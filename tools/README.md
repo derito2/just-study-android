@@ -61,3 +61,17 @@ cd /Users/dero/Documents/JustStudyApp
 PYTHONPATH=$WEB/backend $WEB/backend/.venv/bin/python -m pytest tools/tests -q -p no:cacheprovider
 $WEB/backend/.venv/bin/ruff check tools && $WEB/backend/.venv/bin/ruff format --check tools
 ```
+
+## CI (`.github/workflows/ci.yml`) in local
+
+The same as GitHub Actions on every PR and push to `main` (stop the web, Colima and Ollama first):
+
+```bash
+./gradlew test verifyRoborazziDebug lint assembleDebug assembleRelease
+python3 tools/ci/check_manifest.py      # debug and release merged manifests; exit 1 on a forbidden permission,
+                                        # an exported component other than MainActivity, or a debuggable release
+python3 -m pytest -q tools/tests/test_check_manifest.py
+```
+
+After a deliberate UI change: `./gradlew :app:recordRoborazziDebug` and commit the new `app/src/test/screenshots/`.
+
