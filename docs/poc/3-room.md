@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-11-08 · **Rama del código:** `poc/3-room` (no se mergea) · **Plan:** `docs/POC_PLAN.md`, tarea 3.
 
-**Respuesta corta:** sí. Tu respaldo real entra en Room en una sola transacción, sin perder ni cambiar nada, en 0.25 s.
+**Respuesta corta:** sí. Tu respaldo real entra en Room en una sola transacción, sin perder ni cambiar nada, en menos de 0.4 s.
 
 ## Montaje
 
@@ -23,8 +23,8 @@ Del teléfono solo salen cifras (`files/poc/room-*.json`); la exportación de id
 | Filas por tabla | 18/18 tablas, 1265/1265 filas iguales al manifiesto, 0 errores | 100 % | ✅ |
 | Ida y vuelta (importar → exportar) | 18/18 JSONL idénticos byte a byte | idénticos | ✅ |
 | ZIP corrupto o a medias | sha256 mal, tabla que falta y fila mala en la última tabla (con sha256 válido: se insertan 17 tablas y se deshace todo): 3/3 con error y 0 filas | error y base vacía | ✅ |
-| Tiempo de importación | 247 ms (verificación de sha256 + inserción) | ≤ 10 s | ✅ |
-| Memoria | PSS pico 99 MB (89 MB antes de importar) | ≤ 200 MB | ✅ |
+| Tiempo de importación | 247–390 ms en dos ejecuciones (verificación de sha256 + inserción) | ≤ 10 s | ✅ |
+| Memoria | PSS pico 52–99 MB en dos ejecuciones (el proceso de pruebas parte de 50–89 MB) | ≤ 200 MB | ✅ |
 | Fechas | 1564/1564 en UTC con `Z` (el importador rechaza otra zona); racha 2 = 2; minutos y preguntas por día de los últimos 30 días: 30/30 iguales a la web (America/Monterrey) | iguales | ✅ |
 | Tamaño del `.db` | 326 KB | — | — |
 
