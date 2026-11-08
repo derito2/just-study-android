@@ -5,7 +5,7 @@ plugins {
 android {
     namespace = "com.dero.juststudykorean"
     compileSdk {
-        version = release(37)
+        version = release(37) { minorApiLevel = 2 }
     }
 
     defaultConfig {
