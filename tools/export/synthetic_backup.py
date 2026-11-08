@@ -1,4 +1,5 @@
-"""Synthetic `.jsbackup.zip` v1 (no personal data): every table with 2 rows of made-up values, from an
+"""Synthetic `.jsbackup.zip` v1 (no personal data): every table with 2 rows of made-up values (plus one
+extracted JSON and one tiny PDF for document 1), from an
 in-memory SQLite with the web's models. Used by tools/tests and by :core:data's BackupTest:
 
     cd <web>/backend && PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. .venv/bin/python \
@@ -9,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -51,7 +53,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", type=Path, required=True)
     out = parser.parse_args().out
-    zip_path = export_backup.export(seeded_engine(), out, web_commit="synthetic")
+    # One extracted JSON and one tiny made-up PDF for document 1 (stored_name "stored_name-1").
+    with tempfile.TemporaryDirectory() as tmp:
+        extracted, uploads = Path(tmp, "extracted"), Path(tmp, "uploads")
+        extracted.mkdir()
+        uploads.mkdir()
+        (extracted / "stored_name-1.json").write_text('{"pages": [{"number": 1, "text": "synthetic"}]}')
+        (uploads / "stored_name-1.pdf").write_bytes(b"%PDF-1.4\n% synthetic test file\n%%EOF\n")
+        zip_path = export_backup.export(
+            seeded_engine(), out, web_commit="synthetic", extracted_dir=extracted, uploads_dir=uploads
+        )
     final = zip_path.with_name("synthetic.jsbackup.zip")
     zip_path.replace(final)
     print(final)

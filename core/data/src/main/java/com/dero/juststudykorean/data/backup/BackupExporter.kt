@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 import java.io.FilterOutputStream
 import java.io.IOException
 import java.io.OutputStream
@@ -62,12 +63,24 @@ class BackupExporter @Inject constructor(
                         tables.put(table, JSONObject().put("rows", rows).put("sha256", BackupFormat.sha256Hex(digest)).put("columns", JSONArray(cols.map { it.name })))
                     }
                 }
+                // extracted/ and pdfs/ from the last import, byte for byte, with their sha256 from that manifest.
+                val dir = File(context.filesDir, BackupFormat.FILES_DIR)
+                val index = File(dir, BackupFormat.FILES_INDEX).takeIf { it.isFile }?.let { JSONObject(it.readText()) }
+                val extracted = index?.optJSONObject("extracted") ?: JSONObject()
+                val pdfs = index?.optJSONObject("pdfs") ?: JSONObject()
+                for ((map, entry) in listOf(extracted to BackupFormat::extractedEntry, pdfs to BackupFormat::pdfEntry)) {
+                    for (key in map.keys().asSequence().sorted()) {
+                        zos.putNextEntry(ZipEntry(entry(key)))
+                        File(dir, entry(key)).inputStream().use { it.copyTo(zos) }
+                        zos.closeEntry()
+                    }
+                }
                 val manifest = JSONObject()
                     .put("format", BackupFormat.FORMAT).put("version", BackupFormat.VERSION)
                     .put("web_commit", JSONObject.NULL).put("alembic_head", JSONObject.NULL)
                     .put("exported_at", Instant.now().truncatedTo(ChronoUnit.SECONDS).toString())
                     .put("source_time_zone", "UTC").put("tables", tables)
-                    .put("extracted", JSONObject()).put("pdfs", JSONObject())
+                    .put("extracted", extracted).put("pdfs", pdfs)
                 zos.putNextEntry(ZipEntry(BackupFormat.MANIFEST))
                 zos.write(manifest.toString(1).toByteArray())
                 zos.closeEntry()

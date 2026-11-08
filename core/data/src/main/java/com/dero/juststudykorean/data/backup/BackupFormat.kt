@@ -26,6 +26,19 @@ object BackupFormat {
     fun tableOf(entry: String): String? =
         entry.takeIf { it.startsWith("tables/") && it.endsWith(".jsonl") }?.removePrefix("tables/")?.removeSuffix(".jsonl")
 
+    fun extractedEntry(documentId: String) = "extracted/$documentId.json"
+
+    fun pdfEntry(name: String) = "pdfs/$name"
+
+    /** A file name from the manifest that is safe to use as a path segment (no folders, no "..", no hidden files). */
+    fun isSafeName(name: String) = name.isNotEmpty() && name.length <= 255 && !name.startsWith(".") && '/' !in name && '\\' !in name
+
+    /** Folder (app private storage) with the backup's extracted/ and pdfs/ files, kept as they came. */
+    const val FILES_DIR = "backup-files"
+
+    /** In [FILES_DIR]: the manifest's `extracted` and `pdfs` maps (name → sha256), to write them back on export. */
+    const val FILES_INDEX = "files.json"
+
     fun sha256Hex(digest: MessageDigest): String = digest.digest().joinToString("") { "%02x".format(it) }
 
     fun quote(name: String) = "\"" + name.replace("\"", "\"\"") + "\""

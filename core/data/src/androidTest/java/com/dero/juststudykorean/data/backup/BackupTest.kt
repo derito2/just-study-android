@@ -41,6 +41,7 @@ class BackupTest {
     @Before
     fun open() {
         context.deleteDatabase(DB)
+        File(context.filesDir, BackupFormat.FILES_DIR).deleteRecursively()
         db = Room.databaseBuilder(context, JustStudyDatabase::class.java, DB).setDriver(BundledSQLiteDriver()).build()
         importer = BackupImporter(context, db)
         exporter = BackupExporter(context, db)
@@ -93,6 +94,23 @@ class BackupTest {
                     val name = "tables/$table.jsonl"
                     assertArrayEquals(name, a.getInputStream(a.getEntry(name)).readBytes(), b.getInputStream(b.getEntry(name)).readBytes())
                 }
+            }
+        }
+    }
+
+    @Test
+    fun roundTripKeepsExtraFiles() {
+        import(synthetic)
+        val out = File(dir, "export.jsbackup.zip")
+        runBlocking { exporter.export(Uri.fromFile(out)) }
+        ZipFile(synthetic).use { a ->
+            ZipFile(out).use { b ->
+                val extras = a.entries().asSequence().map { it.name }.filter { it.startsWith("extracted/") || it.startsWith("pdfs/") }.toList()
+                assertEquals(listOf("extracted/1.json", "pdfs/stored_name-1.pdf"), extras.sorted())
+                for (name in extras) assertArrayEquals(name, a.getInputStream(a.getEntry(name)).readBytes(), b.getInputStream(b.getEntry(name)).readBytes())
+                val ma = JSONObject(a.getInputStream(a.getEntry("manifest.json")).bufferedReader().readText())
+                val mb = JSONObject(b.getInputStream(b.getEntry("manifest.json")).bufferedReader().readText())
+                for (key in listOf("extracted", "pdfs")) assertEquals(key, ma.getJSONObject(key).toString(), mb.getJSONObject(key).toString())
             }
         }
     }
