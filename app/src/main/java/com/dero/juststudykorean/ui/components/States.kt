@@ -39,8 +39,8 @@ private fun Modifier.card() = this
 fun EmptyState(
     icon: Lucide,
     title: String,
-    ko: String,
-    message: String,
+    ko: String?,
+    message: String?,
     modifier: Modifier = Modifier,
     action: String? = null,
     actionKo: String? = null,
@@ -53,10 +53,12 @@ fun EmptyState(
         Spacer(Modifier.height(Tokens.Space3))
         Row(verticalAlignment = Alignment.Bottom) {
             Text(title, Modifier.alignByBaseline(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-            KoSide(ko, MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onSurface)
+            if (ko != null) KoSide(ko, MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onSurface)
         }
-        Spacer(Modifier.height(Tokens.Space1))
-        Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        if (message != null) {
+            Spacer(Modifier.height(Tokens.Space1))
+            Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        }
         if (action != null) {
             Spacer(Modifier.height(Tokens.Space4))
             StickerButton(action, onAction, ko = actionKo, color = StickerColor.Go)

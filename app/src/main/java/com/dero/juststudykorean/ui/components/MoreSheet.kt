@@ -4,6 +4,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,12 +20,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.dero.juststudykorean.ui.navigation.MoreDestination
@@ -37,13 +42,19 @@ fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDes
     val shape = RoundedCornerShape(topStart = Tokens.RadiusLg, topEnd = Tokens.RadiusLg)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        modifier = Modifier.border(Tokens.Border, JustStudyTheme.colors.line, shape),
         shape = shape,
         containerColor = MaterialTheme.colorScheme.surface,
         scrimColor = MaterialTheme.colorScheme.scrim, // the token already carries its alpha
-        dragHandle = { BottomSheetDefaults.DragHandle(width = 32.dp, height = 4.dp) },
+        dragHandle = null, // drawn inside the border below
+        contentWindowInsets = { WindowInsets(0) },
     ) {
-        MoreSheetContent(darkMode, onDarkMode, onOpen)
+        // The sheet is its own window: no contrast scrim behind the system buttons there either.
+        val view = LocalView.current
+        SideEffect { generateSequence(view.parent) { it.parent }.filterIsInstance<DialogWindowProvider>().firstOrNull()?.window?.isNavigationBarContrastEnforced = false }
+        Column(Modifier.border(Tokens.Border, JustStudyTheme.colors.line, shape).navigationBarsPadding()) {
+            BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally), width = 32.dp, height = 4.dp)
+            MoreSheetContent(darkMode, onDarkMode, onOpen)
+        }
     }
 }
 
