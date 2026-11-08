@@ -8,21 +8,33 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import com.dero.juststudykorean.data.prefs.ThemeMode
+import com.dero.juststudykorean.data.prefs.UserPrefs
 import com.dero.juststudykorean.ui.navigation.AppScaffold
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var prefs: UserPrefs
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            // shortcut: dark mode choice in memory only; task 4 stores it in DataStore.
-            var choice by rememberSaveable { mutableStateOf<Boolean?>(null) }
-            val dark = choice ?: isSystemInDarkTheme()
+            // null until DataStore answers: the window background shows meanwhile (no flash of the wrong theme).
+            val mode by prefs.themeMode.collectAsState(initial = null)
+            val dark = when (mode ?: return@setContent) {
+                ThemeMode.System -> isSystemInDarkTheme()
+                ThemeMode.Light -> false
+                ThemeMode.Dark -> true
+            }
+            val scope = rememberCoroutineScope()
             DisposableEffect(dark) {
                 enableEdgeToEdge(
                     // Status bar icons follow the app theme, not only the system one.
@@ -34,7 +46,10 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
             JustStudyTheme(darkTheme = dark) {
-                AppScaffold(darkMode = dark, onDarkMode = { choice = it })
+                AppScaffold(
+                    darkMode = dark,
+                    onDarkMode = { on -> scope.launch { prefs.setThemeMode(if (on) ThemeMode.Dark else ThemeMode.Light) } },
+                )
             }
         }
     }
