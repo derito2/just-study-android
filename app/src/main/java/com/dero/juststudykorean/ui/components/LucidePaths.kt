@@ -74,4 +74,9 @@ internal val Lucide.paths: List<String>
             "M12.0 8.0L12.0 12.0",
             "M12.0 16.0L12.01 16.0",
         )
+        Lucide.Download -> listOf(
+            "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4",
+            "M7 10L12 15L17 10",
+            "M12.0 15.0L12.0 3.0",
+        )
     }

@@ -36,6 +36,24 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
   --out /Users/dero/Documents/JustStudyApp/build/poc [--no-pdfs]
 ```
 
+## Synthetic backup → `core/data/src/androidTest/assets/backup/synthetic.jsbackup.zip`
+
+No MySQL and no personal data: every table with 2 made-up rows (in-memory SQLite with the web's models).
+`BackupTest` imports it on the phone.
+
+```bash
+PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/synthetic_backup.py \
+  --out /Users/dero/Documents/JustStudyApp/core/data/src/androidTest/assets/backup
+```
+
+## Room v1 entities → `core/data/.../data/{db,backup}`
+
+`Entities.kt`, `Daos.kt`, `JustStudyDatabase.kt` and `backup/BackupSchema.kt`, from the web's `models.py`:
+
+```bash
+PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/data/gen_room_entities.py
+```
+
 ## Checks
 
 ```bash

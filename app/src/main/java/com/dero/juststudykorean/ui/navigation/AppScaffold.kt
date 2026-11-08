@@ -17,6 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.components.MoreSheet
 import com.dero.juststudykorean.ui.screens.PlaceholderScreen
+import com.dero.juststudykorean.ui.screens.SettingsScreen
 
 /**
  * PhoneLayout (design/shell.md): each screen draws its own JsTopBar under the status bar; JsBottomBar goes to the
@@ -32,11 +33,15 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
             entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
             entryProvider = { route ->
                 NavEntry(route, contentKey = "${route.tab}/${route.section}") {
-                    PlaceholderScreen(
-                        route,
-                        onMore = { moreOpen = true },
-                        onBack = if (route.section != null) ({ nav.back() }) else null,
-                    )
+                    if (route.section == MoreDestination.Settings) {
+                        SettingsScreen(onMore = { moreOpen = true }, onBack = { nav.back() })
+                    } else {
+                        PlaceholderScreen(
+                            route,
+                            onMore = { moreOpen = true },
+                            onBack = if (route.section != null) ({ nav.back() }) else null,
+                        )
+                    }
                 }
             },
         )

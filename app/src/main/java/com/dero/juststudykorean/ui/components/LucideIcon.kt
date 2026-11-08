@@ -33,7 +33,7 @@ import kotlin.math.sin
 /** Lucide Animated icons used by the shell (design/shell.md and the design system README, section Iconos). */
 enum class Lucide(internal val durationMs: Int) {
     LayoutGrid(800), BookText(600), Layers(600), CircleHelp(500), GraduationCap(700), Menu(300),
-    Languages(1000), TrendingUp(400), CalendarDays(400), Moon(1200), Settings(600), ChevronLeft(500), BadgeAlert(500),
+    Languages(1000), TrendingUp(400), CalendarDays(400), Moon(1200), Settings(600), ChevronLeft(500), BadgeAlert(500), Download(500),
 }
 
 /** How one part of an icon moves at progress t (0..1). Pivot in icon units (24 × 24). */
@@ -66,6 +66,7 @@ private fun Lucide.pose(part: Int, t: Float): PartPose = when (this) {
     Lucide.Moon -> PartPose(rotation = 14f * swing(t) * (1f - t))
     Lucide.Settings -> PartPose(rotation = 180f * t)
     Lucide.ChevronLeft -> PartPose(dx = -2f * wave(t))
+    Lucide.Download -> if (part == 0) PartPose() else PartPose(dy = 2f * wave(t)) // the arrow drops 2 dp
     Lucide.BadgeAlert -> PartPose(rotation = 8f * sin(4 * PI * t).toFloat() * (1f - t), scale = 1f + 0.1f * wave(t))
 }
 
