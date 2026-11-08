@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -39,4 +40,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    // PoC 3 (Room import), androidTest only
+    androidTestImplementation(libs.room3.runtime)
+    debugImplementation(libs.androidx.sqlite.bundled) // its .so must be in the app APK (tests run in the app process)
+    androidTestImplementation(libs.kotlinx.serialization.json)
+    kspAndroidTest(libs.room3.compiler)
 }
