@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "claude-android-ninja": {
+      "source": "drjacky/claude-android-ninja",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "1538e83a26cc8de6e72a6256f3271aa143d3b14c287768ccacc09fb3074aae06"
+    }
+  }
+}
