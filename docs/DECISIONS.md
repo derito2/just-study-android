@@ -2,6 +2,30 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-08 — Gemma 4 E2B no hace falta
+**Decisión:** la tarea 4 de `docs/POC_PLAN.md` (Gemma 4 E2B con LiteRT-LM) se descarta. No hay nivel 2 de IA.
+**Por qué:** Nano pasó la PoC 2: está disponible en el OPPO, funciona sin `INTERNET` y en modo avión, y cumple la latencia (ver la entrada siguiente). La tarea 4 solo tocaba si Nano no estaba, no funcionaba sin red o fallaba la latencia.
+**Descartado:** probar Gemma solo para mejorar calificar por significado (~2.6 GB más en el teléfono para un uso que ya funciona como "solo aprobar").
+
+## 2026-11-08 — Gemini Nano (ML Kit genai-prompt 1.0.0-beta5) como nivel 1
+**Decisión:** la IA del teléfono es Gemini Nano por ML Kit Prompt API (`com.google.mlkit:genai-prompt` 1.0.0-beta5), sin `INTERNET`. Por uso (plan, punto 10.1):
+- **Sí:** Coach, explicación (explicar tu error, Grammar a), preguntas Multiple choice y Teacher con fragmentos.
+- **Calificar por significado** (Quiz y Type the answer): **solo para aprobar**. El umbral de aciertos no aplica: solo actúa cuando las reglas ya rechazaron, así que lo que importa son los falsos positivos.
+- **Sin medir:** notas desordenadas y frase de práctica; se miden en la fase 6.
+
+**Por qué** (PoC 2, `docs/poc/2-nano.md`, OPPO, build debug; 150 llamadas con wifi y 50 en modo avión):
+- `AVAILABLE` tras la descarga por AICore; `INTERNET` y `ACCESS_NETWORK_STATE` fuera del manifiesto unido; 50/50 llamadas responden en modo avión con el wifi apagado.
+- Coach: 30/30 válidos, p90 1.5 s. Explicación: 27/30 válidas, primer token p50 0.39 s, total p90 3.3 s. Multiple choice: 28/30 válidas.
+- Calificar por significado: **0 % de falsos positivos** (0/30), **67 % de aciertos** (40/60): aprueba ~1/3 de los sinónimos que las reglas rechazan. p90 1.3 s.
+- `BUSY`: 8/57 sin pausa; 0 con 2 s de pausa.
+
+**Reglas obligatorias:**
+- Prompt de sistema: "You are an English-speaking tutor. Write your whole answer in English". Sin él, Nano explicó en coreano (6/30 válidas).
+- Pausa de 2 s entre llamadas y, con `BUSY`, esperar lo que pide AICore (5 s si nada) y reintentar una vez.
+- Solo con la app en primer plano: en segundo plano o con la pantalla bloqueada AICore da el error 30 (`BACKGROUND_USE_BLOCKED`).
+
+**Descartado:** calificar por significado como juez completo (no llega al 90 % de aciertos) y Gemma 4 E2B como nivel 2 (entrada anterior).
+
 ## 2026-11-08 — Room + formato .jsbackup.zip v1 para el respaldo
 **Decisión:** la base de la app es Room 3 (`androidx.room3` 3.0.3, KSP, `BundledSQLiteDriver` de `sqlite-bundled` 2.7.0). El formato del respaldo es `.jsbackup.zip` v1 (`docs/POC_PLAN.md`, *Formato del respaldo*): un JSONL por tabla con filas y sha256 en `manifest.json`, y fechas ISO-8601 UTC con `Z`.
 **Por qué** (PoC 3, `docs/poc/3-room.md`, tu respaldo real en el OPPO, build debug, dos ejecuciones):
