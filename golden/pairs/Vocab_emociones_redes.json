@@ -1,0 +1,364 @@
+[
+ {
+  "chunk": "4:1:0",
+  "pairs": []
+ },
+ {
+  "chunk": "4:1:1",
+  "pairs": [
+   {
+    "english": "To be excited / To have butterflies",
+    "example_en": "I'm so excited thinking about tomorrow's trip",
+    "example_ko": "내일 여행 갈 생각에 너무 설레요.",
+    "examples": [
+     [
+      "내일 여행 갈 생각에 너무 설레요.",
+      "I'm so excited thinking about tomorrow's trip"
+     ]
+    ],
+    "korean": "설레다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To feel hurt / To feel let down",
+    "example_en": "I felt a bit hurt that you forgot my birthday",
+    "example_ko": "내 생일을 잊어버려서 좀 서운했어.",
+    "examples": [
+     [
+      "내 생일을 잊어버려서 좀 서운했어.",
+      "I felt a bit hurt that you forgot my birthday"
+     ]
+    ],
+    "korean": "서운하다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be cute",
+    "example_en": "The puppy is so cute!",
+    "example_ko": "강아지가 너무 귀여워요!",
+    "examples": [
+     [
+      "강아지가 너무 귀여워요!",
+      "The puppy is so cute!"
+     ],
+     [
+      "귀여워",
+      ""
+     ]
+    ],
+    "korean": "귀엽다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be lonely",
+    "example_en": "When you live alone, you sometimes feel lonely",
+    "example_ko": "혼자 살면 가끔 외로워요.",
+    "examples": [
+     [
+      "혼자 살면 가끔 외로워요.",
+      "When you live alone, you sometimes feel lonely"
+     ]
+    ],
+    "korean": "외롭다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "4:1:2",
+  "pairs": [
+   {
+    "english": "To be scary / To be scared",
+    "example_en": "This movie is really scary",
+    "example_ko": "이 영화 진짜 무서워요.",
+    "examples": [
+     [
+      "이 영화 진짜 무서워요.",
+      "This movie is really scary"
+     ]
+    ],
+    "korean": "무섭다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be annoyed",
+    "example_en": "I missed the bus this morning, so I was annoyed",
+    "example_ko": "아침부터 버스를 놓쳐서 짜증났어.",
+    "examples": [
+     [
+      "아침부터 버스를 놓쳐서 짜증났어.",
+      "I missed the bus this morning, so I was annoyed"
+     ]
+    ],
+    "korean": "짜증나다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To miss / To long for",
+    "example_en": "I miss the food from my hometown",
+    "example_ko": "고향 음식이 그리워요.",
+    "examples": [
+     [
+      "고향 음식이 그리워요.",
+      "I miss the food from my hometown"
+     ]
+    ],
+    "korean": "그립다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be hard / To be tiring",
+    "example_en": "Work was really hard today",
+    "example_ko": "오늘 일이 너무 힘들었어요.",
+    "examples": [
+     [
+      "오늘 일이 너무 힘들었어요.",
+      "Work was really hard today"
+     ]
+    ],
+    "korean": "힘들다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be happy",
+    "example_en": "I'm happy when I'm with you",
+    "example_ko": "너랑 있으면 행복해.",
+    "examples": [
+     [
+      "너랑 있으면 행복해.",
+      "I'm happy when I'm with you"
+     ]
+    ],
+    "korean": "행복하다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "4:1:3",
+  "pairs": [
+   {
+    "english": "To be funny",
+    "example_en": "This video is so funny",
+    "example_ko": "이 영상 너무 웃겨요.",
+    "examples": [
+     [
+      "이 영상 너무 웃겨요.",
+      "This video is so funny"
+     ]
+    ],
+    "korean": "웃기다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To cry",
+    "example_en": "I cried while watching the movie",
+    "example_ko": "영화 보다가 울었어요.",
+    "examples": [
+     [
+      "영화 보다가 울었어요.",
+      "I cried while watching the movie"
+     ]
+    ],
+    "korean": "울다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be thankful",
+    "example_en": "Thanks for coming",
+    "example_ko": "와 줘서 고마워.",
+    "examples": [
+     [
+      "와 줘서 고마워.",
+      "Thanks for coming"
+     ],
+     [
+      "고마워요",
+      ""
+     ]
+    ],
+    "korean": "고맙다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To worry",
+    "example_en": "Don't worry too much",
+    "example_ko": "너무 걱정하지 마세요.",
+    "examples": [
+     [
+      "너무 걱정하지 마세요.",
+      "Don't worry too much"
+     ]
+    ],
+    "korean": "걱정하다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To regret",
+    "example_en": "I regret saying that",
+    "example_ko": "그 말을 한 걸 후회해요.",
+    "examples": [
+     [
+      "그 말을 한 걸 후회해요.",
+      "I regret saying that"
+     ]
+    ],
+    "korean": "후회하다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "4:2:0",
+  "pairs": [
+   {
+    "english": "To fall for someone",
+    "example_en": "I fell for them at first sight",
+    "example_ko": "첫눈에 반했어요.",
+    "examples": [
+     [
+      "첫눈에 반했어요.",
+      "I fell for them at first sight"
+     ]
+    ],
+    "korean": "반하다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be disappointed",
+    "example_en": "I was a bit disappointed when I saw the result",
+    "example_ko": "결과를 보고 좀 실망했어요.",
+    "examples": [
+     [
+      "결과를 보고 좀 실망했어요.",
+      "I was a bit disappointed when I saw the result"
+     ]
+    ],
+    "korean": "실망하다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be proud",
+    "example_en": "I'm really proud of you",
+    "example_ko": "네가 정말 자랑스러워.",
+    "examples": [
+     [
+      "네가 정말 자랑스러워.",
+      "I'm really proud of you"
+     ]
+    ],
+    "korean": "자랑스럽다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Mood / Feeling",
+    "example_en": "How are you feeling today?",
+    "example_ko": "오늘 기분이 어때요?",
+    "examples": [
+     [
+      "오늘 기분이 어때요?",
+      "How are you feeling today?"
+     ]
+    ],
+    "korean": "기분",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Tears",
+    "example_en": "When I hear that song, I tear up",
+    "example_ko": "그 노래를 들으면 눈물이 나요.",
+    "examples": [
+     [
+      "그 노래를 들으면 눈물이 나요.",
+      "When I hear that song, I tear up"
+     ]
+    ],
+    "korean": "눈물",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "4:2:1",
+  "pairs": [
+   {
+    "english": "Awesome",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "대박",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "OMG",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "헐",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "The best",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "짱",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Popular person",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "인싸",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ }
+]

@@ -1,0 +1,156 @@
+[
+ {
+  "chroma_id": "6:1:0",
+  "content_type": "grammar",
+  "document_id": 6,
+  "filename": "Korean_Notes_Example.pdf",
+  "index": 0,
+  "language": "en",
+  "metadata": {
+   "content_type": "grammar",
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "language": "en",
+   "page_number": 1,
+   "section": "My Korean notes",
+   "source_type": "pdf",
+   "topic": "My Korean notes"
+  },
+  "page_number": 1,
+  "section": "My Korean notes",
+  "text": "My Korean notes\nOne rule: Korean = English. The lines under an entry, without any label, are its examples\n(Korean = English) or its notes. Use / for synonyms: any of them counts as right.",
+  "topic": "My Korean notes"
+ },
+ {
+  "chroma_id": "6:1:1",
+  "content_type": "vocabulary",
+  "document_id": 6,
+  "filename": "Korean_Notes_Example.pdf",
+  "index": 1,
+  "language": "ko-en",
+  "metadata": {
+   "content_type": "vocabulary",
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "language": "ko-en",
+   "page_number": 1,
+   "section": "Vocabulary",
+   "source_type": "pdf",
+   "topic": "Vocabulary"
+  },
+  "page_number": 1,
+  "section": "Vocabulary",
+  "text": "Vocabulary\n1. 근처 = Nearby\n이 근처에는 카페가 없어요. = There are no cafes in this vicinity.\n학교가 집 근처에 있어요. = The school is nearby my house.\n2. 안 = Inside\n가방 안에 있어요. = It's inside of the bag.\n3. 가장 / 제일 = The most / best\n4. 걷다 = To walk\n걸어요\n걸을 거야\n5. 혼자 = Alone, on one's own\n저 혼자 살아요 = I live alone\n혼자서 = By oneself\n6. 챙기다 = To take (Important no forget)\nUse it like \"dont forget to take this...\" because is important",
+  "topic": "Vocabulary"
+ },
+ {
+  "chroma_id": "6:1:2",
+  "content_type": "vocabulary",
+  "document_id": 6,
+  "filename": "Korean_Notes_Example.pdf",
+  "index": 2,
+  "language": "ko-en",
+  "metadata": {
+   "content_type": "vocabulary",
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "language": "ko-en",
+   "page_number": 1,
+   "section": "Sentences",
+   "source_type": "pdf",
+   "topic": "Sentences"
+  },
+  "page_number": 1,
+  "section": "Sentences",
+  "text": "Sentences\n1. 피곤하니까 집에 갈래요 = Since I am tired, I want to go home.\n2. 비가 오니까 우산을 챙기세요 = Because it's raining, take an umbrella.\nUse 으니까 because we cannot use 어서 in commands.",
+  "topic": "Sentences"
+ },
+ {
+  "chroma_id": "6:1:3",
+  "content_type": "grammar",
+  "document_id": 6,
+  "filename": "Korean_Notes_Example.pdf",
+  "index": 3,
+  "language": "ko-en",
+  "metadata": {
+   "content_type": "grammar",
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "language": "ko-en",
+   "page_number": 1,
+   "section": "1. -ㄹ 지/ 을 지",
+   "source_type": "pdf",
+   "topic": "1. -ㄹ 지/ 을 지"
+  },
+  "page_number": 1,
+  "section": "1. -ㄹ 지/ 을 지",
+  "text": "1. -ㄹ 지/ 을 지\nMeaning: whether\n비가 올지 안 올지 모르겠어요. = I don't know whether it'll rain or not.\n말할지 말지 모르겠어요 = I don't know whether to say it or not\nExplanation: Use -ㄹ지 말지 when expressing indecision.",
+  "topic": "1. -ㄹ 지/ 을 지"
+ },
+ {
+  "chroma_id": "6:2:0",
+  "content_type": "grammar",
+  "document_id": 6,
+  "filename": "Korean_Notes_Example.pdf",
+  "index": 0,
+  "language": "ko-en",
+  "metadata": {
+   "content_type": "grammar",
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "language": "ko-en",
+   "page_number": 2,
+   "section": "2. -네요",
+   "source_type": "pdf",
+   "topic": "2. -네요"
+  },
+  "page_number": 2,
+  "section": "2. -네요",
+  "text": "2. -네요\nMeaning: A reaction to something you see or feel right now\n비싸네요\n좋네요",
+  "topic": "2. -네요"
+ },
+ {
+  "chroma_id": "6:2:1",
+  "content_type": "table",
+  "document_id": 6,
+  "filename": "Korean_Notes_Example.pdf",
+  "index": 1,
+  "language": "ko-en",
+  "metadata": {
+   "content_type": "table",
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "language": "ko-en",
+   "page_number": 2,
+   "section": "Particles",
+   "source_type": "pdf",
+   "topic": "Particles"
+  },
+  "page_number": 2,
+  "section": "Particles",
+  "text": "Particles\nParticle\nMain function\nExample\n이/가\nSubject\n고양이가 집 뒤에 숨었어요. — The cat hid behind the house.\n을/를\nObject\n집 주위를 둘러봤어요. — I looked around the house.\n에\nPlace or time\n가방 안에 있어요. — It's inside of the bag.",
+  "topic": "Particles"
+ },
+ {
+  "chroma_id": "6:2:2",
+  "content_type": "general",
+  "document_id": 6,
+  "filename": "Korean_Notes_Example.pdf",
+  "index": 2,
+  "language": "ko-en",
+  "metadata": {
+   "content_type": "general",
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "language": "ko-en",
+   "page_number": 2,
+   "section": "Free notes (no numbers)",
+   "source_type": "pdf",
+   "topic": "Free notes (no numbers)"
+  },
+  "page_number": 2,
+  "section": "Free notes (no numbers)",
+  "text": "Free notes (no numbers)\nWithout numbers, every line with Korean = English (or →, :, a dash, or the English in\nparentheses) is one word.\n- 구름 → Cloud\n- 가방: Bag\n감자 (Potato), 거울 (Mirror)",
+  "topic": "Free notes (no numbers)"
+ }
+]
