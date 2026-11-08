@@ -35,7 +35,7 @@ import com.dero.juststudykorean.ui.navigation.MoreDestination
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
-/** More: Grammar, Progress, Calendar · divider · Dark mode with ThemeSwitch · Settings. */
+/** More: Grammar, Calendar · divider · Dark mode with ThemeSwitch · Settings. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDestination) -> Unit, onDismiss: () -> Unit) {
@@ -63,7 +63,6 @@ fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDes
 internal fun MoreSheetContent(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDestination) -> Unit) {
     Column(Modifier.fillMaxWidth().padding(bottom = Tokens.Space2)) {
         MoreRow(Lucide.Languages, "Grammar", "문법") { onOpen(MoreDestination.Grammar) }
-        MoreRow(Lucide.TrendingUp, "Progress", "진도") { onOpen(MoreDestination.Progress) }
         MoreRow(Lucide.CalendarDays, "Calendar", "달력") { onOpen(MoreDestination.Calendar) }
         HorizontalDivider(Modifier.padding(vertical = Tokens.Space2), thickness = Tokens.Border, color = JustStudyTheme.colors.line)
         var moonTaps by remember { mutableIntStateOf(0) }
