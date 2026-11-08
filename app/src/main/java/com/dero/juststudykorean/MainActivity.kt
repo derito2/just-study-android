@@ -1,13 +1,25 @@
 package com.dero.juststudykorean
 
 import android.os.Bundle
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import com.dero.juststudykorean.ui.theme.JustStudyTheme
 
-// shortcut: placeholder until phase 2 brings Compose + the design system.
-class MainActivity : AppCompatActivity() {
+// shortcut: empty `background` screen until task 3 brings navigation and the placeholder screens.
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        setContentView(TextView(this).apply { setText(R.string.app_name); textSize = 24f; setPadding(48, 200, 48, 48) })
+        setContent {
+            JustStudyTheme {
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+            }
+        }
     }
 }
