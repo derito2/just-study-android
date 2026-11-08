@@ -9,10 +9,13 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import com.dero.juststudykorean.ui.navigation.TopLevel
+import androidx.compose.ui.unit.dp
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import com.dero.juststudykorean.ui.theme.Tokens
 
 private val TopLevel.icon
     get() = when (this) {
@@ -48,6 +51,12 @@ fun JsBottomBar(current: TopLevel, onSelect: (TopLevel) -> Unit, modifier: Modif
                         maxLines = 2,
                         textAlign = TextAlign.Center,
                     )
+                },
+                modifier = Modifier.layout { measurable, constraints ->
+                    // With big fonts the item outgrows 80 dp and M3 leaves ~4 dp above the indicator: keep 12 dp.
+                    val item = measurable.measure(constraints)
+                    val extra = if (item.height > Tokens.BottomBarH.roundToPx()) 12.dp.roundToPx() else 0
+                    layout(item.width, item.height + extra) { item.place(0, extra) }
                 },
                 alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
