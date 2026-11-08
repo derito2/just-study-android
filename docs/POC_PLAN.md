@@ -143,7 +143,7 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
    - 30 positivos: sinónimos o paráfrasis de la respuesta correcta, sacados de `english_answers` y de las alternativas `a/b` de tus pares, más paráfrasis escritas a mano en `nano-cases.json`;
    - 30 negativos: la respuesta de otro par, el antónimo o un sentido cercano pero distinto.
 
-- [ ] **Paso 1: prueba que falla** `NanoTest.featureStatusIsAvailable`: `checkStatus()` debe dar `AVAILABLE`. Si da `DOWNLOADABLE`, la descarga del modelo la hace AICore (Ajustes → Google → AICore) **con wifi, fuera de la app**, y se repite.
+- [ ] **Paso 1: prueba que falla** `NanoTest.featureStatusIsAvailable`: `checkStatus()` debe dar `AVAILABLE`. Si da `DOWNLOADABLE`, la app llama a `download()` solo cuando el usuario pulsa el botón; AICore descarga el modelo (con wifi y cargando) y la app sigue sin `INTERNET`. Luego se repite.
 - [ ] **Paso 2:** correrla en el OPPO y anotar el estado tal cual. Si da `UNAVAILABLE`, se para aquí: Nano no está en este teléfono y se pasa a la tarea 4.
 - [ ] **Paso 3:** manifiesto. Compilar `assembleDebug` y buscar `INTERNET` en `app/build/intermediates/merged_manifest/debug/`. Si está, quitarlo con `tools:node="remove"` y volver a compilar.
 - [ ] **Paso 4:** `NanoTest.tasksMeetLatencyAndValidity`: 30 casos × 3 encargos más 60 de calificar, con `ActivityScenario` de `MainActivity` en primer plano y el resultado guardado caso a caso. Calentamiento: 1 llamada que no cuenta.
