@@ -26,11 +26,6 @@ private data class ScreenText(val title: String, val ko: String, val subtitle: S
 private val Route.text: ScreenText
     get() = when (section) {
         MoreDestination.Grammar -> ScreenText("Grammar", "문법", "Explore Korean grammar with clear explanations and examples.", null, Lucide.Languages)
-        MoreDestination.Progress -> ScreenText(
-            "Progress", "진도",
-            "Mastery = correct answers in your last 10 for each topic, out of 10. The numbers don't lie.",
-            "숙달도 = 주제별 최근 10문제 중 맞힌 수. 숫자는 거짓말 안 해.", Lucide.TrendingUp,
-        )
         MoreDestination.Calendar -> ScreenText(
             "Calendar", "달력", "Every day you studied, and every day you didn't.", "공부한 날도, 안 한 날도 전부.", Lucide.CalendarDays,
         )

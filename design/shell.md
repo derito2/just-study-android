@@ -40,7 +40,7 @@ Fuente de verdad visual: el Design System **Just Study Mobile** (claude.ai, arte
 | **StickerButton** | `shell-button-*` | Colores `Action` · `Go` · `Fix` (texto `on-fix`) · `Danger` · `Gray`. Default: 44 dp visibles + canto de 4 dp. Small: 36 + 3 dp, con zona táctil de 48 dp. Radio 12. Texto `button` (13 sp, 700, MAYÚSCULAS, tracking 0.053em) y coreano opcional debajo (11 sp, 500, 85 %). Al pulsar: relleno `*-pressed`, baja lo que mide el canto y el canto desaparece (90 ms). Deshabilitado: `disabled-fill` y `disabled-ink`, sin canto. Sin ripple. |
 | **JsTopBar** | `shell-topbar-*` | Large Top App Bar: `page-title` (32 sp, 800) y su coreano al 55 % y 60 % de opacidad; subtítulo `muted` 14 sp y subtítulo coreano 11 sp. Al desplazar se pliega a 64 dp con el título en `section-title`. A la derecha, **More** (icono `menu`, 48 dp), que abre MoreSheet. En pantallas de segundo nivel, flecha `chevron-left` a la izquierda. |
 | **JsBottomBar** | `shell-bottombar-*` | NavigationBar de 80 dp más el inset de gestos, fondo `action`. Destinos: **Dashboard** `layout-grid` · **Library** `book-text` · **Flashcards** `layers` · **Quiz** `circle-help` · **Teacher** `graduation-cap`. Etiquetas `nav-label` (12 sp, 700) en Title Case, blancas. Activo: indicador de 64 × 32 dp `nav-active` e icono con trazo 2.5. El icono se anima una vez al elegirlo. |
-| **MoreSheet** | `shell-moresheet-*` | ModalBottomSheet `surface` con radio superior 16, borde `line` y asa de 32 × 4 dp. Filas de 56 dp: icono 24 dp `control`, nombre `body-bold` y coreano `ko-side` (como en la web: 0.75 em del texto al lado, 700, a 0.45 em; aquí 10.5 sp). Orden: Grammar `languages` 문법 · Progress `trending-up` 진도 · Calendar `calendar-days` 달력 · divisor · Dark mode `moon` + ThemeSwitch · Settings `settings` 설정. |
+| **MoreSheet** | `shell-moresheet-*` | ModalBottomSheet `surface` con radio superior 16, borde `line` y asa de 32 × 4 dp. Filas de 56 dp: icono 24 dp `control`, nombre `body-bold` y coreano `ko-side` (como en la web: 0.75 em del texto al lado, 700, a 0.45 em; aquí 10.5 sp). Orden: Grammar `languages` 문법 · Calendar `calendar-days` 달력 · divisor · Dark mode `moon` + ThemeSwitch · Settings `settings` 설정. |
 | **ThemeSwitch** | `shell-themeswitch-*` | Como en la web: pista de 36 × 20 dp y círculo de 16 dp, con zona táctil de 48 dp (toda la fila de MoreSheet lo activa). Pista `line` (oscuro: `disabled-fill`); encendida, `nav-active`. Círculo blanco con la sombra de la web (Tailwind `shadow`: 0 1 dp 3 dp y 0 1 dp 2 dp −1 dp, negro al 10 %; solo en claro). En oscuro, como en la web: pista `disabled-fill` encendido o apagado y círculo `background`. 150 ms. |
 | **States** | `shell-states-*` | **Vacío:** Card centrada con icono de 40 dp, `section-title` con coreano, una línea `muted` y su acción `Go` si la hay. **Cargando:** el texto de siempre ("Loading…") y LinearProgressIndicator (pista `tint`, barra `brand`) solo si tarda más de 300 ms. **Error:** recuadro `wrong-fill`, icono `badge-alert`, texto `wrong` y *Try again* (Gray, Small). |
 | **Snackbar** | `shell-feedback-*` | Fondo `tooltip`, texto blanco y acción `on-tooltip-action`, encima de la barra inferior. |
@@ -60,17 +60,22 @@ Cada destino muestra su JsTopBar con el título, el coreano y el subtítulo **de
 | Quiz | Quiz · 퀴즈 | Questions built only from your own notes. No excuses if you fail. · 네 노트로만 만든 문제. 틀려도 변명은 없어. |
 | Teacher | Teacher · 선생님 | Your teacher answers from your own notes first. For anything else, AI is used. · 선생님은 먼저 네 노트로 대답해. 나머지는 AI를 사용해. |
 | Grammar | Grammar · 문법 | Explore Korean grammar with clear explanations and examples. (sin subtítulo coreano, como en la web) |
-| Progress | Progress · 진도 | Mastery = correct answers in your last 10 for each topic, out of 10. The numbers don't lie. · 숙달도 = 주제별 최근 10문제 중 맞힌 수. 숫자는 거짓말 안 해. |
 | Calendar | Calendar · 달력 | Every day you studied, and every day you didn't. · 공부한 날도, 안 한 날도 전부. |
 | Settings | Settings · 설정 | — |
 
-Grammar, Progress, Calendar y Settings se abren **encima** del destino actual, con la flecha atrás (no tienen sitio en la barra inferior).
+Grammar, Calendar y Settings se abren **encima** del destino actual, con la flecha atrás (no tienen sitio en la barra inferior).
 
-## Settings (Fase 2: solo respaldo)
+## Settings (Fase 2: tema y respaldo)
 
 Una lista con filas como las de MoreSheet (56 dp, icono, `body-bold` y una línea `muted`):
 
+- **Theme** (`moon`): SelectedGroup Small *System · Light · Dark*, guardado en `UserPrefs.themeMode`. Es la única forma de volver a *System*. El interruptor de MoreSheet sigue eligiendo Light o Dark.
 - **Import backup** (`download`). Abre el selector del sistema (SAF, `.jsbackup.zip`) y luego un diálogo: *"This replaces everything in the app with the backup. Continue?"*, con los botones *Cancel* (Gray) e *Import* (Danger). Mientras importa, LinearProgressIndicator. Al terminar, Snackbar *"Imported 1265 rows from 18 tables."* Si falla, un recuadro de error con el motivo y nada cambia.
 - **Export backup** (`download`, girado 180°). Abre el selector para guardar `juststudy-backup-<fecha>.jsbackup.zip`. Al terminar, Snackbar *"Backup saved."*
 
 Encima de la lista, el JsTopBar de Settings.
+
+
+## Sin pantalla Progress
+
+Como en la web (Progress no está en su menú), el móvil no tiene pantalla Progress. Todo el progreso se ve en la gráfica del Dashboard (`design/dashboard.md`, sección 4). `MoreDestination` queda en Grammar, Calendar y Settings.

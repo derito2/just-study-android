@@ -75,9 +75,9 @@ class NavigationTest {
     @Test
     fun otherTabsKeepTheirStack() {
         tab("Flashcards").performClick()
-        more("Progress")
+        more("Calendar")
         tab("Dashboard").performClick()
         tab("Flashcards").performClick()
-        title("Progress").assertIsDisplayed()
+        title("Calendar").assertIsDisplayed()
     }
 }

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.room3)
 }
 
 android {
@@ -12,6 +13,7 @@ android {
     }
     defaultConfig {
         minSdk = 31
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -19,9 +21,19 @@ android {
     }
 }
 
+room3 {
+    schemaDirectory("$projectDir/schemas") // the v1 schema JSON is committed
+}
+
 dependencies {
+    implementation(libs.room3.runtime)
+    implementation(libs.androidx.sqlite.bundled)
+    ksp(libs.room3.compiler)
+    implementation(libs.kotlinx.serialization.json) // backup rows as JsonElement (Python json.dumps round trip)
     api(libs.androidx.datastore.preferences)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.runner)
 }

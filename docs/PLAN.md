@@ -89,7 +89,7 @@ JustStudyApp/
 
 ## 4. Pantallas y navegación
 
-Barra inferior con 5 destinos: **Dashboard · Library · Flashcards · Quiz · Teacher**. **Grammar, Progress, Calendar y Ajustes** van en el menú "More" (o desde el Dashboard).
+Barra inferior con 5 destinos: **Dashboard · Library · Flashcards · Quiz · Teacher**. **Grammar, Calendar y Settings** van en el menú "More"; no hay pantalla Progress (como en la web): el progreso está en la gráfica del Dashboard.
 
 **Teacher con el Coach dentro:**
 - Un solo chat. Una pregunta sobre tus notas ("What does 근처 mean?", "Example with -아서", "가는데요 맞아요?") la responde Teacher con reglas, como hoy en la web.
