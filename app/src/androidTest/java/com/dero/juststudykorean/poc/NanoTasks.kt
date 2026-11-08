@@ -49,7 +49,7 @@ object NanoTasks {
 
     /** Korean words in [out] that are not in [source] (invented Korean). */
     fun inventedKorean(out: String, source: String): List<String> =
-        hangulWord.findAll(out).map { it.value }.filterNot { isGrounded(it, source) }.toList()
+        hangulWord.findAll(out).map { it.value }.filterNot { KoreanForms.fromNotes(it, source) }.toList()
 
     // --- Jobs.
     class Job(val prompt: String, val maxTokens: Int, val temperature: Float?, val validate: (String) -> Pair<Boolean, String>)
@@ -68,8 +68,10 @@ object NanoTasks {
 
     fun explain(c: JSONObject): Job {
         val entry = c.getString("entry")
-        val prompt = "Explain this Korean grammar point to a beginner in simple English, in 3 or 4 sentences. " +
-            "Only use Korean that appears in the entry below.\n\nEntry:\n$entry"
+        // v2: v1 ("in simple English") made Nano answer in Korean.
+        val prompt = "You are an English-speaking tutor. Write your whole answer in English. " +
+            "Explain the Korean grammar point below to a beginner in 3 or 4 short English sentences. " +
+            "You may quote the Korean pattern and the Korean examples from the entry, but write no other Korean.\n\nEntry:\n$entry"
         return Job(prompt, 256, null) { out ->
             val bad = inventedKorean(out, entry)
             (out.isNotBlank() && bad.isEmpty()) to if (bad.isEmpty()) "" else "invented_korean=${bad.size}"

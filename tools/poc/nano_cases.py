@@ -87,4 +87,5 @@ text = json.load(open(ROOT / "golden/text.json"))
 OUT.write_text(json.dumps({"coach": coach, "explain": explain, "mcq": mcq, "grade": grade,
                            "is_grounded": text["is_grounded"], "leaks_answer": text["leaks_answer"]},
                           ensure_ascii=False, indent=1) + "\n")
+(OUT.parent / "korean.json").write_text((ROOT / "golden/korean.json").read_text())  # for KoreanForms checks
 print(OUT, len(coach), len(explain), len(mcq), len(grade))
