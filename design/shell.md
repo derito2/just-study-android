@@ -25,6 +25,7 @@ Fuente de verdad visual: el Design System **Just Study Mobile** (claude.ai, arte
 
   El resto de los tokens va en `JustStudyColors` (CompositionLocal). **Dynamic Color desactivado.**
 - **Tipografía:** Poppins 400 / 700 / 800 (TTF de google/fonts, OFL; licencia junto a las fuentes). El coreano usa la fuente del sistema, con interlineado 1.6 y sin tracking. Estilos con nombre y valores en `tokens.json → type.groups`; su asignación a `Typography` está en el README del sistema (sección *Material 3 en Compose*).
+- **Correspondencia con Typography:** headlineLarge = `page-title` · headlineSmall = `stat-value` · titleLarge = `kpi-value` · titleMedium = `section-title` · bodyMedium = `body` · bodySmall = `caption` · labelLarge = `button` · labelMedium = `label-caps`, `button-sm` y `nav-label` · labelSmall = `ko-below`. Los estilos coreanos van en `KoreanTypography`.
 - **Formas:** small 8 · medium 12 · large 16 · `CircleShape` para las píldoras.
 - **Movimiento:**
   - duraciones: 150 / 240 / 400 ms; pulsar, 90 ms;
@@ -57,7 +58,7 @@ Cada destino muestra su JsTopBar con el título, el coreano y el subtítulo **de
 | Library | Library · 자료실 | Your study PDFs. No notes, no progress. · 공부용 PDF. 노트가 없으면 발전도 없어. |
 | Flashcards | Flashcards · 단어 카드 | Words from your own notes. Review them before you forget them, again. · 네 노트에서 나온 단어. 또 잊어버리기 전에 복습해. |
 | Quiz | Quiz · 퀴즈 | Questions built only from your own notes. No excuses if you fail. · 네 노트로만 만든 문제. 틀려도 변명은 없어. |
-| Teacher | Teacher · 선생님 | **(pendiente de aprobar)** Your teacher answers from your own notes first. Anything else is marked AI. · 선생님은 먼저 네 노트로 대답해. 나머지는 AI 표시가 붙어. |
+| Teacher | Teacher · 선생님 | Your teacher answers from your own notes first. For anything else, AI is used. · 선생님은 먼저 네 노트로 대답해. 나머지는 AI를 사용해. |
 | Grammar | Grammar · 문법 | Explore Korean grammar with clear explanations and examples. (sin subtítulo coreano, como en la web) |
 | Progress | Progress · 진도 | Mastery = correct answers in your last 10 for each topic, out of 10. The numbers don't lie. · 숙달도 = 주제별 최근 10문제 중 맞힌 수. 숫자는 거짓말 안 해. |
 | Calendar | Calendar · 달력 | Every day you studied, and every day you didn't. · 공부한 날도, 안 한 날도 전부. |
