@@ -1,0 +1,189 @@
+[
+ {
+  "chunk": "6:1:0",
+  "pairs": []
+ },
+ {
+  "chunk": "6:1:1",
+  "pairs": [
+   {
+    "english": "Nearby",
+    "example_en": "There are no cafes in this vicinity",
+    "example_ko": "이 근처에는 카페가 없어요.",
+    "examples": [
+     [
+      "이 근처에는 카페가 없어요.",
+      "There are no cafes in this vicinity"
+     ],
+     [
+      "학교가 집 근처에 있어요.",
+      "The school is nearby my house"
+     ]
+    ],
+    "korean": "근처",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Inside",
+    "example_en": "It's inside of the bag",
+    "example_ko": "가방 안에 있어요.",
+    "examples": [
+     [
+      "가방 안에 있어요.",
+      "It's inside of the bag"
+     ]
+    ],
+    "korean": "안",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "The most / best",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "가장 / 제일",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To walk",
+    "example_en": null,
+    "example_ko": "걸어요",
+    "examples": [
+     [
+      "걸어요",
+      ""
+     ],
+     [
+      "걸을 거야",
+      ""
+     ]
+    ],
+    "korean": "걷다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Alone, on one's own",
+    "example_en": "I live alone",
+    "example_ko": "저 혼자 살아요",
+    "examples": [
+     [
+      "저 혼자 살아요",
+      "I live alone"
+     ],
+     [
+      "혼자서",
+      "By oneself"
+     ]
+    ],
+    "korean": "혼자",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To take (Important no forget)",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "챙기다",
+    "notes": [
+     "Use it like \"dont forget to take this...\" because is important"
+    ],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "6:1:2",
+  "pairs": [
+   {
+    "english": "Since I am tired, I want to go home",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "피곤하니까 집에 갈래요",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Because it's raining, take an umbrella",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "비가 오니까 우산을 챙기세요",
+    "notes": [
+     "Use 으니까 because we cannot use 어서 in commands."
+    ],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "6:1:3",
+  "pairs": []
+ },
+ {
+  "chunk": "6:2:0",
+  "pairs": []
+ },
+ {
+  "chunk": "6:2:1",
+  "pairs": []
+ },
+ {
+  "chunk": "6:2:2",
+  "pairs": [
+   {
+    "english": "Cloud",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "구름",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Bag",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "가방",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Potato",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "감자",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Mirror",
+    "example_en": null,
+    "example_ko": null,
+    "examples": [],
+    "korean": "거울",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ }
+]

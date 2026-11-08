@@ -1,0 +1,116 @@
+[
+ {
+  "chunk": "6:1:0",
+  "points": []
+ },
+ {
+  "chunk": "6:1:1",
+  "points": []
+ },
+ {
+  "chunk": "6:1:2",
+  "points": []
+ },
+ {
+  "chunk": "6:1:3",
+  "points": [
+   {
+    "choice_answer": null,
+    "choices": [],
+    "examples": [
+     [
+      "비가 올지 안 올지 모르겠어요.",
+      "I don't know whether it'll rain or not"
+     ],
+     [
+      "말할지 말지 모르겠어요",
+      "I don't know whether to say it or not"
+     ]
+    ],
+    "explanation": "Use -ㄹ지 말지 when expressing indecision.",
+    "forms": [],
+    "kind": "pattern",
+    "meaning": "whether",
+    "pattern": "-ㄹ 지/ 을 지"
+   }
+  ]
+ },
+ {
+  "chunk": "6:2:0",
+  "points": [
+   {
+    "choice_answer": null,
+    "choices": [],
+    "examples": [
+     [
+      "비싸네요",
+      ""
+     ],
+     [
+      "좋네요",
+      ""
+     ]
+    ],
+    "explanation": null,
+    "forms": [],
+    "kind": "pattern",
+    "meaning": "A reaction to something you see or feel right now",
+    "pattern": "-네요"
+   }
+  ]
+ },
+ {
+  "chunk": "6:2:1",
+  "points": [
+   {
+    "choice_answer": null,
+    "choices": [],
+    "examples": [
+     [
+      "고양이가 집 뒤에 숨었어요.",
+      "The cat hid behind the house."
+     ]
+    ],
+    "explanation": null,
+    "forms": [],
+    "kind": "particle",
+    "meaning": "Subject",
+    "pattern": "이/가"
+   },
+   {
+    "choice_answer": null,
+    "choices": [],
+    "examples": [
+     [
+      "집 주위를 둘러봤어요.",
+      "I looked around the house."
+     ]
+    ],
+    "explanation": null,
+    "forms": [],
+    "kind": "particle",
+    "meaning": "Object",
+    "pattern": "을/를"
+   },
+   {
+    "choice_answer": null,
+    "choices": [],
+    "examples": [
+     [
+      "가방 안에 있어요.",
+      "It's inside of the bag."
+     ]
+    ],
+    "explanation": null,
+    "forms": [],
+    "kind": "particle",
+    "meaning": "Place or time",
+    "pattern": "에"
+   }
+  ]
+ },
+ {
+  "chunk": "6:2:2",
+  "points": []
+ }
+]

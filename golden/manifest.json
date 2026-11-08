@@ -1,0 +1,200 @@
+{
+ "alembic_head": "b3e8d5c1a9f4",
+ "files": {
+  "chunks/Frases_dramas_y_redes.json": {
+   "cases": 5,
+   "sha256": "5639415df246cd2fc7f8f03dd41183cd464afb55d831e6814d259f7dfd20b604"
+  },
+  "chunks/Gramatica_semana_14.json": {
+   "cases": 10,
+   "sha256": "46717bc5a272f7b8a3a6a204bbcef3babd4fd9e6fcd82edf62d54497851710a9"
+  },
+  "chunks/Korean_Notes_Example.json": {
+   "cases": 7,
+   "sha256": "4507700bfe2abcb6ed87a55b6ee21d24c7cd40271bfba4ceb9ad523d6d702c17"
+  },
+  "chunks/Vocab_cafe_y_comida.json": {
+   "cases": 6,
+   "sha256": "e276aa0afeed01c7769c39a4a0a6f96e06514c901bc8b3d0311d0f6130feded0"
+  },
+  "chunks/Vocab_emociones_redes.json": {
+   "cases": 6,
+   "sha256": "b82c7e003cf279c6659a37d97f258cf45fca025076fab07c4b055ec4698462be"
+  },
+  "chunks/Vocab_viajes_irregulares.json": {
+   "cases": 5,
+   "sha256": "c2d23ff1fe1a737609c0c4f989eb602dccef841f63b2ac6b7add236f1bf81bd5"
+  },
+  "compare_answer.json": {
+   "cases": 2011,
+   "sha256": "ee88ca9fae9d84fb85b85e9a749f862da1d430e2c8dbed897fa0579af55281ca"
+  },
+  "grammar/Frases_dramas_y_redes.json": {
+   "cases": 0,
+   "sha256": "83a247680fd5b8cf787df09770b5b499e1bae436d383f714bbe3eb0730acfbf2"
+  },
+  "grammar/Gramatica_semana_14.json": {
+   "cases": 12,
+   "sha256": "410454cf7c811ffb908d710ee003cc45a0c566273bb496b2f7db5e316da8f96b"
+  },
+  "grammar/Korean_Notes_Example.json": {
+   "cases": 5,
+   "sha256": "847f0c4e39a534b2a097841df3a4e10322c4154aac19d68417ccc040d0c9f032"
+  },
+  "grammar/Vocab_cafe_y_comida.json": {
+   "cases": 0,
+   "sha256": "ac9a025fd8bfbd515d9f906f46b8a9874aea3267df8d3a3d1424046b63515987"
+  },
+  "grammar/Vocab_emociones_redes.json": {
+   "cases": 0,
+   "sha256": "6f39e3446b23cd21ff823d1d58857f37dafed77aff178888bc2cf286ec0f17d6"
+  },
+  "grammar/Vocab_viajes_irregulares.json": {
+   "cases": 0,
+   "sha256": "ca7c523cd51f0d9410092376740c71ec3dd4a27a9b3d4095e8e8b7c86d982dbe"
+  },
+  "index/Frases_dramas_y_redes.json": {
+   "cases": 20,
+   "sha256": "0dc3a9b9aa22866634a651c4d2e84706e726cbf079651efaac62210e0689f258"
+  },
+  "index/Gramatica_semana_14.json": {
+   "cases": 28,
+   "sha256": "f17f31d1f4bcea874fed26bb9fc4f4669867cbf4b61d737028c7fc7d08ae7571"
+  },
+  "index/Korean_Notes_Example.json": {
+   "cases": 16,
+   "sha256": "c7b6fe8e1e111e71b1ff8f262aa801cf5478f9be44cd36fe1da4a4854855bbd2"
+  },
+  "index/Vocab_cafe_y_comida.json": {
+   "cases": 38,
+   "sha256": "1e98ef436a346dfc8a2bd76908c0cfc0cd555c52746b9780e62aac0ced98019b"
+  },
+  "index/Vocab_emociones_redes.json": {
+   "cases": 36,
+   "sha256": "511b324bced92907cbf01bd88e3d9e05edd70f180fea5eebcf0af30e8d7df3f6"
+  },
+  "index/Vocab_viajes_irregulares.json": {
+   "cases": 37,
+   "sha256": "f761e895e5a29233a15637d112e52d891b861f8d16bc634cacd8a71ac687bf00"
+  },
+  "korean.json": {
+   "cases": 789,
+   "sha256": "060c80d76b75ad165c77a9ded38c27ee35499aa8717d58062114801af9eb984b"
+  },
+  "pairs/Frases_dramas_y_redes.json": {
+   "cases": 20,
+   "sha256": "404d6c3c60f9141377361e12a2a971a4ea637157959705ffacfbc824cdde1f29"
+  },
+  "pairs/Gramatica_semana_14.json": {
+   "cases": 0,
+   "sha256": "57b2a7d2ee16413050766e2c271f0bd5ed984c80d7e79a183fee03573e926a13"
+  },
+  "pairs/Korean_Notes_Example.json": {
+   "cases": 12,
+   "sha256": "2043de4884ce790e069a491dc069a3ca62b75064530d4de5f78ed3e2cdf5d447"
+  },
+  "pairs/Vocab_cafe_y_comida.json": {
+   "cases": 20,
+   "sha256": "00c09d844f172f919d17f7213aa99f6bc2dac1ce288aeed50140c5857f39a0f1"
+  },
+  "pairs/Vocab_emociones_redes.json": {
+   "cases": 23,
+   "sha256": "e94d9899876d09002f499e2e40ea26f13f9e9b5f7a44d0f82b44848ba3401b0e"
+  },
+  "pairs/Vocab_viajes_irregulares.json": {
+   "cases": 20,
+   "sha256": "cb3c0084d886c05c9d0a597a16a3cc683c6a13733cc5039f55dd75a7d229feee"
+  },
+  "parser/Frases_dramas_y_redes.json": {
+   "cases": 1,
+   "sha256": "6e6d5068c8b505dcea193bba1ead33b46442c5f09f8ebad1e7ba69f69c38fb1e"
+  },
+  "parser/Gramatica_semana_14.json": {
+   "cases": 2,
+   "sha256": "e61100c8fceff202f5396ba41c27a4ec74b68c28de82137405ac3ae35cdc39a2"
+  },
+  "parser/Korean_Notes_Example.json": {
+   "cases": 2,
+   "sha256": "252a894e154195c9e880c50c10a17e8ca21e5b903cbb1a5938c9ee0f516c241e"
+  },
+  "parser/Vocab_cafe_y_comida.json": {
+   "cases": 2,
+   "sha256": "cb47c48bd5d95a8b823d1bbeb3715b3ea535e219019af791d10d49dc008725c4"
+  },
+  "parser/Vocab_emociones_redes.json": {
+   "cases": 2,
+   "sha256": "78318a9e0c607906e8919907df8ef4ef3b30a9104a6a28f595206067fb128c13"
+  },
+  "parser/Vocab_viajes_irregulares.json": {
+   "cases": 2,
+   "sha256": "5b24593b4db4f2b6871c822e1ad66fe0e8fd8336132cd9501bef2b5c870bf26f"
+  },
+  "parser_raw/Frases_dramas_y_redes.json": {
+   "cases": 1,
+   "sha256": "1a4f922817db45d6028ab10e802c43559b75250d696a608b2ba171544b54d272"
+  },
+  "parser_raw/Gramatica_semana_14.json": {
+   "cases": 2,
+   "sha256": "79d9097ca5a7680050bd05286b1b6dbcb75ec709a497f0738138728c6bd5efb8"
+  },
+  "parser_raw/Korean_Notes_Example.json": {
+   "cases": 2,
+   "sha256": "465a4669abd42bb147593fc24238dfb99138248ed7f967909ed57124c03ce093"
+  },
+  "parser_raw/Vocab_cafe_y_comida.json": {
+   "cases": 2,
+   "sha256": "c4035cff3758344257fe8ab0fb9497d9f090fcaac8aa411f0b3040cb6c125398"
+  },
+  "parser_raw/Vocab_emociones_redes.json": {
+   "cases": 2,
+   "sha256": "c05c14dd5ac3bd1327da88c7b921188a01f475a57654a2e64ceeb288e1297d16"
+  },
+  "parser_raw/Vocab_viajes_irregulares.json": {
+   "cases": 2,
+   "sha256": "7be2aac9a72951f90a584742bef9704135c7976024efc15f6eea6f1b0c0d2c67"
+  },
+  "sm2.json": {
+   "cases": 682,
+   "sha256": "296f85df125bbb6e7b009e42bea462dcb0809487d1418f2afa776352d1ef4d53"
+  },
+  "teacher/Frases_dramas_y_redes.jsonl": {
+   "cases": 60,
+   "sha256": "659ab2a93239811c6767d3251722fa7280380bd95ce030c5508078ad423fd21b"
+  },
+  "teacher/Gramatica_semana_14.jsonl": {
+   "cases": 84,
+   "sha256": "b5cfd23c84117896194ef599ea56736a4e33232e2f5c6f03d2e28e04d62ae944"
+  },
+  "teacher/Korean_Notes_Example.jsonl": {
+   "cases": 42,
+   "sha256": "e1bbfc3ad02c6fdef9bb9a2ee483d52b3821230b67aa7ff82ccb91c0736d583a"
+  },
+  "teacher/Vocab_cafe_y_comida.jsonl": {
+   "cases": 92,
+   "sha256": "429914b886a43efc4a72485d3a2fdf968bc93e6af2487f535933eda7066958ea"
+  },
+  "teacher/Vocab_emociones_redes.jsonl": {
+   "cases": 85,
+   "sha256": "7a9acd1d2907230a8a495154321f42659edf3923c21b44ae4000091dda9e2a1a"
+  },
+  "teacher/Vocab_viajes_irregulares.jsonl": {
+   "cases": 91,
+   "sha256": "3e5a1dc0674f489e6d4b8d0ead10a55c441a362133ab0446aa9f466bf70aedbd"
+  },
+  "text.json": {
+   "cases": 9069,
+   "sha256": "e4fe56dba6170e434baa2529849965ea52818cc817e9fe5a07969d0d8af0d9fd"
+  }
+ },
+ "format": 1,
+ "teacher": {
+  "sample": 40,
+  "seed": 7
+ },
+ "versions": {
+  "mupdf": "1.28.2",
+  "pdfplumber": "0.11.10",
+  "pymupdf": "1.28.2"
+ },
+ "web_commit": "ed270f457461d83e1f5e89193daaf1b2a7646d25"
+}

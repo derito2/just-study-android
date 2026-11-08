@@ -1,0 +1,334 @@
+[
+ {
+  "chunk": "5:1:0",
+  "pairs": []
+ },
+ {
+  "chunk": "5:1:1",
+  "pairs": [
+   {
+    "english": "Airport",
+    "example_en": "How long does it take to get to the airport?",
+    "example_ko": "공항까지 얼마나 걸려요?",
+    "examples": [
+     [
+      "공항까지 얼마나 걸려요?",
+      "How long does it take to get to the airport?"
+     ]
+    ],
+    "korean": "공항",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Passport",
+    "example_en": "I lost my passport",
+    "example_ko": "여권을 잃어버렸어요.",
+    "examples": [
+     [
+      "여권을 잃어버렸어요.",
+      "I lost my passport"
+     ]
+    ],
+    "korean": "여권",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "Luggage",
+    "example_en": "The luggage is too heavy",
+    "example_ko": "짐이 너무 무거워요.",
+    "examples": [
+     [
+      "짐이 너무 무거워요.",
+      "The luggage is too heavy"
+     ]
+    ],
+    "korean": "짐",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To exchange money",
+    "example_en": "I exchanged money at the airport",
+    "example_ko": "공항에서 돈을 환전했어요.",
+    "examples": [
+     [
+      "공항에서 돈을 환전했어요.",
+      "I exchanged money at the airport"
+     ]
+    ],
+    "korean": "환전하다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To get lost",
+    "example_en": "I got lost in the market",
+    "example_ko": "시장에서 길을 잃었어요.",
+    "examples": [
+     [
+      "시장에서 길을 잃었어요.",
+      "I got lost in the market"
+     ]
+    ],
+    "korean": "길을 잃다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To play / To hang out",
+    "example_en": "I hung out at the beach all day",
+    "example_ko": "바닷가에서 하루 종일 놀았어요.",
+    "examples": [
+     [
+      "바닷가에서 하루 종일 놀았어요.",
+      "I hung out at the beach all day"
+     ]
+    ],
+    "korean": "놀다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "5:1:2",
+  "pairs": [
+   {
+    "english": "To open",
+    "example_en": "Please open the window",
+    "example_ko": "창문 좀 열어 주세요.",
+    "examples": [
+     [
+      "창문 좀 열어 주세요.",
+      "Please open the window"
+     ]
+    ],
+    "korean": "열다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "5:1:3",
+  "pairs": [
+   {
+    "english": "To ask",
+    "example_en": "I asked for directions",
+    "example_ko": "길을 물어봤어요.",
+    "examples": [
+     [
+      "길을 물어봤어요.",
+      "I asked for directions"
+     ],
+     [
+      "물어요",
+      ""
+     ]
+    ],
+    "korean": "묻다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To load",
+    "example_en": "I loaded the luggage into the car",
+    "example_ko": "짐을 차에 실었어요.",
+    "examples": [
+     [
+      "짐을 차에 실었어요.",
+      "I loaded the luggage into the car"
+     ]
+    ],
+    "korean": "싣다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To realize",
+    "example_en": "That's when I realized my mistake",
+    "example_ko": "그때 제 실수를 깨달았어요.",
+    "examples": [
+     [
+      "그때 제 실수를 깨달았어요.",
+      "That's when I realized my mistake"
+     ]
+    ],
+    "korean": "깨닫다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To help",
+    "example_en": "A stranger helped me find the way",
+    "example_ko": "모르는 사람이 길 찾는 걸 도와줬어요.",
+    "examples": [
+     [
+      "모르는 사람이 길 찾는 걸 도와줬어요.",
+      "A stranger helped me find the way"
+     ],
+     [
+      "도와요",
+      ""
+     ]
+    ],
+    "korean": "돕다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be cold (weather)",
+    "example_en": "It gets very cold at night",
+    "example_ko": "밤에는 많이 추워요.",
+    "examples": [
+     [
+      "밤에는 많이 추워요.",
+      "It gets very cold at night"
+     ]
+    ],
+    "korean": "춥다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be close / near",
+    "example_en": "The hotel is close to the airport",
+    "example_ko": "호텔이 공항에서 가까워요.",
+    "examples": [
+     [
+      "호텔이 공항에서 가까워요.",
+      "The hotel is close to the airport"
+     ]
+    ],
+    "korean": "가깝다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ },
+ {
+  "chunk": "5:2:0",
+  "pairs": [
+   {
+    "english": "To be easy",
+    "example_en": "This problem is easier than I thought",
+    "example_ko": "이 문제는 생각보다 쉬워요.",
+    "examples": [
+     [
+      "이 문제는 생각보다 쉬워요.",
+      "This problem is easier than I thought"
+     ]
+    ],
+    "korean": "쉽다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To get better",
+    "example_en": "My cold is all better",
+    "example_ko": "감기가 다 나았어요.",
+    "examples": [
+     [
+      "감기가 다 나았어요.",
+      "My cold is all better"
+     ]
+    ],
+    "korean": "낫다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To stir",
+    "example_en": "I stir the coffee slowly",
+    "example_ko": "커피를 천천히 저어요.",
+    "examples": [
+     [
+      "커피를 천천히 저어요.",
+      "I stir the coffee slowly"
+     ]
+    ],
+    "korean": "젓다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be fast",
+    "example_en": "The subway is faster than the bus",
+    "example_ko": "지하철이 버스보다 빨라요.",
+    "examples": [
+     [
+      "지하철이 버스보다 빨라요.",
+      "The subway is faster than the bus"
+     ]
+    ],
+    "korean": "빠르다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To flow",
+    "example_en": "The river flows slowly",
+    "example_ko": "강물이 천천히 흘러요.",
+    "examples": [
+     [
+      "강물이 천천히 흘러요.",
+      "The river flows slowly"
+     ]
+    ],
+    "korean": "흐르다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be blue",
+    "example_en": "The sky is really blue",
+    "example_ko": "하늘이 정말 파래요.",
+    "examples": [
+     [
+      "하늘이 정말 파래요.",
+      "The sky is really blue"
+     ]
+    ],
+    "korean": "파랗다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   },
+   {
+    "english": "To be yellow",
+    "example_en": "The ginkgo leaves are yellow",
+    "example_ko": "은행잎이 노래요.",
+    "examples": [
+     [
+      "은행잎이 노래요.",
+      "The ginkgo leaves are yellow"
+     ]
+    ],
+    "korean": "노랗다",
+    "notes": [],
+    "romanization": null,
+    "source": "rules"
+   }
+  ]
+ }
+]

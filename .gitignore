@@ -39,3 +39,12 @@ golden/private/
 # CodeGraph database (keeps only .codegraph/.gitignore)
 .codegraph/*
 !.codegraph/.gitignore
+
+# PoC outputs and backups (user's data)
+build/poc/
+*.jsbackup.zip
+
+# Python tools
+__pycache__/
+.pytest_cache/
+.ruff_cache/

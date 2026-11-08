@@ -1,0 +1,4805 @@
+{
+ "aeo": [
+  "가까워",
+  "가깝아",
+  "걱정해",
+  "걷어",
+  "걸어",
+  "계산해",
+  "고마워",
+  "고맙아",
+  "구워",
+  "굽어",
+  "귀여워",
+  "귀엽어",
+  "그리워",
+  "그립어",
+  "깨닫아",
+  "깨달아",
+  "나아",
+  "남겨",
+  "남기어",
+  "낫아",
+  "노랗아",
+  "노래",
+  "놀아",
+  "달아",
+  "데우어",
+  "데워",
+  "도와",
+  "돕아",
+  "맛나",
+  "맛있어",
+  "매워",
+  "맵어",
+  "무서워",
+  "무섭어",
+  "묻어",
+  "물어",
+  "반해",
+  "배고파",
+  "부어",
+  "붓어",
+  "빠라",
+  "빨라",
+  "서운해",
+  "설레",
+  "설레어",
+  "쉬워",
+  "쉽어",
+  "식어",
+  "싣어",
+  "실망해",
+  "실어",
+  "싱거워",
+  "싱겁어",
+  "열어",
+  "예약해",
+  "외로워",
+  "외롭아",
+  "울어",
+  "웃겨",
+  "웃기어",
+  "자랑스러워",
+  "자랑스럽어",
+  "저어",
+  "젓어",
+  "진해",
+  "짜",
+  "짜증나",
+  "챙겨",
+  "챙기어",
+  "추워",
+  "춥어",
+  "파랗아",
+  "파래",
+  "포장해",
+  "행복해",
+  "환전해",
+  "후회해",
+  "흐러",
+  "흘러",
+  "힘들어"
+ ],
+ "aeo_forms": [
+  {
+   "in": "가깝다",
+   "out": [
+    "가까워",
+    "가깝아"
+   ]
+  },
+  {
+   "in": "걱정하다",
+   "out": [
+    "걱정해"
+   ]
+  },
+  {
+   "in": "걷다",
+   "out": [
+    "걷어",
+    "걸어"
+   ]
+  },
+  {
+   "in": "계산하다",
+   "out": [
+    "계산해"
+   ]
+  },
+  {
+   "in": "고맙다",
+   "out": [
+    "고마워",
+    "고맙아"
+   ]
+  },
+  {
+   "in": "굽다",
+   "out": [
+    "구워",
+    "굽어"
+   ]
+  },
+  {
+   "in": "귀엽다",
+   "out": [
+    "귀여워",
+    "귀엽어"
+   ]
+  },
+  {
+   "in": "그립다",
+   "out": [
+    "그리워",
+    "그립어"
+   ]
+  },
+  {
+   "in": "깨닫다",
+   "out": [
+    "깨닫아",
+    "깨달아"
+   ]
+  },
+  {
+   "in": "남기다",
+   "out": [
+    "남겨",
+    "남기어"
+   ]
+  },
+  {
+   "in": "낫다",
+   "out": [
+    "나아",
+    "낫아"
+   ]
+  },
+  {
+   "in": "노랗다",
+   "out": [
+    "노랗아",
+    "노래"
+   ]
+  },
+  {
+   "in": "놀다",
+   "out": [
+    "놀아"
+   ]
+  },
+  {
+   "in": "달다",
+   "out": [
+    "달아"
+   ]
+  },
+  {
+   "in": "데우다",
+   "out": [
+    "데우어",
+    "데워"
+   ]
+  },
+  {
+   "in": "돕다",
+   "out": [
+    "도와",
+    "돕아"
+   ]
+  },
+  {
+   "in": "맛나다",
+   "out": [
+    "맛나"
+   ]
+  },
+  {
+   "in": "맛있다",
+   "out": [
+    "맛있어"
+   ]
+  },
+  {
+   "in": "맵다",
+   "out": [
+    "매워",
+    "맵어"
+   ]
+  },
+  {
+   "in": "무섭다",
+   "out": [
+    "무서워",
+    "무섭어"
+   ]
+  },
+  {
+   "in": "묻다",
+   "out": [
+    "묻어",
+    "물어"
+   ]
+  },
+  {
+   "in": "반하다",
+   "out": [
+    "반해"
+   ]
+  },
+  {
+   "in": "배고프다",
+   "out": [
+    "배고파"
+   ]
+  },
+  {
+   "in": "붓다",
+   "out": [
+    "부어",
+    "붓어"
+   ]
+  },
+  {
+   "in": "빠르다",
+   "out": [
+    "빠라",
+    "빨라"
+   ]
+  },
+  {
+   "in": "서운하다",
+   "out": [
+    "서운해"
+   ]
+  },
+  {
+   "in": "설레다",
+   "out": [
+    "설레",
+    "설레어"
+   ]
+  },
+  {
+   "in": "쉽다",
+   "out": [
+    "쉬워",
+    "쉽어"
+   ]
+  },
+  {
+   "in": "식다",
+   "out": [
+    "식어"
+   ]
+  },
+  {
+   "in": "싣다",
+   "out": [
+    "싣어",
+    "실어"
+   ]
+  },
+  {
+   "in": "실망하다",
+   "out": [
+    "실망해"
+   ]
+  },
+  {
+   "in": "싱겁다",
+   "out": [
+    "싱거워",
+    "싱겁어"
+   ]
+  },
+  {
+   "in": "열다",
+   "out": [
+    "열어"
+   ]
+  },
+  {
+   "in": "예약하다",
+   "out": [
+    "예약해"
+   ]
+  },
+  {
+   "in": "외롭다",
+   "out": [
+    "외로워",
+    "외롭아"
+   ]
+  },
+  {
+   "in": "울다",
+   "out": [
+    "울어"
+   ]
+  },
+  {
+   "in": "웃기다",
+   "out": [
+    "웃겨",
+    "웃기어"
+   ]
+  },
+  {
+   "in": "자랑스럽다",
+   "out": [
+    "자랑스러워",
+    "자랑스럽어"
+   ]
+  },
+  {
+   "in": "젓다",
+   "out": [
+    "저어",
+    "젓어"
+   ]
+  },
+  {
+   "in": "진하다",
+   "out": [
+    "진해"
+   ]
+  },
+  {
+   "in": "짜다",
+   "out": [
+    "짜"
+   ]
+  },
+  {
+   "in": "짜증나다",
+   "out": [
+    "짜증나"
+   ]
+  },
+  {
+   "in": "챙기다",
+   "out": [
+    "챙겨",
+    "챙기어"
+   ]
+  },
+  {
+   "in": "춥다",
+   "out": [
+    "추워",
+    "춥어"
+   ]
+  },
+  {
+   "in": "파랗다",
+   "out": [
+    "파랗아",
+    "파래"
+   ]
+  },
+  {
+   "in": "포장하다",
+   "out": [
+    "포장해"
+   ]
+  },
+  {
+   "in": "행복하다",
+   "out": [
+    "행복해"
+   ]
+  },
+  {
+   "in": "환전하다",
+   "out": [
+    "환전해"
+   ]
+  },
+  {
+   "in": "후회하다",
+   "out": [
+    "후회해"
+   ]
+  },
+  {
+   "in": "흐르다",
+   "out": [
+    "흐러",
+    "흘러"
+   ]
+  },
+  {
+   "in": "힘들다",
+   "out": [
+    "힘들어"
+   ]
+  }
+ ],
+ "has_form": [
+  {
+   "form": "ㄹ게요",
+   "out": true,
+   "own_chunk": true,
+   "text": "제가 먼저 연락할게요. = I'll contact you first."
+  },
+  {
+   "form": "ㄹ게요",
+   "out": true,
+   "own_chunk": true,
+   "text": "내일 다시 올게요. = I'll come again tomorrow."
+  },
+  {
+   "form": "ㄹ게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "1. 오늘 하루도 수고 많았어요 = You worked hard today too."
+  },
+  {
+   "form": "ㄹ게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "2. 나 너 때문에 진짜 웃었어 = I really laughed because of you."
+  },
+  {
+   "form": "ㄹ게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "3. 밥 먹었어? = Did you eat?"
+  },
+  {
+   "form": "ㄹ게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "4. 이거 보고 너 생각나서 샀어 = I saw this and thought of you, so I bought it."
+  },
+  {
+   "form": "ㄹ게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "5. 주말에 시간 있으면 영화 보러 갈래? = If you have time this weekend, want to go see a movie?"
+  },
+  {
+   "form": "ㄹ게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "6. 괜찮아, 다 잘될 거야 = It's okay, everything will be fine."
+  },
+  {
+   "form": "을게요",
+   "out": false,
+   "own_chunk": true,
+   "text": "제가 먼저 연락할게요. = I'll contact you first."
+  },
+  {
+   "form": "을게요",
+   "out": false,
+   "own_chunk": true,
+   "text": "내일 다시 올게요. = I'll come again tomorrow."
+  },
+  {
+   "form": "을게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "1. 오늘 하루도 수고 많았어요 = You worked hard today too."
+  },
+  {
+   "form": "을게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "2. 나 너 때문에 진짜 웃었어 = I really laughed because of you."
+  },
+  {
+   "form": "을게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "3. 밥 먹었어? = Did you eat?"
+  },
+  {
+   "form": "을게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "4. 이거 보고 너 생각나서 샀어 = I saw this and thought of you, so I bought it."
+  },
+  {
+   "form": "을게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "5. 주말에 시간 있으면 영화 보러 갈래? = If you have time this weekend, want to go see a movie?"
+  },
+  {
+   "form": "을게요",
+   "out": false,
+   "own_chunk": false,
+   "text": "6. 괜찮아, 다 잘될 거야 = It's okay, everything will be fine."
+  },
+  {
+   "form": "아보다",
+   "out": false,
+   "own_chunk": true,
+   "text": "이 노래 한번 들어 보세요. = Try listening to this song once."
+  },
+  {
+   "form": "아보다",
+   "out": false,
+   "own_chunk": true,
+   "text": "한국 음식을 만들어 봤어요. = I tried making Korean food."
+  },
+  {
+   "form": "아보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "7. 길이 막혀서 조금 늦을 것 같아요 = The road is jammed, so I think I'll be a little late."
+  },
+  {
+   "form": "아보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "8. 날씨가 너무 추워서 밖에 나가기 싫어요 = It's so cold that I don't want to go outside."
+  },
+  {
+   "form": "아보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "9. 사진 잘 나왔네요 = The photo came out well."
+  },
+  {
+   "form": "아보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "10. 요즘 이 노래만 계속 들어요 = These days I keep listening to this song only."
+  },
+  {
+   "form": "아보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "11. 너무 졸려서 커피를 두 잔이나 마셨어요 = I was so sleepy that I drank two whole cups of coffee."
+  },
+  {
+   "form": "아보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "12. 우리 언제 한번 밥 먹어요 = Let's eat together sometime."
+  },
+  {
+   "form": "어보다",
+   "out": true,
+   "own_chunk": true,
+   "text": "이 노래 한번 들어 보세요. = Try listening to this song once."
+  },
+  {
+   "form": "어보다",
+   "out": true,
+   "own_chunk": true,
+   "text": "한국 음식을 만들어 봤어요. = I tried making Korean food."
+  },
+  {
+   "form": "어보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "7. 길이 막혀서 조금 늦을 것 같아요 = The road is jammed, so I think I'll be a little late."
+  },
+  {
+   "form": "어보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "8. 날씨가 너무 추워서 밖에 나가기 싫어요 = It's so cold that I don't want to go outside."
+  },
+  {
+   "form": "어보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "9. 사진 잘 나왔네요 = The photo came out well."
+  },
+  {
+   "form": "어보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "10. 요즘 이 노래만 계속 들어요 = These days I keep listening to this song only."
+  },
+  {
+   "form": "어보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "11. 너무 졸려서 커피를 두 잔이나 마셨어요 = I was so sleepy that I drank two whole cups of coffee."
+  },
+  {
+   "form": "어보다",
+   "out": false,
+   "own_chunk": false,
+   "text": "12. 우리 언제 한번 밥 먹어요 = Let's eat together sometime."
+  },
+  {
+   "form": "기로하다",
+   "out": true,
+   "own_chunk": true,
+   "text": "올해부터 운동하기로 했어요. = I decided to exercise starting this year."
+  },
+  {
+   "form": "기로하다",
+   "out": true,
+   "own_chunk": true,
+   "text": "우리 주말에 만나기로 했어요. = We decided to meet on the weekend."
+  },
+  {
+   "form": "기로하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "13. 혹시 이 근처에 편의점 있어요? = Is there a convenience store near here, by any chance?"
+  },
+  {
+   "form": "기로하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "14. 생일 축하해, 행복한 하루 보내 = Happy birthday, have a happy day."
+  },
+  {
+   "form": "기로하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "15. 이 옷 나한테 잘 어울려? = Do these clothes suit me?"
+  },
+  {
+   "form": "기로하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "16. 오랜만에 친구를 만나서 정말 좋았어요 = It was really nice to meet a friend after a long time."
+  },
+  {
+   "form": "기로하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "17. 비 오는 날에는 집에서 쉬는 게 최고예요 = On rainy days, resting at home is the best."
+  },
+  {
+   "form": "기로하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "18. 그 사람 목소리를 들으면 마음이 편해져요 = When I hear that person's voice, I feel at ease."
+  },
+  {
+   "form": "면서",
+   "out": true,
+   "own_chunk": true,
+   "text": "음악을 들으면서 공부해요. = I study while listening to music."
+  },
+  {
+   "form": "면서",
+   "out": true,
+   "own_chunk": true,
+   "text": "커피를 마시면서 이야기했어요. = We talked while drinking coffee."
+  },
+  {
+   "form": "면서",
+   "out": false,
+   "own_chunk": false,
+   "text": "19. 할 수 있어, 포기하지 마 = You can do it, don't give up."
+  },
+  {
+   "form": "면서",
+   "out": false,
+   "own_chunk": false,
+   "text": "20. 다음에 또 놀러 오세요 = Please come visit again next time."
+  },
+  {
+   "form": "으면서",
+   "out": true,
+   "own_chunk": true,
+   "text": "음악을 들으면서 공부해요. = I study while listening to music."
+  },
+  {
+   "form": "으면서",
+   "out": false,
+   "own_chunk": true,
+   "text": "커피를 마시면서 이야기했어요. = We talked while drinking coffee."
+  },
+  {
+   "form": "으면서",
+   "out": false,
+   "own_chunk": false,
+   "text": "19. 할 수 있어, 포기하지 마 = You can do it, don't give up."
+  },
+  {
+   "form": "으면서",
+   "out": false,
+   "own_chunk": false,
+   "text": "20. 다음에 또 놀러 오세요 = Please come visit again next time."
+  },
+  {
+   "form": "는동안",
+   "out": true,
+   "own_chunk": true,
+   "text": "제가 자는 동안 비가 왔어요. = It rained while I was sleeping."
+  },
+  {
+   "form": "는동안",
+   "out": true,
+   "own_chunk": true,
+   "text": "기다리는 동안 책을 읽었어요. = I read a book while I was waiting."
+  },
+  {
+   "form": "는동안",
+   "out": false,
+   "own_chunk": false,
+   "text": "제가 먼저 연락할게요. = I'll contact you first."
+  },
+  {
+   "form": "는동안",
+   "out": false,
+   "own_chunk": false,
+   "text": "내일 다시 올게요. = I'll come again tomorrow."
+  },
+  {
+   "form": "ㄹ까봐",
+   "out": false,
+   "own_chunk": true,
+   "text": "늦을까 봐 택시를 탔어요. = I took a taxi because I was worried I'd be late."
+  },
+  {
+   "form": "ㄹ까봐",
+   "out": false,
+   "own_chunk": true,
+   "text": "비가 올까 봐 우산을 가져왔어요. = I brought an umbrella in case it rains."
+  },
+  {
+   "form": "ㄹ까봐",
+   "out": false,
+   "own_chunk": false,
+   "text": "이 노래 한번 들어 보세요. = Try listening to this song once."
+  },
+  {
+   "form": "ㄹ까봐",
+   "out": false,
+   "own_chunk": false,
+   "text": "한국 음식을 만들어 봤어요. = I tried making Korean food."
+  },
+  {
+   "form": "을까봐",
+   "out": true,
+   "own_chunk": true,
+   "text": "늦을까 봐 택시를 탔어요. = I took a taxi because I was worried I'd be late."
+  },
+  {
+   "form": "을까봐",
+   "out": false,
+   "own_chunk": true,
+   "text": "비가 올까 봐 우산을 가져왔어요. = I brought an umbrella in case it rains."
+  },
+  {
+   "form": "을까봐",
+   "out": false,
+   "own_chunk": false,
+   "text": "이 노래 한번 들어 보세요. = Try listening to this song once."
+  },
+  {
+   "form": "을까봐",
+   "out": false,
+   "own_chunk": false,
+   "text": "한국 음식을 만들어 봤어요. = I tried making Korean food."
+  },
+  {
+   "form": "아야하다",
+   "out": false,
+   "own_chunk": true,
+   "text": "내일 일찍 일어나야 해요. = I have to wake up early tomorrow."
+  },
+  {
+   "form": "아야하다",
+   "out": false,
+   "own_chunk": true,
+   "text": "이 약은 하루에 세 번 먹어야 해요. = You have to take this medicine three times a day."
+  },
+  {
+   "form": "아야하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "올해부터 운동하기로 했어요. = I decided to exercise starting this year."
+  },
+  {
+   "form": "아야하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "우리 주말에 만나기로 했어요. = We decided to meet on the weekend."
+  },
+  {
+   "form": "어야하다",
+   "out": false,
+   "own_chunk": true,
+   "text": "내일 일찍 일어나야 해요. = I have to wake up early tomorrow."
+  },
+  {
+   "form": "어야하다",
+   "out": true,
+   "own_chunk": true,
+   "text": "이 약은 하루에 세 번 먹어야 해요. = You have to take this medicine three times a day."
+  },
+  {
+   "form": "어야하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "올해부터 운동하기로 했어요. = I decided to exercise starting this year."
+  },
+  {
+   "form": "어야하다",
+   "out": false,
+   "own_chunk": false,
+   "text": "우리 주말에 만나기로 했어요. = We decided to meet on the weekend."
+  },
+  {
+   "form": "지말다",
+   "out": false,
+   "own_chunk": true,
+   "text": "걱정하지 마세요. = Don't worry."
+  },
+  {
+   "form": "지말다",
+   "out": false,
+   "own_chunk": true,
+   "text": "울지 마. = Don't cry."
+  },
+  {
+   "form": "지말다",
+   "out": false,
+   "own_chunk": false,
+   "text": "음악을 들으면서 공부해요. = I study while listening to music."
+  },
+  {
+   "form": "지말다",
+   "out": false,
+   "own_chunk": false,
+   "text": "커피를 마시면서 이야기했어요. = We talked while drinking coffee."
+  },
+  {
+   "form": "으로",
+   "out": false,
+   "own_chunk": false,
+   "text": "제가 자는 동안 비가 왔어요. = It rained while I was sleeping."
+  },
+  {
+   "form": "으로",
+   "out": false,
+   "own_chunk": false,
+   "text": "기다리는 동안 책을 읽었어요. = I read a book while I was waiting."
+  },
+  {
+   "form": "한테",
+   "out": false,
+   "own_chunk": false,
+   "text": "늦을까 봐 택시를 탔어요. = I took a taxi because I was worried I'd be late."
+  },
+  {
+   "form": "한테",
+   "out": false,
+   "own_chunk": false,
+   "text": "비가 올까 봐 우산을 가져왔어요. = I brought an umbrella in case it rains."
+  },
+  {
+   "form": "부터",
+   "out": false,
+   "own_chunk": false,
+   "text": "내일 일찍 일어나야 해요. = I have to wake up early tomorrow."
+  },
+  {
+   "form": "부터",
+   "out": false,
+   "own_chunk": false,
+   "text": "이 약은 하루에 세 번 먹어야 해요. = You have to take this medicine three times a day."
+  },
+  {
+   "form": "까지",
+   "out": false,
+   "own_chunk": false,
+   "text": "걱정하지 마세요. = Don't worry."
+  },
+  {
+   "form": "까지",
+   "out": false,
+   "own_chunk": false,
+   "text": "울지 마. = Don't cry."
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": true,
+   "text": "비가 올지 안 올지 모르겠어요. = I don't know whether it'll rain or not."
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": true,
+   "text": "말할지 말지 모르겠어요 = I don't know whether to say it or not"
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": false,
+   "text": "메뉴판 좀 주세요. = Can I have the menu, please?"
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": false,
+   "text": "오늘은 제가 계산할게요. = I'll pay today."
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": false,
+   "text": "계산해 주세요 = The bill, please"
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": false,
+   "text": "남은 음식 포장해 주세요. = Please wrap up the leftovers."
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": false,
+   "text": "떡볶이가 너무 매워요. = The tteokbokki is too spicy."
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": false,
+   "text": "국이 좀 싱거워요. = The soup is a bit bland."
+  },
+  {
+   "form": "을지",
+   "out": false,
+   "own_chunk": false,
+   "text": "이 김치는 너무 짜요. = This kimchi is too salty."
+  },
+  {
+   "form": "네요",
+   "out": false,
+   "own_chunk": false,
+   "text": "케이크가 생각보다 안 달아요. = The cake isn't as sweet as I thought."
+  },
+  {
+   "form": "네요",
+   "out": false,
+   "own_chunk": false,
+   "text": "여기 유명한 맛집이에요. = This is a famous restaurant."
+  },
+  {
+   "form": "네요",
+   "out": false,
+   "own_chunk": false,
+   "text": "일곱 시로 예약했어요. = I made a reservation for seven."
+  },
+  {
+   "form": "네요",
+   "out": false,
+   "own_chunk": false,
+   "text": "창가 자리 있어요? = Is there a window seat?"
+  },
+  {
+   "form": "네요",
+   "out": false,
+   "own_chunk": false,
+   "text": "음식을 남기지 마세요. = Don't leave food on your plate."
+  }
+ ],
+ "korean_cores": [
+  {
+   "in": "-(으)ㄹ게요",
+   "out": [
+    [
+     "게요",
+     true
+    ]
+   ]
+  },
+  {
+   "in": "-아/어 보다",
+   "out": [
+    [
+     "아",
+     true
+    ],
+    [
+     "어 보",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "-기로 하다",
+   "out": [
+    [
+     "기로 하",
+     true
+    ]
+   ]
+  },
+  {
+   "in": "-(으)면서",
+   "out": [
+    [
+     "면서",
+     true
+    ]
+   ]
+  },
+  {
+   "in": "-는 동안",
+   "out": [
+    [
+     "는 동안",
+     true
+    ]
+   ]
+  },
+  {
+   "in": "-(으)ㄹ까 봐",
+   "out": [
+    [
+     "까 봐",
+     true
+    ]
+   ]
+  },
+  {
+   "in": "-아/어야 하다",
+   "out": [
+    [
+     "아",
+     true
+    ],
+    [
+     "어야 하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "-지 말다",
+   "out": [
+    [
+     "지 말",
+     true
+    ]
+   ]
+  },
+  {
+   "in": "(으)로",
+   "out": [
+    [
+     "로",
+     true
+    ]
+   ]
+  },
+  {
+   "in": "한테",
+   "out": [
+    [
+     "한테",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "부터",
+   "out": [
+    [
+     "부터",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "까지",
+   "out": [
+    [
+     "까지",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "-ㄹ 지/ 을 지",
+   "out": [
+    [
+     "지",
+     true
+    ],
+    [
+     "을 지",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "-네요",
+   "out": [
+    [
+     "네요",
+     true
+    ]
+   ]
+  },
+  {
+   "in": "이/가",
+   "out": [
+    [
+     "이",
+     false
+    ],
+    [
+     "가",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "을/를",
+   "out": [
+    [
+     "을",
+     false
+    ],
+    [
+     "를",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "에",
+   "out": [
+    [
+     "에",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "오늘 하루도 수고 많았어요",
+   "out": [
+    [
+     "오늘 하루도 수고 많았어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "나 너 때문에 진짜 웃었어",
+   "out": [
+    [
+     "나 너 때문에 진짜 웃었어",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "밥 먹었어?",
+   "out": [
+    [
+     "밥 먹었어?",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이거 보고 너 생각나서 샀어",
+   "out": [
+    [
+     "이거 보고 너 생각나서 샀어",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "주말에 시간 있으면 영화 보러 갈래?",
+   "out": [
+    [
+     "주말에 시간 있으면 영화 보러 갈래?",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "괜찮아, 다 잘될 거야",
+   "out": [
+    [
+     "괜찮아",
+     false
+    ],
+    [
+     "다 잘될 거야",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "길이 막혀서 조금 늦을 것 같아요",
+   "out": [
+    [
+     "길이 막혀서 조금 늦을 것 같아요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "날씨가 너무 추워서 밖에 나가기 싫어요",
+   "out": [
+    [
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "사진 잘 나왔네요",
+   "out": [
+    [
+     "사진 잘 나왔네요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "요즘 이 노래만 계속 들어요",
+   "out": [
+    [
+     "요즘 이 노래만 계속 들어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "너무 졸려서 커피를 두 잔이나 마셨어요",
+   "out": [
+    [
+     "너무 졸려서 커피를 두 잔이나 마셨어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "우리 언제 한번 밥 먹어요",
+   "out": [
+    [
+     "우리 언제 한번 밥 먹어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "혹시 이 근처에 편의점 있어요?",
+   "out": [
+    [
+     "혹시 이 근처에 편의점 있어요?",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "생일 축하해, 행복한 하루 보내",
+   "out": [
+    [
+     "생일 축하해",
+     false
+    ],
+    [
+     "행복한 하루 보내",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 옷 나한테 잘 어울려?",
+   "out": [
+    [
+     "이 옷 나한테 잘 어울려?",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "오랜만에 친구를 만나서 정말 좋았어요",
+   "out": [
+    [
+     "오랜만에 친구를 만나서 정말 좋았어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "비 오는 날에는 집에서 쉬는 게 최고예요",
+   "out": [
+    [
+     "비 오는 날에는 집에서 쉬는 게 최고예요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "그 사람 목소리를 들으면 마음이 편해져요",
+   "out": [
+    [
+     "그 사람 목소리를 들으면 마음이 편해져요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "할 수 있어, 포기하지 마",
+   "out": [
+    [
+     "할 수 있어",
+     false
+    ],
+    [
+     "포기하지 마",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "다음에 또 놀러 오세요",
+   "out": [
+    [
+     "다음에 또 놀러 오세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "제가 먼저 연락할게요",
+   "out": [
+    [
+     "제가 먼저 연락할게요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "내일 다시 올게요",
+   "out": [
+    [
+     "내일 다시 올게요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 노래 한번 들어 보세요",
+   "out": [
+    [
+     "이 노래 한번 들어 보세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "한국 음식을 만들어 봤어요",
+   "out": [
+    [
+     "한국 음식을 만들어 봤어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "올해부터 운동하기로 했어요",
+   "out": [
+    [
+     "올해부터 운동하기로 했어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "우리 주말에 만나기로 했어요",
+   "out": [
+    [
+     "우리 주말에 만나기로 했어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "음악을 들으면서 공부해요",
+   "out": [
+    [
+     "음악을 들으면서 공부해요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "커피를 마시면서 이야기했어요",
+   "out": [
+    [
+     "커피를 마시면서 이야기했어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "제가 자는 동안 비가 왔어요",
+   "out": [
+    [
+     "제가 자는 동안 비가 왔어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "기다리는 동안 책을 읽었어요",
+   "out": [
+    [
+     "기다리는 동안 책을 읽었어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "늦을까 봐 택시를 탔어요",
+   "out": [
+    [
+     "늦을까 봐 택시를 탔어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "비가 올까 봐 우산을 가져왔어요",
+   "out": [
+    [
+     "비가 올까 봐 우산을 가져왔어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "내일 일찍 일어나야 해요",
+   "out": [
+    [
+     "내일 일찍 일어나야 해요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 약은 하루에 세 번 먹어야 해요",
+   "out": [
+    [
+     "이 약은 하루에 세 번 먹어야 해요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "걱정하지 마세요",
+   "out": [
+    [
+     "걱정하지 마세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "울지 마",
+   "out": [
+    [
+     "울지 마",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "메뉴판",
+   "out": [
+    [
+     "메뉴판",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "메뉴판 좀 주세요",
+   "out": [
+    [
+     "메뉴판 좀 주세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "계산하다",
+   "out": [
+    [
+     "계산하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "오늘은 제가 계산할게요",
+   "out": [
+    [
+     "오늘은 제가 계산할게요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "계산해 주세요",
+   "out": [
+    [
+     "계산해 주세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "포장하다",
+   "out": [
+    [
+     "포장하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "남은 음식 포장해 주세요",
+   "out": [
+    [
+     "남은 음식 포장해 주세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "Used at restaurants: 포장이요!",
+   "out": [
+    [
+     "Used at restaurants: 포장이요!",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "맵다",
+   "out": [
+    [
+     "맵다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "떡볶이가 너무 매워요",
+   "out": [
+    [
+     "떡볶이가 너무 매워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "싱겁다",
+   "out": [
+    [
+     "싱겁",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "국이 좀 싱거워요",
+   "out": [
+    [
+     "국이 좀 싱거워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "짜다",
+   "out": [
+    [
+     "짜다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 김치는 너무 짜요",
+   "out": [
+    [
+     "이 김치는 너무 짜요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "달다",
+   "out": [
+    [
+     "달다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "케이크가 생각보다 안 달아요",
+   "out": [
+    [
+     "케이크가 생각보다 안 달아요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "맛집",
+   "out": [
+    [
+     "맛집",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "여기 유명한 맛집이에요",
+   "out": [
+    [
+     "여기 유명한 맛집이에요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "예약하다",
+   "out": [
+    [
+     "예약하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "일곱 시로 예약했어요",
+   "out": [
+    [
+     "일곱 시로 예약했어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "자리",
+   "out": [
+    [
+     "자리",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "창가 자리 있어요?",
+   "out": [
+    [
+     "창가 자리 있어요?",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "남기다",
+   "out": [
+    [
+     "남기",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "음식을 남기지 마세요",
+   "out": [
+    [
+     "음식을 남기지 마세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "데우다",
+   "out": [
+    [
+     "데우",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "전자레인지에 데워 주세요",
+   "out": [
+    [
+     "전자레인지에 데워 주세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "식다",
+   "out": [
+    [
+     "식다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "커피가 다 식었어요",
+   "out": [
+    [
+     "커피가 다 식었어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "굽다",
+   "out": [
+    [
+     "굽다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "고기를 구워요",
+   "out": [
+    [
+     "고기를 구워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "붓다",
+   "out": [
+    [
+     "붓다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "컵에 물을 부어 주세요",
+   "out": [
+    [
+     "컵에 물을 부어 주세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "줄을 서다",
+   "out": [
+    [
+     "줄을 서",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "사람들이 줄을 서 있어요",
+   "out": [
+    [
+     "사람들이 줄을 서 있어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "영수증",
+   "out": [
+    [
+     "영수증",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "영수증 필요하세요?",
+   "out": [
+    [
+     "영수증 필요하세요?",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "배고프다",
+   "out": [
+    [
+     "배고프",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "배고파 죽겠어요",
+   "out": [
+    [
+     "배고파 죽겠어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "Casual exaggeration: 죽겠어요",
+   "out": [
+    [
+     "Casual exaggeration: 죽겠어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "진하다",
+   "out": [
+    [
+     "진하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "커피가 너무 진해요",
+   "out": [
+    [
+     "커피가 너무 진해요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "맛있다 / 맛나다",
+   "out": [
+    [
+     "맛있",
+     false
+    ],
+    [
+     "맛나",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 집 빵 진짜 맛있어요",
+   "out": [
+    [
+     "이 집 빵 진짜 맛있어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "설레다",
+   "out": [
+    [
+     "설레",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "내일 여행 갈 생각에 너무 설레요",
+   "out": [
+    [
+     "내일 여행 갈 생각에 너무 설레요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "서운하다",
+   "out": [
+    [
+     "서운하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "내 생일을 잊어버려서 좀 서운했어",
+   "out": [
+    [
+     "내 생일을 잊어버려서 좀 서운했어",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "귀엽다",
+   "out": [
+    [
+     "귀엽",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "강아지가 너무 귀여워요!",
+   "out": [
+    [
+     "강아지가 너무 귀여워요!",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "외롭다",
+   "out": [
+    [
+     "외롭",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "혼자 살면 가끔 외로워요",
+   "out": [
+    [
+     "혼자 살면 가끔 외로워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "무섭다",
+   "out": [
+    [
+     "무섭",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 영화 진짜 무서워요",
+   "out": [
+    [
+     "이 영화 진짜 무서워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "짜증나다",
+   "out": [
+    [
+     "짜증나",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "아침부터 버스를 놓쳐서 짜증났어",
+   "out": [
+    [
+     "아침부터 버스를 놓쳐서 짜증났어",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "그립다",
+   "out": [
+    [
+     "그립",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "고향 음식이 그리워요",
+   "out": [
+    [
+     "고향 음식이 그리워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "힘들다",
+   "out": [
+    [
+     "힘들",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "오늘 일이 너무 힘들었어요",
+   "out": [
+    [
+     "오늘 일이 너무 힘들었어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "행복하다",
+   "out": [
+    [
+     "행복하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "너랑 있으면 행복해",
+   "out": [
+    [
+     "너랑 있으면 행복해",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "웃기다",
+   "out": [
+    [
+     "웃기",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 영상 너무 웃겨요",
+   "out": [
+    [
+     "이 영상 너무 웃겨요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "울다",
+   "out": [
+    [
+     "울다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "영화 보다가 울었어요",
+   "out": [
+    [
+     "영화 보다가 울었어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "고맙다",
+   "out": [
+    [
+     "고맙",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "와 줘서 고마워",
+   "out": [
+    [
+     "와 줘서 고마워",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "걱정하다",
+   "out": [
+    [
+     "걱정하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "너무 걱정하지 마세요",
+   "out": [
+    [
+     "너무 걱정하지 마세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "후회하다",
+   "out": [
+    [
+     "후회하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "그 말을 한 걸 후회해요",
+   "out": [
+    [
+     "그 말을 한 걸 후회해요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "반하다",
+   "out": [
+    [
+     "반하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "첫눈에 반했어요",
+   "out": [
+    [
+     "첫눈에 반했어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "실망하다",
+   "out": [
+    [
+     "실망하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "결과를 보고 좀 실망했어요",
+   "out": [
+    [
+     "결과를 보고 좀 실망했어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "자랑스럽다",
+   "out": [
+    [
+     "자랑스럽",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "네가 정말 자랑스러워",
+   "out": [
+    [
+     "네가 정말 자랑스러워",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "기분",
+   "out": [
+    [
+     "기분",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "오늘 기분이 어때요?",
+   "out": [
+    [
+     "오늘 기분이 어때요?",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "눈물",
+   "out": [
+    [
+     "눈물",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "그 노래를 들으면 눈물이 나요",
+   "out": [
+    [
+     "그 노래를 들으면 눈물이 나요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "공항",
+   "out": [
+    [
+     "공항",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "공항까지 얼마나 걸려요?",
+   "out": [
+    [
+     "공항까지 얼마나 걸려요?",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "여권",
+   "out": [
+    [
+     "여권",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "여권을 잃어버렸어요",
+   "out": [
+    [
+     "여권을 잃어버렸어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "짐",
+   "out": [
+    [
+     "짐",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "짐이 너무 무거워요",
+   "out": [
+    [
+     "짐이 너무 무거워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "환전하다",
+   "out": [
+    [
+     "환전하",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "공항에서 돈을 환전했어요",
+   "out": [
+    [
+     "공항에서 돈을 환전했어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "길을 잃다",
+   "out": [
+    [
+     "길을 잃",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "시장에서 길을 잃었어요",
+   "out": [
+    [
+     "시장에서 길을 잃었어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "놀다",
+   "out": [
+    [
+     "놀다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "바닷가에서 하루 종일 놀았어요",
+   "out": [
+    [
+     "바닷가에서 하루 종일 놀았어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "열다",
+   "out": [
+    [
+     "열다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "창문 좀 열어 주세요",
+   "out": [
+    [
+     "창문 좀 열어 주세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "묻다",
+   "out": [
+    [
+     "묻다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "길을 물어봤어요",
+   "out": [
+    [
+     "길을 물어봤어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "싣다",
+   "out": [
+    [
+     "싣다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "짐을 차에 실었어요",
+   "out": [
+    [
+     "짐을 차에 실었어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "깨닫다",
+   "out": [
+    [
+     "깨닫",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "그때 제 실수를 깨달았어요",
+   "out": [
+    [
+     "그때 제 실수를 깨달았어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "돕다",
+   "out": [
+    [
+     "돕다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "모르는 사람이 길 찾는 걸 도와줬어요",
+   "out": [
+    [
+     "모르는 사람이 길 찾는 걸 도와줬어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "춥다",
+   "out": [
+    [
+     "춥다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "밤에는 많이 추워요",
+   "out": [
+    [
+     "밤에는 많이 추워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "가깝다",
+   "out": [
+    [
+     "가깝",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "호텔이 공항에서 가까워요",
+   "out": [
+    [
+     "호텔이 공항에서 가까워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "쉽다",
+   "out": [
+    [
+     "쉽다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 문제는 생각보다 쉬워요",
+   "out": [
+    [
+     "이 문제는 생각보다 쉬워요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "낫다",
+   "out": [
+    [
+     "낫다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "감기가 다 나았어요",
+   "out": [
+    [
+     "감기가 다 나았어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "젓다",
+   "out": [
+    [
+     "젓다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "커피를 천천히 저어요",
+   "out": [
+    [
+     "커피를 천천히 저어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "빠르다",
+   "out": [
+    [
+     "빠르",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "지하철이 버스보다 빨라요",
+   "out": [
+    [
+     "지하철이 버스보다 빨라요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "흐르다",
+   "out": [
+    [
+     "흐르",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "강물이 천천히 흘러요",
+   "out": [
+    [
+     "강물이 천천히 흘러요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "파랗다",
+   "out": [
+    [
+     "파랗",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "하늘이 정말 파래요",
+   "out": [
+    [
+     "하늘이 정말 파래요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "노랗다",
+   "out": [
+    [
+     "노랗",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "은행잎이 노래요",
+   "out": [
+    [
+     "은행잎이 노래요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "근처",
+   "out": [
+    [
+     "근처",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "이 근처에는 카페가 없어요",
+   "out": [
+    [
+     "이 근처에는 카페가 없어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "학교가 집 근처에 있어요",
+   "out": [
+    [
+     "학교가 집 근처에 있어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "안",
+   "out": [
+    [
+     "안",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "가방 안에 있어요",
+   "out": [
+    [
+     "가방 안에 있어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "가장 / 제일",
+   "out": [
+    [
+     "가장",
+     false
+    ],
+    [
+     "제일",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "걷다",
+   "out": [
+    [
+     "걷다",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "혼자",
+   "out": [
+    [
+     "혼자",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "저 혼자 살아요",
+   "out": [
+    [
+     "저 혼자 살아요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "혼자서",
+   "out": [
+    [
+     "혼자서",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "챙기다",
+   "out": [
+    [
+     "챙기",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "피곤하니까 집에 갈래요",
+   "out": [
+    [
+     "피곤하니까 집에 갈래요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "비가 오니까 우산을 챙기세요",
+   "out": [
+    [
+     "비가 오니까 우산을 챙기세요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "비가 올지 안 올지 모르겠어요",
+   "out": [
+    [
+     "비가 올지 안 올지 모르겠어요",
+     false
+    ]
+   ]
+  },
+  {
+   "in": "말할지 말지 모르겠어요",
+   "out": [
+    [
+     "말할지 말지 모르겠어요",
+     false
+    ]
+   ]
+  }
+ ],
+ "lemmas": [
+  {
+   "in": "가까워요.",
+   "out": [
+    "가깝다"
+   ]
+  },
+  {
+   "in": "가끔",
+   "out": []
+  },
+  {
+   "in": "가방",
+   "out": []
+  },
+  {
+   "in": "가져왔어요.",
+   "out": []
+  },
+  {
+   "in": "갈",
+   "out": []
+  },
+  {
+   "in": "갈래?",
+   "out": []
+  },
+  {
+   "in": "갈래요",
+   "out": []
+  },
+  {
+   "in": "감기가",
+   "out": []
+  },
+  {
+   "in": "강물이",
+   "out": []
+  },
+  {
+   "in": "강아지가",
+   "out": []
+  },
+  {
+   "in": "같아요",
+   "out": []
+  },
+  {
+   "in": "거야",
+   "out": []
+  },
+  {
+   "in": "걱정하지",
+   "out": [
+    "걱정하다"
+   ]
+  },
+  {
+   "in": "걸",
+   "out": []
+  },
+  {
+   "in": "걸려요?",
+   "out": []
+  },
+  {
+   "in": "걸을",
+   "out": []
+  },
+  {
+   "in": "것",
+   "out": []
+  },
+  {
+   "in": "게",
+   "out": []
+  },
+  {
+   "in": "결과를",
+   "out": []
+  },
+  {
+   "in": "계산할게요.",
+   "out": []
+  },
+  {
+   "in": "계산해",
+   "out": [
+    "계산하다"
+   ]
+  },
+  {
+   "in": "계속",
+   "out": []
+  },
+  {
+   "in": "고기를",
+   "out": []
+  },
+  {
+   "in": "고마워.",
+   "out": [
+    "고맙다"
+   ]
+  },
+  {
+   "in": "고향",
+   "out": []
+  },
+  {
+   "in": "공부해요.",
+   "out": []
+  },
+  {
+   "in": "공항까지",
+   "out": []
+  },
+  {
+   "in": "공항에서",
+   "out": []
+  },
+  {
+   "in": "괜찮아,",
+   "out": []
+  },
+  {
+   "in": "구워요.",
+   "out": [
+    "굽다"
+   ]
+  },
+  {
+   "in": "국이",
+   "out": []
+  },
+  {
+   "in": "귀여워요!",
+   "out": [
+    "귀엽다"
+   ]
+  },
+  {
+   "in": "그",
+   "out": []
+  },
+  {
+   "in": "그때",
+   "out": []
+  },
+  {
+   "in": "그리워요.",
+   "out": [
+    "그립다"
+   ]
+  },
+  {
+   "in": "근처에",
+   "out": []
+  },
+  {
+   "in": "근처에는",
+   "out": []
+  },
+  {
+   "in": "기다리는",
+   "out": []
+  },
+  {
+   "in": "기분이",
+   "out": []
+  },
+  {
+   "in": "길",
+   "out": []
+  },
+  {
+   "in": "길을",
+   "out": []
+  },
+  {
+   "in": "길이",
+   "out": []
+  },
+  {
+   "in": "김치는",
+   "out": []
+  },
+  {
+   "in": "깨달았어요.",
+   "out": [
+    "깨닫다"
+   ]
+  },
+  {
+   "in": "나",
+   "out": []
+  },
+  {
+   "in": "나가기",
+   "out": []
+  },
+  {
+   "in": "나았어요.",
+   "out": [
+    "낫다"
+   ]
+  },
+  {
+   "in": "나왔네요",
+   "out": []
+  },
+  {
+   "in": "나요.",
+   "out": []
+  },
+  {
+   "in": "나한테",
+   "out": []
+  },
+  {
+   "in": "날씨가",
+   "out": []
+  },
+  {
+   "in": "날에는",
+   "out": []
+  },
+  {
+   "in": "남기지",
+   "out": [
+    "남기다"
+   ]
+  },
+  {
+   "in": "남은",
+   "out": []
+  },
+  {
+   "in": "내",
+   "out": []
+  },
+  {
+   "in": "내일",
+   "out": []
+  },
+  {
+   "in": "너",
+   "out": []
+  },
+  {
+   "in": "너랑",
+   "out": []
+  },
+  {
+   "in": "너무",
+   "out": []
+  },
+  {
+   "in": "네가",
+   "out": []
+  },
+  {
+   "in": "노래",
+   "out": [
+    "노랗다"
+   ]
+  },
+  {
+   "in": "노래를",
+   "out": []
+  },
+  {
+   "in": "노래만",
+   "out": []
+  },
+  {
+   "in": "노래요.",
+   "out": [
+    "노랗다"
+   ]
+  },
+  {
+   "in": "놀러",
+   "out": []
+  },
+  {
+   "in": "놀았어요.",
+   "out": [
+    "놀다"
+   ]
+  },
+  {
+   "in": "놓쳐서",
+   "out": []
+  },
+  {
+   "in": "눈물이",
+   "out": []
+  },
+  {
+   "in": "늦을",
+   "out": []
+  },
+  {
+   "in": "늦을까",
+   "out": []
+  },
+  {
+   "in": "다",
+   "out": []
+  },
+  {
+   "in": "다시",
+   "out": [
+    "달다"
+   ]
+  },
+  {
+   "in": "다음에",
+   "out": []
+  },
+  {
+   "in": "달아요.",
+   "out": [
+    "달다"
+   ]
+  },
+  {
+   "in": "데워",
+   "out": [
+    "데우다"
+   ]
+  },
+  {
+   "in": "도와줬어요.",
+   "out": []
+  },
+  {
+   "in": "돈을",
+   "out": []
+  },
+  {
+   "in": "동안",
+   "out": []
+  },
+  {
+   "in": "두",
+   "out": []
+  },
+  {
+   "in": "들어",
+   "out": []
+  },
+  {
+   "in": "들어요",
+   "out": []
+  },
+  {
+   "in": "들으면",
+   "out": []
+  },
+  {
+   "in": "들으면서",
+   "out": []
+  },
+  {
+   "in": "때문에",
+   "out": []
+  },
+  {
+   "in": "떡볶이가",
+   "out": []
+  },
+  {
+   "in": "또",
+   "out": []
+  },
+  {
+   "in": "마",
+   "out": []
+  },
+  {
+   "in": "마.",
+   "out": []
+  },
+  {
+   "in": "마세요.",
+   "out": []
+  },
+  {
+   "in": "마셨어요",
+   "out": []
+  },
+  {
+   "in": "마시면서",
+   "out": []
+  },
+  {
+   "in": "마음이",
+   "out": []
+  },
+  {
+   "in": "막혀서",
+   "out": []
+  },
+  {
+   "in": "만나기로",
+   "out": []
+  },
+  {
+   "in": "만나서",
+   "out": []
+  },
+  {
+   "in": "만들어",
+   "out": []
+  },
+  {
+   "in": "많았어요",
+   "out": []
+  },
+  {
+   "in": "많이",
+   "out": []
+  },
+  {
+   "in": "말을",
+   "out": []
+  },
+  {
+   "in": "말지",
+   "out": []
+  },
+  {
+   "in": "말할지",
+   "out": []
+  },
+  {
+   "in": "맛있어요.",
+   "out": [
+    "맛있다"
+   ]
+  },
+  {
+   "in": "맛집이에요.",
+   "out": []
+  },
+  {
+   "in": "매워요.",
+   "out": [
+    "맵다"
+   ]
+  },
+  {
+   "in": "먹어야",
+   "out": []
+  },
+  {
+   "in": "먹어요",
+   "out": []
+  },
+  {
+   "in": "먹었어?",
+   "out": []
+  },
+  {
+   "in": "먼저",
+   "out": []
+  },
+  {
+   "in": "메뉴판",
+   "out": []
+  },
+  {
+   "in": "모르겠어요",
+   "out": []
+  },
+  {
+   "in": "모르겠어요.",
+   "out": []
+  },
+  {
+   "in": "모르는",
+   "out": []
+  },
+  {
+   "in": "목소리를",
+   "out": []
+  },
+  {
+   "in": "무거워요.",
+   "out": []
+  },
+  {
+   "in": "무서워요.",
+   "out": [
+    "무섭다"
+   ]
+  },
+  {
+   "in": "문제는",
+   "out": []
+  },
+  {
+   "in": "물어봤어요.",
+   "out": []
+  },
+  {
+   "in": "물을",
+   "out": []
+  },
+  {
+   "in": "바닷가에서",
+   "out": []
+  },
+  {
+   "in": "밖에",
+   "out": []
+  },
+  {
+   "in": "반했어요.",
+   "out": [
+    "반하다"
+   ]
+  },
+  {
+   "in": "밤에는",
+   "out": []
+  },
+  {
+   "in": "밥",
+   "out": []
+  },
+  {
+   "in": "배고파",
+   "out": [
+    "배고프다"
+   ]
+  },
+  {
+   "in": "버스를",
+   "out": []
+  },
+  {
+   "in": "버스보다",
+   "out": []
+  },
+  {
+   "in": "번",
+   "out": []
+  },
+  {
+   "in": "보고",
+   "out": []
+  },
+  {
+   "in": "보내",
+   "out": []
+  },
+  {
+   "in": "보다가",
+   "out": []
+  },
+  {
+   "in": "보러",
+   "out": []
+  },
+  {
+   "in": "보세요.",
+   "out": []
+  },
+  {
+   "in": "봐",
+   "out": []
+  },
+  {
+   "in": "봤어요.",
+   "out": []
+  },
+  {
+   "in": "부어",
+   "out": [
+    "붓다"
+   ]
+  },
+  {
+   "in": "비",
+   "out": []
+  },
+  {
+   "in": "비가",
+   "out": []
+  },
+  {
+   "in": "빨라요.",
+   "out": [
+    "빠르다"
+   ]
+  },
+  {
+   "in": "빵",
+   "out": []
+  },
+  {
+   "in": "사람",
+   "out": []
+  },
+  {
+   "in": "사람들이",
+   "out": []
+  },
+  {
+   "in": "사람이",
+   "out": []
+  },
+  {
+   "in": "사진",
+   "out": []
+  },
+  {
+   "in": "살면",
+   "out": []
+  },
+  {
+   "in": "살아요",
+   "out": []
+  },
+  {
+   "in": "샀어",
+   "out": []
+  },
+  {
+   "in": "생각나서",
+   "out": []
+  },
+  {
+   "in": "생각보다",
+   "out": []
+  },
+  {
+   "in": "생각에",
+   "out": []
+  },
+  {
+   "in": "생일",
+   "out": []
+  },
+  {
+   "in": "생일을",
+   "out": []
+  },
+  {
+   "in": "서",
+   "out": []
+  },
+  {
+   "in": "서다",
+   "out": []
+  },
+  {
+   "in": "서운했어.",
+   "out": [
+    "서운하다"
+   ]
+  },
+  {
+   "in": "설레요.",
+   "out": [
+    "설레다"
+   ]
+  },
+  {
+   "in": "세",
+   "out": []
+  },
+  {
+   "in": "수",
+   "out": []
+  },
+  {
+   "in": "수고",
+   "out": []
+  },
+  {
+   "in": "쉬는",
+   "out": []
+  },
+  {
+   "in": "쉬워요.",
+   "out": [
+    "쉽다"
+   ]
+  },
+  {
+   "in": "시간",
+   "out": []
+  },
+  {
+   "in": "시로",
+   "out": []
+  },
+  {
+   "in": "시장에서",
+   "out": []
+  },
+  {
+   "in": "식었어요.",
+   "out": [
+    "식다"
+   ]
+  },
+  {
+   "in": "실망했어요.",
+   "out": [
+    "실망하다"
+   ]
+  },
+  {
+   "in": "실수를",
+   "out": []
+  },
+  {
+   "in": "실었어요.",
+   "out": [
+    "싣다"
+   ]
+  },
+  {
+   "in": "싫어요",
+   "out": []
+  },
+  {
+   "in": "싱거워요.",
+   "out": [
+    "싱겁다"
+   ]
+  },
+  {
+   "in": "아침부터",
+   "out": []
+  },
+  {
+   "in": "안",
+   "out": []
+  },
+  {
+   "in": "안에",
+   "out": []
+  },
+  {
+   "in": "약은",
+   "out": []
+  },
+  {
+   "in": "어때요?",
+   "out": []
+  },
+  {
+   "in": "어울려?",
+   "out": []
+  },
+  {
+   "in": "언제",
+   "out": []
+  },
+  {
+   "in": "얼마나",
+   "out": []
+  },
+  {
+   "in": "없어요.",
+   "out": []
+  },
+  {
+   "in": "여권을",
+   "out": []
+  },
+  {
+   "in": "여기",
+   "out": []
+  },
+  {
+   "in": "여행",
+   "out": []
+  },
+  {
+   "in": "연락할게요.",
+   "out": []
+  },
+  {
+   "in": "열어",
+   "out": [
+    "열다"
+   ]
+  },
+  {
+   "in": "영상",
+   "out": []
+  },
+  {
+   "in": "영수증",
+   "out": []
+  },
+  {
+   "in": "영화",
+   "out": []
+  },
+  {
+   "in": "예약했어요.",
+   "out": [
+    "예약하다"
+   ]
+  },
+  {
+   "in": "오는",
+   "out": []
+  },
+  {
+   "in": "오늘",
+   "out": []
+  },
+  {
+   "in": "오늘은",
+   "out": []
+  },
+  {
+   "in": "오니까",
+   "out": []
+  },
+  {
+   "in": "오랜만에",
+   "out": []
+  },
+  {
+   "in": "오세요",
+   "out": []
+  },
+  {
+   "in": "올게요.",
+   "out": []
+  },
+  {
+   "in": "올까",
+   "out": []
+  },
+  {
+   "in": "올지",
+   "out": []
+  },
+  {
+   "in": "올해부터",
+   "out": []
+  },
+  {
+   "in": "옷",
+   "out": []
+  },
+  {
+   "in": "와",
+   "out": []
+  },
+  {
+   "in": "왔어요.",
+   "out": []
+  },
+  {
+   "in": "외로워요.",
+   "out": [
+    "외롭다"
+   ]
+  },
+  {
+   "in": "요즘",
+   "out": []
+  },
+  {
+   "in": "우리",
+   "out": []
+  },
+  {
+   "in": "우산을",
+   "out": []
+  },
+  {
+   "in": "운동하기로",
+   "out": []
+  },
+  {
+   "in": "울었어요.",
+   "out": [
+    "울다"
+   ]
+  },
+  {
+   "in": "울지",
+   "out": [
+    "울다"
+   ]
+  },
+  {
+   "in": "웃겨요.",
+   "out": [
+    "웃기다"
+   ]
+  },
+  {
+   "in": "웃었어",
+   "out": []
+  },
+  {
+   "in": "유명한",
+   "out": []
+  },
+  {
+   "in": "은행잎이",
+   "out": []
+  },
+  {
+   "in": "음식",
+   "out": []
+  },
+  {
+   "in": "음식을",
+   "out": []
+  },
+  {
+   "in": "음식이",
+   "out": []
+  },
+  {
+   "in": "음악을",
+   "out": []
+  },
+  {
+   "in": "이",
+   "out": []
+  },
+  {
+   "in": "이거",
+   "out": []
+  },
+  {
+   "in": "이야기했어요.",
+   "out": []
+  },
+  {
+   "in": "일곱",
+   "out": []
+  },
+  {
+   "in": "일어나야",
+   "out": []
+  },
+  {
+   "in": "일이",
+   "out": []
+  },
+  {
+   "in": "일찍",
+   "out": []
+  },
+  {
+   "in": "읽었어요.",
+   "out": []
+  },
+  {
+   "in": "잃다",
+   "out": []
+  },
+  {
+   "in": "잃어버렸어요.",
+   "out": []
+  },
+  {
+   "in": "잃었어요.",
+   "out": []
+  },
+  {
+   "in": "있어,",
+   "out": []
+  },
+  {
+   "in": "있어요.",
+   "out": []
+  },
+  {
+   "in": "있어요?",
+   "out": []
+  },
+  {
+   "in": "있으면",
+   "out": []
+  },
+  {
+   "in": "잊어버려서",
+   "out": []
+  },
+  {
+   "in": "자는",
+   "out": []
+  },
+  {
+   "in": "자랑스러워.",
+   "out": [
+    "자랑스럽다"
+   ]
+  },
+  {
+   "in": "자리",
+   "out": []
+  },
+  {
+   "in": "잔이나",
+   "out": []
+  },
+  {
+   "in": "잘",
+   "out": []
+  },
+  {
+   "in": "잘될",
+   "out": []
+  },
+  {
+   "in": "저",
+   "out": []
+  },
+  {
+   "in": "저어요.",
+   "out": [
+    "젓다"
+   ]
+  },
+  {
+   "in": "전자레인지에",
+   "out": []
+  },
+  {
+   "in": "정말",
+   "out": []
+  },
+  {
+   "in": "제",
+   "out": []
+  },
+  {
+   "in": "제가",
+   "out": []
+  },
+  {
+   "in": "조금",
+   "out": []
+  },
+  {
+   "in": "졸려서",
+   "out": []
+  },
+  {
+   "in": "좀",
+   "out": []
+  },
+  {
+   "in": "종일",
+   "out": []
+  },
+  {
+   "in": "좋았어요",
+   "out": []
+  },
+  {
+   "in": "주말에",
+   "out": []
+  },
+  {
+   "in": "주세요",
+   "out": []
+  },
+  {
+   "in": "주세요.",
+   "out": []
+  },
+  {
+   "in": "죽겠어요.",
+   "out": []
+  },
+  {
+   "in": "줄을",
+   "out": []
+  },
+  {
+   "in": "줘서",
+   "out": []
+  },
+  {
+   "in": "지하철이",
+   "out": []
+  },
+  {
+   "in": "진짜",
+   "out": []
+  },
+  {
+   "in": "진해요.",
+   "out": [
+    "진하다"
+   ]
+  },
+  {
+   "in": "짐을",
+   "out": []
+  },
+  {
+   "in": "짐이",
+   "out": []
+  },
+  {
+   "in": "집",
+   "out": []
+  },
+  {
+   "in": "집에",
+   "out": []
+  },
+  {
+   "in": "집에서",
+   "out": []
+  },
+  {
+   "in": "짜요.",
+   "out": [
+    "짜다"
+   ]
+  },
+  {
+   "in": "짜증났어.",
+   "out": [
+    "짜증나다"
+   ]
+  },
+  {
+   "in": "차에",
+   "out": []
+  },
+  {
+   "in": "창가",
+   "out": []
+  },
+  {
+   "in": "창문",
+   "out": []
+  },
+  {
+   "in": "찾는",
+   "out": []
+  },
+  {
+   "in": "책을",
+   "out": []
+  },
+  {
+   "in": "챙기세요",
+   "out": [
+    "챙기다"
+   ]
+  },
+  {
+   "in": "천천히",
+   "out": []
+  },
+  {
+   "in": "첫눈에",
+   "out": []
+  },
+  {
+   "in": "최고예요",
+   "out": []
+  },
+  {
+   "in": "추워서",
+   "out": [
+    "춥다"
+   ]
+  },
+  {
+   "in": "추워요.",
+   "out": [
+    "춥다"
+   ]
+  },
+  {
+   "in": "축하해,",
+   "out": []
+  },
+  {
+   "in": "친구를",
+   "out": []
+  },
+  {
+   "in": "카페가",
+   "out": []
+  },
+  {
+   "in": "커피가",
+   "out": []
+  },
+  {
+   "in": "커피를",
+   "out": []
+  },
+  {
+   "in": "컵에",
+   "out": []
+  },
+  {
+   "in": "케이크가",
+   "out": []
+  },
+  {
+   "in": "탔어요.",
+   "out": []
+  },
+  {
+   "in": "택시를",
+   "out": []
+  },
+  {
+   "in": "파래요.",
+   "out": [
+    "파랗다"
+   ]
+  },
+  {
+   "in": "편의점",
+   "out": []
+  },
+  {
+   "in": "편해져요",
+   "out": []
+  },
+  {
+   "in": "포기하지",
+   "out": []
+  },
+  {
+   "in": "포장해",
+   "out": [
+    "포장하다"
+   ]
+  },
+  {
+   "in": "피곤하니까",
+   "out": []
+  },
+  {
+   "in": "필요하세요?",
+   "out": []
+  },
+  {
+   "in": "하늘이",
+   "out": []
+  },
+  {
+   "in": "하루",
+   "out": []
+  },
+  {
+   "in": "하루도",
+   "out": []
+  },
+  {
+   "in": "하루에",
+   "out": []
+  },
+  {
+   "in": "학교가",
+   "out": []
+  },
+  {
+   "in": "한",
+   "out": []
+  },
+  {
+   "in": "한국",
+   "out": []
+  },
+  {
+   "in": "한번",
+   "out": []
+  },
+  {
+   "in": "할",
+   "out": []
+  },
+  {
+   "in": "해요.",
+   "out": []
+  },
+  {
+   "in": "했어요.",
+   "out": []
+  },
+  {
+   "in": "행복한",
+   "out": []
+  },
+  {
+   "in": "행복해.",
+   "out": [
+    "행복하다"
+   ]
+  },
+  {
+   "in": "호텔이",
+   "out": []
+  },
+  {
+   "in": "혹시",
+   "out": []
+  },
+  {
+   "in": "혼자",
+   "out": []
+  },
+  {
+   "in": "환전했어요.",
+   "out": [
+    "환전하다"
+   ]
+  },
+  {
+   "in": "후회해요.",
+   "out": [
+    "후회하다"
+   ]
+  },
+  {
+   "in": "흘러요.",
+   "out": [
+    "흐르다"
+   ]
+  },
+  {
+   "in": "힘들었어요.",
+   "out": [
+    "힘들다"
+   ]
+  }
+ ],
+ "past": [
+  {
+   "in": "가까워",
+   "out": "가까웠"
+  },
+  {
+   "in": "가깝아",
+   "out": "가깝았"
+  },
+  {
+   "in": "걱정해",
+   "out": "걱정했"
+  },
+  {
+   "in": "걷어",
+   "out": "걷었"
+  },
+  {
+   "in": "걸어",
+   "out": "걸었"
+  },
+  {
+   "in": "계산해",
+   "out": "계산했"
+  },
+  {
+   "in": "고마워",
+   "out": "고마웠"
+  },
+  {
+   "in": "고맙아",
+   "out": "고맙았"
+  },
+  {
+   "in": "구워",
+   "out": "구웠"
+  },
+  {
+   "in": "굽어",
+   "out": "굽었"
+  },
+  {
+   "in": "귀여워",
+   "out": "귀여웠"
+  },
+  {
+   "in": "귀엽어",
+   "out": "귀엽었"
+  },
+  {
+   "in": "그리워",
+   "out": "그리웠"
+  },
+  {
+   "in": "그립어",
+   "out": "그립었"
+  },
+  {
+   "in": "깨닫아",
+   "out": "깨닫았"
+  },
+  {
+   "in": "깨달아",
+   "out": "깨달았"
+  },
+  {
+   "in": "나아",
+   "out": "나았"
+  },
+  {
+   "in": "남겨",
+   "out": "남겼"
+  },
+  {
+   "in": "남기어",
+   "out": "남기었"
+  },
+  {
+   "in": "낫아",
+   "out": "낫았"
+  },
+  {
+   "in": "노랗아",
+   "out": "노랗았"
+  },
+  {
+   "in": "노래",
+   "out": "노랬"
+  },
+  {
+   "in": "놀아",
+   "out": "놀았"
+  },
+  {
+   "in": "달아",
+   "out": "달았"
+  },
+  {
+   "in": "데우어",
+   "out": "데우었"
+  },
+  {
+   "in": "데워",
+   "out": "데웠"
+  },
+  {
+   "in": "도와",
+   "out": "도왔"
+  },
+  {
+   "in": "돕아",
+   "out": "돕았"
+  },
+  {
+   "in": "맛나",
+   "out": "맛났"
+  },
+  {
+   "in": "맛있어",
+   "out": "맛있었"
+  },
+  {
+   "in": "매워",
+   "out": "매웠"
+  },
+  {
+   "in": "맵어",
+   "out": "맵었"
+  },
+  {
+   "in": "무서워",
+   "out": "무서웠"
+  },
+  {
+   "in": "무섭어",
+   "out": "무섭었"
+  },
+  {
+   "in": "묻어",
+   "out": "묻었"
+  },
+  {
+   "in": "물어",
+   "out": "물었"
+  },
+  {
+   "in": "반해",
+   "out": "반했"
+  },
+  {
+   "in": "배고파",
+   "out": "배고팠"
+  },
+  {
+   "in": "부어",
+   "out": "부었"
+  },
+  {
+   "in": "붓어",
+   "out": "붓었"
+  },
+  {
+   "in": "빠라",
+   "out": "빠랐"
+  },
+  {
+   "in": "빨라",
+   "out": "빨랐"
+  },
+  {
+   "in": "서운해",
+   "out": "서운했"
+  },
+  {
+   "in": "설레",
+   "out": "설렜"
+  },
+  {
+   "in": "설레어",
+   "out": "설레었"
+  },
+  {
+   "in": "쉬워",
+   "out": "쉬웠"
+  },
+  {
+   "in": "쉽어",
+   "out": "쉽었"
+  },
+  {
+   "in": "식어",
+   "out": "식었"
+  },
+  {
+   "in": "싣어",
+   "out": "싣었"
+  },
+  {
+   "in": "실망해",
+   "out": "실망했"
+  },
+  {
+   "in": "실어",
+   "out": "실었"
+  },
+  {
+   "in": "싱거워",
+   "out": "싱거웠"
+  },
+  {
+   "in": "싱겁어",
+   "out": "싱겁었"
+  },
+  {
+   "in": "열어",
+   "out": "열었"
+  },
+  {
+   "in": "예약해",
+   "out": "예약했"
+  },
+  {
+   "in": "외로워",
+   "out": "외로웠"
+  },
+  {
+   "in": "외롭아",
+   "out": "외롭았"
+  },
+  {
+   "in": "울어",
+   "out": "울었"
+  },
+  {
+   "in": "웃겨",
+   "out": "웃겼"
+  },
+  {
+   "in": "웃기어",
+   "out": "웃기었"
+  },
+  {
+   "in": "자랑스러워",
+   "out": "자랑스러웠"
+  },
+  {
+   "in": "자랑스럽어",
+   "out": "자랑스럽었"
+  },
+  {
+   "in": "저어",
+   "out": "저었"
+  },
+  {
+   "in": "젓어",
+   "out": "젓었"
+  },
+  {
+   "in": "진해",
+   "out": "진했"
+  },
+  {
+   "in": "짜",
+   "out": "짰"
+  },
+  {
+   "in": "짜증나",
+   "out": "짜증났"
+  },
+  {
+   "in": "챙겨",
+   "out": "챙겼"
+  },
+  {
+   "in": "챙기어",
+   "out": "챙기었"
+  },
+  {
+   "in": "추워",
+   "out": "추웠"
+  },
+  {
+   "in": "춥어",
+   "out": "춥었"
+  },
+  {
+   "in": "파랗아",
+   "out": "파랗았"
+  },
+  {
+   "in": "파래",
+   "out": "파랬"
+  },
+  {
+   "in": "포장해",
+   "out": "포장했"
+  },
+  {
+   "in": "행복해",
+   "out": "행복했"
+  },
+  {
+   "in": "환전해",
+   "out": "환전했"
+  },
+  {
+   "in": "후회해",
+   "out": "후회했"
+  },
+  {
+   "in": "흐러",
+   "out": "흐렀"
+  },
+  {
+   "in": "흘러",
+   "out": "흘렀"
+  },
+  {
+   "in": "힘들어",
+   "out": "힘들었"
+  }
+ ],
+ "pattern_forms": [
+  {
+   "in": "-(으)ㄹ게요",
+   "out": [
+    "ㄹ게요",
+    "을게요"
+   ]
+  },
+  {
+   "in": "-아/어 보다",
+   "out": [
+    "아",
+    "아보다",
+    "어보다"
+   ]
+  },
+  {
+   "in": "-기로 하다",
+   "out": [
+    "기로하다"
+   ]
+  },
+  {
+   "in": "-(으)면서",
+   "out": [
+    "면서",
+    "으면서"
+   ]
+  },
+  {
+   "in": "-는 동안",
+   "out": [
+    "는동안"
+   ]
+  },
+  {
+   "in": "-(으)ㄹ까 봐",
+   "out": [
+    "ㄹ까봐",
+    "을까봐"
+   ]
+  },
+  {
+   "in": "-아/어야 하다",
+   "out": [
+    "아",
+    "아야하다",
+    "어야하다"
+   ]
+  },
+  {
+   "in": "-지 말다",
+   "out": [
+    "지말다"
+   ]
+  },
+  {
+   "in": "(으)로",
+   "out": [
+    "로",
+    "으로"
+   ]
+  },
+  {
+   "in": "한테",
+   "out": [
+    "한테"
+   ]
+  },
+  {
+   "in": "부터",
+   "out": [
+    "부터"
+   ]
+  },
+  {
+   "in": "까지",
+   "out": [
+    "까지"
+   ]
+  },
+  {
+   "in": "-ㄹ 지/ 을 지",
+   "out": [
+    "을지",
+    "지"
+   ]
+  },
+  {
+   "in": "-네요",
+   "out": [
+    "네요"
+   ]
+  },
+  {
+   "in": "이/가",
+   "out": [
+    "가",
+    "이"
+   ]
+  },
+  {
+   "in": "을/를",
+   "out": [
+    "를",
+    "을"
+   ]
+  },
+  {
+   "in": "에",
+   "out": [
+    "에"
+   ]
+  }
+ ],
+ "same_grammar": [
+  {
+   "out": true,
+   "pattern": "-(으)ㄹ게요",
+   "word": "-(으)ㄹ게요"
+  },
+  {
+   "out": true,
+   "pattern": "-(으)ㄹ게요",
+   "word": "-을게"
+  },
+  {
+   "out": false,
+   "pattern": "-(으)ㄹ게요",
+   "word": "-아/어 보다"
+  },
+  {
+   "out": true,
+   "pattern": "-아/어 보다",
+   "word": "-아/어 보다"
+  },
+  {
+   "out": true,
+   "pattern": "-아/어 보다",
+   "word": "-아보아요"
+  },
+  {
+   "out": false,
+   "pattern": "-아/어 보다",
+   "word": "-기로 하다"
+  },
+  {
+   "out": true,
+   "pattern": "-기로 하다",
+   "word": "-기로 하다"
+  },
+  {
+   "out": true,
+   "pattern": "-기로 하다",
+   "word": "-기로해요"
+  },
+  {
+   "out": false,
+   "pattern": "-기로 하다",
+   "word": "-(으)면서"
+  },
+  {
+   "out": true,
+   "pattern": "-(으)면서",
+   "word": "-(으)면서"
+  },
+  {
+   "out": true,
+   "pattern": "-(으)면서",
+   "word": "-으면서요"
+  },
+  {
+   "out": false,
+   "pattern": "-(으)면서",
+   "word": "-는 동안"
+  },
+  {
+   "out": true,
+   "pattern": "-는 동안",
+   "word": "-는 동안"
+  },
+  {
+   "out": true,
+   "pattern": "-는 동안",
+   "word": "-는동안요"
+  },
+  {
+   "out": false,
+   "pattern": "-는 동안",
+   "word": "-(으)ㄹ까 봐"
+  },
+  {
+   "out": true,
+   "pattern": "-(으)ㄹ까 봐",
+   "word": "-(으)ㄹ까 봐"
+  },
+  {
+   "out": true,
+   "pattern": "-(으)ㄹ까 봐",
+   "word": "-을까봐요"
+  },
+  {
+   "out": false,
+   "pattern": "-(으)ㄹ까 봐",
+   "word": "-아/어야 하다"
+  },
+  {
+   "out": true,
+   "pattern": "-아/어야 하다",
+   "word": "-아/어야 하다"
+  },
+  {
+   "out": true,
+   "pattern": "-아/어야 하다",
+   "word": "-아야해요"
+  },
+  {
+   "out": false,
+   "pattern": "-아/어야 하다",
+   "word": "-지 말다"
+  },
+  {
+   "out": true,
+   "pattern": "-지 말다",
+   "word": "-지 말다"
+  },
+  {
+   "out": true,
+   "pattern": "-지 말다",
+   "word": "-지말아요"
+  },
+  {
+   "out": false,
+   "pattern": "-지 말다",
+   "word": "(으)로"
+  },
+  {
+   "out": true,
+   "pattern": "(으)로",
+   "word": "(으)로"
+  },
+  {
+   "out": true,
+   "pattern": "(으)로",
+   "word": "-으로요"
+  },
+  {
+   "out": false,
+   "pattern": "(으)로",
+   "word": "한테"
+  },
+  {
+   "out": true,
+   "pattern": "한테",
+   "word": "한테"
+  },
+  {
+   "out": true,
+   "pattern": "한테",
+   "word": "-한테요"
+  },
+  {
+   "out": false,
+   "pattern": "한테",
+   "word": "부터"
+  },
+  {
+   "out": true,
+   "pattern": "부터",
+   "word": "부터"
+  },
+  {
+   "out": true,
+   "pattern": "부터",
+   "word": "-부터요"
+  },
+  {
+   "out": false,
+   "pattern": "부터",
+   "word": "까지"
+  },
+  {
+   "out": true,
+   "pattern": "까지",
+   "word": "까지"
+  },
+  {
+   "out": true,
+   "pattern": "까지",
+   "word": "-까지요"
+  },
+  {
+   "out": false,
+   "pattern": "까지",
+   "word": "-ㄹ 지/ 을 지"
+  },
+  {
+   "out": true,
+   "pattern": "-ㄹ 지/ 을 지",
+   "word": "-ㄹ 지/ 을 지"
+  },
+  {
+   "out": true,
+   "pattern": "-ㄹ 지/ 을 지",
+   "word": "-을지요"
+  },
+  {
+   "out": false,
+   "pattern": "-ㄹ 지/ 을 지",
+   "word": "-네요"
+  },
+  {
+   "out": true,
+   "pattern": "-네요",
+   "word": "-네요"
+  },
+  {
+   "out": false,
+   "pattern": "-네요",
+   "word": "이/가"
+  },
+  {
+   "out": true,
+   "pattern": "이/가",
+   "word": "이/가"
+  },
+  {
+   "out": false,
+   "pattern": "이/가",
+   "word": "을/를"
+  },
+  {
+   "out": true,
+   "pattern": "을/를",
+   "word": "을/를"
+  },
+  {
+   "out": false,
+   "pattern": "을/를",
+   "word": "에"
+  },
+  {
+   "out": true,
+   "pattern": "에",
+   "word": "에"
+  },
+  {
+   "out": false,
+   "pattern": "에",
+   "word": "-(으)ㄹ게요"
+  }
+ ],
+ "verbs": [
+  "가깝다",
+  "걱정하다",
+  "걷다",
+  "계산하다",
+  "고맙다",
+  "굽다",
+  "귀엽다",
+  "그립다",
+  "깨닫다",
+  "남기다",
+  "낫다",
+  "노랗다",
+  "놀다",
+  "달다",
+  "데우다",
+  "돕다",
+  "맛나다",
+  "맛있다",
+  "맵다",
+  "무섭다",
+  "묻다",
+  "반하다",
+  "배고프다",
+  "붓다",
+  "빠르다",
+  "서운하다",
+  "설레다",
+  "쉽다",
+  "식다",
+  "싣다",
+  "실망하다",
+  "싱겁다",
+  "열다",
+  "예약하다",
+  "외롭다",
+  "울다",
+  "웃기다",
+  "자랑스럽다",
+  "젓다",
+  "진하다",
+  "짜다",
+  "짜증나다",
+  "챙기다",
+  "춥다",
+  "파랗다",
+  "포장하다",
+  "행복하다",
+  "환전하다",
+  "후회하다",
+  "흐르다",
+  "힘들다"
+ ]
+}

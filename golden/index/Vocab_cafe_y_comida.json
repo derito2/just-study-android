@@ -1,0 +1,135 @@
+{
+ "aeo": [
+  "계산해",
+  "구워",
+  "굽어",
+  "남겨",
+  "남기어",
+  "달아",
+  "데우어",
+  "데워",
+  "맛나",
+  "맛있어",
+  "매워",
+  "맵어",
+  "배고파",
+  "부어",
+  "붓어",
+  "식어",
+  "싱거워",
+  "싱겁어",
+  "예약해",
+  "진해",
+  "짜",
+  "포장해"
+ ],
+ "points": [],
+ "sentences": [
+  {
+   "chunk": "3:1:1",
+   "text": "메뉴판 좀 주세요. = Can I have the menu, please?"
+  },
+  {
+   "chunk": "3:1:1",
+   "text": "오늘은 제가 계산할게요. = I'll pay today."
+  },
+  {
+   "chunk": "3:1:1",
+   "text": "계산해 주세요 = The bill, please"
+  },
+  {
+   "chunk": "3:1:1",
+   "text": "남은 음식 포장해 주세요. = Please wrap up the leftovers."
+  },
+  {
+   "chunk": "3:1:1",
+   "text": "떡볶이가 너무 매워요. = The tteokbokki is too spicy."
+  },
+  {
+   "chunk": "3:1:1",
+   "text": "국이 좀 싱거워요. = The soup is a bit bland."
+  },
+  {
+   "chunk": "3:1:1",
+   "text": "이 김치는 너무 짜요. = This kimchi is too salty."
+  },
+  {
+   "chunk": "3:1:2",
+   "text": "케이크가 생각보다 안 달아요. = The cake isn't as sweet as I thought."
+  },
+  {
+   "chunk": "3:1:2",
+   "text": "여기 유명한 맛집이에요. = This is a famous restaurant."
+  },
+  {
+   "chunk": "3:1:2",
+   "text": "일곱 시로 예약했어요. = I made a reservation for seven."
+  },
+  {
+   "chunk": "3:1:2",
+   "text": "창가 자리 있어요? = Is there a window seat?"
+  },
+  {
+   "chunk": "3:1:2",
+   "text": "음식을 남기지 마세요. = Don't leave food on your plate."
+  },
+  {
+   "chunk": "3:1:3",
+   "text": "전자레인지에 데워 주세요. = Please heat it up in the microwave."
+  },
+  {
+   "chunk": "3:1:3",
+   "text": "커피가 다 식었어요. = The coffee has gone cold."
+  },
+  {
+   "chunk": "3:1:3",
+   "text": "고기를 구워요. = I grill the meat."
+  },
+  {
+   "chunk": "3:2:0",
+   "text": "컵에 물을 부어 주세요. = Please pour water into the cup."
+  },
+  {
+   "chunk": "3:2:0",
+   "text": "16. 줄을 서다 = To stand in line"
+  },
+  {
+   "chunk": "3:2:0",
+   "text": "사람들이 줄을 서 있어요. = People are standing in line."
+  },
+  {
+   "chunk": "3:2:0",
+   "text": "영수증 필요하세요? = Do you need a receipt?"
+  },
+  {
+   "chunk": "3:2:0",
+   "text": "배고파 죽겠어요. = I'm starving."
+  },
+  {
+   "chunk": "3:2:0",
+   "text": "커피가 너무 진해요. = The coffee is too strong."
+  },
+  {
+   "chunk": "3:2:1",
+   "text": "이 집 빵 진짜 맛있어요. = The bread here is really delicious."
+  }
+ ],
+ "verbs": [
+  "계산하다",
+  "굽다",
+  "남기다",
+  "달다",
+  "데우다",
+  "맛나다",
+  "맛있다",
+  "맵다",
+  "배고프다",
+  "붓다",
+  "식다",
+  "싱겁다",
+  "예약하다",
+  "진하다",
+  "짜다",
+  "포장하다"
+ ]
+}

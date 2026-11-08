@@ -209,11 +209,32 @@ Cada skill instalada añade su descripción al contexto de **cada** sesión: ins
 | Nivel | Qué | Cuándo |
 |---|---|---|
 | 0 | **Sin modelo:** Teacher por reglas, Quiz por reglas, Coach determinista | Siempre; la app funciona entera así |
-| 1 | **Gemini Nano** (ML Kit GenAI Prompt API, beta): el Find X8 Pro está en la lista de dispositivos | Redactar la respuesta del Coach, explicar en inglés cuando las reglas no tienen respuesta, preguntas Multiple choice y Short answer escritas por el modelo (validadas igual que hoy) |
+| 1 | **Gemini Nano** (ML Kit GenAI Prompt API, beta): el Find X8 Pro está en la lista de dispositivos | Los 8 usos del punto 10.1, más las preguntas Multiple choice y Short answer escritas por el modelo (validadas igual que hoy) |
 | 2 | **Gemma 4 E2B** con LiteRT-LM en GPU (~2.6 GB) | Solo si Nano no está disponible o no da la calidad; se copia al teléfono e importa con el selector de archivos |
 | Embeddings | **EmbeddingGemma** con LiteRT | Solo si hace falta búsqueda por significado; si no, FTS y las reglas bastan |
 
 Todo lo que escribe el modelo pasa por las mismas comprobaciones que hoy: nada de coreano que no esté en tus notas, citas válidas, sin frases inventadas. El soporte de coreano de Nano se mide en la PoC (las respuestas van en inglés y el coreano sale de tus notas).
+
+### 10.1 Dónde entra el modelo (fase 6)
+
+Sin la pantalla Study, el modelo entra en estos 8 sitios. La regla no cambia: **el modelo explica en inglés, y todo el coreano que ves sale de tus notas o va marcado como práctica**. Lo hace Gemini Nano (viene en tu OPPO y es gratis). Si no está disponible, cada función tiene su versión sin modelo y la app sigue funcionando igual.
+
+| # | Dónde | Qué hace el modelo | Cómo se comprueba | Sin modelo |
+|---|---|---|---|---|
+| 1 | **Quiz:** calificar por significado | Si escribes la respuesta con otras palabras ("to be grateful" para "to be thankful"), juzga si significa lo mismo: sí o no, con una razón corta. Solo se pregunta cuando las reglas (`is_correct`) dicen "incorrecto" | Solo puede **aprobar** respuestas en inglés que las reglas rechazaron; nunca aprueba coreano distinto de tus notas. La razón se muestra ("accepted: same meaning") | Solo los sinónimos que tienen tus notas (como hoy) |
+| 2 | **Quiz:** explicar tu error | Cuando fallas, una frase de por qué ("you used 는 but 은 goes after a consonant"), basada en tu punto de gramática | El prompt lleva tu punto de gramática y las dos respuestas. El coreano de la frase tiene que estar en tu respuesta, en la correcta o en el punto de gramática | La explicación del punto de gramática tal cual, si existe |
+| 3 | **Flashcards:** Type the answer | Igual que el 1: si tu respuesta es otra forma correcta de decirlo | Las mismas reglas que el 1, después de `compareAnswer` | `compareAnswer` (como hoy) |
+| 4 | **Teacher:** sin respuesta en las reglas | En vez de solo "your notes don't cover this", una explicación en inglés con tus fragmentos (búsqueda FTS) como fuente, con sus citas | Citas válidas; coreano solo de los fragmentos citados. Si no hay fragmentos, se queda el mensaje de siempre | "Your notes don't cover this" |
+| 5 | **Coach dentro de Teacher** | Redactar el plan del día y las recomendaciones a partir de lo que calculan las reglas (temas débiles, tarjetas pendientes, progreso) | El modelo solo recibe esos hechos y no puede añadir números ni coreano que no estén en ellos | El texto con plantilla del Coach determinista |
+| 6 | **Library:** notas desordenadas | Sacar pares "coreano = inglés" para las tarjetas de las notas que las reglas no entienden (`needs_llm_pairs`). Ya existe en la web como respaldo; en el teléfono va como etapa opcional del procesado (WorkManager), porque puede tardar | `validate_llm_pair`, como en la web: el coreano tiene que estar en ese fragmento | Solo los pares que sacan las reglas |
+| 7 | **Grammar** | (a) Una explicación más sencilla del punto; (b) "dame una frase de práctica" usando solo palabras de tus notas | (a) Coreano solo del punto. (b) Cada palabra de la frase tiene que estar en tus notas (índice de notas + conjugación); la frase va siempre etiquetada **PRACTICE** y nunca se guarda como si fuera tuya | (a) La explicación de tus notas; (b) los ejemplos de tus notas |
+| 8 | **Dashboard:** resumen semanal | Una o dos frases ("this week you improved in particles; -거든요 is still weak") a partir de las cifras de la semana | Solo con las cifras y temas que le pasan las reglas; nada de números nuevos | Una frase con plantilla a partir de las mismas cifras |
+
+**Común a los 8:**
+- El modelo se carga bajo demanda y nunca mientras se procesa un PDF (punto 9).
+- Toda respuesta del modelo lleva una marca discreta ("AI") para distinguirla de lo que sale de tus notas.
+- Si tarda más de lo que fija la PoC 2 o AICore da cuota o error, se muestra la versión sin modelo, sin aviso de error.
+- Cada uso tiene su validador en `core/ai` con pruebas JVM (con un modelo falso) y su prompt en inglés, versionado.
 
 ---
 
@@ -235,18 +256,20 @@ Todo lo que escribe el modelo pasa por las mismas comprobaciones que hoy: nada d
 
 ## 12. Fases
 
-| Fase | Qué | Salida |
-|---|---|---|
-| **0. Preparación** (1–2 días) | Instalar (punto 2); crear el proyecto en Android Studio en `/Users/dero/Documents/JustStudyApp`; repo y GitHub privado; `CLAUDE.md` del proyecto; skills del punto 6 instaladas y comprobadas; la plantilla abre en el OPPO | La APK abre en el teléfono y Claude Code ve todas las skills |
-| **1. PoC** (1–2 semanas, en paralelo) | (1) PDF con MuPDF frente a `/Users/dero/Documents/visual/korean-study-assistant/data/extracted`; (2) Gemini Nano: calidad, latencia y si funciona sin `INTERNET`; (3) Room: importar un respaldo real; (4) Gemma 4 E2B solo si (2) falla | Una decisión por PoC en `docs/DECISIONS.md` y Engram |
-| **2. Diseño + base** (1 semana) | Sistema de diseño y pantallas (sesión de diseño); tema, navegación, Room, Hilt, DataStore y CI de Gradle (Claude Code) | Esqueleto navegable con el tema |
-| **3. Núcleo sin IA** (2–3 semanas) | `core/korean` con pruebas doradas; Flashcards (SM-2, mazos, Type the answer), Quiz por reglas, Grammar, Progress, Calendar, Dashboard, Fix this next | Ya se puede estudiar con datos importados |
-| **4. Library y PDF** (1–2 semanas) | SAF, SHA-256, pipeline por etapas, All vocabulary, duplicados, reprocesar y borrar | PDFs nuevos procesados en el teléfono |
-| **5. Teacher + Coach** (2 semanas) | Respondedores con pruebas doradas, Coach determinista dentro de Teacher, `selfcheck` en el teléfono | Teacher igual que en la web |
-| **6. IA** (1–2 semanas) | Gemini Nano (y nivel 2 si hace falta) para el Coach, la explicación de respaldo y preguntas del modelo | Mejora opcional |
-| **7. Pulido** (1–2 semanas) | Perfiladores, ANR, R8, Baseline Profiles, modo avión, cerrar a la fuerza, actualizar la APK, auditoría de seguridad | APK final |
+| Fase | Qué | Salida | 📱 Teléfono por USB con depuración |
+|---|---|---|---|
+| **0. Preparación** (1–2 días) | Instalar (punto 2); crear el proyecto en Android Studio en `/Users/dero/Documents/JustStudyApp`; repo y GitHub privado; `CLAUDE.md` del proyecto; skills del punto 6 instaladas y comprobadas; la plantilla abre en el OPPO | La APK abre en el teléfono y Claude Code ve todas las skills | **Sí** |
+| **1. PoC** (1–2 semanas, en paralelo) | (1) PDF con MuPDF frente a `/Users/dero/Documents/visual/korean-study-assistant/data/extracted`; (2) Gemini Nano: calidad, latencia y si funciona sin `INTERNET`; (3) Room: importar un respaldo real; (4) Gemma 4 E2B solo si (2) falla | Una decisión por PoC en `docs/DECISIONS.md` y Engram | Tarea 0: **no**. Tareas 1–4: **sí** |
+| **2. Diseño + base** (1 semana) | Sistema de diseño y pantallas (sesión de diseño); tema, navegación, Room, Hilt, DataStore y CI de Gradle (Claude Code) | Esqueleto navegable con el tema | **Sí**, para instalar el esqueleto (`android run`) |
+| **3. Núcleo sin IA** (2–3 semanas) | `core/korean` con pruebas doradas; Flashcards (SM-2, mazos, Type the answer), Quiz por reglas, Grammar, Progress, Calendar, Dashboard, Fix this next | Ya se puede estudiar con datos importados | `core/korean`: **no** (pruebas JVM). Pantallas: **sí** |
+| **4. Library y PDF** (1–2 semanas) | SAF, SHA-256, pipeline por etapas, All vocabulary, duplicados, reprocesar y borrar | PDFs nuevos procesados en el teléfono | **Sí** |
+| **5. Teacher + Coach** (2 semanas) | Respondedores con pruebas doradas, Coach determinista dentro de Teacher, `selfcheck` en el teléfono | Teacher igual que en la web | Respondedores: **no** (JVM). `selfcheck` en el teléfono: **sí** |
+| **6. IA** (2–3 semanas) | Gemini Nano (y nivel 2 si hace falta) en los 8 usos del punto 10.1: calificar por significado (Quiz y Type the answer), explicar tu error, Teacher sin respuesta, Coach, pares de notas desordenadas, Grammar (explicación sencilla y frase de práctica) y resumen semanal; más las preguntas del modelo | Mejora opcional | **Sí** (Nano solo corre en el OPPO) |
+| **7. Pulido** (1–2 semanas) | Perfiladores, ANR, R8, Baseline Profiles, modo avión, cerrar a la fuerza, actualizar la APK, auditoría de seguridad | APK final | **Sí** |
 
-**Total:** unas 9–14 semanas a tiempo parcial.
+**Total:** unas 10–15 semanas a tiempo parcial.
+
+Cada prompt para Claude Code empieza diciendo si hace falta el teléfono conectado por USB con la depuración activada.
 
 ---
 

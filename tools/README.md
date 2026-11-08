@@ -1,0 +1,45 @@
+# tools/
+
+Python tools that read the web project (`/Users/dero/Documents/visual/korean-study-assistant`,
+**read-only**) with its venv. Plan: `docs/POC_PLAN.md`, Task 0.
+
+```bash
+WEB=/Users/dero/Documents/visual/korean-study-assistant
+cd $WEB/backend
+export PYTHONDONTWRITEBYTECODE=1   # no .pyc inside the web project
+```
+
+## Golden files → `golden/`
+
+```bash
+PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/golden/export_golden.py \
+  --out /Users/dero/Documents/JustStudyApp/golden
+```
+
+- Inputs: the 5 PDFs in `backend/tests/fixtures/notes_libreoffice/` and
+  `docs/templates/Korean_Notes_Example.pdf`. `--pdf <file>` replaces them.
+- `--private` uses your notes (`data/uploads` + `data/extracted`) and writes only to
+  `golden/private/` (git-ignored). A path under `data/` without `--private` exits with code 2.
+- Deterministic: the script re-runs itself with `PYTHONHASHSEED=0` (the web's self-check
+  iterates sets). Two runs give the same `manifest.json`.
+- Needs Node ≥ 22.6 for `compare_answer.mjs` (`--experimental-strip-types` on `compare.ts`).
+- Cases with `"transform": "nfd"` are stored in NFC: apply NFD to the input before calling.
+- `teacher/*.jsonl` keeps Python's question order; compare by question, not by line.
+
+## Backup → `build/poc/juststudy-backup-<date>.jsbackup.zip`
+
+Needs MySQL up (`$WEB/scripts/study.sh`). Read-only transaction; stops with code 3 if
+MySQL's time zone is not UTC.
+
+```bash
+PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/export_backup.py \
+  --out /Users/dero/Documents/JustStudyApp/build/poc [--no-pdfs]
+```
+
+## Checks
+
+```bash
+cd /Users/dero/Documents/JustStudyApp
+PYTHONPATH=$WEB/backend $WEB/backend/.venv/bin/python -m pytest tools/tests -q -p no:cacheprovider
+$WEB/backend/.venv/bin/ruff check tools && $WEB/backend/.venv/bin/ruff format --check tools
+```
