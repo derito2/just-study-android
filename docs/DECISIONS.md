@@ -2,6 +2,32 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-08 — Respaldo: reemplaza todo, con confirmación, y conserva extracted/ y pdfs/
+**Decisión:** *Import backup* (Settings) reemplaza **todo** lo de la app por el `.jsbackup.zip` v1 elegido con SAF, tras el diálogo *"This replaces everything in the app with the backup. Continue?"* (*Cancel* gris / *Import* rojo). Primero verifica sin escribir el manifiesto y el sha256 de cada tabla, de cada `extracted/` y de cada `pdfs/`. Después, en **una sola transacción**, borra e inserta las 18 tablas. Los `extracted/` y `pdfs/` se guardan tal cual en el almacenamiento privado (`files/backup-files/`, con sus sha256) y solo sustituyen a los anteriores si la transacción termina bien. *Export backup* los vuelve a meter.
+**Por qué** (tarea 5, PR #13, OPPO, build debug): `BackupTest` 6/6 (importar todo, ida y vuelta idéntica, dos importaciones sin duplicar, un PDF o un ZIP sin manifiesto da `NotABackup` sin tocar la base, sha256 cambiado da `ChecksumMismatch` y deshace todo, `extracted/` y `pdfs/` idénticos a la vuelta). Con el respaldo real, desde la app: 1265 filas de 18 tablas; la exportación pesa 579 433 bytes (el original, 579 034) y sus 26 entradas son idénticas byte a byte, con los mismos sha256.
+**Descartado:** fusionar con lo que ya hay (sin claves estables entre el web y el teléfono, duplicaría); importar solo las tablas (perdía los textos extraídos y los PDF).
+
+## 2026-11-08 — Roborazzi para las capturas de la UI
+**Decisión:** capturas de los componentes en la JVM con Roborazzi 1.78.0 sobre Robolectric 4.17 (`@Config(sdk = [36])`, 411 dp, 420 dpi), en claro y oscuro, y la barra superior e inferior al 130 %. Se graban con `recordRoborazziDebug`, se commitean en `app/src/test/screenshots/` y el CI las verifica con `verifyRoborazziDebug`.
+**Notas:** `roborazzi-compose` registra su propia actividad en Robolectric, así que no hace falta `ui-test-manifest` (metería una actividad exported). En JDK nuevos Robolectric necesita `--add-opens java.base/java.io` y `--add-exports java.base/jdk.internal.access` (solo en las pruebas JVM). Para verificar de verdad en local: `--rerun-tasks`, si no Gradle saca el resultado de la caché.
+**Descartado:** Paparazzi (no se probó) y capturas en el teléfono para comparar (lentas y dependen del tema del sistema).
+
+## 2026-11-08 — Room 3 para la base de la app
+**Decisión:** Room 3.0.3 (`androidx.room3`, KSP 2.3.13, `BundledSQLiteDriver` de `sqlite-bundled` 2.7.1), `JustStudyDatabase` v1 con `exportSchema` (esquema en `core/data/schemas/`). Las 18 entidades, sus DAO y el esquema del respaldo se generan desde `models.py` del web (`tools/data/gen_room_entities.py`), con las mismas columnas; fechas en epoch ms UTC y JSON como texto.
+**Por qué:** la PoC 3 (entrada de Room más abajo) y la tarea 5: compila con Kotlin 2.4.0 y AGP 9.5.1, y el esquema generado es idéntico al de la PoC.
+**Descartado:** escribir las entidades a mano (se desincronizan del web).
+
+## 2026-11-08 — Navigation 3 con una pila por pestaña
+**Decisión:** Navigation 3 1.2.1 (`navigation3-runtime` y `-ui`), sin librerías extra: una pila por pestaña (receta *multiple back stacks*), "exit through home", volver a tocar la pestaña activa la deja en su raíz, y Grammar, Calendar y Settings se apilan encima de la pestaña actual. Las pilas se guardan con `rememberSaveable` por nombre de enum (sin kotlinx-serialization). Back predictivo activado (`enableOnBackInvokedCallback`).
+**Por qué:** tarea 3: `NavigationTest` 6/6 en el OPPO.
+**Notas:** el gesto de Back predictivo no se pudo ver: el OPPO usa navegación de 3 botones y cambiarlo es un ajuste del teléfono.
+**Descartado:** Navigation 2 (plan, punto 5).
+
+## 2026-11-08 — Kotlin 2.4.0
+**Decisión:** Kotlin 2.4.0 en todo el proyecto (el KGP se fija desde el catálogo en el `buildscript` raíz; el plugin de Compose con la misma versión). AGP 9.5.1, Compose BOM 2026.09.00, Hilt 2.60.1, KSP 2.3.13 y Room 3.0.3 compilan con él.
+**Por qué:** ML Kit genai-prompt 1.0.0-beta5 (Gemini Nano, fase 6) está compilado con metadatos de Kotlin 2.4; el Kotlin que trae AGP 9.5 (2.2) no lo lee. Se fija ya para no cambiarlo dos veces.
+**Descartado:** genai-prompt beta4 con Kotlin 2.3.
+
 ## 2026-11-08 — Gemma 4 E2B no hace falta
 **Decisión:** la tarea 4 de `docs/POC_PLAN.md` (Gemma 4 E2B con LiteRT-LM) se descarta. No hay nivel 2 de IA.
 **Por qué:** Nano pasó la PoC 2: está disponible en el OPPO, funciona sin `INTERNET` y en modo avión, y cumple la latencia (ver la entrada siguiente). La tarea 4 solo tocaba si Nano no estaba, no funcionaba sin red o fallaba la latencia.
