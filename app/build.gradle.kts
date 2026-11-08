@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     testImplementation(libs.junit)
     // Roborazzi: roborazzi-compose registers its own activity in Robolectric, so no ui-test-manifest (it would add an exported activity).
     testImplementation(platform(libs.androidx.compose.bom))
@@ -58,6 +60,8 @@ dependencies {
     testImplementation(libs.roborazzi.junit.rule)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.org.json) // TokensTest reads design/tokens.json (android.jar's org.json is a stub)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
 }

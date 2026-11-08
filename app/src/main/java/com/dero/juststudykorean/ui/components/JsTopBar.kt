@@ -25,6 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
@@ -72,10 +74,10 @@ fun JsTopBar(
             }
             Box(Modifier.weight(1f)) {
                 if (folded) {
-                    Text(title, style = MaterialTheme.typography.titleMedium, color = ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, color = ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 } else {
                     Row(verticalAlignment = Alignment.Bottom) {
-                        Text(title, Modifier.alignByBaseline().weight(1f, fill = false), style = MaterialTheme.typography.headlineLarge, color = ink)
+                        Text(title, Modifier.alignByBaseline().weight(1f, fill = false).semantics { heading() }, style = MaterialTheme.typography.headlineLarge, color = ink)
                         KoSide(ko, MaterialTheme.typography.headlineLarge.fontSize, Modifier.alignByBaseline(), ratio = 0.55f, color = ink.copy(alpha = 0.6f))
                     }
                 }
