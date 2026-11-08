@@ -32,6 +32,8 @@
 
 ## Tarea 0 — Herramientas: respaldo exportable y pruebas doradas
 
+📱 **Teléfono: no hace falta.** Todo corre en el Mac.
+
 **Rama:** `poc/0-tools` · **Se mergea** (con tu confirmación): `tools/`, `golden/` (sin `private/`), `.gitignore`.
 
 **Archivos:**
@@ -58,7 +60,7 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
 - [ ] **Paso 1: pruebas que fallan** (`tools/tests/`, pytest con el mismo venv):
   - `test_golden_is_deterministic`: dos ejecuciones sobre una carpeta temporal dan el mismo `manifest.json` (mismos sha256).
   - `test_golden_refuses_private_paths`: `export_golden.py --pdf <algo bajo data/>` sale con código 2 y no escribe nada.
-  - `test_golden_parser_matches_parse_pdf`: para `Vocab_cafe_y_comida.pdf`, `golden/parser/Vocab_cafe_y_comida.json["pages"][0]["text"] == asdict(parse_pdf(p)).pages[0].text`.
+  - `test_golden_parser_matches_parse_pdf`: para `Vocab_cafe_y_comida.pdf`, `golden/parser/Vocab_cafe_y_comida.json["pages"][0]["text"] == asdict(parse_pdf(p))["pages"][0]["text"]`.
   - `test_sm2_rounding_case`: entre los casos de `golden/sm2.json` hay uno donde `interval_hours * factor` termina en `.5`, y su resultado es el de `round()` de Python.
   - `test_backup_manifest_checksums`: con una base SQLite de prueba (los modelos SQLAlchemy del web sobre `sqlite://`, 2 filas por tabla), el ZIP trae una entrada por tabla con su número de filas y un sha256 que coincide con el JSONL.
 - [ ] **Paso 2:** correrlas y ver que fallan (`pytest tools/tests -q`).
@@ -71,6 +73,8 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
 ---
 
 ## Tarea 1 — PoC MuPDF frente a lo que ya extrae la web
+
+📱 **Teléfono: sí**, conectado por USB con la depuración activada (`adb devices` → `device`).
 
 **Rama:** `poc/1-mupdf` (después de mergear la tarea 0) · **No se mergea** el código; sí `docs/poc/1-mupdf.md` y la decisión.
 
@@ -115,6 +119,8 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
 
 ## Tarea 2 — PoC Gemini Nano con ML Kit Prompt API, sin `INTERNET`
 
+📱 **Teléfono: sí**, por USB con depuración, desbloqueado y con la app en primer plano. Para el paso 5 (modo avión), mejor por cable: la depuración inalámbrica se corta sin red.
+
 **Rama:** `poc/2-nano` (después de la tarea 0; en paralelo con la 1 y la 3, en otro worktree) · **No se mergea** el código.
 
 **Pregunta:** ¿Nano está en este OPPO, funciona sin el permiso `INTERNET` y en modo avión, y da calidad y latencia suficientes para el nivel 1 del plan (punto 10)?
@@ -122,22 +128,25 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
 **Archivos:**
 - Modificar: `gradle/libs.versions.toml`, `app/build.gradle.kts` (`com.google.mlkit:genai-prompt`, la versión que indique la skill *Use ML Kit GenAI Prompt API*); `app/src/main/AndroidManifest.xml` (`<uses-permission android:name="android.permission.INTERNET" tools:node="remove"/>` si la librería lo mete)
 - Crear: `app/src/androidTest/java/com/dero/juststudykorean/poc/NanoTest.kt`, `NanoTasks.kt` (los 3 encargos y sus validadores)
-- Crear: `app/src/androidTest/assets/poc/nano-cases.json` ← 30 casos por encargo, sacados de `golden/pairs` y `golden/grammar`
+- Crear: `app/src/androidTest/assets/poc/nano-cases.json` ← 30 casos por encargo (60 para calificar), sacados de `golden/pairs`, `golden/grammar` y `golden/text.json`
 - Crear: `docs/poc/2-nano.md`
 
 **Interfaces:**
 - Consume: `golden/pairs/*.json`, `golden/grammar/*.json`, `golden/text.json` (la tarea 0 trae `is_grounded` y `leaks_answer`, para portarlos).
 - Produce: `files/poc/nano-results.jsonl`: una línea por llamada con `task`, `ok`, `latencyMs`, `firstTokenMs`, `outTokens`, `valid` y `reason`.
 
-**Los tres encargos** (los del plan, punto 10), siempre en inglés y siempre con el coreano copiado de las notas en el prompt:
+**Los cuatro encargos** (los del plan, punto 10.1), siempre en inglés y siempre con el coreano copiado de las notas en el prompt:
 1. **Coach:** redactar 2 o 3 frases a partir de hechos ya calculados (tema débil, tarjetas pendientes). Es válido si no añade coreano que no esté en los hechos.
 2. **Explicación de respaldo:** explicar en inglés una entrada de gramática dada. Es válido si todo el coreano que sale está en la entrada.
 3. **Pregunta Multiple choice:** a partir de un par (coreano, inglés). Es válida si pasa `is_grounded` y `!leaks_answer`, trae 4 opciones distintas y una sola correcta.
+4. **Calificar por significado** (usos 1 y 3 del punto 10.1): ¿la respuesta escrita en inglés significa lo mismo que la correcta? El modelo responde sí o no, con una razón corta. Casos con etiqueta:
+   - 30 positivos: sinónimos o paráfrasis de la respuesta correcta, sacados de `english_answers` y de las alternativas `a/b` de tus pares, más paráfrasis escritas a mano en `nano-cases.json`;
+   - 30 negativos: la respuesta de otro par, el antónimo o un sentido cercano pero distinto.
 
 - [ ] **Paso 1: prueba que falla** `NanoTest.featureStatusIsAvailable`: `checkStatus()` debe dar `AVAILABLE`. Si da `DOWNLOADABLE`, la descarga del modelo la hace AICore (Ajustes → Google → AICore) **con wifi, fuera de la app**, y se repite.
 - [ ] **Paso 2:** correrla en el OPPO y anotar el estado tal cual. Si da `UNAVAILABLE`, se para aquí: Nano no está en este teléfono y se pasa a la tarea 4.
 - [ ] **Paso 3:** manifiesto. Compilar `assembleDebug` y buscar `INTERNET` en `app/build/intermediates/merged_manifest/debug/`. Si está, quitarlo con `tools:node="remove"` y volver a compilar.
-- [ ] **Paso 4:** `NanoTest.tasksMeetLatencyAndValidity`: 30 casos × 3 encargos, con `ActivityScenario` de `MainActivity` en primer plano y el resultado guardado caso a caso. Calentamiento: 1 llamada que no cuenta.
+- [ ] **Paso 4:** `NanoTest.tasksMeetLatencyAndValidity`: 30 casos × 3 encargos más 60 de calificar, con `ActivityScenario` de `MainActivity` en primer plano y el resultado guardado caso a caso. Calentamiento: 1 llamada que no cuenta.
 - [ ] **Paso 5: modo avión.** `adb shell cmd connectivity airplane-mode enable`, repetir el paso 4 con 10 casos por encargo y `adb shell cmd connectivity airplane-mode disable` al terminar.
 - [ ] **Paso 6:** `docs/poc/2-nano.md`.
 
@@ -152,15 +161,20 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
 | Explicación: primer token / total | p50 ≤ 1.5 s / p90 ≤ 6 s |
 | Multiple choice válidas | ≥ 80 % (las inválidas se descartan, como en la web) |
 | Coreano inventado antes de validar | se mide y se informa (el validador lo filtra) |
+| Calificar por significado: aciertos | ≥ 90 % de los 60 casos |
+| Calificar por significado: falsos positivos | ≤ 3 % (aprobar una respuesta mal es peor que rechazar una bien) |
+| Calificar por significado: latencia | p90 ≤ 2 s (se espera tras pulsar Check) |
 | Errores de cuota (`BUSY`/cuota) | se cuentan; ≤ 5 % con la app en primer plano |
 
-**Decisión:** Nano como nivel 1 si cumple todo. Si falla solo la calidad, Nano para el Coach y la explicación, y las preguntas siguen por reglas. Si no está disponible, no funciona sin red o falla la latencia, se hace la tarea 4.
+**Decisión:** Nano como nivel 1 si cumple todo. Si falla solo una parte, se decide uso por uso (punto 10.1): cada uso que no pase su umbral se queda con su versión sin modelo. Si no está disponible, no funciona sin red o falla la latencia, se hace la tarea 4.
 
 **Parar si:** para funcionar hace falta `INTERNET` (no se añade sin hablarlo contigo), o las condiciones de ML Kit GenAI obligan a enviar métricas que no se pueden desactivar. En ese caso se informa y decides tú.
 
 ---
 
 ## Tarea 3 — PoC importar un respaldo real a Room
+
+📱 **Teléfono: sí**, por USB con depuración (para copiar el respaldo y correr las pruebas).
 
 **Rama:** `poc/3-room` (después de la tarea 0; en paralelo con la 1) · **No se mergea** el código; sí el formato del respaldo, si se aprueba.
 
@@ -207,6 +221,8 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
 
 ## Tarea 4 — PoC Gemma 4 E2B con LiteRT-LM (solo si Nano falla)
 
+📱 **Teléfono: sí**, por USB con depuración y con unos 3 GB libres para el modelo.
+
 **Rama:** `poc/4-gemma` · Solo se empieza si la tarea 2 decide "no Nano" o "Nano parcial" y tú lo confirmas.
 
 **Pregunta:** ¿Gemma 4 E2B en la GPU del OPPO cumple lo que Nano no cumplió, con un modelo de ~2.6 GB importado sin red?
@@ -218,14 +234,14 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
 
 - [ ] **Paso 1:** descargar el `.litertlm` de Gemma 4 E2B de `litert-community` en el Mac (nunca en el repo), `adb push` a `/data/local/tmp/poc/` y `run-as … cp` a `files/models/`.
 - [ ] **Paso 2: prueba que falla** `GemmaTest.engineLoadsOnGpu`: el `Engine` se crea con backend GPU, fuera del hilo principal.
-- [ ] **Paso 3:** `GemmaTest.tasksMeetLatencyAndValidity`: los mismos 3 × 30 casos y las mismas métricas que la tarea 2.
+- [ ] **Paso 3:** `GemmaTest.tasksMeetLatencyAndValidity`: los mismos casos y las mismas métricas que la tarea 2.
 - [ ] **Paso 4:** medir la carga, la memoria y la temperatura (`adb shell dumpsys thermalservice` antes y después).
 
-**Criterios:** los mismos umbrales que la tarea 2, más:
+**Criterios:** los mismos umbrales que la tarea 2 (también los de calificar), más:
 - carga del modelo ≤ 10 s;
 - ≥ 10 tokens/s;
 - PSS pico ≤ 4 GB;
-- sin estrangulamiento térmico en 90 llamadas seguidas.
+- sin estrangulamiento térmico con todos los casos seguidos.
 
 **Decisión:** Gemma como nivel 2 si cumple. Si no, la app se queda en el nivel 0 (sin IA), que ya funciona entera.
 
@@ -234,6 +250,8 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
 ---
 
 ## Tarea 5 — Decisiones
+
+📱 **Teléfono: no hace falta.**
 
 - [ ] Una entrada por PoC en `docs/DECISIONS.md`, la más reciente arriba, con el formato del archivo: fecha, decisión, por qué (con las cifras de `docs/poc/<n>.md`) y lo descartado.
 - [ ] `mem_save` en Engram con `topic_key` `android/poc-mupdf`, `android/poc-nano`, `android/poc-room` y `android/poc-gemma`.
@@ -304,7 +322,7 @@ Sin casos escritos a mano que se queden viejos: salen de los PDFs de prueba y de
 
 ### Reglas
 
-- **Determinista:** sin fechas ni azar sin semilla. JSON con `ensure_ascii=False`, `sort_keys=True`, indentación de 1 y NFC. Dos ejecuciones dan los mismos sha256 (prueba de la tarea 0).
+- **Determinista:** sin fechas ni azar sin semilla. El script fija `PYTHONHASHSEED=0` (la autoevaluación del web recorre conjuntos cuyo orden cambia en cada proceso), y la prueba de determinismo usa dos procesos distintos. Kotlin compara Teacher **por pregunta**, no por el orden de las líneas. JSON con `ensure_ascii=False`, `sort_keys=True`, indentación de 1 y NFC. Dos ejecuciones dan los mismos sha256 (prueba de la tarea 0).
 - **Sin modelo:** `SelfCheck` ya usa embeddings y LLM falsos; si una respuesta de Teacher llama al modelo (`usedModel: true`), el caso se marca y se excluye de la comparación exacta.
 - **La búsqueda no es la de Android:** las respuestas de Teacher dependen de la búsqueda por similitud de `SelfCheck`. En Kotlin la búsqueda será FTS. Por eso `teacher/*.jsonl` guarda también las fuentes, y la fase 5 compara primero el texto de la respuesta y luego si las fuentes son las mismas; una diferencia solo de fuentes se revisa a mano.
 - **Versionado:** si el web cambia (no debería: está en pausa), se regenera y el diff de `golden/` se revisa en el PR.
