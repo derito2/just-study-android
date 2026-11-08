@@ -1,0 +1,41 @@
+# Android / Gradle
+*.iml
+.gradle/
+/build/
+**/build/
+/captures
+.externalNativeBuild
+.cxx
+.kotlin/
+*.apk
+*.aab
+.DS_Store
+
+# Android Studio
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/deviceManager.xml
+
+# Local config and secrets (never commit)
+local.properties
+*.jks
+*.keystore
+.env
+
+# AI models
+*.gguf
+*.tflite
+*.litertlm
+models/
+
+# Private golden data (user's notes)
+golden/private/
+
+# CodeGraph database (keeps only .codegraph/.gitignore)
+.codegraph/*
+!.codegraph/.gitignore
