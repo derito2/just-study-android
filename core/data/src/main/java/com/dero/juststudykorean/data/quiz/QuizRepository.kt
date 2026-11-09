@@ -6,6 +6,7 @@ import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.data.db.QuestionAttemptsEntity
 import com.dero.juststudykorean.data.db.QuestionsEntity
 import com.dero.juststudykorean.data.db.QuizRunsEntity
+import com.dero.juststudykorean.data.db.DocumentsEntity
 import com.dero.juststudykorean.data.notes.NotesSource
 import com.dero.juststudykorean.data.progress.ProgressRepository
 import com.dero.juststudykorean.data.time.AppClock
@@ -184,6 +185,9 @@ class QuizRepository @Inject constructor(
 
     /** Your processed documents (the Documents selector). */
     suspend fun readyDocuments() = withContext(Dispatchers.IO) { db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id } }
+
+    /** Fills the chunk cache of [docs] so the first quiz doesn't pay for reading and chunking the notes. */
+    suspend fun warmUp(docs: List<DocumentsEntity>) = withContext(Dispatchers.Default) { docs.forEach(notes::chunks) }
 
     // ---------- writes ----------
 

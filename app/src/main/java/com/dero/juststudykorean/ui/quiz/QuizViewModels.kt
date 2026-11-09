@@ -95,7 +95,10 @@ class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, pr
     }.catch { emit(emptyList()) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
-        viewModelScope.launch { _documents.value = runCatching { quiz.readyDocuments() }.getOrDefault(emptyList()) }
+        viewModelScope.launch {
+            _documents.value = runCatching { quiz.readyDocuments() }.getOrDefault(emptyList())
+            runCatching { quiz.warmUp(_documents.value) }
+        }
     }
 
     fun setForm(f: QuizForm) = viewModelScope.launch { prefs.setQuizForm(f) }
