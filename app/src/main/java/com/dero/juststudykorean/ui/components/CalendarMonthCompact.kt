@@ -38,24 +38,24 @@ import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 import java.time.LocalDate
 
-private val koWeekdays = listOf("월", "화", "수", "목", "금", "토", "일")
+internal val koWeekdays = listOf("월", "화", "수", "목", "금", "토", "일")
 private val cellShape = RoundedCornerShape(Tokens.RadiusSm)
 
-private fun JustStudyColors.cell(status: String): Pair<Color, Color> = when (status) {
+internal fun JustStudyColors.cell(status: String): Pair<Color, Color> = when (status) {
     "green" -> correctFill to correct
     "yellow" -> warnFill to fillWarn
     "red" -> wrongFill to wrong
     else -> canvas to muted
 }
 
-private fun symbol(status: String) = when (status) { "green" -> "✓"; "yellow" -> "~"; "red" -> "!"; else -> "" }
+internal fun symbol(status: String) = when (status) { "green" -> "✓"; "yellow" -> "~"; "red" -> "!"; else -> "" }
 
-/** What TalkBack reads for a day (the web's describe()). */
-private fun describe(day: CalendarDay, month: Int): String {
+/** The day's detail (the web's describe(), with its "80 %"): TalkBack, and Calendar's detail card. */
+fun dayDescription(day: CalendarDay, month: Int): String {
     val date = "${month}월 ${day.date.dayOfMonth}일"
     if (!day.studied) return "$date: not studied"
     val topics = if (day.topics.isNotEmpty()) ", topics: ${day.topics.joinToString(", ") { shownTopic(it) }}" else ""
-    return "$date: ${plural(day.questions, "question")}, ${percent(day.accuracy)} accuracy, ${day.minutes} min$topics"
+    return "$date: ${plural(day.questions, "question")}, ${day.accuracy?.let { "${Math.round(it * 100)} %" } ?: "—"} accuracy, ${day.minutes} min$topics"
 }
 
 /** The month's calendar, compact (design/dashboard.md §3): Monday first, 26 dp cells, today with a `brand` ring. */
@@ -87,7 +87,7 @@ fun CalendarMonthCompact(month: CalendarMonth, today: LocalDate, modifier: Modif
                         Row(
                             Modifier.weight(1f).heightIn(min = 26.dp).background(fill, cellShape)
                                 .then(if (day.date == today) Modifier.border(2.dp, colors.brand, cellShape) else Modifier)
-                                .semantics { contentDescription = describe(day, month.month) },
+                                .semantics { contentDescription = dayDescription(day, month.month) },
                             horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text("${day.date.dayOfMonth}", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium), color = ink)

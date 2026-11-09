@@ -17,7 +17,9 @@ import androidx.navigation3.ui.NavDisplay
 import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.components.MoreSheet
 import com.dero.juststudykorean.ui.screens.PlaceholderScreen
+import com.dero.juststudykorean.ui.calendar.CalendarScreen
 import com.dero.juststudykorean.ui.dashboard.DashboardScreen
+import com.dero.juststudykorean.ui.grammar.GrammarScreen
 import com.dero.juststudykorean.ui.flashcards.DecksScreen
 import com.dero.juststudykorean.ui.flashcards.StudyScreen
 import com.dero.juststudykorean.ui.quiz.QuestionScreen
@@ -51,6 +53,8 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                             onOpenRun = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onDetails = { nav.push(TopLevel.Quiz, Screen.Results(it)) },
                         )
                         route.section == MoreDestination.Settings -> SettingsScreen(onMore = more, onBack = back)
+                        route.section == MoreDestination.Grammar -> GrammarScreen(onMore = more, onBack = back, onLibrary = { nav.select(TopLevel.Library) })
+                        route.section == MoreDestination.Calendar -> CalendarScreen(onMore = more, onBack = back)
                         route == Route(TopLevel.Dashboard) -> DashboardScreen(
                             onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onAsk = { nav.select(TopLevel.Teacher) },
                         )

@@ -45,6 +45,7 @@ fun EmptyState(
     action: String? = null,
     actionKo: String? = null,
     onAction: () -> Unit = {},
+    actionColor: StickerColor = StickerColor.Go,
 ) {
     var shown by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { shown = true }
@@ -61,7 +62,7 @@ fun EmptyState(
         }
         if (action != null) {
             Spacer(Modifier.height(Tokens.Space4))
-            StickerButton(action, onAction, ko = actionKo, color = StickerColor.Go)
+            StickerButton(action, onAction, ko = actionKo, color = actionColor)
         }
     }
 }
