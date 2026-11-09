@@ -23,6 +23,7 @@ import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.navigation.TopLevel
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -56,8 +57,12 @@ class FlashcardsScreenshotTest {
     )
     private val sources = mapOf(7L to CardSource("Unit 3 · At school", 4), 8L to CardSource("Unit 3 · At school", 2))
 
-    private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, content: @Composable () -> Unit) =
-        captureRoboImage("src/test/screenshots/$name.png") {
+    // Edit mode greys out the buttons: their small semi-transparent Korean text is antialiased a bit differently
+    // on Linux (CI) and macOS, so only these two captures allow 0.1 % of changed pixels. The rest stay exact.
+    private val koreanAlphaTolerance = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.001f))
+
+    private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, options: RoborazziOptions = RoborazziOptions(), content: @Composable () -> Unit) =
+        captureRoboImage("src/test/screenshots/$name.png", options) {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
                 JustStudyTheme(darkTheme = false) {
@@ -83,10 +88,10 @@ class FlashcardsScreenshotTest {
     fun decks() = snap("flashcards_decks") { Decks(ui) }
 
     @Test
-    fun decksEdit() = snap("flashcards_decks_edit") { Decks(ui, editing = true) }
+    fun decksEdit() = snap("flashcards_decks_edit", options = koreanAlphaTolerance) { Decks(ui, editing = true) }
 
     @Test
-    fun mergeDialog() = snap("flashcards_merge") { Decks(ui, editing = true, merge = 0 to 2) }
+    fun mergeDialog() = snap("flashcards_merge", options = koreanAlphaTolerance) { Decks(ui, editing = true, merge = 0 to 2) }
 
     @Test
     fun decksAt130Percent() = snap("flashcards_decks_130", fontScale = 1.3f) { Decks(ui) }
