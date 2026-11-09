@@ -22,6 +22,9 @@ App Android nativa (Kotlin + Jetpack Compose, Material 3) para el OPPO Find X8 P
 - adb: `~/Library/Android/sdk/platform-tools/adb` (añadir al `PATH` si no está).
 - No cambiar ningún ajuste del teléfono (pantalla, bloqueo, batería, desarrollador, red, idioma…) sin preguntar antes. Solo se permite lo que el plan de la tarea nombra (modo avión y wifi en la PoC 2), y se deja como estaba al terminar. Antes de cambiar algo, anota su valor y restáuralo.
 - No leer, copiar ni filtrar archivos del usuario fuera de JustStudyApp y del proyecto web (ni Descargas del Mac ni del teléfono), salvo el archivo exacto que la tarea nombra.
+- `adb pull`/`push` solo con la ruta exacta de un archivo, comprobada y no vacía. Nunca una carpeta ni un comodín.
+- Nunca aceptar diálogos ni permisos del sistema por el usuario. Si hace falta uno, parar y pedírselo.
+- Sin capturas salvo que sean imprescindibles.
 
 ## Comandos
 - `./gradlew assembleDebug` · `./gradlew test` · `./gradlew lint`
