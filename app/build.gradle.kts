@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3) // a ViewModel per screen, cleared when it leaves the stack
     testImplementation(libs.junit)
     // Roborazzi: roborazzi-compose registers its own activity in Robolectric, so no ui-test-manifest (it would add an exported activity).
     testImplementation(platform(libs.androidx.compose.bom))
@@ -66,6 +67,8 @@ dependencies {
     testImplementation(libs.roborazzi.compose)
     testImplementation(libs.roborazzi.junit.rule)
     testImplementation(libs.androidx.junit)
+    testImplementation(libs.room3.runtime) // behaviour tests: the real repositories on the golden base, in memory
+    testImplementation(libs.androidx.sqlite.framework)
     testImplementation(libs.org.json) // TokensTest reads design/tokens.json (android.jar's org.json is a stub)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

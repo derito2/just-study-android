@@ -25,12 +25,19 @@ android {
     }
 }
 
+// The db goldens run on the JVM (Robolectric) and on the phone (androidTest: Android's own regex and SQLite).
+android.sourceSets {
+    getByName("test").kotlin.srcDir("src/sharedTest/java")
+    getByName("androidTest").kotlin.srcDir("src/sharedTest/java")
+    getByName("androidTest").assets.srcDir("../../golden/db") // only the synthetic db goldens, never golden/private
+}
+
 room3 {
     schemaDirectory("$projectDir/schemas") // the v1 schema JSON is committed
 }
 
 dependencies {
-    implementation(project(":core:korean"))
+    api(project(":core:korean")) // the app shows Rating, Comparison… from the repositories
     implementation(libs.room3.runtime)
     implementation(libs.androidx.sqlite.bundled)
     ksp(libs.room3.compiler)
@@ -45,4 +52,6 @@ dependencies {
     testImplementation(libs.androidx.sqlite.framework)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.sqlite.framework)
+    androidTestCompileOnly(libs.robolectric) // @Config on the shared golden tests; ignored on the phone
 }

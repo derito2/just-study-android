@@ -82,3 +82,11 @@ fun compareAnswer(typed: String, answer: String, korean: Boolean): Comparison {
     val shown = if (verdict == Verdict.Wrong) codePoints(given).map { Letter(it, if (it == " ") Mark.Ok else Mark.Wrong) } else letters
     return Comparison(verdict, option, shown, off)
 }
+
+/** A word card (not grammar or an ending): it can be typed (compare.ts isWordCard). */
+fun isWordCard(front: String, hasStructure: Boolean): Boolean {
+    val word = jsTrim(front)
+    if (word.isEmpty() || hasStructure) return false
+    if (Regex("^[-~(]|^[$JS_SPACE]*[ㄱ-ㅎ]").containsMatchIn(word)) return false // -거든(요), ~네요, (으)니까, ㄹ 거야
+    return word.split(Regex("[$JS_SPACE]+")).size <= 3 && Regex("[가-힣]").containsMatchIn(word)
+}

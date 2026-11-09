@@ -17,6 +17,7 @@ import com.dero.juststudykorean.korean.CardState
 import com.dero.juststudykorean.korean.Next
 import com.dero.juststudykorean.korean.PyRandom
 import com.dero.juststudykorean.korean.Rating
+import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.korean.englishSenses
 import com.dero.juststudykorean.korean.extractGrammar
 import com.dero.juststudykorean.korean.extractPairs
@@ -26,6 +27,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.Json
 import java.time.Duration
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -80,6 +85,17 @@ data class DeletedDeck(
 data class CreateResult(val created: Int, val skipped: Int, val totalCards: Int)
 
 class FlashcardException(message: String) : Exception(message)
+
+/** What your notes say about a card, for its back ("From your notes"). */
+data class CardDetails(
+    val structure: List<String> = emptyList(),
+    val examples: List<Pair<String, String>> = emptyList(),
+    val explanation: List<String> = emptyList(),
+    val notes: List<String> = emptyList(),
+)
+
+/** Where a card comes from: "Source: {name}, page {n}". */
+data class CardSource(val filename: String, val page: Int)
 
 private val LEARN_AHEAD = Duration.ofMinutes(20)
 private const val GROUP_BASE = 1_000_000_000L
@@ -252,13 +268,62 @@ class FlashcardRepository @Inject constructor(
             }
     }
 
+    /** Your processed documents (the Documents selector). */
+    suspend fun readyDocuments(): List<DocumentsEntity> = withContext(Dispatchers.IO) { db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id } }
+
+    /** The document and page of each card, as the web's to_out (no source for coach cards or bad ids). */
+    suspend fun sources(cards: List<FlashcardsEntity>): Map<Long, CardSource> = withContext(Dispatchers.IO) {
+        val names = db.documentsDao().all().associate { it.id to it.originalName }
+        cards.mapNotNull { c ->
+            val parts = c.sourceChunkId?.split(":") ?: return@mapNotNull null
+            if (parts.size != 3) return@mapNotNull null
+            val doc = parts[0].toLongOrNull() ?: return@mapNotNull null
+            val page = parts[1].toIntOrNull() ?: return@mapNotNull null
+            names[doc]?.let { c.id to CardSource(it, page) }
+        }.toMap()
+    }
+
+    /**
+     * Port of the web's card_details: words gather the examples and notes of every document; grammar cards take the
+     * Grammar screen's point (grammar_points). Read from your documents when a deck opens.
+     */
+    suspend fun details(cards: List<FlashcardsEntity>): Map<Long, CardDetails> = withContext(Dispatchers.IO) {
+        if (cards.isEmpty()) return@withContext emptyMap()
+        fun strings(json: String?) = json?.let { Json.parseToJsonElement(it) as? JsonArray }?.map { it.jsonPrimitive.content }.orEmpty()
+        val grammar = LinkedHashMap<String, CardDetails>()
+        for (gp in db.grammarPointsDao().all().sortedWith(compareBy({ it.documentId }, { it.id }))) {
+            grammar.getOrPut(norm(gp.pattern)) {
+                val examples = (Json.parseToJsonElement(gp.examples) as? JsonArray)?.map { e -> e.jsonArray.let { it[0].jsonPrimitive.content to it[1].jsonPrimitive.content } }.orEmpty()
+                CardDetails(strings(gp.structure), examples, strings(gp.explanation), strings(gp.notes))
+            }
+        }
+        class Acc(val examples: MutableList<Pair<String, String>> = mutableListOf(), val notes: MutableList<String> = mutableListOf())
+        val words = HashMap<String, Acc>()
+        for (doc in db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id }) {
+            for (chunk in notes.chunks(doc)) for (pair in extractPairs(chunk)) {
+                val entry = words.getOrPut(norm(pair.korean)) { Acc() }
+                pair.examples.forEach { if (it !in entry.examples) entry.examples += it }
+                pair.notes.forEach { if (it !in entry.notes) entry.notes += it }
+            }
+        }
+        cards.mapNotNull { card ->
+            val key = norm(card.koreanWord)
+            val d = when {
+                card.difficulty == GRAMMAR_DIFFICULTY && key in grammar -> grammar.getValue(key)
+                key in words -> words.getValue(key).let { CardDetails(examples = it.examples, notes = it.notes) }
+                else -> grammar[key]
+            }
+            d?.let { card.id to it }
+        }.toMap()
+    }
+
     // ---------- writes ----------
 
     /** Applies the button, saves the review and counts it in a flashcards session. */
-    suspend fun review(cardId: Long, rating: Rating, elapsedMs: Long): Next = db.withWriteTransaction {
+    suspend fun review(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling = Scheduling()): Next = db.withWriteTransaction {
         val now = clock.now().toEpochMilli()
         val card = db.flashcardsDao().all().firstOrNull { it.id == cardId } ?: throw FlashcardException("Flashcard not found.")
-        val next = schedule(CardState(card.ease, card.intervalHours.toInt(), card.repetitions.toInt()), rating)
+        val next = schedule(CardState(card.ease, card.intervalHours.toInt(), card.repetitions.toInt()), rating, cfg)
         db.flashcardReviewsDao().insert(
             FlashcardReviewsEntity(progress.nextId("flashcard_reviews"), card.id, rating.name.lowercase(), now, card.intervalHours, next.intervalHours.toLong()),
         )

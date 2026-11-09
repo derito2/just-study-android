@@ -31,7 +31,7 @@ Sin capturas propias. Usan los componentes del Design System: FilterPill, Gramma
 1. **JsTopBar** con flecha atrás: Calendar · 달력; *Every day you studied, and every day you didn't.* · *공부한 날도, 안 한 날도 전부.*
 2. **Cambiar de mes:** dos StickerButton Small (`Action`): **← {mes anterior}** y **{mes siguiente} →**, con el mes en coreano (*10월*, *12월*). El siguiente se deshabilita en el mes actual.
 3. **Mes:** Card con relleno de 16 dp.
-   - Título: *November 2026* · 11월.
+   - Título: solo *2026년 11월* (`ink`; sin el nombre del mes en inglés), igual que en el Dashboard.
    - Días de la semana: 월화수목금토일 (12 sp, `muted`). La semana empieza en lunes.
    - Celdas: ancho repartido entre 7 (unos 46 dp), 52 dp de alto, radio 8 y 4 dp de separación. El número arriba (12 sp, 500) y el símbolo debajo (✓ ~ !, 12 sp al 75 %). Colores como en el calendario compacto del Dashboard (`design/dashboard.md`, sección 3). Hoy lleva un aro de 2 dp `brand`.
    - **Tocar un día:** abre debajo del mes una Card con el detalle que en la web estaba en el `title`: *"11월 8일: 15 questions, 80 % accuracy, 25 min, topics: particles, -아서/어서"*, o *"11월 9일: not studied"*. El día elegido lleva un aro de 2 dp `action`.

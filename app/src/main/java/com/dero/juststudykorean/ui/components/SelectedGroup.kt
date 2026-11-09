@@ -15,6 +15,9 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -26,7 +29,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
  * sunk to a 2 dp `action-edge`; the others are the gray sticker button with its 3 dp edge.
  */
 @Composable
-fun SelectedGroup(options: List<String>, selected: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
+fun SelectedGroup(options: List<String>, selected: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier, ko: List<String>? = null) {
     val colors = JustStudyTheme.colors
     Row(modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
         options.forEachIndexed { i, label ->
@@ -46,10 +49,13 @@ fun SelectedGroup(options: List<String>, selected: Int, onSelect: (Int) -> Unit,
                         .offset(y = Tokens.EdgeMd - edge) // chosen: sunk 1 dp, so 2 dp of edge stay visible
                         .background(if (chosen) colors.action else colors.control, MaterialTheme.shapes.medium)
                         .heightIn(min = Tokens.ButtonSmH)
-                        .padding(horizontal = Tokens.Space3),
+                        .padding(horizontal = Tokens.Space3, vertical = if (ko != null) Tokens.Space1 else 0.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(label.uppercase(), color = Color.White, style = JustStudyTheme.korean.buttonSm, textAlign = TextAlign.Center, maxLines = 1)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(label.uppercase(), color = Color.White, style = JustStudyTheme.korean.buttonSm, textAlign = TextAlign.Center, maxLines = 1)
+                        if (ko != null) Text(ko[i], color = Color.White, style = JustStudyTheme.korean.koBelow, modifier = Modifier.alpha(0.85f), maxLines = 1)
+                    }
                 }
             }
         }

@@ -79,4 +79,37 @@ internal val Lucide.paths: List<String>
             "M7 10L12 15L17 10",
             "M12.0 15.0L12.0 3.0",
         )
+        Lucide.TrendingDown -> listOf(
+            "M22 17L13.5 8.5L8.5 13.5L2 7",
+            "M16 17L22 17L22 11",
+        )
+        Lucide.Minus -> listOf(
+            "M5 12h14",
+        )
+        Lucide.Check -> listOf(
+            "M4 12 9 17L20 6",
+        )
+        Lucide.X -> listOf(
+            "M18 6 6 18",
+            "m6 6 12 12",
+        )
+        Lucide.SquarePen -> listOf(
+            "M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7",
+            "M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z",
+        )
+        Lucide.Trash2 -> listOf(
+            "M3 6h18",
+            "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6",
+            "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2",
+            "M10.0 11.0L10.0 17.0",
+            "M14.0 11.0L14.0 17.0",
+        )
+        Lucide.Search -> listOf(
+            "M3.0 11.0A8.0 8.0 0 1 0 19.0 11.0A8.0 8.0 0 1 0 3.0 11.0Z",
+            "m21 21-4.3-4.3",
+        )
+        Lucide.Plus -> listOf(
+            "M5 12h14",
+            "M12 5v14",
+        )
     }

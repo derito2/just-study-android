@@ -2,6 +2,21 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-09 — Caché en memoria de los fragmentos de tus notas
+**Decisión:** `NotesSource` (ahora `@Singleton`) guarda en memoria los fragmentos de cada documento. La clave es la fecha de modificación, el tamaño de `extracted/<id>.json` y el nombre del documento, así que se invalida sola cuando un *Import* o el procesado de un PDF reescriben ese archivo. Al abrir Quiz, `QuizRepository.warmUp` la llena en segundo plano.
+**Por qué** (OPPO, APK de release, tus datos, 10 preguntas): sin caché, 330–426 ms (mediana ≈ 362), por encima de la meta de 300 ms. Con caché, del segundo quiz en adelante: 214–257 ms. El primer quiz tras abrir la app, con la precarga: 246–286 ms (6 medidas). Los resultados no cambian: las doradas siguen en verde y `NotesSourceTest` comprueba la invalidación.
+**Descartado:** invalidar a mano desde `BackupImporter` (cambiaba su constructor y las pruebas, y la fase 4 tendría que acordarse de llamarlo); guardar los fragmentos en Room (más esquema para algo que se recalcula en ~115 ms).
+
+## 2026-11-09 — Regex: UNICODE_CHARACTER_CLASS solo donde existe
+**Decisión:** `:core:korean` solo usa `Pattern.UNICODE_CHARACTER_CLASS` en la JVM. En Android, la regex (ICU) no acepta esa opción y lanzaba una excepción al generar un quiz; allí `\w` y `\s` ya funcionan con Unicode.
+**Por qué:** en la JVM las pruebas pasaban, pero en el OPPO la app se cerraba. Para comprobarlo, las doradas de BD también corren en el teléfono (`connectedAndroidTest`): 16/16, incluida la repetición de las 290 operaciones del web con las 18 tablas idénticas.
+**Descartado:** quitar la opción en todas partes (en la JVM `\w`, `\s` y `\d` volverían a ser solo ASCII, a diferencia de Python).
+
+## 2026-11-09 — lifecycle-viewmodel-navigation3 para un ViewModel por pantalla
+**Decisión:** se añade `androidx.lifecycle:lifecycle-viewmodel-navigation3` 2.11.0 (`rememberViewModelStoreNavEntryDecorator`): cada entrada de la pila tiene su propio ViewModel, que se borra al salir de ella.
+**Por qué:** sin él, todas las pantallas compartían el ViewModel de la actividad: un segundo *Generate quiz* o un segundo mazo enseñaban el anterior. Es la librería oficial de Navigation 3, de la familia `lifecycle` que ya se usa. El manifiesto unido sigue sin permisos nuevos.
+**Descartado:** gestionar a mano un `ViewModelStore` por entrada (más código para hacer lo mismo que el decorador oficial).
+
 ## 2026-11-09 — undoDelete para el Undo del Snackbar (no existe en el web)
 **Decisión:** `FlashcardRepository.delete(deckId)` devuelve un `DeletedDeck` con todo lo borrado (tarjetas, repasos, mazos del coach, lugar y grupo del mazo combinado) y `undoDelete(deleted)` lo vuelve a meter tal cual, con los mismos ids.
 **Por qué:** en el teléfono, borrar un mazo muestra un Snackbar con *UNDO* (sistema de diseño, Feedback: "Snackbar para lo pasajero; diálogo solo para lo que no se puede deshacer"). El web borra sin vuelta atrás, así que esta función no tiene dorada; se prueba con la pantalla de mazos (tarea 4).

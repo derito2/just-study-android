@@ -14,13 +14,19 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * The extracted pages of each document (`extracted/<id>.json`, kept by the backup import; phase 4's reader
  * writes there too) and their chunks, like the web's `read_extracted` + `chunk_document`.
  */
+@Singleton
 class NotesSource @Inject constructor(@param:ApplicationContext private val context: Context) {
+    /** Chunks per document, kept until its extracted file changes (a backup import or processing a PDF rewrites it). */
+    private val cache = ConcurrentHashMap<Long, Pair<List<Any>, List<Chunk>>>()
+
     private fun file(documentId: Long) = File(context.filesDir, "${BackupFormat.FILES_DIR}/${BackupFormat.extractedEntry(documentId.toString())}")
 
     fun pages(documentId: Long): List<ExtractedPage>? {
@@ -37,5 +43,10 @@ class NotesSource @Inject constructor(@param:ApplicationContext private val cont
         }
     }
 
-    fun chunks(doc: DocumentsEntity): List<Chunk> = pages(doc.id)?.let { chunkDocument(doc.id, doc.originalName, it) }.orEmpty()
+    fun chunks(doc: DocumentsEntity): List<Chunk> {
+        val f = file(doc.id)
+        val stamp = listOf(f.lastModified(), f.length(), doc.originalName)
+        cache[doc.id]?.takeIf { it.first == stamp }?.let { return it.second }
+        return pages(doc.id)?.let { chunkDocument(doc.id, doc.originalName, it) }.orEmpty().also { cache[doc.id] = stamp to it }
+    }
 }

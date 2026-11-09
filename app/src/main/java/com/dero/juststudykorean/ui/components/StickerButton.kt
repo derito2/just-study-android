@@ -28,13 +28,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dero.juststudykorean.ui.theme.JustStudyColors
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Motion
 import com.dero.juststudykorean.ui.theme.Tokens
 
 enum class StickerColor { Action, Go, Fix, Danger, Gray }
-enum class StickerSize { Default, Small }
+/** Mini: Today's session only (design/dashboard.md): 32 dp + 3 dp edge, 11 sp, Korean 10 sp, 48 dp touch area. */
+enum class StickerSize { Default, Small, Mini }
 
 private data class StickerPaint(val fill: Color, val pressed: Color, val edge: Color, val ink: Color)
 
@@ -59,7 +61,9 @@ fun StickerButton(
     color: StickerColor = StickerColor.Action,
     size: StickerSize = StickerSize.Default,
     enabled: Boolean = true,
-) = StickerButton(text, onClick, modifier, ko, color, size, enabled, forcePressed = false)
+    detail: String? = null,
+    icon: Lucide? = null,
+) = StickerButton(text, onClick, modifier, ko, color, size, enabled, forcePressed = false, detail = detail, icon = icon)
 
 /** [forcePressed] only for screenshot tests of the pressed state. */
 @Composable
@@ -72,13 +76,15 @@ internal fun StickerButton(
     size: StickerSize,
     enabled: Boolean,
     forcePressed: Boolean,
+    detail: String? = null,
+    icon: Lucide? = null,
 ) {
     val colors = JustStudyTheme.colors
     val paint = colors.paint(color)
     val source = remember { MutableInteractionSource() }
     val pressed = enabled && (forcePressed || source.collectIsPressedAsState().value)
     val edge = if (size == StickerSize.Default) Tokens.EdgeLg else Tokens.EdgeMd
-    val height = if (size == StickerSize.Default) Tokens.ButtonH else Tokens.ButtonSmH
+    val height = when (size) { StickerSize.Default -> Tokens.ButtonH; StickerSize.Small -> Tokens.ButtonSmH; StickerSize.Mini -> 32.dp }
     val sink by animateDpAsState(if (pressed) edge else 0.dp, tween(Motion.Press, easing = Motion.EaseOut), label = "sink")
     val fill by animateColorAsState(
         when { !enabled -> colors.disabledFill; pressed -> paint.pressed; else -> paint.fill },
@@ -86,11 +92,11 @@ internal fun StickerButton(
     )
     val ink = if (enabled) paint.ink else colors.disabledInk
     val shape = MaterialTheme.shapes.medium
-    val label = if (size == StickerSize.Default) MaterialTheme.typography.labelLarge else JustStudyTheme.korean.buttonSm
+    val label = when (size) { StickerSize.Default -> MaterialTheme.typography.labelLarge; StickerSize.Small -> JustStudyTheme.korean.buttonSm; StickerSize.Mini -> JustStudyTheme.korean.buttonSm.copy(fontSize = 11.sp) }
 
     Box(
         modifier
-            .then(if (size == StickerSize.Small) Modifier.minimumInteractiveComponentSize() else Modifier)
+            .then(if (size != StickerSize.Default) Modifier.minimumInteractiveComponentSize() else Modifier)
             .clickable(source, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(bottom = edge), // room for the edge: the button is height + edge tall
         propagateMinConstraints = true, // fillMaxWidth() on the button stretches the face
@@ -102,14 +108,19 @@ internal fun StickerButton(
                 .offset(y = sink)
                 .background(fill, shape)
                 .heightIn(min = height)
-                .padding(horizontal = if (size == StickerSize.Default) Tokens.Space4 else Tokens.Space3, vertical = Tokens.Space2),
+                .padding(horizontal = when (size) { StickerSize.Default -> Tokens.Space4; StickerSize.Small -> Tokens.Space3; StickerSize.Mini -> 10.dp }, vertical = if (size == StickerSize.Mini) Tokens.Space1 else Tokens.Space2),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(text.uppercase(), color = ink, style = label, textAlign = TextAlign.Center)
+            // With an [icon], the face shows only the 20 dp icon and [text] is what TalkBack reads.
+            if (icon != null) LucideIcon(icon, contentDescription = text, size = 20.dp, tint = ink)
+            else Text(text.uppercase(), color = ink, style = label, textAlign = TextAlign.Center)
             if (ko != null) {
                 Spacer(Modifier.height(1.dp))
-                Text(ko, color = ink, style = JustStudyTheme.korean.koBelow, modifier = Modifier.alpha(0.85f), textAlign = TextAlign.Center)
+                Text(ko, color = ink, style = if (size == StickerSize.Mini) JustStudyTheme.korean.koBelow.copy(fontSize = 10.sp) else JustStudyTheme.korean.koBelow, modifier = Modifier.alpha(0.85f), textAlign = TextAlign.Center)
+            }
+            if (detail != null) { // a third line: the rating's next interval ("10 min"), 12 sp, no caps
+                Text(detail, color = ink, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
             }
         }
     }

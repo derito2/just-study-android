@@ -6,6 +6,7 @@ import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.data.db.QuestionAttemptsEntity
 import com.dero.juststudykorean.data.db.QuestionsEntity
 import com.dero.juststudykorean.data.db.QuizRunsEntity
+import com.dero.juststudykorean.data.db.DocumentsEntity
 import com.dero.juststudykorean.data.notes.NotesSource
 import com.dero.juststudykorean.data.progress.ProgressRepository
 import com.dero.juststudykorean.data.time.AppClock
@@ -40,6 +41,9 @@ data class QuizRequest(
 )
 
 data class QuizRun(val id: Long, val questions: List<QuestionsEntity>)
+
+/** One answered question of a quiz: what you answered (the last time) and whether it was right. */
+data class ResultRow(val question: QuestionsEntity, val given: String, val correct: Boolean)
 
 data class Grade(val correct: Boolean, val correctAnswer: String, val explanation: String?)
 
@@ -151,6 +155,40 @@ class QuizRepository @Inject constructor(
         }
     }
 
+    /** A saved quiz and its questions, in order (deleted questions are left out). */
+    suspend fun run(runId: Long): QuizRun? = withContext(Dispatchers.IO) {
+        val run = db.quizRunsDao().all().firstOrNull { it.id == runId } ?: return@withContext null
+        val questions = db.questionsDao().all().associateBy { it.id }
+        QuizRun(run.id, ids(run.questionIds).mapNotNull { questions[it] })
+    }
+
+    /** The answers of a history card ("run-{id}" or "session-{id}"): the last answer to each question, in order. */
+    suspend fun results(key: String): List<ResultRow> = withContext(Dispatchers.IO) {
+        val (kind, idText) = key.split("-", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
+        val id = idText.toLongOrNull() ?: return@withContext emptyList()
+        val attempts = db.questionAttemptsDao().all().filter { if (kind == "run") it.quizRunId == id else it.quizRunId == null && it.sessionId == id }.sortedBy { it.id }
+        val questions = db.questionsDao().all().associateBy { it.id }
+        val last = LinkedHashMap<Long, com.dero.juststudykorean.data.db.QuestionAttemptsEntity>()
+        attempts.forEach { last[it.questionId] = it }
+        val order = if (kind == "run") db.quizRunsDao().all().firstOrNull { it.id == id }?.let { ids(it.questionIds) }.orEmpty() else last.keys.toList()
+        order.mapNotNull { q -> last[q]?.let { a -> questions[q]?.let { ResultRow(it, a.userAnswer, a.isCorrect) } } }
+    }
+
+    /** The document each question comes from (its file name), for the question card and the mistakes. */
+    suspend fun documentNames(questions: List<QuestionsEntity>): Map<Long, String> = withContext(Dispatchers.IO) {
+        val docs = db.documentsDao().all().associate { it.id to it.originalName }
+        questions.mapNotNull { q ->
+            Json.parseToJsonElement(q.sourceChunkIds ?: "[]").jsonArray.firstNotNullOfOrNull { it.jsonPrimitive.content.split(":")[0].toLongOrNull() }
+                ?.let { docs[it] }?.let { q.id to it }
+        }.toMap()
+    }
+
+    /** Your processed documents (the Documents selector). */
+    suspend fun readyDocuments() = withContext(Dispatchers.IO) { db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id } }
+
+    /** Fills the chunk cache of [docs] so the first quiz doesn't pay for reading and chunking the notes. */
+    suspend fun warmUp(docs: List<DocumentsEntity>) = withContext(Dispatchers.Default) { docs.forEach(notes::chunks) }
+
     // ---------- writes ----------
 
     /** Saves a quiz when it starts: its questions, in order, and the time. */
@@ -227,3 +265,6 @@ class QuizRepository @Inject constructor(
     /** "Fix these weaknesses": the same questions you got wrong and have not fixed yet. */
     suspend fun fixWeaknesses(): QuizRun? = mistakesNow(10).takeIf { it.isNotEmpty() }?.let { m -> createRun(m.map { it.question.id }) }
 }
+
+/** The options of a choice question (options_json), in order. */
+fun QuestionsEntity.options(): List<String> = Json.parseToJsonElement(optionsJson ?: "[]").jsonArray.map { it.jsonPrimitive.content }

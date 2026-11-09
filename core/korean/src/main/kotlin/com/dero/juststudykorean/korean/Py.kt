@@ -6,11 +6,22 @@ import java.util.regex.Pattern
 
 /** A Python `re` pattern: \w, \s, \b, \d and IGNORECASE are Unicode-aware, as in Python 3. */
 internal fun py(pattern: String, ignoreCase: Boolean = false, multiline: Boolean = false): Regex {
-    var flags = Pattern.UNICODE_CHARACTER_CLASS
-    if (ignoreCase) flags = flags or Pattern.CASE_INSENSITIVE
+    var flags = 0
+    if (ignoreCase) flags = flags or Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
     if (multiline) flags = flags or Pattern.MULTILINE
-    return Pattern.compile(pattern, flags).toRegex()
+    return unicodePattern(pattern, flags)
 }
+
+/**
+ * The JVM needs UNICODE_CHARACTER_CLASS for Unicode \w \s \d \b; Android's regex (ICU) already works that way
+ * and rejects the flag ("not supported"), so there it is left out. Checked on the phone by the db goldens (androidTest).
+ */
+internal fun unicodePattern(pattern: String, flags: Int = 0): Regex =
+    try {
+        Pattern.compile(pattern, flags or Pattern.UNICODE_CHARACTER_CLASS).toRegex()
+    } catch (e: IllegalArgumentException) {
+        Pattern.compile(pattern, flags).toRegex()
+    }
 
 /** `re.match`: only at the start of the string. */
 internal fun Regex.pyMatch(s: String): MatchResult? = matchAt(s, 0)

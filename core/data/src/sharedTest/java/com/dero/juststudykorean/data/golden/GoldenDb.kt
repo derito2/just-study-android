@@ -37,7 +37,13 @@ abstract class GoldenDb(private val zip: String = "fixture") {
         val ZONE: ZoneId = ZoneId.of("America/Mexico_City")
         /** 18:30 on 8 Nov 2026 in Mexico City (already 9 Nov in UTC), as tools/golden/export_db_golden.py. */
         val NOW: Instant = ZonedDateTime.of(2026, 11, 8, 18, 30, 0, 0, ZONE).toInstant()
-        fun file(name: String) = File("../../golden/db/$name")
+        /** A golden/db file: from the repo on the JVM; on the phone, from the test APK's assets (copied to the cache). */
+        fun file(name: String): File {
+            if (android.os.Build.FINGERPRINT == "robolectric") return File("../../golden/db/$name")
+            val out = File(ApplicationProvider.getApplicationContext<Context>().cacheDir, "golden-$name")
+            if (!out.exists()) androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().context.assets.open(name).use { i -> out.outputStream().use { i.copyTo(it) } }
+            return out
+        }
         fun golden(name: String): JsonElement = Json.parseToJsonElement(file("$name.json").readText())
     }
 
