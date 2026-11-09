@@ -25,7 +25,7 @@ Card con borde de 2 dp `line`, radio 16 y relleno 14/12/12 dp, todo centrado. T�
 | KPI | Valor | Comparación |
 |---|---|---|
 | Study streak | `"{n} day"` / `"{n} days"` | Ninguna. Borde y título según la racha: `streak-7` desde 7 días, `streak-15`, `streak-30`, `streak-50` y `streak-70`, cada uno con su `*-title`. A partir de 100 días, 🔥 bajo el número (🔥🔥 a los 150 y 🔥🔥🔥 a los 200), del mismo tamaño que la comparación. Si la racha sube respecto a la última visita, el número da un salto (`bump`: escala 1.15, 280 ms, spring). |
-| Study time | `"6 h 40 m"` (formato de la web, `studyTime`) | Ninguna. |
+| Study time | el formato de `studyTime` de la web (`"6 h 40 min"`) | Ninguna. |
 | Words learned this week | `"{n} word(s)"` | `trending-up` en `correct` / `trending-down` en `wrong` / `minus` en `muted`, más el porcentaje frente a la semana anterior. |
 | Quiz accuracy this week | `"84%"` | Igual que la anterior. |
 
@@ -39,7 +39,7 @@ TalkBack lee *"Up/Down vs last week: +12%"*.
 - **Fondo:** tu foto `dashboard.jpeg`, recortada (Crop) con alineación vertical 0.72 y el velo `photo-veil` encima. Radio 12, relleno de 16 × 20 dp y texto blanco. Si no hay foto, el degradado `hero-indigo → hero-violet (30 %) → hero-sky`.
 - **Título:** `label-caps` en `on-hero-soft`: *Today's session* · 오늘의 공부.
 - **Con estudio hoy:** cuatro columnas, *Questions 문제 · Accuracy 정확도 · Cards 카드 · Time 시간*. Etiqueta de 12 sp en `on-hero-soft` y valor de 24 sp (800).
-- **Sin estudio hoy:** una línea de 16 sp (700): *You haven't studied today yet?? That's mediocre.*
+- **Sin estudio hoy:** una línea de 16 sp (700): *Study Dumbass!! Obsession!!*
 - **Fix this next** · 다음에 고칠 것 (`label-caps`, `on-hero-soft`):
   - El tema más débil, en coreano: 20 sp, 800.
   - Etiqueta de prioridad (`label-caps`, radio 12):
@@ -47,13 +47,13 @@ TalkBack lee *"Up/Down vs last week: +12%"*.
     - `~ Medium priority`: fondo `priority-medium-on-photo`, texto `fill-warn`;
     - `✓ Low priority`: fondo `priority-low-on-photo`, texto `correct`.
   - Debajo, los motivos separados por " · " (14 sp, `on-hero-soft`) y *"Also: …"* con los temas siguientes (12 sp).
-  - Botones Small: **Practice this** · 연습하기 (`Go`; crea un quiz de 5 preguntas de ese tema y abre Quiz), el separador 아니면 (16 sp, 700, `on-hero-soft`, decorativo) y **Ask what to do** · 뭘 할지 묻기 (`Action`; abre Teacher en modo *What should I study?*).
+  - Botones **más pequeños que Small** (petición del usuario): 32 dp visibles + canto de 3 dp, relleno de 4 × 10 dp, texto de 11 sp y coreano de 10 sp, con zona táctil de 48 dp. **Practice this** · 연습하기 (`Go`; crea un quiz de 5 preguntas de ese tema y abre Quiz), el separador 아니면 (13 sp, 700, `on-hero-soft`, decorativo) y **Ask what to do** · 뭘 할지 묻기 (`Action`; abre Teacher en modo *What should I study?*).
   - Sin datos de quiz: *Answer some quiz questions first. I can't read your mind.* y ningún botón.
 
 ## 3 · Calendario del mes (compacto)
 
 - **Contenedor:** Card con relleno de 12 × 16 dp.
-- **Título:** *November 2026* (14 sp, 700) y el mes en coreano, *11월*, en `muted`.
+- **Título:** solo el año y el mes en coreano, *2026년 11월* (14 sp, 700, `ink`: blanco en oscuro). Sin el nombre del mes en inglés.
 - **Días de la semana:** 월화수목금토일 (12 sp, `muted`). La semana empieza en lunes.
 - **Celdas:** 26 dp de alto, radio 8 y 4 dp de separación. Número de 12 sp (500) y símbolo de 10 sp al 75 %:
   - ✓ (80 % o más): `correct-fill` y `correct`;
