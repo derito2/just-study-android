@@ -253,7 +253,9 @@ def generate(out: Path) -> dict[str, str]:
         shas = {}
 
         def save_zip(name: str) -> None:
-            zip_path = export_backup.export(engine, Path(tmp) / name, web_commit="golden-db")
+            zip_path = export_backup.export(
+                engine, Path(tmp) / name, web_commit="golden-db", extracted_dir=Path(os.environ["DATA_DIR"]) / "extracted"
+            )
             target = out / f"{name}.jsbackup.zip"
             target.write_bytes(zip_path.read_bytes())
             _fixed_zip(target)
