@@ -227,9 +227,14 @@ def outputs(db) -> dict[str, object]:
 
 
 def _fixed_zip(path: Path) -> None:
-    """Same bytes on every run: entries rewritten with a fixed date."""
+    """Same bytes on every run: entries rewritten with a fixed date, and the manifest's exported_at fixed."""
     with zipfile.ZipFile(path) as zf:
         entries = [(i.filename, zf.read(i)) for i in zf.infolist()]
+    for i, (name, data) in enumerate(entries):
+        if name == "manifest.json":
+            manifest = json.loads(data)
+            manifest["exported_at"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+            entries[i] = (name, json.dumps(manifest, ensure_ascii=False, indent=1).encode())
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
         for name, data in entries:
             info = zipfile.ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
@@ -248,7 +253,6 @@ def generate(out: Path) -> dict[str, str]:
 
         engine = create_engine(os.environ["DATABASE_URL_OVERRIDE"])
         Base.metadata.create_all(engine)
-        export_backup.datetime = type("FixedDatetime", (datetime,), {"now": classmethod(lambda cls, tz=None: NOW.replace(tzinfo=UTC))})
         out.mkdir(parents=True, exist_ok=True)
         shas = {}
 

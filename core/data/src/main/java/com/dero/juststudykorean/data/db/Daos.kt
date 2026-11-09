@@ -2,7 +2,10 @@
 package com.dero.juststudykorean.data.db
 
 import androidx.room3.Dao
+import androidx.room3.Delete
+import androidx.room3.Insert
 import androidx.room3.Query
+import androidx.room3.Update
 
 @Dao
 interface CustomDecksDao {
@@ -11,6 +14,10 @@ interface CustomDecksDao {
 
     @Query("SELECT COUNT(*) FROM custom_decks")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: CustomDecksEntity)
+    @Update suspend fun update(row: CustomDecksEntity)
+    @Delete suspend fun delete(row: CustomDecksEntity)
 }
 
 @Dao
@@ -20,6 +27,10 @@ interface DeckGroupsDao {
 
     @Query("SELECT COUNT(*) FROM deck_groups")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: DeckGroupsEntity)
+    @Update suspend fun update(row: DeckGroupsEntity)
+    @Delete suspend fun delete(row: DeckGroupsEntity)
 }
 
 @Dao
@@ -29,6 +40,10 @@ interface DocumentsDao {
 
     @Query("SELECT COUNT(*) FROM documents")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: DocumentsEntity)
+    @Update suspend fun update(row: DocumentsEntity)
+    @Delete suspend fun delete(row: DocumentsEntity)
 }
 
 @Dao
@@ -38,6 +53,10 @@ interface QuizRunsDao {
 
     @Query("SELECT COUNT(*) FROM quiz_runs")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: QuizRunsEntity)
+    @Update suspend fun update(row: QuizRunsEntity)
+    @Delete suspend fun delete(row: QuizRunsEntity)
 }
 
 @Dao
@@ -47,6 +66,10 @@ interface StudySessionsDao {
 
     @Query("SELECT COUNT(*) FROM study_sessions")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: StudySessionsEntity)
+    @Update suspend fun update(row: StudySessionsEntity)
+    @Delete suspend fun delete(row: StudySessionsEntity)
 }
 
 @Dao
@@ -56,6 +79,10 @@ interface TopicsDao {
 
     @Query("SELECT COUNT(*) FROM topics")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: TopicsEntity)
+    @Update suspend fun update(row: TopicsEntity)
+    @Delete suspend fun delete(row: TopicsEntity)
 }
 
 @Dao
@@ -65,6 +92,10 @@ interface DeckPlacesDao {
 
     @Query("SELECT COUNT(*) FROM deck_places")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: DeckPlacesEntity)
+    @Update suspend fun update(row: DeckPlacesEntity)
+    @Delete suspend fun delete(row: DeckPlacesEntity)
 }
 
 @Dao
@@ -74,6 +105,10 @@ interface DocumentTopicsDao {
 
     @Query("SELECT COUNT(*) FROM document_topics")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: DocumentTopicsEntity)
+    @Update suspend fun update(row: DocumentTopicsEntity)
+    @Delete suspend fun delete(row: DocumentTopicsEntity)
 }
 
 @Dao
@@ -83,6 +118,10 @@ interface GrammarPointsDao {
 
     @Query("SELECT COUNT(*) FROM grammar_points")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: GrammarPointsEntity)
+    @Update suspend fun update(row: GrammarPointsEntity)
+    @Delete suspend fun delete(row: GrammarPointsEntity)
 }
 
 @Dao
@@ -92,6 +131,10 @@ interface MlTopicScoresDao {
 
     @Query("SELECT COUNT(*) FROM ml_topic_scores")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: MlTopicScoresEntity)
+    @Update suspend fun update(row: MlTopicScoresEntity)
+    @Delete suspend fun delete(row: MlTopicScoresEntity)
 }
 
 @Dao
@@ -101,6 +144,10 @@ interface QuestionsDao {
 
     @Query("SELECT COUNT(*) FROM questions")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: QuestionsEntity)
+    @Update suspend fun update(row: QuestionsEntity)
+    @Delete suspend fun delete(row: QuestionsEntity)
 }
 
 @Dao
@@ -110,6 +157,10 @@ interface StudySessionTopicsDao {
 
     @Query("SELECT COUNT(*) FROM study_session_topics")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: StudySessionTopicsEntity)
+    @Update suspend fun update(row: StudySessionTopicsEntity)
+    @Delete suspend fun delete(row: StudySessionTopicsEntity)
 }
 
 @Dao
@@ -119,6 +170,10 @@ interface UserTopicProgressDao {
 
     @Query("SELECT COUNT(*) FROM user_topic_progress")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: UserTopicProgressEntity)
+    @Update suspend fun update(row: UserTopicProgressEntity)
+    @Delete suspend fun delete(row: UserTopicProgressEntity)
 }
 
 @Dao
@@ -128,6 +183,10 @@ interface VocabularyDao {
 
     @Query("SELECT COUNT(*) FROM vocabulary")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: VocabularyEntity)
+    @Update suspend fun update(row: VocabularyEntity)
+    @Delete suspend fun delete(row: VocabularyEntity)
 }
 
 @Dao
@@ -137,6 +196,10 @@ interface ExamplesDao {
 
     @Query("SELECT COUNT(*) FROM examples")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: ExamplesEntity)
+    @Update suspend fun update(row: ExamplesEntity)
+    @Delete suspend fun delete(row: ExamplesEntity)
 }
 
 @Dao
@@ -146,6 +209,10 @@ interface FlashcardsDao {
 
     @Query("SELECT COUNT(*) FROM flashcards")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: FlashcardsEntity)
+    @Update suspend fun update(row: FlashcardsEntity)
+    @Delete suspend fun delete(row: FlashcardsEntity)
 }
 
 @Dao
@@ -155,6 +222,10 @@ interface QuestionAttemptsDao {
 
     @Query("SELECT COUNT(*) FROM question_attempts")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: QuestionAttemptsEntity)
+    @Update suspend fun update(row: QuestionAttemptsEntity)
+    @Delete suspend fun delete(row: QuestionAttemptsEntity)
 }
 
 @Dao
@@ -164,4 +235,8 @@ interface FlashcardReviewsDao {
 
     @Query("SELECT COUNT(*) FROM flashcard_reviews")
     suspend fun count(): Int
+
+    @Insert suspend fun insert(row: FlashcardReviewsEntity)
+    @Update suspend fun update(row: FlashcardReviewsEntity)
+    @Delete suspend fun delete(row: FlashcardReviewsEntity)
 }
