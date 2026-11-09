@@ -74,7 +74,7 @@ class ProcessingQueue @Inject constructor(
         try {
             if (tmp.length() == 0L) return@withContext UploadResult.Rejected("The file is empty.")
             if (tmp.length() > MAX_UPLOAD_BYTES) return@withContext UploadResult.Rejected("File is larger than 25 MB.")
-            val header = tmp.inputStream().use { it.readNBytes(1024) }
+            val header = ByteArray(1024).let { b -> b.copyOf(tmp.inputStream().use { it.read(b).coerceAtLeast(0) }) } // the first KB (minSdk 31: no readNBytes)
             if ("%PDF-".toByteArray().let { h -> (0..header.size - h.size).none { i -> h.indices.all { header[i + it] == h[it] } } }) {
                 return@withContext UploadResult.Rejected("The file is not a valid PDF.")
             }
@@ -143,7 +143,9 @@ class ProcessingQueue @Inject constructor(
                             }
                             db.processingJobsDao().delete(id)
                         }
-                        Log.i("JustStudy", "document_processed id=$id ms=${(System.nanoTime() - start) / 1_000_000}")
+                        val pages = db.documentsDao().all().firstOrNull { it.id == id }?.pageCount ?: 0
+                        // Counts only (time, pages, memory), never names or text: the phase's goals are measured from these.
+                        Log.i("JustStudy", "document_processed id=$id ms=${(System.nanoTime() - start) / 1_000_000} pages=$pages pss_kb=${android.os.Debug.getPss()}")
                         return
                     }
                     else -> error("unknown stage")

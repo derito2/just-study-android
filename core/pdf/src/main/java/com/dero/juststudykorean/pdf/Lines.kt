@@ -22,13 +22,13 @@ data class Box(val x0: Double, val y0: Double, val x1: Double, val y1: Double) {
 
 class Line(val text: String, val size: Double, val bold: Boolean, val bbox: Box)
 
-private val ZERO_WIDTH = Regex("[​‌‍⁠﻿]")
+private val ZERO_WIDTH = Regex("[\\u200b\\u200c\\u200d\\u2060\\ufeff]")
 private val CONTROL = Regex("[\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]")
 private val SPACES = Regex("[ \t]{2,}")
 
 /** NFC (composed jamo), without control or zero-width characters. */
 fun normalizeText(text: String): String {
-    val t = Normalizer.normalize(text, Normalizer.Form.NFC).replace(ZERO_WIDTH, "").replace(' ', ' ')
+    val t = Normalizer.normalize(text, Normalizer.Form.NFC).replace(ZERO_WIDTH, "").replace('\u00a0', ' ')
     return CONTROL.replace(t, "").pyStrip()
 }
 

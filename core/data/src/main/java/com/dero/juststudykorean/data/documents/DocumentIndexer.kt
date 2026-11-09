@@ -152,6 +152,11 @@ class DocumentIndexer @Inject constructor(
         db.notesFtsDao().deleteOrphanTopics()
     }
 
+    /** After the v1 → v2 migration the index is empty: it is built once from extracted/ (nothing else changes). */
+    suspend fun ensureIndex() {
+        if (db.notesFtsDao().count() == 0 && db.documentsDao().all().any { it.status == "ready" }) rebuildIndex()
+    }
+
     /** After an import the index is rebuilt from extracted/ (it is not in the backup). */
     suspend fun rebuildIndex() {
         db.notesFtsDao().deleteAll()
