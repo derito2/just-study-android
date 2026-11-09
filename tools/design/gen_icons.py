@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "app/src/main/java/com/dero/juststudykorean/ui/components/LucidePaths.kt"
 ICONS = ["layout-grid", "book-text", "layers", "circle-help", "graduation-cap", "menu", "languages",
-         "trending-up", "calendar-days", "moon", "settings", "chevron-left", "badge-alert", "download"]
+         "trending-up", "calendar-days", "moon", "settings", "chevron-left", "badge-alert", "download", "trending-down", "minus"]
 
 
 def attrs(tag):

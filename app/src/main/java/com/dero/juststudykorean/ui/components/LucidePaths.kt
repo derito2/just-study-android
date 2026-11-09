@@ -79,4 +79,11 @@ internal val Lucide.paths: List<String>
             "M7 10L12 15L17 10",
             "M12.0 15.0L12.0 3.0",
         )
+        Lucide.TrendingDown -> listOf(
+            "M22 17L13.5 8.5L8.5 13.5L2 7",
+            "M16 17L22 17L22 11",
+        )
+        Lucide.Minus -> listOf(
+            "M5 12h14",
+        )
     }

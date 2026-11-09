@@ -17,6 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.components.MoreSheet
 import com.dero.juststudykorean.ui.screens.PlaceholderScreen
+import com.dero.juststudykorean.ui.dashboard.DashboardScreen
 import com.dero.juststudykorean.ui.screens.SettingsScreen
 
 /**
@@ -35,6 +36,9 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                 NavEntry(route, contentKey = "${route.tab}/${route.section}") {
                     if (route.section == MoreDestination.Settings) {
                         SettingsScreen(onMore = { moreOpen = true }, onBack = { nav.back() })
+                    } else if (route == Route(TopLevel.Dashboard)) {
+                        // shortcut: the run id is not passed on yet; the Quiz screen (task 5) will open it.
+                        DashboardScreen(onMore = { moreOpen = true }, onOpenQuiz = { nav.select(TopLevel.Quiz) }, onAsk = { nav.select(TopLevel.Teacher) })
                     } else {
                         PlaceholderScreen(
                             route,
