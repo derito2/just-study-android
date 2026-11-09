@@ -1,0 +1,225 @@
+{
+ "recommended": [
+  {
+   "mastery": 0.3,
+   "name": "Travel",
+   "priority": "high",
+   "reasons": [
+    "mastery 30 % (3 answers)"
+   ],
+   "score": 342.0,
+   "topic_id": 19
+  },
+  {
+   "mastery": 0.4,
+   "name": "Vocabulary",
+   "priority": "high",
+   "reasons": [
+    "mastery 40 % (6 answers)"
+   ],
+   "score": 337.0,
+   "topic_id": 22
+  },
+  {
+   "mastery": null,
+   "name": "4. -(으)면서",
+   "priority": "medium",
+   "reasons": [
+    "new topic: not practised yet",
+    "1 flashcard due"
+   ],
+   "score": 230.0,
+   "topic_id": 7
+  }
+ ],
+ "topics": {
+  "best": [
+   {
+    "accuracy": 0.7777777777777778,
+    "attempts": 27,
+    "cards_due": 0,
+    "cards_learning": 2,
+    "cards_new": 17,
+    "category": "vocabulary",
+    "correct": 21,
+    "has_material": true,
+    "last_studied_at": "2026-11-08T09:08:15-06:00",
+    "mastery": 0.9,
+    "name": "Feelings",
+    "topic_id": 16
+   },
+   {
+    "accuracy": 0.8125,
+    "attempts": 16,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 13,
+    "category": "vocabulary",
+    "correct": 13,
+    "has_material": true,
+    "last_studied_at": "2026-11-04T20:04:15-06:00",
+    "mastery": 0.8,
+    "name": "Irregular verbs",
+    "topic_id": 20
+   },
+   {
+    "accuracy": 0.782608695652174,
+    "attempts": 23,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 8,
+    "category": "vocabulary",
+    "correct": 18,
+    "has_material": true,
+    "last_studied_at": "2026-11-08T09:02:15-06:00",
+    "mastery": 0.7,
+    "name": "Free notes (no numbers)",
+    "topic_id": 17
+   }
+  ],
+  "most_difficult": [
+   {
+    "accuracy": 1.0,
+    "attempts": 3,
+    "cards_due": 0,
+    "cards_learning": 1,
+    "cards_new": 6,
+    "category": "other",
+    "correct": 3,
+    "has_material": true,
+    "last_studied_at": "2026-10-31T20:02:15-06:00",
+    "mastery": 0.3,
+    "name": "Travel",
+    "topic_id": 19
+   },
+   {
+    "accuracy": 0.6666666666666666,
+    "attempts": 6,
+    "cards_due": 0,
+    "cards_learning": 1,
+    "cards_new": 5,
+    "category": "vocabulary",
+    "correct": 4,
+    "has_material": true,
+    "last_studied_at": "2026-10-31T20:08:15-06:00",
+    "mastery": 0.4,
+    "name": "Vocabulary",
+    "topic_id": 22
+   },
+   {
+    "accuracy": 0.7,
+    "attempts": 20,
+    "cards_due": 0,
+    "cards_learning": 5,
+    "cards_new": 15,
+    "category": "other",
+    "correct": 14,
+    "has_material": true,
+    "last_studied_at": "2026-11-08T09:04:15-06:00",
+    "mastery": 0.6,
+    "name": "At the café and the restaurant",
+    "topic_id": 14
+   }
+  ],
+  "topics": [
+   {
+    "accuracy": 1.0,
+    "attempts": 3,
+    "cards_due": 0,
+    "cards_learning": 1,
+    "cards_new": 6,
+    "category": "other",
+    "correct": 3,
+    "has_material": true,
+    "last_studied_at": "2026-10-31T20:02:15-06:00",
+    "mastery": 0.3,
+    "name": "Travel",
+    "topic_id": 19
+   },
+   {
+    "accuracy": 0.6666666666666666,
+    "attempts": 6,
+    "cards_due": 0,
+    "cards_learning": 1,
+    "cards_new": 5,
+    "category": "vocabulary",
+    "correct": 4,
+    "has_material": true,
+    "last_studied_at": "2026-10-31T20:08:15-06:00",
+    "mastery": 0.4,
+    "name": "Vocabulary",
+    "topic_id": 22
+   },
+   {
+    "accuracy": 0.7,
+    "attempts": 20,
+    "cards_due": 0,
+    "cards_learning": 5,
+    "cards_new": 15,
+    "category": "other",
+    "correct": 14,
+    "has_material": true,
+    "last_studied_at": "2026-11-08T09:04:15-06:00",
+    "mastery": 0.6,
+    "name": "At the café and the restaurant",
+    "topic_id": 14
+   },
+   {
+    "accuracy": 0.782608695652174,
+    "attempts": 23,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 8,
+    "category": "vocabulary",
+    "correct": 18,
+    "has_material": true,
+    "last_studied_at": "2026-11-08T09:02:15-06:00",
+    "mastery": 0.7,
+    "name": "Free notes (no numbers)",
+    "topic_id": 17
+   },
+   {
+    "accuracy": 0.631578947368421,
+    "attempts": 19,
+    "cards_due": 1,
+    "cards_learning": 10,
+    "cards_new": 11,
+    "category": "other",
+    "correct": 12,
+    "has_material": true,
+    "last_studied_at": "2026-11-08T09:06:15-06:00",
+    "mastery": 0.7,
+    "name": "Sentences",
+    "topic_id": 2
+   },
+   {
+    "accuracy": 0.8125,
+    "attempts": 16,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 13,
+    "category": "vocabulary",
+    "correct": 13,
+    "has_material": true,
+    "last_studied_at": "2026-11-04T20:04:15-06:00",
+    "mastery": 0.8,
+    "name": "Irregular verbs",
+    "topic_id": 20
+   },
+   {
+    "accuracy": 0.7777777777777778,
+    "attempts": 27,
+    "cards_due": 0,
+    "cards_learning": 2,
+    "cards_new": 17,
+    "category": "vocabulary",
+    "correct": 21,
+    "has_material": true,
+    "last_studied_at": "2026-11-08T09:08:15-06:00",
+    "mastery": 0.9,
+    "name": "Feelings",
+    "topic_id": 16
+   }
+  ]
+ }
+}

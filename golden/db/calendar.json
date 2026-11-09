@@ -1,0 +1,734 @@
+[
+ {
+  "days": [
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-01",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-02",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-03",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-04",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-05",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-06",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-07",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-08",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": 0.6,
+    "correct": 3,
+    "date": "2026-10-09",
+    "minutes": 13,
+    "questions": 5,
+    "status": "yellow",
+    "studied": true,
+    "topics": [
+     "Feelings",
+     "Irregular verbs",
+     "Vocabulary"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-10",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Free notes (no numbers)",
+     "Irregular verbs",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-11",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Free notes (no numbers)",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-12",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": 0.6,
+    "correct": 3,
+    "date": "2026-10-13",
+    "minutes": 13,
+    "questions": 5,
+    "status": "yellow",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Free notes (no numbers)"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-14",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Free notes (no numbers)",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-15",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Irregular verbs",
+     "Sentences",
+     "Vocabulary"
+    ]
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-16",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": 0.6,
+    "correct": 3,
+    "date": "2026-10-17",
+    "minutes": 13,
+    "questions": 5,
+    "status": "yellow",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Free notes (no numbers)"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-18",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "Feelings",
+     "Free notes (no numbers)",
+     "Irregular verbs",
+     "Sentences",
+     "Travel"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-19",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "Free notes (no numbers)",
+     "Irregular verbs",
+     "Sentences",
+     "Vocabulary"
+    ]
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-20",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": 0.5,
+    "correct": 1,
+    "date": "2026-10-21",
+    "minutes": 7,
+    "questions": 2,
+    "status": "yellow",
+    "studied": true,
+    "topics": [
+     "Feelings",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-22",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "Free notes (no numbers)",
+     "Irregular verbs",
+     "Vocabulary"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-23",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Free notes (no numbers)",
+     "Irregular verbs",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-24",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": 0.6,
+    "correct": 3,
+    "date": "2026-10-25",
+    "minutes": 13,
+    "questions": 5,
+    "status": "yellow",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Free notes (no numbers)",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-26",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Free notes (no numbers)",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-27",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Sentences",
+     "Vocabulary"
+    ]
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-10-28",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": 0.6,
+    "correct": 3,
+    "date": "2026-10-29",
+    "minutes": 13,
+    "questions": 5,
+    "status": "yellow",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-30",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "Feelings",
+     "Free notes (no numbers)",
+     "Travel"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-10-31",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "Free notes (no numbers)",
+     "Irregular verbs",
+     "Sentences",
+     "Travel",
+     "Vocabulary"
+    ]
+   }
+  ],
+  "month": 10,
+  "timezone": "America/Mexico_City",
+  "year": 2026
+ },
+ {
+  "days": [
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-01",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": 0.75,
+    "correct": 3,
+    "date": "2026-11-02",
+    "minutes": 11,
+    "questions": 4,
+    "status": "yellow",
+    "studied": true,
+    "topics": [
+     "Feelings",
+     "Free notes (no numbers)",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": 1.0,
+    "correct": 1,
+    "date": "2026-11-03",
+    "minutes": 5,
+    "questions": 1,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "Feelings"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-11-04",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "Free notes (no numbers)",
+     "Irregular verbs",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-05",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": 0.6666666666666666,
+    "correct": 4,
+    "date": "2026-11-06",
+    "minutes": 13,
+    "questions": 6,
+    "status": "yellow",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Free notes (no numbers)",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": 0.8333333333333334,
+    "correct": 5,
+    "date": "2026-11-07",
+    "minutes": 13,
+    "questions": 6,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Free notes (no numbers)"
+    ]
+   },
+   {
+    "accuracy": 0.8,
+    "correct": 4,
+    "date": "2026-11-08",
+    "minutes": 13,
+    "questions": 5,
+    "status": "green",
+    "studied": true,
+    "topics": [
+     "At the café and the restaurant",
+     "Feelings",
+     "Free notes (no numbers)",
+     "Sentences"
+    ]
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-09",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-10",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-11",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-12",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-13",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-14",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-15",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-16",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-17",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-18",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-19",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-20",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-21",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-22",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-23",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-24",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-25",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-26",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-27",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-28",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-29",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   },
+   {
+    "accuracy": null,
+    "correct": 0,
+    "date": "2026-11-30",
+    "minutes": 0,
+    "questions": 0,
+    "status": "none",
+    "studied": false,
+    "topics": []
+   }
+  ],
+  "month": 11,
+  "timezone": "America/Mexico_City",
+  "year": 2026
+ }
+]

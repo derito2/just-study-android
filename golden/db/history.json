@@ -1,0 +1,452 @@
+[
+ {
+  "document_id": 3,
+  "flashcard_id": 37,
+  "interval_hours": 24,
+  "korean_word": "싱겁다",
+  "rating": "good",
+  "reviewed_at": "2026-11-08T10:05:30-06:00",
+  "translation": "To be bland"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 27,
+  "interval_hours": 24,
+  "korean_word": "-아/어야 하다",
+  "rating": "good",
+  "reviewed_at": "2026-11-08T10:04:30-06:00",
+  "translation": "To have to"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 11,
+  "interval_hours": 48,
+  "korean_word": "너무 졸려서 커피를 두 잔이나 마셨어요",
+  "rating": "easy",
+  "reviewed_at": "2026-11-08T10:03:30-06:00",
+  "translation": "I was so sleepy that I drank two whole cups of coffee"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 8,
+  "interval_hours": 92,
+  "korean_word": "날씨가 너무 추워서 밖에 나가기 싫어요",
+  "rating": "hard",
+  "reviewed_at": "2026-11-08T10:02:30-06:00",
+  "translation": "It's so cold that I don't want to go outside"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 7,
+  "interval_hours": 0,
+  "korean_word": "길이 막혀서 조금 늦을 것 같아요",
+  "rating": "again",
+  "reviewed_at": "2026-11-08T10:01:30-06:00",
+  "translation": "The road is jammed, so I think I'll be a little late"
+ },
+ {
+  "document_id": 4,
+  "flashcard_id": 53,
+  "interval_hours": 20,
+  "korean_word": "설레다",
+  "rating": "good",
+  "reviewed_at": "2026-11-08T10:00:30-06:00",
+  "translation": "To be excited / To have butterflies"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 6,
+  "interval_hours": 517,
+  "korean_word": "괜찮아, 다 잘될 거야",
+  "rating": "good",
+  "reviewed_at": "2026-11-07T21:05:30-06:00",
+  "translation": "It's okay, everything will be fine"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 10,
+  "interval_hours": 48,
+  "korean_word": "요즘 이 노래만 계속 들어요",
+  "rating": "easy",
+  "reviewed_at": "2026-11-07T21:04:30-06:00",
+  "translation": "These days I keep listening to this song only"
+ },
+ {
+  "document_id": 5,
+  "flashcard_id": 76,
+  "interval_hours": 199,
+  "korean_word": "공항",
+  "rating": "hard",
+  "reviewed_at": "2026-11-07T21:03:30-06:00",
+  "translation": "Airport"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 7,
+  "interval_hours": 0,
+  "korean_word": "길이 막혀서 조금 늦을 것 같아요",
+  "rating": "again",
+  "reviewed_at": "2026-11-07T21:02:30-06:00",
+  "translation": "The road is jammed, so I think I'll be a little late"
+ },
+ {
+  "document_id": 3,
+  "flashcard_id": 33,
+  "interval_hours": 230,
+  "korean_word": "메뉴판",
+  "rating": "good",
+  "reviewed_at": "2026-11-07T21:01:30-06:00",
+  "translation": "Menu"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 5,
+  "interval_hours": 30,
+  "korean_word": "주말에 시간 있으면 영화 보러 갈래?",
+  "rating": "good",
+  "reviewed_at": "2026-11-07T21:00:30-06:00",
+  "translation": "If you have time this weekend, want to go see a movie?"
+ },
+ {
+  "document_id": 3,
+  "flashcard_id": 34,
+  "interval_hours": 184,
+  "korean_word": "계산하다",
+  "rating": "easy",
+  "reviewed_at": "2026-11-06T21:05:30-06:00",
+  "translation": "To pay (the bill)"
+ },
+ {
+  "document_id": 4,
+  "flashcard_id": 53,
+  "interval_hours": 14,
+  "korean_word": "설레다",
+  "rating": "hard",
+  "reviewed_at": "2026-11-06T21:04:30-06:00",
+  "translation": "To be excited / To have butterflies"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 10,
+  "interval_hours": 0,
+  "korean_word": "요즘 이 노래만 계속 들어요",
+  "rating": "again",
+  "reviewed_at": "2026-11-06T21:03:30-06:00",
+  "translation": "These days I keep listening to this song only"
+ },
+ {
+  "document_id": 3,
+  "flashcard_id": 36,
+  "interval_hours": 60,
+  "korean_word": "맵다",
+  "rating": "good",
+  "reviewed_at": "2026-11-06T21:02:30-06:00",
+  "translation": "To be spicy"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 26,
+  "interval_hours": 60,
+  "korean_word": "-(으)ㄹ까 봐",
+  "rating": "good",
+  "reviewed_at": "2026-11-06T21:01:30-06:00",
+  "translation": "Worried that / In case"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 9,
+  "interval_hours": 60,
+  "korean_word": "사진 잘 나왔네요",
+  "rating": "good",
+  "reviewed_at": "2026-11-06T21:00:30-06:00",
+  "translation": "The photo came out well"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 10,
+  "interval_hours": 0,
+  "korean_word": "요즘 이 노래만 계속 들어요",
+  "rating": "again",
+  "reviewed_at": "2026-11-04T21:05:30-06:00",
+  "translation": "These days I keep listening to this song only"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 24,
+  "interval_hours": 88,
+  "korean_word": "-(으)면서",
+  "rating": "good",
+  "reviewed_at": "2026-11-04T21:04:30-06:00",
+  "translation": "While (doing two things at the same time)"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 8,
+  "interval_hours": 77,
+  "korean_word": "날씨가 너무 추워서 밖에 나가기 싫어요",
+  "rating": "good",
+  "reviewed_at": "2026-11-04T21:03:30-06:00",
+  "translation": "It's so cold that I don't want to go outside"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 5,
+  "interval_hours": 19,
+  "korean_word": "주말에 시간 있으면 영화 보러 갈래?",
+  "rating": "good",
+  "reviewed_at": "2026-11-04T21:02:30-06:00",
+  "translation": "If you have time this weekend, want to go see a movie?"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 4,
+  "interval_hours": 669,
+  "korean_word": "이거 보고 너 생각나서 샀어",
+  "rating": "easy",
+  "reviewed_at": "2026-11-04T21:01:30-06:00",
+  "translation": "I saw this and thought of you, so I bought it"
+ },
+ {
+  "document_id": 4,
+  "flashcard_id": 53,
+  "interval_hours": 12,
+  "korean_word": "설레다",
+  "rating": "hard",
+  "reviewed_at": "2026-11-04T21:00:30-06:00",
+  "translation": "To be excited / To have butterflies"
+ },
+ {
+  "document_id": 3,
+  "flashcard_id": 36,
+  "interval_hours": 24,
+  "korean_word": "맵다",
+  "rating": "good",
+  "reviewed_at": "2026-11-03T21:05:30-06:00",
+  "translation": "To be spicy"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 26,
+  "interval_hours": 24,
+  "korean_word": "-(으)ㄹ까 봐",
+  "rating": "good",
+  "reviewed_at": "2026-11-03T21:04:30-06:00",
+  "translation": "Worried that / In case"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 9,
+  "interval_hours": 24,
+  "korean_word": "사진 잘 나왔네요",
+  "rating": "good",
+  "reviewed_at": "2026-11-03T21:03:30-06:00",
+  "translation": "The photo came out well"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 25,
+  "interval_hours": 269,
+  "korean_word": "-는 동안",
+  "rating": "easy",
+  "reviewed_at": "2026-11-03T21:02:30-06:00",
+  "translation": "During / While"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 5,
+  "interval_hours": 12,
+  "korean_word": "주말에 시간 있으면 영화 보러 갈래?",
+  "rating": "hard",
+  "reviewed_at": "2026-11-03T21:01:30-06:00",
+  "translation": "If you have time this weekend, want to go see a movie?"
+ },
+ {
+  "document_id": 4,
+  "flashcard_id": 53,
+  "interval_hours": 0,
+  "korean_word": "설레다",
+  "rating": "again",
+  "reviewed_at": "2026-11-03T21:00:30-06:00",
+  "translation": "To be excited / To have butterflies"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 21,
+  "interval_hours": 462,
+  "korean_word": "-(으)ㄹ게요",
+  "rating": "good",
+  "reviewed_at": "2026-11-02T21:05:30-06:00",
+  "translation": "I will (a promise or decision, for the listener)"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 24,
+  "interval_hours": 45,
+  "korean_word": "-(으)면서",
+  "rating": "good",
+  "reviewed_at": "2026-11-02T21:04:30-06:00",
+  "translation": "While (doing two things at the same time)"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 8,
+  "interval_hours": 36,
+  "korean_word": "날씨가 너무 추워서 밖에 나가기 싫어요",
+  "rating": "easy",
+  "reviewed_at": "2026-11-02T21:03:30-06:00",
+  "translation": "It's so cold that I don't want to go outside"
+ },
+ {
+  "document_id": 3,
+  "flashcard_id": 34,
+  "interval_hours": 66,
+  "korean_word": "계산하다",
+  "rating": "hard",
+  "reviewed_at": "2026-11-02T21:02:30-06:00",
+  "translation": "To pay (the bill)"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 5,
+  "interval_hours": 0,
+  "korean_word": "주말에 시간 있으면 영화 보러 갈래?",
+  "rating": "again",
+  "reviewed_at": "2026-11-02T21:01:30-06:00",
+  "translation": "If you have time this weekend, want to go see a movie?"
+ },
+ {
+  "document_id": 3,
+  "flashcard_id": 35,
+  "interval_hours": 289,
+  "korean_word": "포장하다",
+  "rating": "good",
+  "reviewed_at": "2026-11-02T21:00:30-06:00",
+  "translation": "To take out / To wrap up"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 23,
+  "interval_hours": 713,
+  "korean_word": "-기로 하다",
+  "rating": "easy",
+  "reviewed_at": "2026-10-31T21:05:30-06:00",
+  "translation": "To decide to"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 8,
+  "interval_hours": 14,
+  "korean_word": "날씨가 너무 추워서 밖에 나가기 싫어요",
+  "rating": "hard",
+  "reviewed_at": "2026-10-31T21:04:30-06:00",
+  "translation": "It's so cold that I don't want to go outside"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 5,
+  "interval_hours": 0,
+  "korean_word": "주말에 시간 있으면 영화 보러 갈래?",
+  "rating": "again",
+  "reviewed_at": "2026-10-31T21:03:30-06:00",
+  "translation": "If you have time this weekend, want to go see a movie?"
+ },
+ {
+  "document_id": 4,
+  "flashcard_id": 53,
+  "interval_hours": 45,
+  "korean_word": "설레다",
+  "rating": "good",
+  "reviewed_at": "2026-10-31T21:02:30-06:00",
+  "translation": "To be excited / To have butterflies"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 24,
+  "interval_hours": 23,
+  "korean_word": "-(으)면서",
+  "rating": "good",
+  "reviewed_at": "2026-10-31T21:01:30-06:00",
+  "translation": "While (doing two things at the same time)"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 2,
+  "interval_hours": 525,
+  "korean_word": "나 너 때문에 진짜 웃었어",
+  "rating": "good",
+  "reviewed_at": "2026-10-31T21:00:30-06:00",
+  "translation": "I really laughed because of you"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 8,
+  "interval_hours": 12,
+  "korean_word": "날씨가 너무 추워서 밖에 나가기 싫어요",
+  "rating": "hard",
+  "reviewed_at": "2026-10-30T21:05:30-06:00",
+  "translation": "It's so cold that I don't want to go outside"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 5,
+  "interval_hours": 0,
+  "korean_word": "주말에 시간 있으면 영화 보러 갈래?",
+  "rating": "again",
+  "reviewed_at": "2026-10-30T21:04:30-06:00",
+  "translation": "If you have time this weekend, want to go see a movie?"
+ },
+ {
+  "document_id": 3,
+  "flashcard_id": 33,
+  "interval_hours": 144,
+  "korean_word": "메뉴판",
+  "rating": "good",
+  "reviewed_at": "2026-10-30T21:03:30-06:00",
+  "translation": "Menu"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 7,
+  "interval_hours": 150,
+  "korean_word": "길이 막혀서 조금 늦을 것 같아요",
+  "rating": "good",
+  "reviewed_at": "2026-10-30T21:02:30-06:00",
+  "translation": "The road is jammed, so I think I'll be a little late"
+ },
+ {
+  "document_id": 5,
+  "flashcard_id": 76,
+  "interval_hours": 166,
+  "korean_word": "공항",
+  "rating": "good",
+  "reviewed_at": "2026-10-30T21:01:30-06:00",
+  "translation": "Airport"
+ },
+ {
+  "document_id": 2,
+  "flashcard_id": 25,
+  "interval_hours": 78,
+  "korean_word": "-는 동안",
+  "rating": "easy",
+  "reviewed_at": "2026-10-30T21:00:30-06:00",
+  "translation": "During / While"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 8,
+  "interval_hours": 0,
+  "korean_word": "날씨가 너무 추워서 밖에 나가기 싫어요",
+  "rating": "again",
+  "reviewed_at": "2026-10-29T21:05:30-06:00",
+  "translation": "It's so cold that I don't want to go outside"
+ },
+ {
+  "document_id": 1,
+  "flashcard_id": 3,
+  "interval_hours": 386,
+  "korean_word": "밥 먹었어?",
+  "rating": "good",
+  "reviewed_at": "2026-10-29T21:04:30-06:00",
+  "translation": "Did you eat?"
+ }
+]

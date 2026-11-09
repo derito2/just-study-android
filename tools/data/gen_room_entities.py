@@ -43,7 +43,8 @@ def main() -> None:
                 "import androidx.room3.ColumnInfo", "import androidx.room3.Entity", "",
                 "// One entity per backup table, columns 1:1 with the web; dates as epoch millis (UTC); JSON as text.", ""]
     daos = [HEADER, "package com.dero.juststudykorean.data.db", "",
-            "import androidx.room3.Dao", "import androidx.room3.Query", ""]
+            "import androidx.room3.Dao", "import androidx.room3.Delete", "import androidx.room3.Insert",
+            "import androidx.room3.Query", "import androidx.room3.Update", ""]
     schema = []
     for t in tables:
         name = camel(t.name, True)
@@ -63,7 +64,10 @@ def main() -> None:
                  f'    @Query("SELECT * FROM {t.name} ORDER BY {order}")',
                  f"    suspend fun all(): List<{name}Entity>", "",
                  f'    @Query("SELECT COUNT(*) FROM {t.name}")',
-                 "    suspend fun count(): Int", "}", ""]
+                 "    suspend fun count(): Int", "",
+                 f"    @Insert suspend fun insert(row: {name}Entity)",
+                 f"    @Update suspend fun update(row: {name}Entity)",
+                 f"    @Delete suspend fun delete(row: {name}Entity)", "}", ""]
         schema.append(f'    "{t.name}" to TableSpec(listOf({", ".join(cols)}), listOf({pk_list})),')
 
     db = [HEADER, "package com.dero.juststudykorean.data.db", "",

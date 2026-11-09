@@ -1,0 +1,409 @@
+[
+ {
+  "category": "others",
+  "examples": [
+   {
+    "english": "I decided to exercise starting this year",
+    "korean": "올해부터 운동하기로 했어요."
+   },
+   {
+    "english": "We decided to meet on the weekend",
+    "korean": "우리 주말에 만나기로 했어요."
+   }
+  ],
+  "explanation": [],
+  "id": 3,
+  "kind": "pattern",
+  "meaning": "To decide to",
+  "notes": [],
+  "pattern": "-기로 하다",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 1
+  },
+  "structure": []
+ },
+ {
+  "category": "particles",
+  "examples": [
+   {
+    "english": "I studied until late at night.",
+    "korean": "밤늦게까지 공부했어요."
+   }
+  ],
+  "explanation": [],
+  "id": 12,
+  "kind": "particle",
+  "meaning": "Until / Up to",
+  "notes": [],
+  "pattern": "까지",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "endings",
+  "examples": [
+   {
+    "english": "",
+    "korean": "비싸네요"
+   },
+   {
+    "english": "",
+    "korean": "좋네요"
+   }
+  ],
+  "explanation": [],
+  "id": 14,
+  "kind": "pattern",
+  "meaning": "A reaction to something you see or feel right now",
+  "notes": [],
+  "pattern": "-네요",
+  "source": {
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "others",
+  "examples": [
+   {
+    "english": "It rained while I was sleeping",
+    "korean": "제가 자는 동안 비가 왔어요."
+   },
+   {
+    "english": "I read a book while I was waiting",
+    "korean": "기다리는 동안 책을 읽었어요."
+   }
+  ],
+  "explanation": [],
+  "id": 5,
+  "kind": "pattern",
+  "meaning": "During / While",
+  "notes": [],
+  "pattern": "-는 동안",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 1
+  },
+  "structure": []
+ },
+ {
+  "category": "others",
+  "examples": [
+   {
+    "english": "I don't know whether it'll rain or not",
+    "korean": "비가 올지 안 올지 모르겠어요."
+   },
+   {
+    "english": "I don't know whether to say it or not",
+    "korean": "말할지 말지 모르겠어요"
+   }
+  ],
+  "explanation": [
+   "Use -ㄹ지 말지 when expressing indecision."
+  ],
+  "id": 13,
+  "kind": "pattern",
+  "meaning": "whether",
+  "notes": [],
+  "pattern": "-ㄹ 지/ 을 지",
+  "source": {
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "page_number": 1
+  },
+  "structure": []
+ },
+ {
+  "category": "endings",
+  "examples": [
+   {
+    "english": "I'll contact you first",
+    "korean": "제가 먼저 연락할게요."
+   },
+   {
+    "english": "I'll come again tomorrow",
+    "korean": "내일 다시 올게요."
+   }
+  ],
+  "explanation": [
+   "Only with I/we. Use -(으)ㄹ 거예요 for plans that don't involve the listener."
+  ],
+  "id": 1,
+  "kind": "pattern",
+  "meaning": "I will (a promise or decision, for the listener)",
+  "notes": [],
+  "pattern": "-(으)ㄹ게요",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 1
+  },
+  "structure": []
+ },
+ {
+  "category": "others",
+  "examples": [
+   {
+    "english": "I took a taxi because I was worried I'd be late",
+    "korean": "늦을까 봐 택시를 탔어요."
+   },
+   {
+    "english": "I brought an umbrella in case it rains",
+    "korean": "비가 올까 봐 우산을 가져왔어요."
+   }
+  ],
+  "explanation": [],
+  "id": 6,
+  "kind": "pattern",
+  "meaning": "Worried that / In case",
+  "notes": [],
+  "pattern": "-(으)ㄹ까 봐",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 1
+  },
+  "structure": []
+ },
+ {
+  "category": "particles",
+  "examples": [
+   {
+    "english": "I go by subway.",
+    "korean": "지하철로 가요."
+   }
+  ],
+  "explanation": [],
+  "id": 9,
+  "kind": "particle",
+  "meaning": "Direction or means",
+  "notes": [],
+  "pattern": "(으)로",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "others",
+  "examples": [
+   {
+    "english": "I study while listening to music",
+    "korean": "음악을 들으면서 공부해요."
+   },
+   {
+    "english": "We talked while drinking coffee",
+    "korean": "커피를 마시면서 이야기했어요."
+   }
+  ],
+  "explanation": [
+   "The same person does both actions."
+  ],
+  "id": 4,
+  "kind": "pattern",
+  "meaning": "While (doing two things at the same time)",
+  "notes": [],
+  "pattern": "-(으)면서",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 1
+  },
+  "structure": []
+ },
+ {
+  "category": "particles",
+  "examples": [
+   {
+    "english": "I work from nine.",
+    "korean": "아홉 시부터 일해요."
+   }
+  ],
+  "explanation": [],
+  "id": 11,
+  "kind": "particle",
+  "meaning": "Starting point (time)",
+  "notes": [],
+  "pattern": "부터",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "others",
+  "examples": [
+   {
+    "english": "Try listening to this song once",
+    "korean": "이 노래 한번 들어 보세요."
+   },
+   {
+    "english": "I tried making Korean food",
+    "korean": "한국 음식을 만들어 봤어요."
+   }
+  ],
+  "explanation": [
+   "Past form -아/어 봤어요 means you have tried it before."
+  ],
+  "id": 2,
+  "kind": "pattern",
+  "meaning": "To try doing something",
+  "notes": [],
+  "pattern": "-아/어 보다",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 1
+  },
+  "structure": []
+ },
+ {
+  "category": "others",
+  "examples": [
+   {
+    "english": "I have to wake up early tomorrow",
+    "korean": "내일 일찍 일어나야 해요."
+   },
+   {
+    "english": "You have to take this medicine three times a day",
+    "korean": "이 약은 하루에 세 번 먹어야 해요."
+   }
+  ],
+  "explanation": [],
+  "id": 7,
+  "kind": "pattern",
+  "meaning": "To have to",
+  "notes": [],
+  "pattern": "-아/어야 하다",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "particles",
+  "examples": [
+   {
+    "english": "It's inside of the bag.",
+    "korean": "가방 안에 있어요."
+   }
+  ],
+  "explanation": [],
+  "id": 17,
+  "kind": "particle",
+  "meaning": "Place or time",
+  "notes": [],
+  "pattern": "에",
+  "source": {
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "particles",
+  "examples": [
+   {
+    "english": "I looked around the house.",
+    "korean": "집 주위를 둘러봤어요."
+   }
+  ],
+  "explanation": [],
+  "id": 16,
+  "kind": "particle",
+  "meaning": "Object",
+  "notes": [],
+  "pattern": "을/를",
+  "source": {
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "particles",
+  "examples": [
+   {
+    "english": "The cat hid behind the house.",
+    "korean": "고양이가 집 뒤에 숨었어요."
+   }
+  ],
+  "explanation": [],
+  "id": 15,
+  "kind": "particle",
+  "meaning": "Subject",
+  "notes": [],
+  "pattern": "이/가",
+  "source": {
+   "document_id": 6,
+   "filename": "Korean_Notes_Example.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "others",
+  "examples": [
+   {
+    "english": "Don't worry",
+    "korean": "걱정하지 마세요."
+   },
+   {
+    "english": "Don't cry",
+    "korean": "울지 마."
+   }
+  ],
+  "explanation": [
+   "-지 마세요 is polite, -지 마 is casual."
+  ],
+  "id": 8,
+  "kind": "pattern",
+  "meaning": "Don't (negative command)",
+  "notes": [],
+  "pattern": "-지 말다",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ },
+ {
+  "category": "particles",
+  "examples": [
+   {
+    "english": "I sent a text to my friend.",
+    "korean": "친구한테 문자를 보냈어요."
+   }
+  ],
+  "explanation": [],
+  "id": 10,
+  "kind": "particle",
+  "meaning": "To someone",
+  "notes": [],
+  "pattern": "한테",
+  "source": {
+   "document_id": 2,
+   "filename": "Gramatica_semana_14.pdf",
+   "page_number": 2
+  },
+  "structure": []
+ }
+]

@@ -1,0 +1,12 @@
+{
+ "quiz_accuracy": {
+  "last_week": 0.7333333333333333,
+  "this_week": 0.7777777777777778
+ },
+ "quiz_answers_last_week": 30,
+ "quiz_answers_this_week": 27,
+ "words_learned": {
+  "last_week": 2,
+  "this_week": 7
+ }
+}

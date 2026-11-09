@@ -1,0 +1,373 @@
+[
+ {
+  "items": [
+   [
+    1,
+    "Which Korean word means \"To be cute\"?",
+    "correct"
+   ]
+  ],
+  "key": "session-47",
+  "started_at": "2026-11-08T15:00:11",
+  "title": "Vocab_emociones_redes"
+ },
+ {
+  "items": [
+   [
+    15,
+    "Which Korean word means \"To be spicy\"?",
+    "correct"
+   ],
+   [
+    16,
+    "What does \"거울\" mean?",
+    "correct"
+   ],
+   [
+    17,
+    "Choose the meaning of \"맛있다 / 맛나다\".",
+    "wrong"
+   ],
+   [
+    18,
+    "Write in Korean: \"You worked hard today too\"",
+    "correct"
+   ],
+   [
+    19,
+    "Which Korean word means \"To be happy\"?",
+    "correct"
+   ]
+  ],
+  "key": "run-24",
+  "started_at": "2026-11-08T15:00:00",
+  "title": "4 documents"
+ },
+ {
+  "items": [
+   [
+    12,
+    "What does \"인싸\" mean?",
+    "correct"
+   ],
+   [
+    13,
+    "Choose the meaning of \"힘들다\".",
+    "correct"
+   ],
+   [
+    14,
+    "Write in Korean: \"To be disappointed\"",
+    "correct"
+   ],
+   [
+    15,
+    "Which Korean word means \"To be spicy\"?",
+    "wrong"
+   ],
+   [
+    16,
+    "What does \"거울\" mean?",
+    "correct"
+   ]
+  ],
+  "key": "run-23",
+  "started_at": "2026-11-08T02:00:00",
+  "title": "3 documents"
+ },
+ {
+  "items": [
+   [
+    9,
+    "Which Korean word means \"Mirror\"?",
+    "wrong"
+   ],
+   [
+    10,
+    "Choose the meaning of \"식다\".",
+    "correct"
+   ],
+   [
+    11,
+    "Which Korean word means \"I really laughed because of you\"?",
+    "correct"
+   ],
+   [
+    12,
+    "What does \"인싸\" mean?",
+    "correct"
+   ],
+   [
+    13,
+    "Choose the meaning of \"힘들다\".",
+    "wrong"
+   ]
+  ],
+  "key": "run-22",
+  "started_at": "2026-11-07T02:00:00",
+  "title": "4 documents"
+ },
+ {
+  "items": [
+   [
+    3,
+    "Choose the meaning of \"깨닫다\".",
+    "correct"
+   ],
+   [
+    4,
+    "Write in Korean: \"To be cold (weather)\"",
+    "correct"
+   ],
+   [
+    5,
+    "Which Korean word means \"To be fast\"?",
+    "wrong"
+   ],
+   [
+    6,
+    "What does \"헐\" mean?",
+    "correct"
+   ],
+   [
+    7,
+    "Choose the meaning of \"혹시 이 근처에 편의점 있어요?\".",
+    "correct"
+   ]
+  ],
+  "key": "run-21",
+  "started_at": "2026-11-05T02:00:00",
+  "title": "3 documents"
+ },
+ {
+  "items": [
+   [
+    38,
+    "What does \"자랑스럽다\" mean?",
+    "correct"
+   ]
+  ],
+  "key": "run-20",
+  "started_at": "2026-11-04T02:00:00",
+  "title": "Vocab_emociones_redes"
+ },
+ {
+  "items": [
+   [
+    35,
+    "What does \"가방\" mean?",
+    "wrong"
+   ],
+   [
+    36,
+    "Choose the meaning of \"짱\".",
+    "correct"
+   ],
+   [
+    37,
+    "Write in Korean: \"Please come visit again next time\"",
+    "correct"
+   ],
+   [
+    38,
+    "What does \"자랑스럽다\" mean?",
+    "correct"
+   ]
+  ],
+  "key": "run-19",
+  "started_at": "2026-11-03T02:00:00",
+  "title": "3 documents"
+ },
+ {
+  "items": [
+   [
+    29,
+    "Write in Korean: \"Potato\"",
+    "correct"
+   ],
+   [
+    30,
+    "Which Korean word means \"To exchange money\"?",
+    "correct"
+   ],
+   [
+    31,
+    "What does \"밥 먹었어?\" mean?",
+    "wrong"
+   ],
+   [
+    32,
+    "Choose the meaning of \"노랗다\".",
+    "correct"
+   ],
+   [
+    33,
+    "Write in Korean: \"Inside\"",
+    "correct"
+   ]
+  ],
+  "key": "run-18",
+  "started_at": "2026-11-01T02:00:00",
+  "title": "3 documents"
+ },
+ {
+  "items": [
+   [
+    26,
+    "Write in Korean: \"To be cute\"",
+    "correct"
+   ],
+   [
+    27,
+    "Which Korean word means \"To be excited / To have butterflies\"?",
+    "correct"
+   ],
+   [
+    28,
+    "Choose the meaning of \"후회하다\".",
+    "correct"
+   ],
+   [
+    29,
+    "Write in Korean: \"Potato\"",
+    "wrong"
+   ],
+   [
+    30,
+    "Which Korean word means \"To exchange money\"?",
+    "correct"
+   ]
+  ],
+  "key": "run-17",
+  "started_at": "2026-10-31T02:00:00",
+  "title": "3 documents"
+ },
+ {
+  "items": [
+   [
+    23,
+    "Write in Korean: \"When I hear that person's voice, I feel at ease\"",
+    "wrong"
+   ],
+   [
+    24,
+    "Which Korean word means \"If you have time this weekend, want to go see a movie?\"?",
+    "correct"
+   ],
+   [
+    25,
+    "Choose the meaning of \"달다\".",
+    "correct"
+   ],
+   [
+    26,
+    "Write in Korean: \"To be cute\"",
+    "correct"
+   ],
+   [
+    27,
+    "Which Korean word means \"To be excited / To have butterflies\"?",
+    "wrong"
+   ]
+  ],
+  "key": "run-16",
+  "started_at": "2026-10-30T02:00:00",
+  "title": "3 documents"
+ },
+ {
+  "items": [
+   [
+    17,
+    "Choose the meaning of \"맛있다 / 맛나다\".",
+    "correct"
+   ],
+   [
+    18,
+    "Write in Korean: \"You worked hard today too\"",
+    "correct"
+   ],
+   [
+    19,
+    "Which Korean word means \"To be happy\"?",
+    "wrong"
+   ],
+   [
+    20,
+    "What does \"맛집\" mean?",
+    "correct"
+   ],
+   [
+    21,
+    "Which Korean word means \"To take (Important no forget)\"?",
+    "correct"
+   ]
+  ],
+  "key": "run-15",
+  "started_at": "2026-10-28T02:00:00",
+  "title": "4 documents"
+ },
+ {
+  "items": [
+   [
+    14,
+    "Write in Korean: \"To be disappointed\"",
+    "correct"
+   ],
+   [
+    15,
+    "Which Korean word means \"To be spicy\"?",
+    "correct"
+   ],
+   [
+    16,
+    "What does \"거울\" mean?",
+    "correct"
+   ],
+   [
+    17,
+    "Choose the meaning of \"맛있다 / 맛나다\".",
+    "wrong"
+   ],
+   [
+    18,
+    "Write in Korean: \"You worked hard today too\"",
+    "correct"
+   ]
+  ],
+  "key": "run-14",
+  "started_at": "2026-10-27T02:00:00",
+  "title": "4 documents"
+ },
+ {
+  "items": [
+   [
+    11,
+    "Which Korean word means \"I really laughed because of you\"?",
+    "wrong"
+   ],
+   [
+    12,
+    "What does \"인싸\" mean?",
+    "correct"
+   ],
+   [
+    13,
+    "Choose the meaning of \"힘들다\".",
+    "correct"
+   ],
+   [
+    14,
+    "Write in Korean: \"To be disappointed\"",
+    "correct"
+   ],
+   [
+    15,
+    "Which Korean word means \"To be spicy\"?",
+    "wrong"
+   ]
+  ],
+  "key": "run-13",
+  "started_at": "2026-10-26T02:00:00",
+  "title": "3 documents"
+ }
+]

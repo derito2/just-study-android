@@ -1,0 +1,95 @@
+[
+ {
+  "available_now": 16,
+  "custom": false,
+  "document_id": 6,
+  "due": 0,
+  "last_card": {
+   "korean_word": "근처",
+   "translation": "Nearby"
+  },
+  "last_studied_at": "2026-10-23T21:02:30-06:00",
+  "learning": 1,
+  "members": [],
+  "merged": false,
+  "name": "Korean_Notes_Example.pdf",
+  "new": 16,
+  "next_due_at": "2026-11-14T10:02:30-06:00",
+  "total": 17
+ },
+ {
+  "available_now": 19,
+  "custom": false,
+  "document_id": 5,
+  "due": 0,
+  "last_card": {
+   "korean_word": "공항",
+   "translation": "Airport"
+  },
+  "last_studied_at": "2026-11-07T21:03:30-06:00",
+  "learning": 1,
+  "members": [],
+  "merged": false,
+  "name": "Vocab_viajes_irregulares.pdf",
+  "new": 19,
+  "next_due_at": "2026-11-16T04:03:30-06:00",
+  "total": 20
+ },
+ {
+  "available_now": 21,
+  "custom": false,
+  "document_id": 4,
+  "due": 0,
+  "last_card": {
+   "korean_word": "설레다",
+   "translation": "To be excited / To have butterflies"
+  },
+  "last_studied_at": "2026-11-08T10:00:30-06:00",
+  "learning": 2,
+  "members": [],
+  "merged": false,
+  "name": "Vocab_emociones_redes.pdf",
+  "new": 21,
+  "next_due_at": "2026-11-09T00:03:30-06:00",
+  "total": 23
+ },
+ {
+  "available_now": 16,
+  "custom": false,
+  "document_id": -1000000001,
+  "due": 2,
+  "last_card": {
+   "korean_word": "-아/어야 하다",
+   "translation": "To have to"
+  },
+  "last_studied_at": "2026-11-08T10:04:30-06:00",
+  "learning": 16,
+  "members": [
+   "Gramatica_semana_14.pdf",
+   "Frases_dramas_y_redes.pdf"
+  ],
+  "merged": true,
+  "name": "Two decks together",
+  "new": 14,
+  "next_due_at": "2026-11-09T03:00:30-06:00",
+  "total": 32
+ },
+ {
+  "available_now": 15,
+  "custom": false,
+  "document_id": 3,
+  "due": 0,
+  "last_card": {
+   "korean_word": "싱겁다",
+   "translation": "To be bland"
+  },
+  "last_studied_at": "2026-11-08T10:05:30-06:00",
+  "learning": 5,
+  "members": [],
+  "merged": false,
+  "name": "My first deck",
+  "new": 15,
+  "next_due_at": "2026-11-09T09:02:30-06:00",
+  "total": 20
+ }
+]
