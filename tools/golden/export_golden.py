@@ -267,6 +267,10 @@ def generate(sources: list[tuple[str, Path | None, list[dict] | None]], root: Pa
     pairs = [p for d in docs for _, p in d["pairs"]]
     compared = _compare(cases.compare_inputs(pairs))
     w.json("compare_answer.json", compared, len(compared))
+    rnd = cases.random_cases()
+    w.json("random.json", rnd, len(rnd))
+    builders = cases.builder_cases(docs)
+    w.json("builders.json", builders, sum(len(builders[k]) for k in ("from_pair", "blank", "grammar")))
 
     manifest = {
         "format": 1,

@@ -8,6 +8,7 @@ NFD to the input before calling the function, as Python did.
 from __future__ import annotations
 
 import itertools
+import random
 import re
 import unicodedata
 from dataclasses import asdict
@@ -15,7 +16,9 @@ from datetime import timedelta
 
 from app.flashcards.scheduler import RATINGS, CardState, Scheduling, label, schedule
 from app.quiz import text
+from app.quiz.builders import GeneratedBlank, build_blank, build_from_pair
 from app.quiz.generator import widen_answer
+from app.quiz.grammar import VARIANTS, build_grammar, grammar_items
 from app.rag import conjugation, entries
 from app.rag.selfcheck import SelfCheck
 
@@ -286,3 +289,107 @@ def compare_inputs(pairs: list) -> list[dict]:
         for kind, typed, transform in variants(answer, other):
             out.append(_case(kind, transform, typed=typed, answer=answer, korean=korean))
     return out
+
+
+# ---------------------------------------------------------------- random and quiz builders
+BUILDER_SEED = 7  # a fresh random.Random(BUILDER_SEED) per case: each case stands alone
+RANDOM_SEEDS = [0, 1, 7, 42, 2**32 + 5, 2**40 + 3]
+
+
+def random_cases() -> list[dict]:
+    """Python's random.Random as the builders use it (Mersenne Twister): Kotlin ports it."""
+    out = []
+    for seed in RANDOM_SEEDS:
+        rng = random.Random(seed)
+        bits = [rng.getrandbits(k) for k in (32, 1, 5, 31, 17)]
+        shuffled = list(range(10))
+        rng.shuffle(shuffled)
+        out.append(
+            {
+                "seed": seed,
+                "getrandbits": bits,
+                "shuffle10": shuffled,
+                "sample30_3": rng.sample(range(30), 3),
+                "sample5_3": rng.sample(list(range(5)), 3),
+                "sample40_3": rng.sample(list(range(40)), 3),
+            }
+        )
+    return out
+
+
+def _candidate(result) -> dict:
+    candidate, reason = result
+    if candidate is None:
+        return {"reason": reason}
+    return {
+        "type": candidate.type,
+        "prompt": candidate.prompt,
+        "answer": candidate.answer,
+        "options": candidate.options,
+        "explanation": candidate.explanation,
+        "chunk": candidate.chunk.chroma_id,
+        "prompt_version": candidate.prompt_version,
+        "model": candidate.model,
+    }
+
+
+def _blanks(pairs: list) -> list[GeneratedBlank]:
+    """Blanks like the model proposes them, made from the examples in your notes (and some broken)."""
+    koreans = [p.korean for _, p in pairs]
+    out = []
+    for _, pair in pairs:
+        if not pair.example_ko:
+            continue
+        words = HANGUL_WORD.findall(pair.example_ko)
+        if len(words) < 2:
+            continue
+        answer = words[-1]
+        others = [k for k in koreans if k != answer][:3]
+        out.append(GeneratedBlank(sentence=pair.example_ko.replace(answer, "___", 1), answer=answer,
+                                  distractors=others, explanation="Because."))
+        out.append(GeneratedBlank(sentence=pair.example_ko, answer=answer, distractors=others))
+        out.append(GeneratedBlank(sentence=pair.example_ko.replace(answer, "___", 1), answer=answer,
+                                  distractors=others[:1]))
+    out.append(GeneratedBlank(sentence="___", answer="x", distractors=["a", "b", "c"]))
+    out.append(GeneratedBlank(sentence="저는 ___ 학생 ___", answer="은", distractors=["는", "이", "가"]))
+    return out
+
+
+HANGUL_WORD = re.compile(r"[가-힣]+")
+
+
+def builder_cases(docs: list[dict]) -> dict:
+    """build_from_pair, build_blank and build_grammar over the test PDFs, as the generator calls them:
+    pool = the document's pairs or points, grounding = the document's text."""
+    pairs_out, blanks_out, grammar_out = [], [], []
+    for doc in docs:
+        grounding = "\n".join(c.text for c in doc["chunks"])
+        pool = [p for _, p in doc["pairs"]]
+        for i, (chunk, pair) in enumerate(doc["pairs"]):
+            for kind in ("ko_to_en", "vocab_recognition", "en_to_ko", "write_ko"):
+                result = build_from_pair(kind, pair, chunk, pool, grounding, random.Random(BUILDER_SEED))
+                pairs_out.append({"doc": doc["name"], "pair": i, "kind": kind, "out": _candidate(result)})
+        by_id = {c.chroma_id: c for c in doc["chunks"]}
+        for j, gb in enumerate(_blanks(doc["pairs"])):
+            chunk = by_id[doc["pairs"][0][0].chroma_id] if doc["pairs"] else doc["chunks"][0]
+            for source in {c.chroma_id: c for c, _ in doc["pairs"]}.values():
+                if gb.answer in source.text or gb.sentence.replace("___", gb.answer) in source.text:
+                    chunk = source
+                    break
+            for kind in ("fill_blank", "grammar_selection"):
+                result = build_blank(kind, gb, chunk, grounding, random.Random(BUILDER_SEED))
+                blanks_out.append(
+                    {"doc": doc["name"], "blank": j, "chunk": chunk.chroma_id, "kind": kind,
+                     "in": gb.model_dump(), "out": _candidate(result)}
+                )
+        points = [g for _, g in doc["points"]]
+        for kind in VARIANTS:
+            for chunk, point, variant in grammar_items(kind, doc["chunks"]):
+                result = build_grammar(kind, variant, point, chunk, points, grounding,
+                                       random.Random(BUILDER_SEED))
+                grammar_out.append(
+                    {"doc": doc["name"], "chunk": chunk.chroma_id, "point": points.index(point),
+                     "kind": kind, "variant": variant, "out": _candidate(result)}
+                )
+    return {"seed": BUILDER_SEED, "from_pair": pairs_out, "blank": blanks_out, "grammar": grammar_out}
+

@@ -1,6 +1,10 @@
 {
  "alembic_head": "b3e8d5c1a9f4",
  "files": {
+  "builders.json": {
+   "cases": 826,
+   "sha256": "2b0f049122fae129d8ba596d6fad3853b40b9bac0c2b152eba71c01fdba963ae"
+  },
   "chunks/Frases_dramas_y_redes.json": {
    "cases": 5,
    "sha256": "5639415df246cd2fc7f8f03dd41183cd464afb55d831e6814d259f7dfd20b604"
@@ -152,6 +156,10 @@
   "parser_raw/Vocab_viajes_irregulares.json": {
    "cases": 2,
    "sha256": "7be2aac9a72951f90a584742bef9704135c7976024efc15f6eea6f1b0c0d2c67"
+  },
+  "random.json": {
+   "cases": 6,
+   "sha256": "59bf89079735724020ffc43b87c6a0d33df22f765250840c5ab99385600c89ab"
   },
   "sm2.json": {
    "cases": 682,
