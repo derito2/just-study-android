@@ -66,6 +66,8 @@ dependencies {
     testImplementation(libs.roborazzi.compose)
     testImplementation(libs.roborazzi.junit.rule)
     testImplementation(libs.androidx.junit)
+    testImplementation(libs.room3.runtime) // behaviour tests: the real repositories on the golden base, in memory
+    testImplementation(libs.androidx.sqlite.framework)
     testImplementation(libs.org.json) // TokensTest reads design/tokens.json (android.jar's org.json is a stub)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

@@ -30,7 +30,7 @@ room3 {
 }
 
 dependencies {
-    implementation(project(":core:korean"))
+    api(project(":core:korean")) // the app shows Rating, Comparison… from the repositories
     implementation(libs.room3.runtime)
     implementation(libs.androidx.sqlite.bundled)
     ksp(libs.room3.compiler)

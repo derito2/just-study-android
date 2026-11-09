@@ -46,4 +46,13 @@ class FlashcardGoldenTest : GoldenDb() {
                 "rating" to h.rating, "reviewed_at" to h.reviewedAt, "interval_hours" to h.intervalHours)
         }))
     }
+
+    @Test
+    fun cardDetails() = runBlocking {
+        val cards = db.flashcardsDao().all().sortedBy { it.id }
+        val details = repo.details(cards)
+        assertJson("card_details", golden("card_details"), obj(*details.entries.sortedBy { it.key }.map { (id, d) ->
+            id.toString() to obj("structure" to d.structure, "examples" to d.examples.map { listOf(it.first, it.second) }, "explanation" to d.explanation, "notes" to d.notes)
+        }.toTypedArray()))
+    }
 }

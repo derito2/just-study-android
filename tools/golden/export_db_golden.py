@@ -223,7 +223,16 @@ def outputs(db) -> dict[str, object]:
         "quiz_history": quiz_service.history(db, 20, now=NOW),
         "saved_questions": [q.id for q in quiz_service.saved_questions(db, None, now=NOW)],
         "grammar": reference_service.grammar(db),
+        "card_details": {str(k): v for k, v in sorted(flashcard_service.card_details(db, _all_cards(db)).items())},
     }
+
+
+def _all_cards(db):
+    from sqlalchemy import select
+
+    from app.database.models import Flashcard
+
+    return list(db.scalars(select(Flashcard).order_by(Flashcard.id)))
 
 
 def _fixed_zip(path: Path) -> None:

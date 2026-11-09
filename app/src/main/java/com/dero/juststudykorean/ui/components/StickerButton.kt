@@ -61,7 +61,8 @@ fun StickerButton(
     color: StickerColor = StickerColor.Action,
     size: StickerSize = StickerSize.Default,
     enabled: Boolean = true,
-) = StickerButton(text, onClick, modifier, ko, color, size, enabled, forcePressed = false)
+    detail: String? = null,
+) = StickerButton(text, onClick, modifier, ko, color, size, enabled, forcePressed = false, detail = detail)
 
 /** [forcePressed] only for screenshot tests of the pressed state. */
 @Composable
@@ -74,6 +75,7 @@ internal fun StickerButton(
     size: StickerSize,
     enabled: Boolean,
     forcePressed: Boolean,
+    detail: String? = null,
 ) {
     val colors = JustStudyTheme.colors
     val paint = colors.paint(color)
@@ -112,6 +114,9 @@ internal fun StickerButton(
             if (ko != null) {
                 Spacer(Modifier.height(1.dp))
                 Text(ko, color = ink, style = if (size == StickerSize.Mini) JustStudyTheme.korean.koBelow.copy(fontSize = 10.sp) else JustStudyTheme.korean.koBelow, modifier = Modifier.alpha(0.85f), textAlign = TextAlign.Center)
+            }
+            if (detail != null) { // a third line: the rating's next interval ("10 min"), 12 sp, no caps
+                Text(detail, color = ink, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
             }
         }
     }

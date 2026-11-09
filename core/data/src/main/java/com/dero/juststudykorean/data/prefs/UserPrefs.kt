@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.dero.juststudykorean.data.progress.TimelineUnit
+import com.dero.juststudykorean.korean.Scheduling
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -24,12 +25,20 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     /** Dashboard: the chart's period, and the streak seen on the last visit (for the bump when it grows). */
     val chartUnit: Flow<TimelineUnit> = store.data.map { it[CHART_UNIT].toEnum(TimelineUnit.Day) }
     val lastStreak: Flow<Int> = store.data.map { it[LAST_STREAK] ?: 0 }
+    /** Review options (Again in minutes; Hard, Good and Easy in hours): the web kept them in data/flashcard_options.json. */
+    val scheduling: Flow<Scheduling> = store.data.map {
+        val d = Scheduling()
+        Scheduling(it[AGAIN] ?: d.againMinutes, it[HARD] ?: d.hardHours, it[GOOD] ?: d.goodHours, it[EASY] ?: d.easyHours)
+    }
 
     suspend fun setThemeMode(mode: ThemeMode) { store.edit { it[THEME] = mode.name } }
     suspend fun setCardDirection(direction: CardDirection) { store.edit { it[CARD_DIRECTION] = direction.name } }
     suspend fun setTypeAnswer(on: Boolean) { store.edit { it[TYPE_ANSWER] = on } }
     suspend fun setChartUnit(unit: TimelineUnit) { store.edit { it[CHART_UNIT] = unit.name } }
     suspend fun setLastStreak(days: Int) { store.edit { it[LAST_STREAK] = days } }
+    suspend fun setScheduling(s: Scheduling) {
+        store.edit { it[AGAIN] = s.againMinutes; it[HARD] = s.hardHours; it[GOOD] = s.goodHours; it[EASY] = s.easyHours }
+    }
 
     private companion object {
         val THEME = stringPreferencesKey("theme_mode")
@@ -37,6 +46,10 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
         val CHART_UNIT = stringPreferencesKey("chart_unit")
         val LAST_STREAK = intPreferencesKey("last_streak")
+        val AGAIN = intPreferencesKey("again_minutes")
+        val HARD = intPreferencesKey("hard_hours")
+        val GOOD = intPreferencesKey("good_hours")
+        val EASY = intPreferencesKey("easy_hours")
     }
 }
 

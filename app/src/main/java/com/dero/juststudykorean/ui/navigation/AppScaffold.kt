@@ -18,6 +18,8 @@ import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.components.MoreSheet
 import com.dero.juststudykorean.ui.screens.PlaceholderScreen
 import com.dero.juststudykorean.ui.dashboard.DashboardScreen
+import com.dero.juststudykorean.ui.flashcards.DecksScreen
+import com.dero.juststudykorean.ui.flashcards.StudyScreen
 import com.dero.juststudykorean.ui.screens.SettingsScreen
 
 /**
@@ -33,25 +35,25 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
             backStack = nav.stacks.getValue(tab),
             entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
             entryProvider = { route ->
-                NavEntry(route, contentKey = "${route.tab}/${route.section}") {
-                    if (route.section == MoreDestination.Settings) {
-                        SettingsScreen(onMore = { moreOpen = true }, onBack = { nav.back() })
-                    } else if (route == Route(TopLevel.Dashboard)) {
-                        // shortcut: the run id is not passed on yet; the Quiz screen (task 5) will open it.
-                        DashboardScreen(onMore = { moreOpen = true }, onOpenQuiz = { nav.select(TopLevel.Quiz) }, onAsk = { nav.select(TopLevel.Teacher) })
-                    } else {
-                        PlaceholderScreen(
-                            route,
-                            onMore = { moreOpen = true },
-                            onBack = if (route.section != null) ({ nav.back() }) else null,
+                NavEntry(route, contentKey = "${route.tab}/${route.section}/${route.screen}") {
+                    val more = { moreOpen = true }
+                    val back = { nav.back() }
+                    val screen = route.screen
+                    when {
+                        screen is Screen.Study -> StudyScreen(screen.deckId, screen.deckName, onBack = back)
+                        route.section == MoreDestination.Settings -> SettingsScreen(onMore = more, onBack = back)
+                        route == Route(TopLevel.Dashboard) -> DashboardScreen(
+                            onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onAsk = { nav.select(TopLevel.Teacher) },
                         )
+                        route == Route(TopLevel.Flashcards) -> DecksScreen(onMore = more, onStudy = { nav.push(TopLevel.Flashcards, Screen.Study(it.id, it.name)) })
+                        else -> PlaceholderScreen(route, onMore = more, onBack = if (route.section != null || screen != null) back else null)
                     }
                 }
             },
         )
     }
     Scaffold(
-        bottomBar = { JsBottomBar(current = nav.current, onSelect = nav::select) },
+        bottomBar = { if (!nav.fullScreen) JsBottomBar(current = nav.current, onSelect = nav::select) },
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0), // the top bar handles the status bar; the bottom bar, the navigation bar
     ) { padding ->

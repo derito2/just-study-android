@@ -34,6 +34,7 @@ import kotlin.math.sin
 enum class Lucide(internal val durationMs: Int) {
     LayoutGrid(800), BookText(600), Layers(600), CircleHelp(500), GraduationCap(700), Menu(300),
     Languages(1000), TrendingUp(400), CalendarDays(400), Moon(1200), Settings(600), ChevronLeft(500), BadgeAlert(500), Download(500), TrendingDown(400), Minus(300),
+    Check(300), X(300), SquarePen(500), Trash2(500), Search(400), Plus(300),
 }
 
 /** How one part of an icon moves at progress t (0..1). Pivot in icon units (24 × 24). */
@@ -62,7 +63,10 @@ private fun Lucide.pose(part: Int, t: Float): PartPose = when (this) {
     }
     Lucide.Languages -> PartPose(trimEnd = ((t * 1000f - part * 100f) / 500f).coerceIn(0f, 1f)) // drawn in a chain
     Lucide.TrendingUp, Lucide.TrendingDown -> PartPose(trimEnd = t)
-    Lucide.Minus -> PartPose(trimEnd = t)
+    Lucide.Minus, Lucide.Check, Lucide.X, Lucide.Plus -> PartPose(trimEnd = t)
+    Lucide.SquarePen -> PartPose(rotation = 10f * swing(t), pivot = Offset(4f, 20f))
+    Lucide.Trash2 -> PartPose(rotation = 8f * swing(t) * (1f - t))
+    Lucide.Search -> PartPose(scale = 1f + 0.1f * wave(t))
     Lucide.CalendarDays -> if (part < 4) PartPose() else PartPose(alpha = 1f - 0.8f * wave(((t * 6f) - (part - 4)).coerceIn(0f, 1f)))
     Lucide.Moon -> PartPose(rotation = 14f * swing(t) * (1f - t))
     Lucide.Settings -> PartPose(rotation = 180f * t)

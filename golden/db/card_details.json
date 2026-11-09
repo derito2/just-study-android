@@ -1,0 +1,1188 @@
+{
+ "1": {
+  "examples": [],
+  "explanation": [],
+  "notes": [
+   "People say it at the end of the day, like \"good job today\"."
+  ],
+  "structure": []
+ },
+ "10": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "100": {
+  "examples": [
+   [
+    "저 혼자 살아요",
+    "I live alone"
+   ],
+   [
+    "혼자서",
+    "By oneself"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "101": {
+  "examples": [],
+  "explanation": [],
+  "notes": [
+   "Use it like \"dont forget to take this...\" because is important"
+  ],
+  "structure": []
+ },
+ "102": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "103": {
+  "examples": [],
+  "explanation": [],
+  "notes": [
+   "Use 으니까 because we cannot use 어서 in commands."
+  ],
+  "structure": []
+ },
+ "104": {
+  "examples": [
+   [
+    "비가 올지 안 올지 모르겠어요.",
+    "I don't know whether it'll rain or not"
+   ],
+   [
+    "말할지 말지 모르겠어요",
+    "I don't know whether to say it or not"
+   ]
+  ],
+  "explanation": [
+   "Use -ㄹ지 말지 when expressing indecision."
+  ],
+  "notes": [],
+  "structure": []
+ },
+ "105": {
+  "examples": [
+   [
+    "비싸네요",
+    ""
+   ],
+   [
+    "좋네요",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "106": {
+  "examples": [
+   [
+    "고양이가 집 뒤에 숨었어요.",
+    "The cat hid behind the house."
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "107": {
+  "examples": [
+   [
+    "집 주위를 둘러봤어요.",
+    "I looked around the house."
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "108": {
+  "examples": [
+   [
+    "가방 안에 있어요.",
+    "It's inside of the bag."
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "109": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "11": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "110": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "111": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "112": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "12": {
+  "examples": [],
+  "explanation": [],
+  "notes": [
+   "Often polite small talk, not a real plan."
+  ],
+  "structure": []
+ },
+ "13": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "14": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "15": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "16": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "17": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "18": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "19": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "2": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "20": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "21": {
+  "examples": [
+   [
+    "제가 먼저 연락할게요.",
+    "I'll contact you first"
+   ],
+   [
+    "내일 다시 올게요.",
+    "I'll come again tomorrow"
+   ]
+  ],
+  "explanation": [
+   "Only with I/we. Use -(으)ㄹ 거예요 for plans that don't involve the listener."
+  ],
+  "notes": [],
+  "structure": []
+ },
+ "22": {
+  "examples": [
+   [
+    "이 노래 한번 들어 보세요.",
+    "Try listening to this song once"
+   ],
+   [
+    "한국 음식을 만들어 봤어요.",
+    "I tried making Korean food"
+   ]
+  ],
+  "explanation": [
+   "Past form -아/어 봤어요 means you have tried it before."
+  ],
+  "notes": [],
+  "structure": []
+ },
+ "23": {
+  "examples": [
+   [
+    "올해부터 운동하기로 했어요.",
+    "I decided to exercise starting this year"
+   ],
+   [
+    "우리 주말에 만나기로 했어요.",
+    "We decided to meet on the weekend"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "24": {
+  "examples": [
+   [
+    "음악을 들으면서 공부해요.",
+    "I study while listening to music"
+   ],
+   [
+    "커피를 마시면서 이야기했어요.",
+    "We talked while drinking coffee"
+   ]
+  ],
+  "explanation": [
+   "The same person does both actions."
+  ],
+  "notes": [],
+  "structure": []
+ },
+ "25": {
+  "examples": [
+   [
+    "제가 자는 동안 비가 왔어요.",
+    "It rained while I was sleeping"
+   ],
+   [
+    "기다리는 동안 책을 읽었어요.",
+    "I read a book while I was waiting"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "26": {
+  "examples": [
+   [
+    "늦을까 봐 택시를 탔어요.",
+    "I took a taxi because I was worried I'd be late"
+   ],
+   [
+    "비가 올까 봐 우산을 가져왔어요.",
+    "I brought an umbrella in case it rains"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "27": {
+  "examples": [
+   [
+    "내일 일찍 일어나야 해요.",
+    "I have to wake up early tomorrow"
+   ],
+   [
+    "이 약은 하루에 세 번 먹어야 해요.",
+    "You have to take this medicine three times a day"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "28": {
+  "examples": [
+   [
+    "걱정하지 마세요.",
+    "Don't worry"
+   ],
+   [
+    "울지 마.",
+    "Don't cry"
+   ]
+  ],
+  "explanation": [
+   "-지 마세요 is polite, -지 마 is casual."
+  ],
+  "notes": [],
+  "structure": []
+ },
+ "29": {
+  "examples": [
+   [
+    "지하철로 가요.",
+    "I go by subway."
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "3": {
+  "examples": [],
+  "explanation": [],
+  "notes": [
+   "A way to say \"how are you\" to friends."
+  ],
+  "structure": []
+ },
+ "30": {
+  "examples": [
+   [
+    "친구한테 문자를 보냈어요.",
+    "I sent a text to my friend."
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "31": {
+  "examples": [
+   [
+    "아홉 시부터 일해요.",
+    "I work from nine."
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "32": {
+  "examples": [
+   [
+    "밤늦게까지 공부했어요.",
+    "I studied until late at night."
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "33": {
+  "examples": [
+   [
+    "메뉴판 좀 주세요.",
+    "Can I have the menu, please?"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "34": {
+  "examples": [
+   [
+    "오늘은 제가 계산할게요.",
+    "I'll pay today"
+   ],
+   [
+    "계산해 주세요",
+    "The bill, please"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "35": {
+  "examples": [
+   [
+    "남은 음식 포장해 주세요.",
+    "Please wrap up the leftovers"
+   ]
+  ],
+  "explanation": [],
+  "notes": [
+   "Used at restaurants: 포장이요! = To go!"
+  ],
+  "structure": []
+ },
+ "36": {
+  "examples": [
+   [
+    "떡볶이가 너무 매워요.",
+    "The tteokbokki is too spicy"
+   ],
+   [
+    "매워요",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "37": {
+  "examples": [
+   [
+    "국이 좀 싱거워요.",
+    "The soup is a bit bland"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "38": {
+  "examples": [
+   [
+    "이 김치는 너무 짜요.",
+    "This kimchi is too salty"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "39": {
+  "examples": [
+   [
+    "케이크가 생각보다 안 달아요.",
+    "The cake isn't as sweet as I thought"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "4": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "40": {
+  "examples": [
+   [
+    "여기 유명한 맛집이에요.",
+    "This is a famous restaurant"
+   ]
+  ],
+  "explanation": [],
+  "notes": [
+   "People post 맛집 photos on Instagram"
+  ],
+  "structure": []
+ },
+ "41": {
+  "examples": [
+   [
+    "일곱 시로 예약했어요.",
+    "I made a reservation for seven"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "42": {
+  "examples": [
+   [
+    "창가 자리 있어요?",
+    "Is there a window seat?"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "43": {
+  "examples": [
+   [
+    "음식을 남기지 마세요.",
+    "Don't leave food on your plate"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "44": {
+  "examples": [
+   [
+    "전자레인지에 데워 주세요.",
+    "Please heat it up in the microwave"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "45": {
+  "examples": [
+   [
+    "커피가 다 식었어요.",
+    "The coffee has gone cold"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "46": {
+  "examples": [
+   [
+    "고기를 구워요.",
+    "I grill the meat"
+   ],
+   [
+    "구워요",
+    ""
+   ],
+   [
+    "구웠어요",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "47": {
+  "examples": [
+   [
+    "컵에 물을 부어 주세요.",
+    "Please pour water into the cup"
+   ],
+   [
+    "부어요",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "48": {
+  "examples": [
+   [
+    "사람들이 줄을 서 있어요.",
+    "People are standing in line"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "49": {
+  "examples": [
+   [
+    "영수증 필요하세요?",
+    "Do you need a receipt?"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "5": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "50": {
+  "examples": [
+   [
+    "배고파 죽겠어요.",
+    "I'm starving"
+   ]
+  ],
+  "explanation": [],
+  "notes": [
+   "Casual exaggeration: 죽겠어요 = I could die"
+  ],
+  "structure": []
+ },
+ "51": {
+  "examples": [
+   [
+    "커피가 너무 진해요.",
+    "The coffee is too strong"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "52": {
+  "examples": [
+   [
+    "이 집 빵 진짜 맛있어요.",
+    "The bread here is really delicious"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "53": {
+  "examples": [
+   [
+    "내일 여행 갈 생각에 너무 설레요.",
+    "I'm so excited thinking about tomorrow's trip"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "54": {
+  "examples": [
+   [
+    "내 생일을 잊어버려서 좀 서운했어.",
+    "I felt a bit hurt that you forgot my birthday"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "55": {
+  "examples": [
+   [
+    "강아지가 너무 귀여워요!",
+    "The puppy is so cute!"
+   ],
+   [
+    "귀여워",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "56": {
+  "examples": [
+   [
+    "혼자 살면 가끔 외로워요.",
+    "When you live alone, you sometimes feel lonely"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "57": {
+  "examples": [
+   [
+    "이 영화 진짜 무서워요.",
+    "This movie is really scary"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "58": {
+  "examples": [
+   [
+    "아침부터 버스를 놓쳐서 짜증났어.",
+    "I missed the bus this morning, so I was annoyed"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "59": {
+  "examples": [
+   [
+    "고향 음식이 그리워요.",
+    "I miss the food from my hometown"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "6": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "60": {
+  "examples": [
+   [
+    "오늘 일이 너무 힘들었어요.",
+    "Work was really hard today"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "61": {
+  "examples": [
+   [
+    "너랑 있으면 행복해.",
+    "I'm happy when I'm with you"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "62": {
+  "examples": [
+   [
+    "이 영상 너무 웃겨요.",
+    "This video is so funny"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "63": {
+  "examples": [
+   [
+    "영화 보다가 울었어요.",
+    "I cried while watching the movie"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "64": {
+  "examples": [
+   [
+    "와 줘서 고마워.",
+    "Thanks for coming"
+   ],
+   [
+    "고마워요",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "65": {
+  "examples": [
+   [
+    "너무 걱정하지 마세요.",
+    "Don't worry too much"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "66": {
+  "examples": [
+   [
+    "그 말을 한 걸 후회해요.",
+    "I regret saying that"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "67": {
+  "examples": [
+   [
+    "첫눈에 반했어요.",
+    "I fell for them at first sight"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "68": {
+  "examples": [
+   [
+    "결과를 보고 좀 실망했어요.",
+    "I was a bit disappointed when I saw the result"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "69": {
+  "examples": [
+   [
+    "네가 정말 자랑스러워.",
+    "I'm really proud of you"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "7": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "70": {
+  "examples": [
+   [
+    "오늘 기분이 어때요?",
+    "How are you feeling today?"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "71": {
+  "examples": [
+   [
+    "그 노래를 들으면 눈물이 나요.",
+    "When I hear that song, I tear up"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "72": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "73": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "74": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "75": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "76": {
+  "examples": [
+   [
+    "공항까지 얼마나 걸려요?",
+    "How long does it take to get to the airport?"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "77": {
+  "examples": [
+   [
+    "여권을 잃어버렸어요.",
+    "I lost my passport"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "78": {
+  "examples": [
+   [
+    "짐이 너무 무거워요.",
+    "The luggage is too heavy"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "79": {
+  "examples": [
+   [
+    "공항에서 돈을 환전했어요.",
+    "I exchanged money at the airport"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "8": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "80": {
+  "examples": [
+   [
+    "시장에서 길을 잃었어요.",
+    "I got lost in the market"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "81": {
+  "examples": [
+   [
+    "바닷가에서 하루 종일 놀았어요.",
+    "I hung out at the beach all day"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "82": {
+  "examples": [
+   [
+    "창문 좀 열어 주세요.",
+    "Please open the window"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "83": {
+  "examples": [
+   [
+    "길을 물어봤어요.",
+    "I asked for directions"
+   ],
+   [
+    "물어요",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "84": {
+  "examples": [
+   [
+    "짐을 차에 실었어요.",
+    "I loaded the luggage into the car"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "85": {
+  "examples": [
+   [
+    "그때 제 실수를 깨달았어요.",
+    "That's when I realized my mistake"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "86": {
+  "examples": [
+   [
+    "모르는 사람이 길 찾는 걸 도와줬어요.",
+    "A stranger helped me find the way"
+   ],
+   [
+    "도와요",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "87": {
+  "examples": [
+   [
+    "밤에는 많이 추워요.",
+    "It gets very cold at night"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "88": {
+  "examples": [
+   [
+    "호텔이 공항에서 가까워요.",
+    "The hotel is close to the airport"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "89": {
+  "examples": [
+   [
+    "이 문제는 생각보다 쉬워요.",
+    "This problem is easier than I thought"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "9": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "90": {
+  "examples": [
+   [
+    "감기가 다 나았어요.",
+    "My cold is all better"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "91": {
+  "examples": [
+   [
+    "커피를 천천히 저어요.",
+    "I stir the coffee slowly"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "92": {
+  "examples": [
+   [
+    "지하철이 버스보다 빨라요.",
+    "The subway is faster than the bus"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "93": {
+  "examples": [
+   [
+    "강물이 천천히 흘러요.",
+    "The river flows slowly"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "94": {
+  "examples": [
+   [
+    "하늘이 정말 파래요.",
+    "The sky is really blue"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "95": {
+  "examples": [
+   [
+    "은행잎이 노래요.",
+    "The ginkgo leaves are yellow"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "96": {
+  "examples": [
+   [
+    "이 근처에는 카페가 없어요.",
+    "There are no cafes in this vicinity"
+   ],
+   [
+    "학교가 집 근처에 있어요.",
+    "The school is nearby my house"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "97": {
+  "examples": [
+   [
+    "가방 안에 있어요.",
+    "It's inside of the bag"
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "98": {
+  "examples": [],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ },
+ "99": {
+  "examples": [
+   [
+    "걸어요",
+    ""
+   ],
+   [
+    "걸을 거야",
+    ""
+   ]
+  ],
+  "explanation": [],
+  "notes": [],
+  "structure": []
+ }
+}
