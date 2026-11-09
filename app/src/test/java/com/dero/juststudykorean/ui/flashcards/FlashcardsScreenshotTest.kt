@@ -23,9 +23,12 @@ import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.navigation.TopLevel
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import com.dropbox.differ.ImageComparator
+import com.dropbox.differ.Mask
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
+import kotlin.math.abs
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -58,8 +61,22 @@ class FlashcardsScreenshotTest {
     private val sources = mapOf(7L to CardSource("Unit 3 · At school", 4), 8L to CardSource("Unit 3 · At school", 2))
 
     // Edit mode greys out the buttons: their small semi-transparent Korean text is antialiased a bit differently
-    // on Linux (CI) and macOS, so only these two captures allow 0.1 % of changed pixels. The rest stay exact.
-    private val koreanAlphaTolerance = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.001f))
+    // on Linux (CI) and macOS (up to 8/255 per channel, invisible). Only these two captures ignore differences that
+    // small and still allow at most 0.1 % of changed pixels; every other capture stays exact.
+    private val koreanAlphaTolerance = RoborazziOptions(
+        compareOptions = RoborazziOptions.CompareOptions(imageComparator = ChannelToleranceComparator(maxSteps = 8), changeThreshold = 0.001f),
+    )
+
+    @Test
+    fun toleranceIgnoresOnlySmallChanges() {
+        fun image(vararg grey: Int) = object : com.dropbox.differ.Image {
+            override val width = grey.size
+            override val height = 1
+            override fun getPixel(x: Int, y: Int) = com.dropbox.differ.Color(grey[x] / 255f, grey[x] / 255f, grey[x] / 255f, 1f)
+        }
+        val result = ChannelToleranceComparator(maxSteps = 8).compare(image(100, 100, 100), image(100, 108, 109), null)
+        org.junit.Assert.assertEquals(1, result.pixelDifferences) // 8 steps ignored, 9 counted
+    }
 
     private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, options: RoborazziOptions = RoborazziOptions(), content: @Composable () -> Unit) =
         captureRoboImage("src/test/screenshots/$name.png", options) {
@@ -113,4 +130,24 @@ class FlashcardsScreenshotTest {
 
     @Test
     fun noCardsDue() = snap("flashcards_none_due", bar = false) { Study(StudyUi(loading = false)) }
+}
+
+/** A pixel counts as changed only if one of its channels moved more than [maxSteps] of 255. */
+private class ChannelToleranceComparator(private val maxSteps: Int) : ImageComparator {
+    private fun steps(a: Float, b: Float) = Math.round(abs(a - b) * 255f) // differ's channels are byte / 255f
+
+    override fun compare(left: com.dropbox.differ.Image, right: com.dropbox.differ.Image, diff: Mask?): ImageComparator.ComparisonResult {
+        val w = minOf(left.width, right.width)
+        val h = minOf(left.height, right.height)
+        var changed = maxOf(left.width, right.width) * maxOf(left.height, right.height) - w * h // a size change counts fully
+        for (y in 0 until h) for (x in 0 until w) {
+            val a = left.getPixel(x, y)
+            val b = right.getPixel(x, y)
+            if (maxOf(steps(a.r, b.r), steps(a.g, b.g), steps(a.b, b.b), steps(a.a, b.a)) > maxSteps) {
+                changed++
+                diff?.setValue(x, y, 1f)
+            }
+        }
+        return ImageComparator.ComparisonResult(changed, maxOf(left.width, right.width) * maxOf(left.height, right.height), w, h)
+    }
 }
