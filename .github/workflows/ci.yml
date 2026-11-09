@@ -1,0 +1,55 @@
+# Phase 2, task 6: on every PR and every push to main, tests, screenshots, lint, both builds and the
+# manifest check (docs/PLAN.md, point 8). No secrets and nothing paid: GitHub's free Linux runners.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      # JDK 21 for the build; 25 is what gradle/gradle-daemon-jvm.properties asks for the daemon.
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: |
+            25
+            21
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Tests, screenshots, lint and builds
+        run: ./gradlew test verifyRoborazziDebug lint assembleDebug assembleRelease
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: check_manifest test
+        run: |
+          python -m pip install --quiet pytest
+          python -m pytest -q tools/tests/test_check_manifest.py
+
+      - name: Merged manifests (debug and release)
+        run: python tools/ci/check_manifest.py
+
+      - name: Screenshot diffs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: roborazzi
+          path: app/build/outputs/roborazzi
+          if-no-files-found: ignore
