@@ -43,6 +43,9 @@ golden/private/
 # PoC outputs and backups (user's data)
 build/poc/
 *.jsbackup.zip
+# Synthetic backups (test PDFs, no personal data) that the tests need:
+!golden/db/*.jsbackup.zip
+!core/data/src/androidTest/assets/backup/*.jsbackup.zip
 
 # Python tools
 __pycache__/
