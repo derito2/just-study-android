@@ -2,6 +2,11 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-08 — PyRandom (Mersenne Twister de Python) en :core:korean
+**Decisión:** los constructores del quiz por reglas (`buildFromPair`, `buildBlank`, `buildGrammar`) reciben un `PyRandom`: el `random.Random` de Python portado (MT19937 con la semilla de CPython 3.12, `getrandbits`, `_randbelow`, `shuffle` y `sample`). Hereda de `kotlin.random.Random`.
+**Por qué:** con la misma semilla, los constructores dan las mismas opciones y en el mismo orden que el web, así que sus pruebas doradas se pueden comparar campo a campo. Comprobado con 826 casos dorados (`golden/builders.json`) y con 6 semillas de azar puro (`golden/random.json`), incluidas semillas de más de 32 bits (tarea 1 de la fase 3, PR #15).
+**Descartado:** `kotlin.random.Random`: su `nextInt` y su `shuffle` usan otros algoritmos y no coinciden con Python, así que las doradas de los constructores no se podrían comprobar.
+
 ## 2026-11-08 — Respaldo: reemplaza todo, con confirmación, y conserva extracted/ y pdfs/
 **Decisión:** *Import backup* (Settings) reemplaza **todo** lo de la app por el `.jsbackup.zip` v1 elegido con SAF, tras el diálogo *"This replaces everything in the app with the backup. Continue?"* (*Cancel* gris / *Import* rojo). Primero verifica sin escribir el manifiesto y el sha256 de cada tabla, de cada `extracted/` y de cada `pdfs/`. Después, en **una sola transacción**, borra e inserta las 18 tablas. Los `extracted/` y `pdfs/` se guardan tal cual en el almacenamiento privado (`files/backup-files/`, con sus sha256) y solo sustituyen a los anteriores si la transacción termina bien. *Export backup* los vuelve a meter.
 **Por qué** (tarea 5, PR #13, OPPO, build debug): `BackupTest` 6/6 (importar todo, ida y vuelta idéntica, dos importaciones sin duplicar, un PDF o un ZIP sin manifiesto da `NotABackup` sin tocar la base, sha256 cambiado da `ChecksumMismatch` y deshace todo, `extracted/` y `pdfs/` idénticos a la vuelta). Con el respaldo real, desde la app: 1265 filas de 18 tablas; la exportación pesa 579 433 bytes (el original, 579 034) y sus 26 entradas son idénticas byte a byte, con los mismos sha256.
