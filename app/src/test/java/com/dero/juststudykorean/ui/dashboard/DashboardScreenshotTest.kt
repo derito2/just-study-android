@@ -21,6 +21,9 @@ import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.components.niceMax
 import com.dero.juststudykorean.ui.navigation.TopLevel
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.runComposeUiTest
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -117,6 +120,25 @@ class DashboardScreenshotTest {
 
     @Test
     fun dashboardAt130Percent() = snap("dashboard_130", studied, fontScale = 1.3f)
+
+    /** The streak went up since last time (17 → 18): the value at the top of its jump, 140 ms in (scale 1.15). */
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun streakBump() {
+        // runComposeUiTest opens a ComponentActivity: registered in Robolectric only, so no ui-test-manifest in the app.
+        val app = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.app.Application>()
+        val activity = android.content.ComponentName(app, androidx.activity.ComponentActivity::class.java)
+        org.robolectric.Shadows.shadowOf(app.packageManager).apply {
+            addActivityIfNotPresent(activity)
+            addIntentFilterForActivity(activity, android.content.IntentFilter(android.content.Intent.ACTION_MAIN).apply { addCategory(android.content.Intent.CATEGORY_LAUNCHER) })
+        }
+        runComposeUiTest {
+            mainClock.autoAdvance = false
+            setContent { JustStudyTheme { DashboardContent(studied.copy(previousStreak = 17), onMore = {}, onUnit = {}, onPractice = {}, onAsk = {}, onRetry = {}) } }
+            mainClock.advanceTimeBy(140)
+            onRoot().captureRoboImage("src/test/screenshots/dashboard_streak_bump.png")
+        }
+    }
 
     @Test
     fun niceMaxRoundsUpLikeTheWeb() {
