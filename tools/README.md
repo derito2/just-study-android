@@ -36,6 +36,17 @@ PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/export/ex
   --out /Users/dero/Documents/JustStudyApp/build/poc [--no-pdfs]
 ```
 
+## Database golden files → `golden/db/`
+
+Synthetic SQLite with the web's models (the test PDFs, no personal data), filled through the web's own
+services at fixed times in `America/Mexico_City`; then the read services with a fixed `now`. Writes
+`base.jsbackup.zip` (after processing), `ops.json` (every later write), `fixture.jsbackup.zip` (the result) and
+one JSON per read function. Deterministic (`tools/tests/test_export_db_golden.py`).
+
+```bash
+PYTHONPATH=. .venv/bin/python /Users/dero/Documents/JustStudyApp/tools/golden/export_db_golden.py
+```
+
 ## Synthetic backup → `core/data/src/androidTest/assets/backup/synthetic.jsbackup.zip`
 
 No MySQL and no personal data: every table with 2 made-up rows (in-memory SQLite with the web's models).

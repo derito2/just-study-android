@@ -1,0 +1,413 @@
+{
+ "day": {
+  "points": [
+   {
+    "accuracy": 0.8,
+    "answers": 5,
+    "cards_due": 3,
+    "cards_learning": 15,
+    "cards_new": 94,
+    "minutes": 13,
+    "start": "2026-10-26"
+   },
+   {
+    "accuracy": 0.8,
+    "answers": 5,
+    "cards_due": 1,
+    "cards_learning": 19,
+    "cards_new": 92,
+    "minutes": 13,
+    "start": "2026-10-27"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 7,
+    "cards_learning": 13,
+    "cards_new": 92,
+    "minutes": 0,
+    "start": "2026-10-28"
+   },
+   {
+    "accuracy": 0.6,
+    "answers": 5,
+    "cards_due": 6,
+    "cards_learning": 14,
+    "cards_new": 92,
+    "minutes": 13,
+    "start": "2026-10-29"
+   },
+   {
+    "accuracy": 0.8,
+    "answers": 5,
+    "cards_due": 4,
+    "cards_learning": 16,
+    "cards_new": 92,
+    "minutes": 13,
+    "start": "2026-10-30"
+   },
+   {
+    "accuracy": 0.8,
+    "answers": 5,
+    "cards_due": 2,
+    "cards_learning": 18,
+    "cards_new": 92,
+    "minutes": 13,
+    "start": "2026-10-31"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 5,
+    "cards_learning": 15,
+    "cards_new": 92,
+    "minutes": 0,
+    "start": "2026-11-01"
+   },
+   {
+    "accuracy": 0.75,
+    "answers": 4,
+    "cards_due": 2,
+    "cards_learning": 18,
+    "cards_new": 92,
+    "minutes": 11,
+    "start": "2026-11-02"
+   },
+   {
+    "accuracy": 1.0,
+    "answers": 1,
+    "cards_due": 1,
+    "cards_learning": 22,
+    "cards_new": 89,
+    "minutes": 5,
+    "start": "2026-11-03"
+   },
+   {
+    "accuracy": 0.8,
+    "answers": 5,
+    "cards_due": 4,
+    "cards_learning": 20,
+    "cards_new": 88,
+    "minutes": 13,
+    "start": "2026-11-04"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 8,
+    "cards_learning": 16,
+    "cards_new": 88,
+    "minutes": 0,
+    "start": "2026-11-05"
+   },
+   {
+    "accuracy": 0.6666666666666666,
+    "answers": 6,
+    "cards_due": 5,
+    "cards_learning": 19,
+    "cards_new": 88,
+    "minutes": 13,
+    "start": "2026-11-06"
+   },
+   {
+    "accuracy": 0.8333333333333334,
+    "answers": 6,
+    "cards_due": 2,
+    "cards_learning": 22,
+    "cards_new": 88,
+    "minutes": 13,
+    "start": "2026-11-07"
+   },
+   {
+    "accuracy": 0.8,
+    "answers": 5,
+    "cards_due": 2,
+    "cards_learning": 25,
+    "cards_new": 85,
+    "minutes": 13,
+    "start": "2026-11-08"
+   }
+  ],
+  "timezone": "America/Mexico_City",
+  "unit": "day"
+ },
+ "month": {
+  "points": [
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2025-12-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-01-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-02-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-03-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-04-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-05-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-06-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-07-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-08-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 112,
+    "minutes": 0,
+    "start": "2026-09-01"
+   },
+   {
+    "accuracy": 0.735632183908046,
+    "answers": 87,
+    "cards_due": 2,
+    "cards_learning": 18,
+    "cards_new": 92,
+    "minutes": 230,
+    "start": "2026-10-01"
+   },
+   {
+    "accuracy": 0.7777777777777778,
+    "answers": 27,
+    "cards_due": 2,
+    "cards_learning": 25,
+    "cards_new": 85,
+    "minutes": 69,
+    "start": "2026-11-01"
+   }
+  ],
+  "timezone": "America/Mexico_City",
+  "unit": "month"
+ },
+ "week": {
+  "points": [
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-08-17"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-08-24"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-08-31"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-09-07"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-09-14"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2026-09-21"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 112,
+    "minutes": 0,
+    "start": "2026-09-28"
+   },
+   {
+    "accuracy": 0.7333333333333333,
+    "answers": 15,
+    "cards_due": 5,
+    "cards_learning": 6,
+    "cards_new": 101,
+    "minutes": 39,
+    "start": "2026-10-05"
+   },
+   {
+    "accuracy": 0.72,
+    "answers": 25,
+    "cards_due": 2,
+    "cards_learning": 12,
+    "cards_new": 98,
+    "minutes": 66,
+    "start": "2026-10-12"
+   },
+   {
+    "accuracy": 0.7272727272727273,
+    "answers": 22,
+    "cards_due": 7,
+    "cards_learning": 11,
+    "cards_new": 94,
+    "minutes": 60,
+    "start": "2026-10-19"
+   },
+   {
+    "accuracy": 0.76,
+    "answers": 25,
+    "cards_due": 5,
+    "cards_learning": 15,
+    "cards_new": 92,
+    "minutes": 66,
+    "start": "2026-10-26"
+   },
+   {
+    "accuracy": 0.7777777777777778,
+    "answers": 27,
+    "cards_due": 2,
+    "cards_learning": 25,
+    "cards_new": 85,
+    "minutes": 69,
+    "start": "2026-11-02"
+   }
+  ],
+  "timezone": "America/Mexico_City",
+  "unit": "week"
+ },
+ "year": {
+  "points": [
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2022-01-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2023-01-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2024-01-01"
+   },
+   {
+    "accuracy": null,
+    "answers": 0,
+    "cards_due": 0,
+    "cards_learning": 0,
+    "cards_new": 0,
+    "minutes": 0,
+    "start": "2025-01-01"
+   },
+   {
+    "accuracy": 0.7456140350877193,
+    "answers": 114,
+    "cards_due": 2,
+    "cards_learning": 25,
+    "cards_new": 85,
+    "minutes": 299,
+    "start": "2026-01-01"
+   }
+  ],
+  "timezone": "America/Mexico_City",
+  "unit": "year"
+ }
+}
