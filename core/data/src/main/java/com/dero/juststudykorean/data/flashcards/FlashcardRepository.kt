@@ -478,10 +478,10 @@ class FlashcardRepository @Inject constructor(
         return db.grammarPointsDao().all().filter { it.documentId in ids }.map { norm(it.pattern) }.toSet()
     }
 
-    private class Word(val korean: String, val firstDoc: Long, val meanings: MutableList<String> = mutableListOf(), val examples: MutableList<Pair<String, String>> = mutableListOf())
+    internal class Word(val korean: String, val firstDoc: Long, val meanings: MutableList<String> = mutableListOf(), val examples: MutableList<Pair<String, String>> = mutableListOf())
 
     /** Each vocabulary word once, with all its meanings and examples from your ready documents, in upload order. */
-    private fun mergedWords(ready: List<DocumentsEntity>): Map<String, Word> {
+    internal fun mergedWords(ready: List<DocumentsEntity>): Map<String, Word> {
         val words = LinkedHashMap<String, Word>()
         for (doc in ready) for (pair in notes.chunks(doc).flatMap(::extractPairs)) {
             val korean = pair.korean.trim()
@@ -496,7 +496,7 @@ class FlashcardRepository @Inject constructor(
     }
 
     /** All meanings without repeats: "Seat" and "Seat / Spot" -> "Seat / Spot". */
-    private fun joinedMeaning(word: Word): String {
+    internal fun joinedMeaning(word: Word): String {
         var kept = mutableListOf<Pair<String, Set<String>>>()
         for (meaning in word.meanings) {
             val senses = englishSenses(meaning)

@@ -30,6 +30,7 @@ android.sourceSets {
     getByName("test").kotlin.srcDir("src/sharedTest/java")
     getByName("androidTest").kotlin.srcDir("src/sharedTest/java")
     getByName("androidTest").assets.srcDir("../../golden/db") // only the synthetic db goldens, never golden/private
+    getByName("test").assets.srcDir("schemas") // MigrationTest reads the exported schemas
 }
 
 room3 {
@@ -38,6 +39,7 @@ room3 {
 
 dependencies {
     api(project(":core:korean")) // the app shows Rating, Comparison… from the repositories
+    api(project(":core:pdf")) // the pipeline parses PDFs with MuPDF (its types are in DocumentIndexer)
     implementation(libs.room3.runtime)
     implementation(libs.androidx.sqlite.bundled)
     ksp(libs.room3.compiler)
@@ -50,6 +52,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.androidx.sqlite.framework)
+    testImplementation(libs.room3.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.sqlite.framework)

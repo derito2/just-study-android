@@ -54,6 +54,8 @@ class BackupImporter @Inject constructor(
         try {
             db.withWriteTransaction {
                 for (table in SCHEMA.keys) usePrepared("DELETE FROM ${BackupFormat.quote(table)}") { it.step() }
+                // Phone-only tables: the notes index is rebuilt from the new extracted/, and no PDF is half processed.
+                for (table in listOf("notes_fts", "processing_jobs")) usePrepared("DELETE FROM $table") { it.step() }
                 zip(uri) { zis ->
                     while (true) {
                         val name = zis.nextEntry?.name ?: break

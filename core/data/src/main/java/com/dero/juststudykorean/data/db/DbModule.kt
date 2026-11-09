@@ -18,5 +18,6 @@ object DbModule {
     fun database(@ApplicationContext context: Context): JustStudyDatabase =
         Room.databaseBuilder(context, JustStudyDatabase::class.java, "juststudy.db")
             .setDriver(BundledSQLiteDriver())
+            .addMigrations(MIGRATION_1_2)
             .build()
 }

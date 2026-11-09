@@ -33,6 +33,30 @@
    "cases": 2011,
    "sha256": "ee88ca9fae9d84fb85b85e9a749f862da1d430e2c8dbed897fa0579af55281ca"
   },
+  "extracted/Frases_dramas_y_redes.json": {
+   "cases": 25,
+   "sha256": "65dc0caf2ac8edd650066dc7b20e8382a1d06eb70afba0faa8fec17dcc84aaed"
+  },
+  "extracted/Gramatica_semana_14.json": {
+   "cases": 22,
+   "sha256": "e9a992f47f0cfd5229faa0e1c0253dee77c6967550fe4a3c086f9b646150c607"
+  },
+  "extracted/Korean_Notes_Example.json": {
+   "cases": 24,
+   "sha256": "9bb25c394b068711fd8d4a6f4153bb36ee350cffbacd6a2705434dac921566ba"
+  },
+  "extracted/Vocab_cafe_y_comida.json": {
+   "cases": 26,
+   "sha256": "50bef6933eae919089d9554e9da71d9cbb87142c73f26c7f83f5542e87ce9d50"
+  },
+  "extracted/Vocab_emociones_redes.json": {
+   "cases": 29,
+   "sha256": "120410464ee1585fe5ca4c40f8f231572c945211e2e1099a989781b2a107a8f5"
+  },
+  "extracted/Vocab_viajes_irregulares.json": {
+   "cases": 25,
+   "sha256": "e797c26e3d45fcc6ac38c62366c3e7d93ce09950df6d9963c7b40ba595481960"
+  },
   "grammar/Frases_dramas_y_redes.json": {
    "cases": 0,
    "sha256": "83a247680fd5b8cf787df09770b5b499e1bae436d383f714bbe3eb0730acfbf2"

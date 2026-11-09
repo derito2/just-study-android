@@ -1,0 +1,389 @@
+{
+ "document_id": 4,
+ "fragments": [
+  {
+   "content_type": "grammar",
+   "n": 1,
+   "page_number": 1,
+   "section": "Vocabulary: feelings (social media style)",
+   "text": "Vocabulary: feelings (social media style)\nMy Korean notes. One rule: Korean = English.",
+   "topic": "Vocabulary: feelings (social media style)"
+  },
+  {
+   "content_type": "vocabulary",
+   "n": 2,
+   "page_number": 1,
+   "section": "Feelings",
+   "text": "Feelings\n1. 설레다 = To be excited / To have butterflies\n내일 여행 갈 생각에 너무 설레요. = I'm so excited thinking about tomorrow's trip.\n2. 서운하다 = To feel hurt / To feel let down\n내 생일을 잊어버려서 좀 서운했어. = I felt a bit hurt that you forgot my birthday.\n3. 귀엽다 = To be cute\n강아지가 너무 귀여워요! = The puppy is so cute!\n귀여워\n4. 외롭다 = To be lonely\n혼자 살면 가끔 외로워요. = When you live alone, you sometimes feel lonely.",
+   "topic": "Feelings"
+  },
+  {
+   "content_type": "vocabulary",
+   "n": 3,
+   "page_number": 1,
+   "section": "Feelings",
+   "text": "Feelings\n5. 무섭다 = To be scary / To be scared\n이 영화 진짜 무서워요. = This movie is really scary.\n6. 짜증나다 = To be annoyed\n아침부터 버스를 놓쳐서 짜증났어. = I missed the bus this morning, so I was annoyed.\n7. 그립다 = To miss / To long for\n고향 음식이 그리워요. = I miss the food from my hometown.\n8. 힘들다 = To be hard / To be tiring\n오늘 일이 너무 힘들었어요. = Work was really hard today.\n9. 행복하다 = To be happy\n너랑 있으면 행복해. = I'm happy when I'm with you.",
+   "topic": "Feelings"
+  },
+  {
+   "content_type": "vocabulary",
+   "n": 4,
+   "page_number": 1,
+   "section": "Feelings",
+   "text": "Feelings\n10. 웃기다 = To be funny\n이 영상 너무 웃겨요. = This video is so funny.\n11. 울다 = To cry\n영화 보다가 울었어요. = I cried while watching the movie.\n12. 고맙다 = To be thankful\n와 줘서 고마워. = Thanks for coming.\n고마워요\n13. 걱정하다 = To worry\n너무 걱정하지 마세요. = Don't worry too much.\n14. 후회하다 = To regret\n그 말을 한 걸 후회해요. = I regret saying that.",
+   "topic": "Feelings"
+  },
+  {
+   "content_type": "question",
+   "n": 5,
+   "page_number": 2,
+   "section": "Feelings",
+   "text": "Feelings\n15. 반하다 = To fall for someone\n첫눈에 반했어요. = I fell for them at first sight.\n16. 실망하다 = To be disappointed\n결과를 보고 좀 실망했어요. = I was a bit disappointed when I saw the result.\n17. 자랑스럽다 = To be proud\n네가 정말 자랑스러워. = I'm really proud of you.\n18. 기분 = Mood / Feeling\n오늘 기분이 어때요? = How are you feeling today?\n19. 눈물 = Tears\n그 노래를 들으면 눈물이 나요. = When I hear that song, I tear up.",
+   "topic": "Feelings"
+  },
+  {
+   "content_type": "vocabulary",
+   "n": 6,
+   "page_number": 2,
+   "section": "Free notes (no numbers)",
+   "text": "Free notes (no numbers)\n- 대박 → Awesome\n- 헐: OMG\n짱 (The best), 인싸 (Popular person)",
+   "topic": "Free notes (no numbers)"
+  }
+ ],
+ "grammar": [],
+ "words": [
+  {
+   "english": "To be excited / To have butterflies",
+   "example_en": "I'm so excited thinking about tomorrow's trip",
+   "example_ko": "내일 여행 갈 생각에 너무 설레요.",
+   "examples": [
+    [
+     "내일 여행 갈 생각에 너무 설레요.",
+     "I'm so excited thinking about tomorrow's trip"
+    ]
+   ],
+   "korean": "설레다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To feel hurt / To feel let down",
+   "example_en": "I felt a bit hurt that you forgot my birthday",
+   "example_ko": "내 생일을 잊어버려서 좀 서운했어.",
+   "examples": [
+    [
+     "내 생일을 잊어버려서 좀 서운했어.",
+     "I felt a bit hurt that you forgot my birthday"
+    ]
+   ],
+   "korean": "서운하다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be cute",
+   "example_en": "The puppy is so cute!",
+   "example_ko": "강아지가 너무 귀여워요!",
+   "examples": [
+    [
+     "강아지가 너무 귀여워요!",
+     "The puppy is so cute!"
+    ],
+    [
+     "귀여워",
+     ""
+    ]
+   ],
+   "korean": "귀엽다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be lonely",
+   "example_en": "When you live alone, you sometimes feel lonely",
+   "example_ko": "혼자 살면 가끔 외로워요.",
+   "examples": [
+    [
+     "혼자 살면 가끔 외로워요.",
+     "When you live alone, you sometimes feel lonely"
+    ]
+   ],
+   "korean": "외롭다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be scary / To be scared",
+   "example_en": "This movie is really scary",
+   "example_ko": "이 영화 진짜 무서워요.",
+   "examples": [
+    [
+     "이 영화 진짜 무서워요.",
+     "This movie is really scary"
+    ]
+   ],
+   "korean": "무섭다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be annoyed",
+   "example_en": "I missed the bus this morning, so I was annoyed",
+   "example_ko": "아침부터 버스를 놓쳐서 짜증났어.",
+   "examples": [
+    [
+     "아침부터 버스를 놓쳐서 짜증났어.",
+     "I missed the bus this morning, so I was annoyed"
+    ]
+   ],
+   "korean": "짜증나다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To miss / To long for",
+   "example_en": "I miss the food from my hometown",
+   "example_ko": "고향 음식이 그리워요.",
+   "examples": [
+    [
+     "고향 음식이 그리워요.",
+     "I miss the food from my hometown"
+    ]
+   ],
+   "korean": "그립다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be hard / To be tiring",
+   "example_en": "Work was really hard today",
+   "example_ko": "오늘 일이 너무 힘들었어요.",
+   "examples": [
+    [
+     "오늘 일이 너무 힘들었어요.",
+     "Work was really hard today"
+    ]
+   ],
+   "korean": "힘들다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be happy",
+   "example_en": "I'm happy when I'm with you",
+   "example_ko": "너랑 있으면 행복해.",
+   "examples": [
+    [
+     "너랑 있으면 행복해.",
+     "I'm happy when I'm with you"
+    ]
+   ],
+   "korean": "행복하다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be funny",
+   "example_en": "This video is so funny",
+   "example_ko": "이 영상 너무 웃겨요.",
+   "examples": [
+    [
+     "이 영상 너무 웃겨요.",
+     "This video is so funny"
+    ]
+   ],
+   "korean": "웃기다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To cry",
+   "example_en": "I cried while watching the movie",
+   "example_ko": "영화 보다가 울었어요.",
+   "examples": [
+    [
+     "영화 보다가 울었어요.",
+     "I cried while watching the movie"
+    ]
+   ],
+   "korean": "울다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be thankful",
+   "example_en": "Thanks for coming",
+   "example_ko": "와 줘서 고마워.",
+   "examples": [
+    [
+     "와 줘서 고마워.",
+     "Thanks for coming"
+    ],
+    [
+     "고마워요",
+     ""
+    ]
+   ],
+   "korean": "고맙다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To worry",
+   "example_en": "Don't worry too much",
+   "example_ko": "너무 걱정하지 마세요.",
+   "examples": [
+    [
+     "너무 걱정하지 마세요.",
+     "Don't worry too much"
+    ]
+   ],
+   "korean": "걱정하다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To regret",
+   "example_en": "I regret saying that",
+   "example_ko": "그 말을 한 걸 후회해요.",
+   "examples": [
+    [
+     "그 말을 한 걸 후회해요.",
+     "I regret saying that"
+    ]
+   ],
+   "korean": "후회하다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To fall for someone",
+   "example_en": "I fell for them at first sight",
+   "example_ko": "첫눈에 반했어요.",
+   "examples": [
+    [
+     "첫눈에 반했어요.",
+     "I fell for them at first sight"
+    ]
+   ],
+   "korean": "반하다",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "To be disappointed",
+   "example_en": "I was a bit disappointed when I saw the result",
+   "example_ko": "결과를 보고 좀 실망했어요.",
+   "examples": [
+    [
+     "결과를 보고 좀 실망했어요.",
+     "I was a bit disappointed when I saw the result"
+    ]
+   ],
+   "korean": "실망하다",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "To be proud",
+   "example_en": "I'm really proud of you",
+   "example_ko": "네가 정말 자랑스러워.",
+   "examples": [
+    [
+     "네가 정말 자랑스러워.",
+     "I'm really proud of you"
+    ]
+   ],
+   "korean": "자랑스럽다",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "Mood / Feeling",
+   "example_en": "How are you feeling today?",
+   "example_ko": "오늘 기분이 어때요?",
+   "examples": [
+    [
+     "오늘 기분이 어때요?",
+     "How are you feeling today?"
+    ]
+   ],
+   "korean": "기분",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "Tears",
+   "example_en": "When I hear that song, I tear up",
+   "example_ko": "그 노래를 들으면 눈물이 나요.",
+   "examples": [
+    [
+     "그 노래를 들으면 눈물이 나요.",
+     "When I hear that song, I tear up"
+    ]
+   ],
+   "korean": "눈물",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "Awesome",
+   "example_en": null,
+   "example_ko": null,
+   "examples": [],
+   "korean": "대박",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "OMG",
+   "example_en": null,
+   "example_ko": null,
+   "examples": [],
+   "korean": "헐",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "The best",
+   "example_en": null,
+   "example_ko": null,
+   "examples": [],
+   "korean": "짱",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "Popular person",
+   "example_en": null,
+   "example_ko": null,
+   "examples": [],
+   "korean": "인싸",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  }
+ ]
+}

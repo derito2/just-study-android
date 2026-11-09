@@ -31,6 +31,8 @@ from app.quiz.grammar import extract_grammar
 from app.quiz.pairs import extract_pairs
 from app.rag import parser as web_parser
 from app.rag.chunker import chunk_document
+from app.services.document_service import analyze_extracted
+from types import SimpleNamespace
 from app.rag.parser import parse_pdf
 from app.rag.selfcheck import MODEL_SENTINEL, SelfCheck
 from app.rag.tutor import build_index
@@ -252,6 +254,9 @@ def generate(sources: list[tuple[str, Path | None, list[dict] | None]], root: Pa
             len(index["points"]) + len(index["sentences"]) + len(index["verbs"]),
         )
         w.jsonl(f"teacher/{name}.jsonl", teacher(doc_id, f"{name}.pdf", pages))
+        # Library's "What the app extracted" (phase 4): words, grammar and fragments of the document.
+        analysis = analyze_extracted(SimpleNamespace(id=doc_id, original_name=f"{name}.pdf"), {"pages": pages})
+        w.json(f"extracted/{name}.json", analysis, len(analysis["words"]) + len(analysis["grammar"]) + len(analysis["fragments"]))
         docs.append({"name": name, "chunks": chunks, "pairs": pairs, "points": points})
 
     text = cases.text_cases(docs)

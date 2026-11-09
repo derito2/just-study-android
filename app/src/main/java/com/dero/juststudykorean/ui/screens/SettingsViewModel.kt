@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dero.juststudykorean.data.backup.BackupError
 import com.dero.juststudykorean.data.backup.BackupExporter
+import com.dero.juststudykorean.data.documents.DocumentIndexer
 import com.dero.juststudykorean.data.backup.BackupImporter
 import com.dero.juststudykorean.data.backup.ExportResult
 import com.dero.juststudykorean.data.backup.ImportResult
@@ -26,6 +27,7 @@ class SettingsViewModel @Inject constructor(
     private val prefs: UserPrefs,
     private val importer: BackupImporter,
     private val exporter: BackupExporter,
+    private val indexer: DocumentIndexer,
 ) : ViewModel() {
     val themeMode = prefs.themeMode.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ThemeMode.System)
 
@@ -43,7 +45,10 @@ class SettingsViewModel @Inject constructor(
 
     fun import(uri: Uri) = run {
         when (val result = importer.import(uri)) {
-            is ImportResult.Ok -> snackbar.send("Imported ${result.rows} rows from ${result.tables} tables.")
+            is ImportResult.Ok -> {
+                indexer.rebuildIndex() // the notes index is not in the backup: rebuilt from its extracted/
+                snackbar.send("Imported ${result.rows} rows from ${result.tables} tables.")
+            }
             is ImportResult.Failed -> _error.value = result.reason.message() + " Nothing was changed."
         }
     }
