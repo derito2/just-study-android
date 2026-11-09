@@ -73,7 +73,7 @@ fun TodayHero(
             when {
                 today == null -> Text("Loading…", style = MaterialTheme.typography.bodyMedium, color = Color.White)
                 today.questions == 0 && today.cards == 0 ->
-                    Text("You haven't studied today yet?? That's mediocre.", style = MaterialTheme.typography.titleMedium, color = Color.White)
+                    Text("Study Dumbass!! Obsession!!", style = MaterialTheme.typography.titleMedium, color = Color.White)
                 else -> Row(Modifier.fillMaxWidth().padding(top = Tokens.Space1), horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
                     Stat("Questions", "문제", "${today.questions}", Modifier.weight(1f))
                     Stat("Accuracy", "정확도", percent(today.accuracy), Modifier.weight(1f))
@@ -104,7 +104,7 @@ private fun Stat(label: String, ko: String, value: String, modifier: Modifier) {
         // At large font sizes the label shrinks (to 9 sp) instead of breaking "Questions" in two.
         BasicText(label, style = MaterialTheme.typography.bodySmall.copy(color = soft), maxLines = 1, autoSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = MaterialTheme.typography.bodySmall.fontSize))
         Text(ko, style = JustStudyTheme.korean.koBelow, color = soft, maxLines = 1)
-        Text(value, style = MaterialTheme.typography.headlineSmall, color = Color.White, maxLines = 1)
+        BasicText(value, style = MaterialTheme.typography.headlineSmall.copy(color = Color.White), maxLines = 1, autoSize = TextAutoSize.StepBased(minFontSize = 14.sp, maxFontSize = MaterialTheme.typography.headlineSmall.fontSize))
     }
 }
 
@@ -148,8 +148,8 @@ private fun FixThisNext(recommended: List<Recommendation>?, onPractice: (String)
     )
     Spacer(Modifier.height(Tokens.Space2))
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
-        StickerButton("Practice this", { onPractice(top.name) }, ko = "연습하기", color = StickerColor.Go, size = StickerSize.Small)
-        Text("아니면", Modifier.clearAndSetSemantics { }, style = JustStudyTheme.korean.koBody.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold), color = colors.onHeroSoft)
-        StickerButton("Ask what to do", onAsk, ko = "뭘 할지 묻기", color = StickerColor.Action, size = StickerSize.Small)
+        StickerButton("Practice this", { onPractice(top.name) }, ko = "연습하기", color = StickerColor.Go, size = StickerSize.Mini)
+        Text("아니면", Modifier.clearAndSetSemantics { }, style = JustStudyTheme.korean.koBody.copy(fontSize = 13.sp, fontWeight = FontWeight.Bold), color = colors.onHeroSoft)
+        StickerButton("Ask what to do", onAsk, ko = "뭘 할지 묻기", color = StickerColor.Action, size = StickerSize.Mini)
     }
 }

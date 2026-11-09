@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,8 +37,6 @@ import com.dero.juststudykorean.ui.theme.JustStudyColors
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 import java.time.LocalDate
-import java.time.format.TextStyle as DateStyle
-import java.util.Locale
 
 private val koWeekdays = listOf("월", "화", "수", "목", "금", "토", "일")
 private val cellShape = RoundedCornerShape(Tokens.RadiusSm)
@@ -72,11 +71,7 @@ fun CalendarMonthCompact(month: CalendarMonth, today: LocalDate, modifier: Modif
             .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
             .padding(horizontal = Tokens.Space4, vertical = Tokens.Space3),
     ) {
-        Row(verticalAlignment = Alignment.Bottom) {
-            val title = "${first.month.getDisplayName(DateStyle.FULL, Locale.ENGLISH)} ${month.year}"
-            Text(title, Modifier.alignByBaseline(), style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
-            KoSide("${month.month}월", 14.sp, Modifier.alignByBaseline(), ratio = 1f, color = colors.muted)
-        }
+        Text("${month.year}년 ${month.month}월", style = JustStudyTheme.korean.bodyBold.copy(fontFamily = FontFamily.Default), color = MaterialTheme.colorScheme.onSurface)
         Spacer(Modifier.height(Tokens.Space2))
         Row(Modifier.fillMaxWidth().clearAndSetSemantics { }, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
             koWeekdays.forEach { Text(it, Modifier.weight(1f), style = TextStyle(fontSize = 12.sp), color = colors.muted, textAlign = TextAlign.Center) }

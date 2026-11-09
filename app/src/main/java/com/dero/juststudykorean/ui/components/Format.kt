@@ -6,12 +6,12 @@ import java.util.Locale
 
 // Port of the web's frontend/src/progress/format.ts (the parts the dashboard uses).
 
-/** "6 h 40 m", "25 m" (design/dashboard.md: the web's studyTime with "m"). */
+/** The web's studyTime: "6 h 40 min", "25 min", "2 h". */
 fun studyTime(seconds: Long): String {
     val minutes = Math.round(seconds / 60.0)
-    if (minutes < 60) return "$minutes m"
+    if (minutes < 60) return "$minutes min"
     val rest = minutes % 60
-    return if (rest != 0L) "${minutes / 60} h $rest m" else "${minutes / 60} h"
+    return if (rest != 0L) "${minutes / 60} h $rest min" else "${minutes / 60} h"
 }
 
 /** "84%", or "—" with no answers. */
