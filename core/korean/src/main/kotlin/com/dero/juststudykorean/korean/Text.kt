@@ -1,13 +1,12 @@
 package com.dero.juststudykorean.korean
 
 import java.text.Normalizer
-import java.util.regex.Pattern
 
 // Port of backend/app/quiz/text.py, checked against golden/text.json (TextGoldenTest).
 
-// Python's \w is Unicode; on the JVM it is ASCII unless UNICODE_CHARACTER_CLASS (Android's ICU already is).
-private val notWord = Pattern.compile("""[^\w\s]|_""", Pattern.UNICODE_CHARACTER_CLASS).toRegex()
-private val spaces = Pattern.compile("""\s+""", Pattern.UNICODE_CHARACTER_CLASS).toRegex()
+// Python's \w is Unicode (see unicodePattern).
+private val notWord = unicodePattern("""[^\w\s]|_""")
+private val spaces = unicodePattern("""\s+""")
 private val hangul = Regex("[ㄱ-ㆎ가-힣]")
 
 /** NFC + lower case + no punctuation + collapsed spaces. */
