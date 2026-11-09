@@ -20,6 +20,9 @@ import com.dero.juststudykorean.ui.screens.PlaceholderScreen
 import com.dero.juststudykorean.ui.dashboard.DashboardScreen
 import com.dero.juststudykorean.ui.flashcards.DecksScreen
 import com.dero.juststudykorean.ui.flashcards.StudyScreen
+import com.dero.juststudykorean.ui.quiz.QuestionScreen
+import com.dero.juststudykorean.ui.quiz.QuizHomeScreen
+import com.dero.juststudykorean.ui.quiz.ResultsScreen
 import com.dero.juststudykorean.ui.screens.SettingsScreen
 
 /**
@@ -41,6 +44,12 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                     val screen = route.screen
                     when {
                         screen is Screen.Study -> StudyScreen(screen.deckId, screen.deckName, onBack = back)
+                        screen is Screen.Question -> QuestionScreen(screen.runId, onLeave = back, onResults = { nav.push(TopLevel.Quiz, Screen.Results("run-$it"), replace = true) })
+                        screen is Screen.Results -> ResultsScreen(screen.key, onClose = back, onNewQuiz = back)
+                        route == Route(TopLevel.Quiz) -> QuizHomeScreen(
+                            onMore = more, onGenerate = { nav.push(TopLevel.Quiz, Screen.Question(null)) },
+                            onOpenRun = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onDetails = { nav.push(TopLevel.Quiz, Screen.Results(it)) },
+                        )
                         route.section == MoreDestination.Settings -> SettingsScreen(onMore = more, onBack = back)
                         route == Route(TopLevel.Dashboard) -> DashboardScreen(
                             onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onAsk = { nav.select(TopLevel.Teacher) },

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
@@ -69,5 +70,21 @@ fun JsDialog(
                 confirm(Modifier.weight(1f))
             }
         }
+    }
+}
+
+/** After a typed answer (design/quiz.md C): `correct-fill`/`wrong-fill` box with Correct! or Not quite, your answer and the right one. */
+@Composable
+fun AnswerFeedback(correct: Boolean, given: String, answer: String, korean: Boolean, modifier: Modifier = Modifier) {
+    val c = JustStudyTheme.colors
+    val ink = if (correct) c.correct else c.wrong
+    Column(modifier.fillMaxWidth().background(if (correct) c.correctFill else c.wrongFill, MaterialTheme.shapes.medium).padding(Tokens.Space5), verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+            LucideIcon(if (correct) Lucide.Check else Lucide.X, contentDescription = null, size = 20.dp, tint = ink)
+            Text(if (correct) "Correct!" else "Not quite", style = MaterialTheme.typography.titleMedium, color = ink)
+        }
+        val value = if (korean) JustStudyTheme.korean.koBody else MaterialTheme.typography.bodyMedium
+        Row { Text("Your answer:  ", style = MaterialTheme.typography.bodyMedium, color = c.fillMuted); Text(given, style = value, color = MaterialTheme.colorScheme.onSurface) }
+        if (!correct) Row { Text("Correct answer:  ", style = MaterialTheme.typography.bodyMedium, color = c.fillMuted); Text(answer, style = value.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface) }
     }
 }

@@ -62,7 +62,8 @@ fun StickerButton(
     size: StickerSize = StickerSize.Default,
     enabled: Boolean = true,
     detail: String? = null,
-) = StickerButton(text, onClick, modifier, ko, color, size, enabled, forcePressed = false, detail = detail)
+    icon: Lucide? = null,
+) = StickerButton(text, onClick, modifier, ko, color, size, enabled, forcePressed = false, detail = detail, icon = icon)
 
 /** [forcePressed] only for screenshot tests of the pressed state. */
 @Composable
@@ -76,6 +77,7 @@ internal fun StickerButton(
     enabled: Boolean,
     forcePressed: Boolean,
     detail: String? = null,
+    icon: Lucide? = null,
 ) {
     val colors = JustStudyTheme.colors
     val paint = colors.paint(color)
@@ -110,7 +112,9 @@ internal fun StickerButton(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(text.uppercase(), color = ink, style = label, textAlign = TextAlign.Center)
+            // With an [icon], the face shows only the 20 dp icon and [text] is what TalkBack reads.
+            if (icon != null) LucideIcon(icon, contentDescription = text, size = 20.dp, tint = ink)
+            else Text(text.uppercase(), color = ink, style = label, textAlign = TextAlign.Center)
             if (ko != null) {
                 Spacer(Modifier.height(1.dp))
                 Text(ko, color = ink, style = if (size == StickerSize.Mini) JustStudyTheme.korean.koBelow.copy(fontSize = 10.sp) else JustStudyTheme.korean.koBelow, modifier = Modifier.alpha(0.85f), textAlign = TextAlign.Center)

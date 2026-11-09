@@ -88,7 +88,7 @@ internal fun LoadingState(text: String, modifier: Modifier, delayMs: Long, progr
 
 /** Error: `wrong-fill` box, `badge-alert` (shakes once), what happened, and Try again (Gray, Small). */
 @Composable
-fun ErrorState(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier, title: String? = null) {
+fun ErrorState(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier, title: String? = null, retryLabel: String = "Try again") {
     val colors = JustStudyTheme.colors
     var shown by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { shown = true }
@@ -101,7 +101,7 @@ fun ErrorState(message: String, onRetry: () -> Unit, modifier: Modifier = Modifi
             if (title != null) Text(title, style = JustStudyTheme.korean.bodyBold, color = colors.wrong)
             Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.wrong)
             Spacer(Modifier.height(Tokens.Space2))
-            StickerButton("Try again", onRetry, color = StickerColor.Gray, size = StickerSize.Small)
+            StickerButton(retryLabel, onRetry, color = StickerColor.Gray, size = StickerSize.Small)
         }
     }
 }
