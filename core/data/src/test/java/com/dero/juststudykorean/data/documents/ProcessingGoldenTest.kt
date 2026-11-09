@@ -85,7 +85,7 @@ class ProcessingGoldenTest {
         val files = DocumentFiles(context)
         val progress = ProgressRepository(db, clock)
         indexer = DocumentIndexer(db, clock, progress, notes, files)
-        repo = DocumentRepository(db, clock, notes, files, indexer, FlashcardRepository(db, clock, progress, notes))
+        repo = DocumentRepository(db, clock, notes, files, indexer, FlashcardRepository(db, clock, progress, notes), com.dero.juststudykorean.data.processing.ProcessingQueue(db, clock, progress, files, indexer) { error("no PDFs here") })
         names.forEachIndexed { i, name -> process(i + 1L, name) }
     }
 

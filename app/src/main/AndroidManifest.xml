@@ -9,6 +9,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:node="remove" />
 
+    <!-- Processing a PDF (phase 4): a dataSync foreground service with its progress notification (plan §8). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
     <application
         android:name=".JustStudyApp"
         android:allowBackup="false"
@@ -28,6 +33,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".processing.ProcessingService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <!-- Only MainActivity may be exported. shortcut: macrobenchmark needs this receiver, re-add it in a benchmark build type in phase 7. -->
         <receiver

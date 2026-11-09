@@ -62,6 +62,7 @@ class DocumentRepository @Inject constructor(
     private val files: DocumentFiles,
     private val indexer: DocumentIndexer,
     private val cards: FlashcardRepository,
+    private val queue: com.dero.juststudykorean.data.processing.ProcessingQueue,
 ) {
     /** Your documents, newest first (the web's list order), with the pipeline stage of the ones being processed. */
     fun documents(): Flow<List<LibraryDocument>> =
@@ -160,6 +161,7 @@ class DocumentRepository @Inject constructor(
     /** Deletes the document, its PDF, its text and its index; [withCards]: also its deck and the deck's history. */
     suspend fun delete(documentId: Long, withCards: Boolean) {
         val doc = document(documentId)
+        queue.cancel(documentId) // deleting the one being processed stops it first; nothing of it is left behind
         if (withCards) try { cards.delete(documentId) } catch (e: FlashcardException) { /* it had no cards */ }
         indexer.discard(documentId)
         db.withWriteTransaction {

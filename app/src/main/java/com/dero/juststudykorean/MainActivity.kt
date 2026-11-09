@@ -11,7 +11,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.dero.juststudykorean.data.prefs.ThemeMode
+import com.dero.juststudykorean.data.processing.ProcessingQueue
+import com.dero.juststudykorean.processing.ProcessingService
 import com.dero.juststudykorean.data.prefs.UserPrefs
 import com.dero.juststudykorean.ui.navigation.AppScaffold
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
@@ -22,10 +25,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject lateinit var prefs: UserPrefs
+    @Inject lateinit var queue: ProcessingQueue
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        // A PDF left half processed (ColorOS closed the app): go on from its last saved stage.
+        lifecycleScope.launch { if (queue.hasWork()) ProcessingService.start(this@MainActivity) }
         setContent {
             // null until DataStore answers: the window background shows meanwhile (no flash of the wrong theme).
             val mode by prefs.themeMode.collectAsState(initial = null)
