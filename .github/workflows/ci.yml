@@ -32,6 +32,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - name: Tests, screenshots, lint and builds
+        timeout-minutes: 35 # below the job's 45, so the reports below are still uploaded
         run: ./gradlew test verifyRoborazziDebug lint assembleDebug assembleRelease
 
       - uses: actions/setup-python@v7
@@ -46,10 +47,21 @@ jobs:
       - name: Merged manifests (debug and release)
         run: python tools/ci/check_manifest.py
 
+      # always(): also when the job fails or is cancelled by its time limit.
       - name: Screenshot diffs
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: roborazzi
           path: app/build/outputs/roborazzi
+          if-no-files-found: ignore
+
+      - name: Test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests
+            **/build/test-results
           if-no-files-found: ignore

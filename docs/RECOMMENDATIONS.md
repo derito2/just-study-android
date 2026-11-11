@@ -12,22 +12,22 @@ Se actualiza en cada PR.
 |---|---|---|
 | R-001 | pendiente |  |
 | R-002 | pendiente |  |
-| R-003 | pendiente |  |
-| R-004 | pendiente |  |
-| R-005 | pendiente |  |
-| R-006 | pendiente |  |
+| R-003 | en PR #20 | #20 |
+| R-004 | en PR #20 | #20 |
+| R-005 | en PR #20 (wiggle: solo se recompone una envoltura, ver DECISIONS) | #20 |
+| R-006 | en PR #20 (el teclado tapaba *Show answer* en el OPPO) | #20 |
 | R-007 | pendiente |  |
 | R-008 | pendiente |  |
-| R-009 | pendiente |  |
+| R-009 | en PR #20 | #20 |
 | R-010 | pendiente |  |
-| R-011 | pendiente |  |
-| R-012 | pendiente |  |
+| R-011 | en PR #20 | #20 |
+| R-012 | en PR #20 | #20 |
 | R-013 | pendiente (fase 6) |  |
 | R-014 | pendiente |  |
-| R-015 | en PR #19 (solo el icono temático; notificación y `onTimeout` en la fase 5) | #19 |
+| R-015 | icono temático hecho (#19); notificación y `onTimeout` pendientes (fase 5) | #19 |
 | R-016 | pendiente |  |
 | R-017 | pendiente (fase 6) |  |
-| R-018 | en PR #19 | #19 |
+| R-018 | hecho | #19 |
 
 ## 1. Resumen ejecutivo
 

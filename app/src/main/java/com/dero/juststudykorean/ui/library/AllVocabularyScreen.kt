@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -79,7 +78,7 @@ fun AllVocabularyContent(state: VocabularyState, query: String, onBack: () -> Un
                 .padding(horizontal = Tokens.Space4, vertical = Tokens.Space2),
             placeholder = "Search in Korean or English",
             leading = { LucideIcon(Lucide.Search, contentDescription = null, size = 20.dp, tint = c.muted) },
-            trailing = if (query.isNotEmpty()) ({ IconButton({ onQuery("") }, Modifier.size(32.dp)) { LucideIcon(Lucide.X, contentDescription = "Clear search", size = 20.dp, tint = c.muted) } }) else null,
+            trailing = if (query.isNotEmpty()) ({ IconButton({ onQuery("") }) { LucideIcon(Lucide.X, contentDescription = "Clear search", size = 20.dp, tint = c.muted) } }) else null,
         )
     }
 }

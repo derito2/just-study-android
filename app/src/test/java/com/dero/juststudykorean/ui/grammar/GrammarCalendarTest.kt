@@ -47,10 +47,13 @@ class GrammarCalendarTest {
         val word = category.value.first().pattern.trim().take(2)
         vm.setFilter(filter)
         vm.setQuery(word)
-        idleUntil { vm.state.value.query == word && vm.state.value.filter == filter && vm.state.value.points?.all { it.category == filter.category } == true }
-        val shown = vm.state.value.points!!
         val q = word.lowercase()
-        assertEquals(all.filter { it.category == filter.category && (q in it.pattern.lowercase() || q in it.meaning.lowercase()) }.map { it.id }, shown.map { it.id })
+        val expected = all.filter { it.category == filter.category && (q in it.pattern.lowercase() || q in it.meaning.lowercase()) }.map { it.id }
+        // Wait for the filtered list itself: the query and the filter reach the state before the points of that query do
+        // (it failed in CI with the list of the filter alone).
+        idleUntil { vm.state.value.query == word && vm.state.value.filter == filter && vm.state.value.points?.map { it.id } == expected }
+        val shown = vm.state.value.points!!
+        assertEquals(expected, shown.map { it.id })
         assertTrue(shown.isNotEmpty())
         job.cancel()
     }

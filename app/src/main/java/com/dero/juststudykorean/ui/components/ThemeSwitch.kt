@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Motion
@@ -42,7 +43,7 @@ fun ThemeSwitch(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, modifie
         Box(Modifier.size(36.dp, 20.dp).background(track, CircleShape)) {
             Box(
                 Modifier
-                    .offset(x = knobX)
+                    .offset { IntOffset(knobX.roundToPx(), 0) }
                     .align(Alignment.CenterStart)
                     .size(16.dp)
                     // The web's Tailwind `shadow` (≈1 dp, black 10 %), light theme only.

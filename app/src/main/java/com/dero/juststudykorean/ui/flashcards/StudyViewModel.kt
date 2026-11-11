@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 
 data class StudyUi(
     val loading: Boolean = true,
@@ -84,6 +85,8 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
                 details = repo.details(entities), sources = repo.sources(entities),
             )
             shownAt = System.nanoTime()
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             _state.value = _state.value.copy(loading = false, error = "Couldn't load the cards.")
         }
@@ -114,6 +117,8 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
                     _state.value = _state.value.copy(reviewed = s.reviewed + 1)
                     load()
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 _state.value = _state.value.copy(error = "Couldn't save the review.")
             } finally {

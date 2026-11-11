@@ -1,3 +1,5 @@
+import java.time.Duration
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -20,6 +22,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Only the OPPO (arm64): the other ABIs of MuPDF and SQLite were 32 MB of the APK.
+        ndk { abiFilters += "arm64-v8a" }
     }
 
     buildTypes {
@@ -78,4 +82,11 @@ dependencies {
 
 roborazzi {
     outputDir.set(file("src/test/screenshots"))
+}
+
+// Every unit test is printed when it starts and ends, so a test that hangs has a name in the CI log; and the task
+// gives up after 20 minutes (it takes about 6) instead of running until the job's limit.
+tasks.withType<Test>().configureEach {
+    testLogging { events("started", "passed", "failed", "skipped") }
+    timeout.set(Duration.ofMinutes(20))
 }
