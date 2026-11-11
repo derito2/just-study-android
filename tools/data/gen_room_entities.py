@@ -24,6 +24,10 @@ KINDS = [  # order matters: Boolean before Integer
 ]
 
 
+DB_VERSION = 2  # v2 (phase 4): notes_fts and processing_jobs, see db/AppTables.kt and MIGRATION_1_2
+APP_TABLES = ["NotesFts", "ProcessingJobs"]
+
+
 def kind(column):
     for cls, k, kt in KINDS:
         if isinstance(column.type, cls):
@@ -74,9 +78,12 @@ def main() -> None:
           "import androidx.room3.Database", "import androidx.room3.RoomDatabase", "",
           "@Database(", "    entities = ["]
     db += [f"        {camel(t.name, True)}Entity::class," for t in tables]
-    db += ["    ],", "    version = 1,", "    exportSchema = true,", ")",
+    # Phone-only tables (hand-written in db/AppTables.kt, never in the backup): v2 = the notes index and the pipeline.
+    db += [f"        {name}Entity::class," for name in APP_TABLES]
+    db += ["    ],", f"    version = {DB_VERSION},", "    exportSchema = true,", ")",
            "abstract class JustStudyDatabase : RoomDatabase() {"]
     db += [f"    abstract fun {camel(t.name)}Dao(): {camel(t.name, True)}Dao" for t in tables]
+    db += [f"    abstract fun {name[0].lower() + name[1:]}Dao(): {name}Dao" for name in APP_TABLES]
     db += ["}", ""]
 
     spec = [HEADER, "package com.dero.juststudykorean.data.backup", "",

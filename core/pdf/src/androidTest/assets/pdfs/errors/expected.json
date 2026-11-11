@@ -1,0 +1,34 @@
+{
+ "blank.pdf": {
+  "error": "EmptyPdfError",
+  "message": "The PDF appears to be empty: no text and no images were found."
+ },
+ "corrupt.pdf": {
+  "error": "CorruptPdfError",
+  "message": "The file is corrupt or is not a valid PDF."
+ },
+ "owner_password.pdf": {
+  "error": null,
+  "message": null
+ },
+ "scanned.pdf": {
+  "error": "NoDigitalTextError",
+  "message": "This document doesn't contain enough digital text to be processed automatically. OCR is not enabled in this application."
+ },
+ "short_text.pdf": {
+  "error": "NoDigitalTextError",
+  "message": "This document doesn't contain enough digital text to be processed automatically. OCR is not enabled in this application."
+ },
+ "small_image.pdf": {
+  "error": null,
+  "message": null
+ },
+ "text_and_image.pdf": {
+  "error": "ImagesNotSupportedError",
+  "message": "This PDF has images on page 1. Only text and tables are supported: text inside images can't be read (OCR is not enabled). Remove the images or type that content as text, then upload it again."
+ },
+ "user_password.pdf": {
+  "error": "CorruptPdfError",
+  "message": "The PDF is password-protected and cannot be processed."
+ }
+}

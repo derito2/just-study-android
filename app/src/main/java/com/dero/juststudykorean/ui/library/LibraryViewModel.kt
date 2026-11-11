@@ -1,0 +1,180 @@
+package com.dero.juststudykorean.ui.library
+
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dero.juststudykorean.data.documents.DocumentFiles
+import com.dero.juststudykorean.data.documents.DocumentRepository
+import com.dero.juststudykorean.data.documents.Duplicate
+import com.dero.juststudykorean.data.documents.Extracted
+import com.dero.juststudykorean.data.documents.LibraryDocument
+import com.dero.juststudykorean.data.documents.VocabularyWord
+import com.dero.juststudykorean.data.processing.ProcessingQueue
+import com.dero.juststudykorean.data.processing.UploadResult
+import com.dero.juststudykorean.processing.ProcessingService
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+/** The documents list: null while loading; [error] if it could not be read. */
+data class DocumentsState(val documents: List<LibraryDocument>? = null, val error: Boolean = false)
+
+/** What the app extracted, per open card: loading, loaded, or nothing to show. */
+sealed interface ExtractedState {
+    data object Loading : ExtractedState
+    data class Loaded(val extracted: Extracted?) : ExtractedState
+    data object Failed : ExtractedState
+}
+
+/** The repeated words and grammar of a document just processed, shown one at a time. */
+data class DuplicatesShown(val filename: String, val items: List<Duplicate>, val index: Int = 0)
+
+@HiltViewModel
+class LibraryViewModel @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val repo: DocumentRepository,
+    private val queue: ProcessingQueue,
+    private val files: DocumentFiles,
+) : ViewModel() {
+    private val retry = MutableStateFlow(0)
+    /** Documents uploaded or reprocessed here: when one is ready, its repeats are shown (DuplicateDialog). */
+    private val watching = MutableStateFlow(emptySet<Long>())
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val documents: StateFlow<DocumentsState> = retry.flatMapLatest {
+        repo.documents().map { DocumentsState(it) }.catch { emit(DocumentsState(error = true)) }
+    }
+        .onEach { s -> s.documents?.let(::checkFinished) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DocumentsState())
+
+    private val _uploading = MutableStateFlow(false)
+    val uploading = _uploading.asStateFlow()
+    private val _open = MutableStateFlow<Long?>(null)
+    val open = _open.asStateFlow()
+    private val _extracted = MutableStateFlow<Map<Long, ExtractedState>>(emptyMap())
+    val extracted = _extracted.asStateFlow()
+    private val _duplicates = MutableStateFlow<DuplicatesShown?>(null)
+    val duplicates = _duplicates.asStateFlow()
+
+    private val events = Channel<String>(Channel.BUFFERED)
+    val messages = events.receiveAsFlow()
+
+    fun retry() { retry.value++ }
+
+    /** Copies each chosen PDF (SAF) to private storage and processes them, one at a time. */
+    fun upload(uris: List<Uri>) {
+        if (uris.isEmpty() || _uploading.value) return
+        _uploading.value = true
+        viewModelScope.launch {
+            try {
+                for (uri in uris) {
+                    val name = withContext(Dispatchers.IO) {
+                        context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
+                            if (c.moveToFirst()) c.getString(0) else null
+                        }
+                    }
+                    val result = runCatching {
+                        withContext(Dispatchers.IO) { context.contentResolver.openInputStream(uri)!!.use { queue.upload(it, name) } }
+                    }.getOrElse { UploadResult.Rejected("Could not read that file.") }
+                    when (result) {
+                        is UploadResult.Queued -> watching.update { it + result.documentId }
+                        is UploadResult.Rejected -> events.send(result.message)
+                    }
+                }
+                if (queue.hasWork()) ProcessingService.start(context)
+            } finally {
+                _uploading.value = false
+            }
+        }
+    }
+
+    fun reprocess(id: Long) = viewModelScope.launch {
+        runCatching { repo.reprocess(id) }.onFailure { events.send(it.message ?: "Could not reprocess.") }.onSuccess {
+            watching.update { it + id }
+            _extracted.update { it - id }
+            ProcessingService.start(context)
+        }
+    }
+
+    fun delete(id: Long, withCards: Boolean) = viewModelScope.launch {
+        runCatching { repo.delete(id, withCards) }.onFailure { events.send("Could not delete the document.") }
+        _extracted.update { it - id }
+        if (_open.value == id) _open.value = null
+    }
+
+    /** Save PDF: a copy of the stored file where you choose (CreateDocument). */
+    fun savePdf(storedName: String, uri: Uri) = viewModelScope.launch {
+        val ok = withContext(Dispatchers.IO) {
+            runCatching {
+                files.pdf(storedName).inputStream().use { input -> context.contentResolver.openOutputStream(uri, "wt")!!.use { input.copyTo(it) } }
+            }.isSuccess
+        }
+        events.send(if (ok) "PDF saved." else "Couldn't save the PDF.")
+    }
+
+    /** Details: opens (and loads) what the app extracted; one card open at a time. */
+    fun toggle(id: Long) {
+        if (_open.value == id) { _open.value = null; return }
+        _open.value = id
+        if (_extracted.value[id] is ExtractedState.Loaded) return
+        _extracted.update { it + (id to ExtractedState.Loading) }
+        viewModelScope.launch {
+            val state = runCatching { ExtractedState.Loaded(repo.extracted(id)) }.getOrElse { ExtractedState.Failed }
+            _extracted.update { it + (id to state) }
+        }
+    }
+
+    private fun checkFinished(docs: List<LibraryDocument>) {
+        for (d in docs) {
+            val id = d.document.id
+            if (id !in watching.value || d.stage != null || d.document.status in setOf("uploaded", "processing")) continue
+            watching.update { it - id }
+            if (d.document.status != "ready") continue
+            viewModelScope.launch {
+                val items = runCatching { repo.duplicates(id) }.getOrNull().orEmpty()
+                if (items.isNotEmpty() && _duplicates.value == null) _duplicates.value = DuplicatesShown(d.document.originalName, items)
+            }
+        }
+    }
+
+    fun skipDuplicate() = _duplicates.update { s -> s?.takeIf { it.index + 1 < it.items.size }?.copy(index = s.index + 1) }
+    fun skipAllDuplicates() { _duplicates.value = null }
+}
+
+/** All vocabulary: the words of your ready documents, filtered while you type. */
+@HiltViewModel
+class AllVocabularyViewModel @Inject constructor(private val repo: DocumentRepository) : ViewModel() {
+    private val _query = MutableStateFlow("")
+    val query = _query.asStateFlow()
+    private val retry = MutableStateFlow(0)
+
+    /** null while loading; failure is an empty list with [failed]. */
+    @OptIn(kotlinx.coroutines.FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val words: StateFlow<VocabularyState> = kotlinx.coroutines.flow.combine(_query.debounce(120), retry) { q, _ -> q }
+        .mapLatest { q -> runCatching { VocabularyState(repo.vocabulary(q), q) }.getOrElse { VocabularyState(null, q, failed = true) } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VocabularyState(null, ""))
+
+    fun setQuery(q: String) { _query.value = q }
+    fun retry() { retry.value++ }
+}
+
+data class VocabularyState(val words: List<VocabularyWord>?, val query: String, val failed: Boolean = false)

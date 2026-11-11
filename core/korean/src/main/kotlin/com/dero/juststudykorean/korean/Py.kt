@@ -27,14 +27,14 @@ internal fun unicodePattern(pattern: String, flags: Int = 0): Regex =
 internal fun Regex.pyMatch(s: String): MatchResult? = matchAt(s, 0)
 
 /** Python's str.isspace() for one character. */
-internal fun Char.pyIsSpace() = this in "\t\n\u000B\u000C\r\u001C\u001D\u001E\u001F \u0085      　" || this in ' '..' '
+fun Char.pyIsSpace() = this in "\t\n\u000B\u000C\r\u001C\u001D\u001E\u001F \u0085      　" || this in ' '..' '
 
-internal fun String.pyStrip() = trim { it.pyIsSpace() }
+fun String.pyStrip() = trim { it.pyIsSpace() }
 internal fun String.pyRstrip() = trimEnd { it.pyIsSpace() }
 internal fun String.pyLstrip() = trimStart { it.pyIsSpace() }
 
 /** str.split() with no argument: runs of whitespace, no empty strings. */
-internal fun String.pySplit(): List<String> {
+fun String.pySplit(): List<String> {
     val out = mutableListOf<String>()
     val cur = StringBuilder()
     for (c in this) if (c.pyIsSpace()) { if (cur.isNotEmpty()) { out += cur.toString(); cur.clear() } } else cur.append(c)
@@ -52,7 +52,7 @@ internal fun String.pySplitlines(): List<String> {
 }
 
 /** len(): code points, not UTF-16 units. */
-internal val String.pyLen get() = codePointCount(0, length)
+val String.pyLen get() = codePointCount(0, length)
 
 /** s[:n] by code points. */
 internal fun String.pyTake(n: Int): String = if (pyLen <= n) this else substring(0, offsetByCodePoints(0, n))

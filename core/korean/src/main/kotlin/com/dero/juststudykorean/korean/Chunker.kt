@@ -5,7 +5,7 @@ package com.dero.juststudykorean.korean
 
 const val MAX_CHARS = 450
 const val GRAMMAR_MAX_CHARS = 1500
-private const val GENERAL_TOPIC = "General"
+const val GENERAL_TOPIC = "General"
 
 internal val HANGUL = py("[\\u3131-\\u318e\\uac00-\\ud7a3]")
 internal val LATIN = py("[A-Za-z]")

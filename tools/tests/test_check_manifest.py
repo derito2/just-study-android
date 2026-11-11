@@ -60,3 +60,17 @@ def test_debuggable_release_fails_but_debug_is_fine(tmp_path):
     path = write(tmp_path, CLEAN.replace("<application ", '<application android:debuggable="true" '))
     assert check_manifest.problems(path, release=True) == ["release is debuggable"]
     assert check_manifest.problems(path, release=False) == []
+
+
+
+def _with(*permissions):
+    lines = "".join(f'    <uses-permission android:name="{p}" />\n' for p in permissions)
+    return CLEAN.replace("    <application", lines + "    <application", 1)
+
+
+def test_only_the_allowed_permissions(tmp_path):
+    ok = write(tmp_path, _with("android.permission.POST_NOTIFICATIONS", "android.permission.FOREGROUND_SERVICE",
+                               "android.permission.FOREGROUND_SERVICE_DATA_SYNC"))
+    assert check_manifest.problems(ok, release=True) == []
+    wake = write(tmp_path, _with("android.permission.WAKE_LOCK"))
+    assert check_manifest.problems(wake, release=True) == ["permission not allowed: android.permission.WAKE_LOCK"]

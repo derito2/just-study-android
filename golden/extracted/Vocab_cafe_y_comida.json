@@ -1,0 +1,382 @@
+{
+ "document_id": 3,
+ "fragments": [
+  {
+   "content_type": "grammar",
+   "n": 1,
+   "page_number": 1,
+   "section": "Vocabulary: cafés and food",
+   "text": "Vocabulary: cafés and food\nMy Korean notes. One rule: Korean = English.",
+   "topic": "Vocabulary: cafés and food"
+  },
+  {
+   "content_type": "question",
+   "n": 2,
+   "page_number": 1,
+   "section": "At the café and the restaurant",
+   "text": "At the café and the restaurant\n1. 메뉴판 = Menu\n메뉴판 좀 주세요. = Can I have the menu, please?\n2. 계산하다 = To pay (the bill)\n오늘은 제가 계산할게요. = I'll pay today.\n계산해 주세요 = The bill, please\n3. 포장하다 = To take out / To wrap up\n남은 음식 포장해 주세요. = Please wrap up the leftovers.\nUsed at restaurants: 포장이요! = To go!\n4. 맵다 = To be spicy\n떡볶이가 너무 매워요. = The tteokbokki is too spicy.\n매워요\n5. 싱겁다 = To be bland\n국이 좀 싱거워요. = The soup is a bit bland.\n6. 짜다 = To be salty\n이 김치는 너무 짜요. = This kimchi is too salty.",
+   "topic": "At the café and the restaurant"
+  },
+  {
+   "content_type": "question",
+   "n": 3,
+   "page_number": 1,
+   "section": "At the café and the restaurant",
+   "text": "At the café and the restaurant\n7. 달다 = To be sweet\n케이크가 생각보다 안 달아요. = The cake isn't as sweet as I thought.\n8. 맛집 = Popular restaurant\n여기 유명한 맛집이에요. = This is a famous restaurant.\nPeople post 맛집 photos on Instagram\n9. 예약하다 = To reserve / To book\n일곱 시로 예약했어요. = I made a reservation for seven.\n10. 자리 = Seat / Spot\n창가 자리 있어요? = Is there a window seat?\n11. 남기다 = To leave (food)\n음식을 남기지 마세요. = Don't leave food on your plate.",
+   "topic": "At the café and the restaurant"
+  },
+  {
+   "content_type": "vocabulary",
+   "n": 4,
+   "page_number": 1,
+   "section": "At the café and the restaurant",
+   "text": "At the café and the restaurant\n12. 데우다 = To heat up\n전자레인지에 데워 주세요. = Please heat it up in the microwave.\n13. 식다 = To get cold\n커피가 다 식었어요. = The coffee has gone cold.\n14. 굽다 = To grill / To bake\n고기를 구워요. = I grill the meat.\n구워요\n구웠어요",
+   "topic": "At the café and the restaurant"
+  },
+  {
+   "content_type": "question",
+   "n": 5,
+   "page_number": 2,
+   "section": "At the café and the restaurant",
+   "text": "At the café and the restaurant\n15. 붓다 = To pour\n컵에 물을 부어 주세요. = Please pour water into the cup.\n부어요\n16. 줄을 서다 = To stand in line\n사람들이 줄을 서 있어요. = People are standing in line.\n17. 영수증 = Receipt\n영수증 필요하세요? = Do you need a receipt?\n18. 배고프다 = To be hungry\n배고파 죽겠어요. = I'm starving.\nCasual exaggeration: 죽겠어요 = I could die\n19. 진하다 = To be strong (drink) / To be thick\n커피가 너무 진해요. = The coffee is too strong.",
+   "topic": "At the café and the restaurant"
+  },
+  {
+   "content_type": "vocabulary",
+   "n": 6,
+   "page_number": 2,
+   "section": "At the café and the restaurant",
+   "text": "At the café and the restaurant\n20. 맛있다 / 맛나다 = To be delicious\n이 집 빵 진짜 맛있어요. = The bread here is really delicious.",
+   "topic": "At the café and the restaurant"
+  }
+ ],
+ "grammar": [],
+ "words": [
+  {
+   "english": "Menu",
+   "example_en": "Can I have the menu, please?",
+   "example_ko": "메뉴판 좀 주세요.",
+   "examples": [
+    [
+     "메뉴판 좀 주세요.",
+     "Can I have the menu, please?"
+    ]
+   ],
+   "korean": "메뉴판",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To pay (the bill)",
+   "example_en": "I'll pay today",
+   "example_ko": "오늘은 제가 계산할게요.",
+   "examples": [
+    [
+     "오늘은 제가 계산할게요.",
+     "I'll pay today"
+    ],
+    [
+     "계산해 주세요",
+     "The bill, please"
+    ]
+   ],
+   "korean": "계산하다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To take out / To wrap up",
+   "example_en": "Please wrap up the leftovers",
+   "example_ko": "남은 음식 포장해 주세요.",
+   "examples": [
+    [
+     "남은 음식 포장해 주세요.",
+     "Please wrap up the leftovers"
+    ]
+   ],
+   "korean": "포장하다",
+   "notes": [
+    "Used at restaurants: 포장이요! = To go!"
+   ],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be spicy",
+   "example_en": "The tteokbokki is too spicy",
+   "example_ko": "떡볶이가 너무 매워요.",
+   "examples": [
+    [
+     "떡볶이가 너무 매워요.",
+     "The tteokbokki is too spicy"
+    ],
+    [
+     "매워요",
+     ""
+    ]
+   ],
+   "korean": "맵다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be bland",
+   "example_en": "The soup is a bit bland",
+   "example_ko": "국이 좀 싱거워요.",
+   "examples": [
+    [
+     "국이 좀 싱거워요.",
+     "The soup is a bit bland"
+    ]
+   ],
+   "korean": "싱겁다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be salty",
+   "example_en": "This kimchi is too salty",
+   "example_ko": "이 김치는 너무 짜요.",
+   "examples": [
+    [
+     "이 김치는 너무 짜요.",
+     "This kimchi is too salty"
+    ]
+   ],
+   "korean": "짜다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To be sweet",
+   "example_en": "The cake isn't as sweet as I thought",
+   "example_ko": "케이크가 생각보다 안 달아요.",
+   "examples": [
+    [
+     "케이크가 생각보다 안 달아요.",
+     "The cake isn't as sweet as I thought"
+    ]
+   ],
+   "korean": "달다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "Popular restaurant",
+   "example_en": "This is a famous restaurant",
+   "example_ko": "여기 유명한 맛집이에요.",
+   "examples": [
+    [
+     "여기 유명한 맛집이에요.",
+     "This is a famous restaurant"
+    ]
+   ],
+   "korean": "맛집",
+   "notes": [
+    "People post 맛집 photos on Instagram"
+   ],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To reserve / To book",
+   "example_en": "I made a reservation for seven",
+   "example_ko": "일곱 시로 예약했어요.",
+   "examples": [
+    [
+     "일곱 시로 예약했어요.",
+     "I made a reservation for seven"
+    ]
+   ],
+   "korean": "예약하다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "Seat / Spot",
+   "example_en": "Is there a window seat?",
+   "example_ko": "창가 자리 있어요?",
+   "examples": [
+    [
+     "창가 자리 있어요?",
+     "Is there a window seat?"
+    ]
+   ],
+   "korean": "자리",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To leave (food)",
+   "example_en": "Don't leave food on your plate",
+   "example_ko": "음식을 남기지 마세요.",
+   "examples": [
+    [
+     "음식을 남기지 마세요.",
+     "Don't leave food on your plate"
+    ]
+   ],
+   "korean": "남기다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To heat up",
+   "example_en": "Please heat it up in the microwave",
+   "example_ko": "전자레인지에 데워 주세요.",
+   "examples": [
+    [
+     "전자레인지에 데워 주세요.",
+     "Please heat it up in the microwave"
+    ]
+   ],
+   "korean": "데우다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To get cold",
+   "example_en": "The coffee has gone cold",
+   "example_ko": "커피가 다 식었어요.",
+   "examples": [
+    [
+     "커피가 다 식었어요.",
+     "The coffee has gone cold"
+    ]
+   ],
+   "korean": "식다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To grill / To bake",
+   "example_en": "I grill the meat",
+   "example_ko": "고기를 구워요.",
+   "examples": [
+    [
+     "고기를 구워요.",
+     "I grill the meat"
+    ],
+    [
+     "구워요",
+     ""
+    ],
+    [
+     "구웠어요",
+     ""
+    ]
+   ],
+   "korean": "굽다",
+   "notes": [],
+   "page_number": 1,
+   "romanization": null
+  },
+  {
+   "english": "To pour",
+   "example_en": "Please pour water into the cup",
+   "example_ko": "컵에 물을 부어 주세요.",
+   "examples": [
+    [
+     "컵에 물을 부어 주세요.",
+     "Please pour water into the cup"
+    ],
+    [
+     "부어요",
+     ""
+    ]
+   ],
+   "korean": "붓다",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "To stand in line",
+   "example_en": "People are standing in line",
+   "example_ko": "사람들이 줄을 서 있어요.",
+   "examples": [
+    [
+     "사람들이 줄을 서 있어요.",
+     "People are standing in line"
+    ]
+   ],
+   "korean": "줄을 서다",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "Receipt",
+   "example_en": "Do you need a receipt?",
+   "example_ko": "영수증 필요하세요?",
+   "examples": [
+    [
+     "영수증 필요하세요?",
+     "Do you need a receipt?"
+    ]
+   ],
+   "korean": "영수증",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "To be hungry",
+   "example_en": "I'm starving",
+   "example_ko": "배고파 죽겠어요.",
+   "examples": [
+    [
+     "배고파 죽겠어요.",
+     "I'm starving"
+    ]
+   ],
+   "korean": "배고프다",
+   "notes": [
+    "Casual exaggeration: 죽겠어요 = I could die"
+   ],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "To be strong (drink) / To be thick",
+   "example_en": "The coffee is too strong",
+   "example_ko": "커피가 너무 진해요.",
+   "examples": [
+    [
+     "커피가 너무 진해요.",
+     "The coffee is too strong"
+    ]
+   ],
+   "korean": "진하다",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  },
+  {
+   "english": "To be delicious",
+   "example_en": "The bread here is really delicious",
+   "example_ko": "이 집 빵 진짜 맛있어요.",
+   "examples": [
+    [
+     "이 집 빵 진짜 맛있어요.",
+     "The bread here is really delicious"
+    ]
+   ],
+   "korean": "맛있다 / 맛나다",
+   "notes": [],
+   "page_number": 2,
+   "romanization": null
+  }
+ ]
+}

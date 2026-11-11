@@ -33,6 +33,15 @@ FORBIDDEN = {
 }
 FORBIDDEN_PREFIXES = ("android.permission.READ_MEDIA_", "android.permission.ACCESS_FINE_LOCATION",
                       "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_BACKGROUND_LOCATION")
+# Plan §8: the only Android permissions the app may have (anything else, from us or a library, fails).
+ALLOWED_PERMISSIONS = {
+    "android.permission.POST_NOTIFICATIONS",
+    "android.permission.FOREGROUND_SERVICE",
+    "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
+    "android.permission.USE_BIOMETRIC",
+}
+OWN_PREFIX = "com.dero.juststudykorean."  # the app's own signature permissions (e.g. DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION)
+
 COMPONENTS = ("activity", "activity-alias", "service", "receiver", "provider")
 
 
@@ -44,6 +53,8 @@ def problems(path: Path, release: bool) -> list[str]:
             name = node.get(ANDROID + "name", "")
             if name in FORBIDDEN or name.startswith(FORBIDDEN_PREFIXES):
                 found.append(f"forbidden permission: {name}")
+            elif name not in ALLOWED_PERMISSIONS and not name.startswith(OWN_PREFIX):
+                found.append(f"permission not allowed: {name}")
     app = root.find("application")
     if app is not None:
         for tag in COMPONENTS:

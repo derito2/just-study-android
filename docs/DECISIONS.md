@@ -2,6 +2,31 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-09 — Procesado de PDFs sin WorkManager: servicio propio en primer plano
+**Decisión:** la cola (`ProcessingQueue`) procesa un PDF a la vez por etapas (PENDING → EXTRACTING → PARSING → CHUNKING → INDEXING) dentro de `ProcessingService`, un servicio en primer plano de tipo `dataSync` con su notificación de progreso. Cada etapa guarda su resultado y la siguiente en `processing_jobs` antes de seguir; al abrir la app, si queda trabajo, continúa desde la última etapa guardada.
+**Por qué:** WorkManager adquiere un wake lock para el trabajo en primer plano (`Processor.startForeground`), así que necesita `WAKE_LOCK`, que no está entre los permisos permitidos (decisión del usuario). En el OPPO: matado con `am force-stop` en EXTRACTING, al reabrir sigue desde EXTRACTING y termina. `ProcessingQueueTest` cubre la reanudación, el mismo PDF dos veces, borrar mientras procesa y el PDF rechazado.
+**Descartado:** WorkManager con `WAKE_LOCK`; WorkManager sin primer plano (sin notificación de progreso y ColorOS lo corta igual).
+
+## 2026-11-09 — Permisos de notificación y servicio en primer plano
+**Decisión:** el manifiesto unido solo gana `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE` y `FOREGROUND_SERVICE_DATA_SYNC` (más el permiso propio `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`). `check_manifest.py` pasa a una lista de permitidos: cualquier `android.permission.*` fuera de esos tres y `USE_BIOMETRIC` falla. Las notificaciones se piden la primera vez que subes un PDF; si las niegas, se procesa igual sin notificación. La notificación solo dice la etapa, nunca nombres de archivo ni texto.
+**Por qué:** plan, punto 8. Comprobado en el manifiesto unido de debug y release.
+
+## 2026-11-09 — Room v1 → v2: solo tablas del teléfono
+**Decisión:** la v2 añade `notes_fts` (FTS4, `unicode61`, para Teacher en la fase 5) y `processing_jobs`. Ninguna de las 18 tablas del respaldo cambia, así que el formato `.jsbackup.zip` v1 sigue igual. El índice no va en el respaldo: se rehace desde `extracted/` al importar y, una vez, tras la migración.
+**Por qué:** `MigrationTest` (todas las filas sobreviven, esquema v2 válido, `MATCH` en coreano). En el OPPO, con tus datos: exportar tras instalar la v2 da las mismas 1265 filas y los mismos sha256 que antes.
+**Descartado:** una columna de etapa en `documents` (cambiaría una tabla del respaldo y su sha256 frente al web).
+
+## 2026-11-09 — Tablas sin pdfplumber: cuadrícula de líneas dibujadas
+**Decisión:** `:core:pdf` saca las tablas de los segmentos dibujados de MuPDF (trazos y barras finas rellenas, como exporta LibreOffice): una tabla por grupo de líneas que se tocan, celdas entre líneas consecutivas, celdas unidas donde falta la línea entre dos (el texto va a la primera celda; el resto, vacío, como el `None` de pdfplumber) y `table_to_text` del web. Solo en páginas con al menos 6 elementos de dibujo, como el web.
+**Por qué:** las tablas de `Tablas_sinteticas.pdf` salen iguales a pdfplumber (filas, texto y bbox a ±1 pt). Los 6 PDFs de prueba no tienen tablas rejilladas; su texto, títulos y cuentas son idénticos a `golden/parser`.
+**Notas (⚠️):** las celdas unidas y varias tablas por página no tienen dorada del web (no hay PDF de prueba con ellas). Si aparece uno real, se añade a `golden/` y se compara.
+
+## 2026-11-09 — Diferencias aceptadas con el web en la fase 4
+- **Mensaje del PDF repetido:** *"This PDF is already in your Library."* (el de `design/library.md`); el web añade el nombre entre paréntesis.
+- **Error inesperado al procesar:** además de marcarlo *Failed*, se borra lo que hubiera dejado (el web solo lo hace con los `PdfError`), para no dejar nada a medias.
+- **Al arrancar:** el web marca como *Failed* los documentos que quedaron procesando; aquí se reanudan desde su etapa (riesgo 1 del plan).
+- **`golden/db/base`** guarda `documents.warnings` como `null` porque se escribió sin pasar por `process_document`; el pipeline real (web y teléfono) guarda `[]`. La prueba compara el resto de columnas.
+
 ## 2026-11-09 — Caché en memoria de los fragmentos de tus notas
 **Decisión:** `NotesSource` (ahora `@Singleton`) guarda en memoria los fragmentos de cada documento. La clave es la fecha de modificación, el tamaño de `extracted/<id>.json` y el nombre del documento, así que se invalida sola cuando un *Import* o el procesado de un PDF reescriben ese archivo. Al abrir Quiz, `QuizRepository.warmUp` la llena en segundo plano.
 **Por qué** (OPPO, APK de release, tus datos, 10 preguntas): sin caché, 330–426 ms (mediana ≈ 362), por encima de la meta de 300 ms. Con caché, del segundo quiz en adelante: 214–257 ms. El primer quiz tras abrir la app, con la precarga: 246–286 ms (6 medidas). Los resultados no cambian: las doradas siguen en verde y `NotesSourceTest` comprueba la invalidación.

@@ -21,18 +21,22 @@ sealed interface Screen {
     data class Question(val runId: Long?) : Screen
     /** [key]: "run-{id}" or "session-{id}" (a history card). */
     data class Results(val key: String) : Screen
+    /** Library's All vocabulary (the search sits above the keyboard, so no bottom bar). */
+    data object Vocabulary : Screen
 
     companion object {
         fun encode(s: Screen): String = when (s) {
             is Study -> "study|${s.deckId ?: ""}|${s.deckName}"
             is Question -> "question|${s.runId ?: ""}"
             is Results -> "results|${s.key}"
+            Vocabulary -> "vocabulary|"
         }
         fun decode(text: String): Screen {
             val p = text.split("|", limit = 3)
             return when (p[0]) {
                 "study" -> Study(p[1].toLongOrNull(), p.getOrElse(2) { "" })
                 "question" -> Question(p[1].toLongOrNull())
+                "vocabulary" -> Vocabulary
                 else -> Results(p.drop(1).joinToString("|"))
             }
         }

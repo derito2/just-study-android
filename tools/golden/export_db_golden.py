@@ -224,7 +224,44 @@ def outputs(db) -> dict[str, object]:
         "saved_questions": [q.id for q in quiz_service.saved_questions(db, None, now=NOW)],
         "grammar": reference_service.grammar(db),
         "card_details": {str(k): v for k, v in sorted(flashcard_service.card_details(db, _all_cards(db)).items())},
+        # Library (phase 4): All vocabulary, and what each document repeats from the others (DuplicateDialog).
+        "library_vocabulary": reference_service.vocabulary(db),
+        "library_duplicates": {str(d): reference_service.duplicates(db, d) for d in _document_ids(db)},
+        # The test PDFs don't repeat each other: a copy of two of them, uploaded again under another name.
+        "library_duplicates_copy": {name: _duplicates_of_copy(db, name) for name in ("Vocab_cafe_y_comida", "Gramatica_semana_14")},
     }
+
+
+def _duplicates_of_copy(db, name: str) -> dict:
+    """duplicates() for a 7th document with the same pages as `name` (rolled back: the golden database doesn't change)."""
+    from app.database.models import Document
+    from app.services import reference_service
+
+    parsed = json.loads((GOLDEN / f"parser/{name}.json").read_text())
+    stored = f"Copy_of_{name}.pdf"
+    extracted = Path(os.environ["DATA_DIR"]) / "extracted" / f"Copy_of_{name}.json"
+    extracted.write_text(json.dumps({"pages": parsed["pages"]}, ensure_ascii=False))
+    nested = db.begin_nested()
+    try:
+        doc = Document(
+            original_name=stored, stored_name=stored, sha256=hashlib.sha256(stored.encode()).hexdigest(),
+            page_count=parsed["page_count"], status="ready", has_digital_text=True, image_count=0, table_count=0,
+            char_count=parsed["char_count"], created_at=NOW, processed_at=NOW,
+        )
+        db.add(doc)
+        db.flush()
+        return {"document_id": doc.id, "pages": parsed["pages"], "duplicates": reference_service.duplicates(db, doc.id)}
+    finally:
+        nested.rollback()
+        extracted.unlink()
+
+
+def _document_ids(db) -> list[int]:
+    from sqlalchemy import select
+
+    from app.database.models import Document
+
+    return list(db.scalars(select(Document.id).order_by(Document.id)))
 
 
 def _all_cards(db):

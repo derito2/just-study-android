@@ -24,8 +24,10 @@ import androidx.room3.RoomDatabase
         FlashcardsEntity::class,
         QuestionAttemptsEntity::class,
         FlashcardReviewsEntity::class,
+        NotesFtsEntity::class,
+        ProcessingJobsEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class JustStudyDatabase : RoomDatabase() {
@@ -47,4 +49,6 @@ abstract class JustStudyDatabase : RoomDatabase() {
     abstract fun flashcardsDao(): FlashcardsDao
     abstract fun questionAttemptsDao(): QuestionAttemptsDao
     abstract fun flashcardReviewsDao(): FlashcardReviewsDao
+    abstract fun notesFtsDao(): NotesFtsDao
+    abstract fun processingJobsDao(): ProcessingJobsDao
 }
