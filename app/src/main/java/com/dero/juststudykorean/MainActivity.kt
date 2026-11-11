@@ -7,6 +7,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import com.dero.juststudykorean.data.processing.ProcessingQueue
 import com.dero.juststudykorean.processing.ProcessingService
 import com.dero.juststudykorean.data.prefs.UserPrefs
 import com.dero.juststudykorean.ui.navigation.AppScaffold
+import com.dero.juststudykorean.ui.splash.SplashOverlay
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -57,10 +59,13 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
             JustStudyTheme(darkTheme = dark) {
-                AppScaffold(
-                    darkMode = dark,
-                    onDarkMode = { on -> scope.launch { prefs.setThemeMode(if (on) ThemeMode.Dark else ThemeMode.Light) } },
-                )
+                Box {
+                    AppScaffold(
+                        darkMode = dark,
+                        onDarkMode = { on -> scope.launch { prefs.setThemeMode(if (on) ThemeMode.Dark else ThemeMode.Light) } },
+                    )
+                    SplashOverlay()
+                }
             }
         }
     }

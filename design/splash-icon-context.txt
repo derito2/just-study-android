@@ -1,0 +1,93 @@
+CONTEXTO PARA LA SESIÓN DE DISEÑO — icono de la app y pantallas de carga
+Just Study 한국어 (Android) · 2026-11-10 · hecho por Claude Code a petición del usuario, sin commit todavía
+
+1. QUÉ CAMBIÓ
+- Icono de la app: ya no es el androide verde por defecto. Ahora es el arte de picsIcons/icono.png
+  (pincelada circular azul, "JS", "한", N Seoul Tower y montañas).
+- Pantallas de carga nuevas: al abrir la app aparece UNA imagen al azar entre 14, durante 1,5 s,
+  encima de la app, y se desvanece.
+- Texto de las pantallas de carga: título "Just Study Korean", subtítulo "by DERO".
+  Sustituye a "Korean Study Assistant" + "Learn · Practice · Progress" / "Tu compañero de estudio de coreano".
+
+2. COLOR
+- El azul de las imágenes pasa al azul de la app: #0047A0 (token `action`, el de la barra inferior).
+- Todo lo que estaba cerca de #0F64CD se llevó a #0047A0. Los dos tienen el mismo tono (213°);
+  cambia el brillo (80 % -> 63 %) y los azules más violetas (228°) de flash2 y flash3 se movieron a 213°.
+- Rojos, rosas y morados se conservan: flores de cerezo de flash2, degradado rojo-rosa del taegeuk de flash3.
+- Paleta resultante de las pantallas de carga:
+    azul marino de fondo   #00143E
+    sombras                #000E2C y #002864
+    azul de la app         #0047A0
+    azul medio             #468CE1
+    azul claro             #BFD9FF  (subtítulo "by DERO")
+    blanco                 #FFFFFF  (título)
+    acentos                rojo/rosa/naranja originales de cada imagen
+
+3. LAS 14 IMÁGENES (res/drawable-nodpi, WebP 1080 x 2400, 1,2 MB en total)
+- splash_flash1  luna, montañas y pagoda junto al lago (de flash1.png)
+- splash_flash2  N Seoul Tower de noche con flores de cerezo (de flash2.png)
+- splash_flash3  taegeuk rojo-rosa y palacio (de flash3.png)
+  En las tres se borró: el texto anterior, los puntos de paginación y, en flash1, el marco del
+  teléfono y la barra de estado (9:41). No se redibujaron: son las mismas ilustraciones, a 1080 x 2400.
+- splash_photo_01 … splash_photo_11  las 11 fotos IMG* de picsIcons, REDIBUJADAS como ilustración plana
+  (2026-11-11; antes eran la foto con un filtro azul y se veían pixeladas). No llevan ningún píxel de la foto:
+  cada escena se dibuja con formas en tools/design/splash_scenes.py, respetando la composición de la foto.
+  Paleta: #00143E, #001F5C, #002F75, #0047A0 (azul de la app, principal), #2F6FC4, #5C9BE6, #8FC4F7,
+  #BFD9FF, #E6F1FF, blanco. Acentos solo donde la foto los tiene: rojo #E5484D (faroles, torre),
+  dorado #FFD27A (luces), rosa #F58FB0 (escenario), lavanda #9C8FE0 (hanbok), durazno (atardecer).
+  Las personas son siluetas sin cara. La parte de abajo se funde a #00143E para el título.
+  Son: palacio (x2), faroles rojos, torre roja y blanca, arroyo Cheonggyecheon, piedra de SKKU,
+  edificio (x2), N Seoul Tower, puerta Gwanghwamun de noche y un escenario.
+  Del prompt de ilustración NO se aplicó: el azul #0F64CD (se usa #0047A0), el título
+  "Korean Study Assistant" / "Learn • Practice • Progress" (sigue "Just Study Korean" / "by DERO",
+  dibujado por la app, no en la imagen) ni "sin animación" (sigue el zoom suave y la entrada del texto).
+
+4. COMPOSICIÓN DE CADA PANTALLA DE CARGA
+- Imagen a pantalla completa (recorte tipo "cover"), fondo #00143E.
+- Título "Just Study Korean": Poppins ExtraBold 34 sp, interlineado 40 sp, blanco, centrado.
+- Subtítulo "by DERO": Poppins Regular 16 sp, espaciado entre letras 3 sp, #BFD9FF, 10 dp bajo el título.
+- Margen horizontal 24 dp.
+- Posición vertical del bloque de texto (centro del bloque sobre la altura de la pantalla):
+    flash1: ~75 %      flash2 y flash3: ~56 %      fotos: ~72 %
+
+5. ANIMACIÓN (1500 ms en total, lineal en el tiempo)
+- Imagen: zoom lento de 100 % a 106 % durante todo el tiempo.
+- Título: aparece (opacidad 0 -> 1) y sube 14 dp entre 75 ms y 480 ms.
+- Subtítulo: aparece entre 330 ms y 750 ms.
+- Salida: toda la pantalla se desvanece entre 1230 ms y 1500 ms y deja ver la app.
+- Con "Quitar animaciones" del sistema: imagen fija con el texto ya puesto, 1500 ms, y desaparece.
+- No se repite al girar el teléfono. Mientras se ve, los toques no llegan a la app.
+
+6. ICONO
+- Icono adaptativo: fondo liso #EEF5FD (el tono papel del borde del arte) + el arte escalado al 74 %
+  del lienzo de 108 dp, para que la máscara del lanzador recorte el borde redondeado que traía la imagen.
+- Sin capa monocroma: con "iconos temáticos" el sistema usa el icono a color.
+- Se borraron los iconos PNG/WebP por densidad de la plantilla.
+
+7. PENDIENTE DE DISEÑO (no se tocó)
+- La notificación de "Processing your PDF" sigue usando el androide de la plantilla como icono pequeño:
+  hace falta un glifo monocromo propio (24 dp, una sola tinta).
+- Un glifo monocromo para el icono temático, si se quiere.
+- El nombre bajo el icono sigue siendo "JustStudyKorean" (app_name); decidir "Just Study Korean" o "Just Study 한국어".
+- Decidir si 1500 ms está bien o se baja a 1000 ms, y si un toque debe saltar la pantalla de carga.
+- Las imágenes no están descritas en design/tokens.json ni en ninguna ficha design/*.md:
+  si se aceptan, añadir una ficha design/splash.md con lo de los puntos 2, 4 y 5.
+
+8. ARCHIVOS
+- app/src/main/java/com/dero/juststudykorean/ui/splash/Splash.kt   (nuevo: SplashOverlay)
+- app/src/main/java/com/dero/juststudykorean/MainActivity.kt       (lo muestra sobre AppScaffold)
+- app/src/main/res/drawable-nodpi/splash_*.webp                    (14 imágenes)
+- app/src/main/res/mipmap-xxxhdpi/ic_launcher_art.webp             (arte del icono, 432 px)
+- app/src/main/res/mipmap-anydpi/ic_launcher.xml e ic_launcher_round.xml
+- app/src/main/res/values/colors.xml                               (ic_launcher_background #EEF5FD)
+- Originales: picsIcons/ (sin commit)
+- Script que genera las imágenes: tools/design/splash_art.py (python3.12 con numpy y Pillow):
+    /opt/homebrew/bin/python3.12 tools/design/splash_art.py picsIcons <carpeta de salida>
+
+9. CAMBIOS DEL 2026-11-11 (PR #19 rehecho)
+- Un toque cierra la pantalla de carga (desvanecido de 150 ms, ease-out); si ya se está desvaneciendo sola, no hace nada.
+- Las 11 imágenes splash_photo_* y picsIcons/ ya no están en el repo (.gitignore): la app las muestra solo si existen
+  en el Mac al compilar; el CI y cualquier otro clon compilan solo con las 3 flash.
+- app_name = "Just Study 한국어". Icono temático: res/drawable/ic_launcher_monochrome.xml (glifo 한 de diseño).
+- Captura de prueba: app/src/test/screenshots/splash.png (flash1, con el título puesto).
+- Arranque en frío en el OPPO (debug): 300 ms con pantalla de carga, 299 ms sin ella.

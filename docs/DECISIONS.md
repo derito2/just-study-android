@@ -2,6 +2,11 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — Pantalla de carga: un toque la cierra; no retrasa el arranque
+**Decisión:** la pantalla de carga se queda (1500 ms, imagen al azar) y un toque la cierra con un desvanecido de 150 ms (`design/shell.md`, R-018). Las 11 imágenes personales se buscan por nombre (`getIdentifier`) y solo están en el APK si existen en el Mac al compilar.
+**Por qué (medido en el OPPO, debug, `am start -W`, 5 arranques en frío cada uno):** con pantalla de carga 305, 291, 300, 300, 299 ms (mediana 300); sin ella 303, 299, 299, 298, 301 ms (mediana 299; una medida de 0 justo tras instalar se descartó). La pantalla se dibuja encima de la app ya compuesta, así que no retrasa el primer fotograma; lo que añade es hasta 1,5 s antes de poder tocar, y por eso el toque la cierra. En release se mide cuando el dueño haga el cambio debug → release.
+**Descartado:** la API SplashScreen del sistema (no admite una imagen al azar a pantalla completa ni el texto animado).
+
 ## 2026-11-11 — Respuestas a las preguntas de la auditoría (`docs/RECOMMENDATIONS.md`, sección 7)
 **Decisión (del dueño):**
 1. **R-007:** hasta la fase 6, *Fill in the blank*, *Short answer* y *Difficulty* se ven deshabilitados con la nota **Needs on-device AI** (`design/quiz.md`, A.1).
