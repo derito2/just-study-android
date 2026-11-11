@@ -2,6 +2,27 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — Procesado de PDFs: tiempo medido; el segundo plano sigue sin probar con un PDF largo
+**Medido en el OPPO (debug):** `Gramatica_semana_14.pdf` del repo (2 páginas, 61 KB) tarda 0,27 s desde que se copia el PDF hasta la última escritura en la base. Terminó antes de que la app pasara a segundo plano (0,7 s después), así que esta prueba **no** demuestra que el procesado siga con la app en segundo plano o con la pantalla apagada.
+**Pendiente:** repetirla con un PDF de cientos de páginas (en el repo no hay ninguno; todos pesan 60–70 KB). Lo ya comprobado sigue siendo lo de la entrada del 2026-11-09: matado en EXTRACTING, al reabrir continúa y termina.
+
+## 2026-11-11 — Pantalla de carga: un toque la cierra; no retrasa el arranque
+**Decisión:** la pantalla de carga se queda (1500 ms, imagen al azar) y un toque la cierra con un desvanecido de 150 ms (`design/shell.md`, R-018). Las 11 imágenes personales se buscan por nombre (`getIdentifier`) y solo están en el APK si existen en el Mac al compilar.
+**Por qué (medido en el OPPO, debug, `am start -W`, 5 arranques en frío cada uno):** con pantalla de carga 305, 291, 300, 300, 299 ms (mediana 300); sin ella 303, 299, 299, 298, 301 ms (mediana 299; una medida de 0 justo tras instalar se descartó). La pantalla se dibuja encima de la app ya compuesta, así que no retrasa el primer fotograma; lo que añade es hasta 1,5 s antes de poder tocar, y por eso el toque la cierra. En release se mide cuando el dueño haga el cambio debug → release.
+**Descartado:** la API SplashScreen del sistema (no admite una imagen al azar a pantalla completa ni el texto animado).
+
+## 2026-11-11 — Respuestas a las preguntas de la auditoría (`docs/RECOMMENDATIONS.md`, sección 7)
+**Decisión (del dueño):**
+1. **R-007:** hasta la fase 6, *Fill in the blank*, *Short answer* y *Difficulty* se ven deshabilitados con la nota **Needs on-device AI** (`design/quiz.md`, A.1).
+2. **R-010:** vibración sí, solo en las acciones de `design/shell.md` (Respuesta háptica).
+3. **R-013:** la caché del modelo va solo en memoria, nunca en disco.
+4. **R-014:** se cambia de tokenizador (y se reindexa) solo si la búsqueda por prefijo falla con las notas reales; antes de cambiarlo se para y se avisa.
+5. **R-016:** la clave de release se crea ya, fuera del repo. El cambio debug → release lo hace el dueño después, con respaldo antes; Claude Code no desinstala nada.
+6. **R-017:** sí, *Fill in the blank* por reglas, en la fase 6.
+7. **R-018:** la pantalla de carga dura 1500 ms. Ni las 11 fotos personales ni las ilustraciones hechas a partir de ellas van a GitHub: `picsIcons/`, `splash_photo_*.webp` y el script que las dibuja están en `.gitignore`; la app las muestra solo si existen al compilar (se buscan por nombre) y el CI compila solo con las 3 flash.
+8. **Nombre visible:** `app_name` = **Just Study 한국어**.
+**Por qué:** cierran las 8 preguntas abiertas de la auditoría del 2026-11-10.
+
 ## 2026-11-09 — Procesado de PDFs sin WorkManager: servicio propio en primer plano
 **Decisión:** la cola (`ProcessingQueue`) procesa un PDF a la vez por etapas (PENDING → EXTRACTING → PARSING → CHUNKING → INDEXING) dentro de `ProcessingService`, un servicio en primer plano de tipo `dataSync` con su notificación de progreso. Cada etapa guarda su resultado y la siguiente en `processing_jobs` antes de seguir; al abrir la app, si queda trabajo, continúa desde la última etapa guardada.
 **Por qué:** WorkManager adquiere un wake lock para el trabajo en primer plano (`Processor.startForeground`), así que necesita `WAKE_LOCK`, que no está entre los permisos permitidos (decisión del usuario). En el OPPO: matado con `am force-stop` en EXTRACTING, al reabrir sigue desde EXTRACTING y termina. `ProcessingQueueTest` cubre la reanudación, el mismo PDF dos veces, borrar mientras procesa y el PDF rechazado.

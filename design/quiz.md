@@ -41,6 +41,20 @@ Base: `design/shell.md`. Valores en `design/tokens.json`. Pantalla de 411 × 905
    - **Details** · 자세히 (Gray, Small), que abre las respuestas de ese quiz (como los resultados, sección D).
    - Vacío: *No quizzes yet. Take one.*
 
+### A.1 · Hasta la fase 6: lo que necesita el modelo (R-007)
+
+Sin modelo en el teléfono, *Fill in the blank*, *Short answer* y el bloque *Difficulty* se ven pero no se pueden usar. Captura: no hace falta; es la misma casilla de arriba con estos cambios.
+
+- **Casillas *Fill in the blank* y *Short answer*:**
+  - toda la fila al **50 % de opacidad** (`Modifier.alpha(0.5f)`), como ya hace *Difficulty*;
+  - la casilla de 18 dp siempre **sin marcar** (borde de 2 dp `control`), aunque `UserPrefs` la tenga marcada. La preferencia guardada **no se toca**;
+  - la pista (*Pick what goes in the gap* / *Type a short answer*) se sustituye por **Needs on-device AI** (12 sp, `muted`, la misma línea y el mismo estilo que la pista);
+  - no responde al toque ni tiene ripple. TalkBack lee "{nombre}, needs on-device AI, unavailable" (`disabled()` en la semántica).
+- **Bloque *Difficulty*:** siempre al 50 % y sin responder al toque. La línea *Only questions written by the model change with it.* se sustituye por **Needs on-device AI** (12 sp, `muted`). Las casillas muestran lo guardado, sin cambiarlo. Nunca sale *Choose at least one difficulty.*
+- **Validación:** solo cuentan los 6 tipos por reglas. Con ninguno de ellos marcado: *Choose at least one question type.* y **Generate quiz** deshabilitado.
+- **Nada más cambia:** ni el orden de las 8 casillas, ni la rejilla de 2 columnas, ni los colores.
+- **En la fase 6:** con Nano `AVAILABLE`, todo vuelve a la sección A. Con Nano no disponible, sigue como aquí.
+
 ## B · Generando
 
 Tras **Generate quiz**, la pantalla de la pregunta muestra el estado de carga de `shell.md` con *Creating your quiz…* (las preguntas por reglas tardan menos de 300 ms, así que casi nunca se ve). Si no se pudo crear ninguna: el recuadro de error con *No questions could be created this time.* y *Try other question types, another document, or try again.*, más **Back** (Gray).

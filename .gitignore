@@ -51,3 +51,9 @@ build/poc/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+
+# Personal photos and the launch pictures drawn from them: only on the owner's Mac, never on GitHub.
+# The app shows them when they exist (ui/splash/Splash.kt); CI builds with the three flash pictures only.
+picsIcons/
+app/src/main/res/drawable-nodpi/splash_photo_*.webp
+tools/design/splash_scenes.py

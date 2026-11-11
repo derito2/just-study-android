@@ -2,4 +2,6 @@
 <resources>
     <!-- tokens.json `background` (light), for the window before Compose draws. -->
     <color name="background">#FFFFFFFF</color>
+    <!-- The paper tone at the edge of the icon art, so the launcher mask shows no seam. -->
+    <color name="ic_launcher_background">#FFEEF5FD</color>
 </resources>
