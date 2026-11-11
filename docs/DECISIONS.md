@@ -2,6 +2,10 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — Procesado de PDFs: tiempo medido; el segundo plano sigue sin probar con un PDF largo
+**Medido en el OPPO (debug):** `Gramatica_semana_14.pdf` del repo (2 páginas, 61 KB) tarda 0,27 s desde que se copia el PDF hasta la última escritura en la base. Terminó antes de que la app pasara a segundo plano (0,7 s después), así que esta prueba **no** demuestra que el procesado siga con la app en segundo plano o con la pantalla apagada.
+**Pendiente:** repetirla con un PDF de cientos de páginas (en el repo no hay ninguno; todos pesan 60–70 KB). Lo ya comprobado sigue siendo lo de la entrada del 2026-11-09: matado en EXTRACTING, al reabrir continúa y termina.
+
 ## 2026-11-11 — Pantalla de carga: un toque la cierra; no retrasa el arranque
 **Decisión:** la pantalla de carga se queda (1500 ms, imagen al azar) y un toque la cierra con un desvanecido de 150 ms (`design/shell.md`, R-018). Las 11 imágenes personales se buscan por nombre (`getIdentifier`) y solo están en el APK si existen en el Mac al compilar.
 **Por qué (medido en el OPPO, debug, `am start -W`, 5 arranques en frío cada uno):** con pantalla de carga 305, 291, 300, 300, 299 ms (mediana 300); sin ella 303, 299, 299, 298, 301 ms (mediana 299; una medida de 0 justo tras instalar se descartó). La pantalla se dibuja encima de la app ya compuesta, así que no retrasa el primer fotograma; lo que añade es hasta 1,5 s antes de poder tocar, y por eso el toque la cierra. En release se mide cuando el dueño haga el cambio debug → release.
