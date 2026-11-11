@@ -79,3 +79,46 @@ Encima de la lista, el JsTopBar de Settings.
 ## Sin pantalla Progress
 
 Como en la web (Progress no está en su menú), el móvil no tiene pantalla Progress. Todo el progreso se ve en la gráfica del Dashboard (`design/dashboard.md`, sección 4). `MoreDestination` queda en Grammar, Calendar y Settings.
+
+
+## Respuesta háptica (R-010)
+
+Solo en estas acciones, una vez y en el mismo fotograma en que se ve el resultado (`LocalHapticFeedback.current.performHapticFeedback`):
+
+| Acción | Dónde | Tipo (`HapticFeedbackType`) |
+|---|---|---|
+| Girar la tarjeta (*Show answer* o tocar la tarjeta) | `StudyScreen`, `Flashcard` | `ContextClick` (toque corto y suave) |
+| Calificar *Good*, *Easy* o *Hard* | `RatingButtons` | `Confirm` |
+| Calificar *Again* | `RatingButtons` | `Reject` |
+| Acierto en el quiz (opción o respuesta escrita) | `QuizOption`, `TypedResult` | `Confirm` |
+| Fallo en el quiz (opción o respuesta escrita) | `QuizOption`, `TypedResult` | `Reject` |
+
+- La respuesta escrita en Flashcards usa `TypedResult`, así que vibra igual: `Confirm` si es correcta y `Reject` si no.
+- **Nunca** al navegar (barra inferior, More, atrás), al escribir, al desplazar, en casillas, interruptores, el selector − / +, *Undo*, la pantalla de carga, Teacher ni ningún otro botón.
+- Sigue el ajuste de vibración táctil del sistema: apagado, no vibra nada. *Quitar animaciones* no lo apaga.
+- Sin el permiso `VIBRATE` ni la API `Vibrator`: solo `performHapticFeedback`.
+- Si `Confirm`, `Reject` o `ContextClick` no existen en el BOM de Compose del proyecto, **parar y avisar**. No hay que sustituirlos por otros tipos.
+
+## Icono y nombre en el lanzador
+
+- **Nombre visible:** `app_name` = **Just Study 한국어** (hoy `JustStudyKorean`). Lo usa también el `label` del manifiesto. Si ColorOS lo corta en la pantalla de inicio, se informa y no se cambia.
+- **Icono temático (R-015):** `design/icons/ic_launcher_monochrome.svg`, el glifo 한 de trazo único, al estilo Lucide (trazo 2, extremos redondos).
+  - Va como `res/drawable/ic_launcher_monochrome.xml` (vector de 108 × 108 dp).
+  - Se añade `<monochrome android:drawable="@drawable/ic_launcher_monochrome" />` en `ic_launcher.xml` e `ic_launcher_round.xml`.
+  - El glifo ocupa 54 dp en el centro (grupo con `translateX/Y` 27 y escala 2.25 sobre una rejilla de 24), dentro de la zona segura de 66 dp.
+  - El color lo pone el sistema: el trazo va en negro opaco (`#FF000000`), sin relleno.
+- **Notificación de procesado (R-015):** `design/icons/ic_stat_processing.svg`, el `file-text` de Lucide, como el de Library.
+  - Va como `res/drawable/ic_stat_processing.xml` (24 × 24 dp), con trazo blanco `#FFFFFFFF` de 2 dp, extremos y uniones redondos, y sin relleno.
+  - Sustituye a `ic_launcher_foreground` en `ProcessingService`. Después se borra `res/drawable/ic_launcher_foreground.xml` si nada más lo usa.
+
+## Pantalla de carga (R-018)
+
+Se queda como está (`design/splash-icon-context.txt`): una imagen al azar, **1500 ms**, el mismo texto y la misma animación. Solo cambia esto:
+
+- **Un toque en cualquier parte la cierra:**
+  - se desvanece en 150 ms (ease-out `(0.2, 0.8, 0.2, 1)`);
+  - con *Quitar animaciones*, desaparece en el mismo fotograma;
+  - ese toque no llega a la app, y los toques durante el desvanecido tampoco;
+  - sin vibración.
+- Si ya está desvaneciéndose sola (1230–1500 ms), el toque no hace nada.
+- No sale al volver de segundo plano ni al girar el teléfono, como hoy.

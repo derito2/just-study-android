@@ -2,6 +2,18 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — Respuestas a las preguntas de la auditoría (`docs/RECOMMENDATIONS.md`, sección 7)
+**Decisión (del dueño):**
+1. **R-007:** hasta la fase 6, *Fill in the blank*, *Short answer* y *Difficulty* se ven deshabilitados con la nota **Needs on-device AI** (`design/quiz.md`, A.1).
+2. **R-010:** vibración sí, solo en las acciones de `design/shell.md` (Respuesta háptica).
+3. **R-013:** la caché del modelo va solo en memoria, nunca en disco.
+4. **R-014:** se cambia de tokenizador (y se reindexa) solo si la búsqueda por prefijo falla con las notas reales; antes de cambiarlo se para y se avisa.
+5. **R-016:** la clave de release se crea ya, fuera del repo. El cambio debug → release lo hace el dueño después, con respaldo antes; Claude Code no desinstala nada.
+6. **R-017:** sí, *Fill in the blank* por reglas, en la fase 6.
+7. **R-018:** la pantalla de carga dura 1500 ms. Ni las 11 fotos personales ni las ilustraciones hechas a partir de ellas van a GitHub: `picsIcons/`, `splash_photo_*.webp` y el script que las dibuja están en `.gitignore`; la app las muestra solo si existen al compilar (se buscan por nombre) y el CI compila solo con las 3 flash.
+8. **Nombre visible:** `app_name` = **Just Study 한국어**.
+**Por qué:** cierran las 8 preguntas abiertas de la auditoría del 2026-11-10.
+
 ## 2026-11-09 — Procesado de PDFs sin WorkManager: servicio propio en primer plano
 **Decisión:** la cola (`ProcessingQueue`) procesa un PDF a la vez por etapas (PENDING → EXTRACTING → PARSING → CHUNKING → INDEXING) dentro de `ProcessingService`, un servicio en primer plano de tipo `dataSync` con su notificación de progreso. Cada etapa guarda su resultado y la siguiente en `processing_jobs` antes de seguir; al abrir la app, si queda trabajo, continúa desde la última etapa guardada.
 **Por qué:** WorkManager adquiere un wake lock para el trabajo en primer plano (`Processor.startForeground`), así que necesita `WAKE_LOCK`, que no está entre los permisos permitidos (decisión del usuario). En el OPPO: matado con `am force-stop` en EXTRACTING, al reabrir sigue desde EXTRACTING y termina. `ProcessingQueueTest` cubre la reanudación, el mismo PDF dos veces, borrar mientras procesa y el PDF rechazado.
