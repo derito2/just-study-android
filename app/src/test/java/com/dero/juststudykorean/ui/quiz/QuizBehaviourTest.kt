@@ -85,4 +85,36 @@ class QuizBehaviourTest {
         assertEquals("Couldn't save your answer. Try again.", vm.state.value.error)
         assertFalse(q.id in vm.state.value.answers)
     }
+
+    @Test
+    fun modelTypesNeverCount() {
+        assertFalse("only model types: Generate quiz is off", QuizForm(types = setOf("fill_blank", "short_answer")).usableTypes().isNotEmpty())
+        val vm = started(QuizForm(count = 5, types = setOf("ko_to_en", "fill_blank", "short_answer")))
+        val run = vm.state.value.run!!
+        assertEquals(5, run.questions.size)
+        assertTrue(run.questions.all { it.type == "ko_to_en" })
+        assertFalse(vm.state.value.failed)
+    }
+
+    @Test
+    fun aQuizOpenedAgainGoesOnWhereItWas() {
+        val vm = started(QuizForm(count = 5))
+        val run = vm.state.value.run!!
+        assertTrue(vm.state.value.created)
+        repeat(2) {
+            val q = vm.state.value.question!!
+            vm.answer(if (answerMode(q.type) == "choice") q.options().first() else "something")
+            idleUntil { q.id in vm.state.value.answers }
+            vm.next()
+        }
+        val given = vm.state.value.answers
+        val runs = runBlocking { app.db.quizRunsDao().all().size }
+
+        val again = QuestionViewModel(app.quiz, app.prefs).also { it.open(run.id); idleUntil { !it.state.value.loading } }
+        assertEquals(2, again.state.value.index)
+        assertEquals(given, again.state.value.answers)
+        assertFalse(again.state.value.created)
+        assertFalse(again.state.value.finished)
+        assertEquals("no new quiz", runs, runBlocking { app.db.quizRunsDao().all().size })
+    }
 }

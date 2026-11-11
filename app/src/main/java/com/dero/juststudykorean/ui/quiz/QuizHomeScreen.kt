@@ -31,6 +31,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -113,22 +117,20 @@ fun QuizHomeContent(
                     }
                     Column {
                         Label("Question types", "문제 유형")
+                        // design/quiz.md A.1: until the phone has a model, the types it writes are shown but cannot be used.
                         Grid(QUIZ_TYPES.entries.toList()) { (id, t) ->
-                            CheckItem(t.first, t.second, t.third, id in form.types) { onForm(form.copy(types = if (id in form.types) form.types - id else form.types + id)) }
+                            if (id in MODEL_TYPES) CheckItem(t.first, t.second, NEEDS_AI, checked = false, unavailable = true, modifier = Modifier.alpha(0.5f)) {}
+                            else CheckItem(t.first, t.second, t.third, id in form.types) { onForm(form.copy(types = if (id in form.types) form.types - id else form.types + id)) }
                         }
-                        if (form.types.isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
+                        if (form.usableTypes().isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
                     }
-                    val levelsCount = form.types.any { it in LEVEL_TYPES }
-                    Column(Modifier.alpha(if (levelsCount) 1f else 0.5f)) {
+                    Column(Modifier.alpha(0.5f)) {
                         Label("Difficulty", "난이도")
-                        Text("Only questions written by the model change with it.", style = MaterialTheme.typography.bodySmall, color = c.muted)
-                        Grid(LEVELS) { (n, label, ko) ->
-                            CheckItem(label, ko, null, n in form.levels) { onForm(form.copy(levels = if (n in form.levels) form.levels - n else form.levels + n)) }
-                        }
-                        if (form.levels.isEmpty()) Text("Choose at least one difficulty.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
+                        Text(NEEDS_AI, style = MaterialTheme.typography.bodySmall, color = c.muted)
+                        Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels, unavailable = true) {} } // shows what is saved
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-                        val ok = form.types.isNotEmpty() && (form.levels.isNotEmpty() || !levelsCount)
+                        val ok = form.usableTypes().isNotEmpty()
                         StickerButton("Generate quiz", onGenerate, Modifier.fillMaxWidth(), ko = "퀴즈 만들기", color = StickerColor.Go, enabled = ok)
                         StickerButton("Practice saved questions", onPracticeSaved, Modifier.fillMaxWidth(), ko = "저장된 문제 연습")
                     }
@@ -172,11 +174,17 @@ private fun <T> Grid(items: List<T>, item: @Composable (T) -> Unit) {
 }
 
 /** A checkbox row: the 18 dp box, the name (`body-bold`), its Korean (11 sp) and the hint (12 sp, `muted`). The whole row toggles. */
+private const val NEEDS_AI = "Needs on-device AI"
+
+/** [unavailable]: it does not answer to touch, and TalkBack says why. */
 @Composable
-private fun CheckItem(name: String, ko: String, hint: String?, checked: Boolean, onToggle: () -> Unit) {
+private fun CheckItem(name: String, ko: String, hint: String?, checked: Boolean, modifier: Modifier = Modifier, unavailable: Boolean = false, onToggle: () -> Unit) {
     val c = JustStudyTheme.colors
+    val touch = if (unavailable) {
+        Modifier.clearAndSetSemantics { contentDescription = "$name, needs on-device AI, unavailable"; role = Role.Checkbox; disabled() }
+    } else Modifier.toggleable(checked, role = Role.Checkbox) { onToggle() }
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(checked, role = Role.Checkbox) { onToggle() }.padding(vertical = Tokens.Space1),
+        modifier.fillMaxWidth().heightIn(min = 48.dp).then(touch).padding(vertical = Tokens.Space1),
         verticalAlignment = Alignment.Top,
     ) {
         JsCheckbox(checked, Modifier.padding(top = 2.dp))

@@ -47,6 +47,15 @@ val QUIZ_TYPES = linkedMapOf(
     "short_answer" to Triple("Short answer", "단답형", "Type a short answer"),
 )
 
+/**
+ * Types only the model can write. Until phase 6 there is no model on the phone: the form shows them as unavailable
+ * and they never count (design/quiz.md A.1). The saved preference keeps them.
+ */
+val MODEL_TYPES = setOf("fill_blank", "short_answer")
+
+/** The types of [this] form a quiz can be built from today. */
+fun QuizForm.usableTypes(): List<String> = QUIZ_TYPES.keys.filter { it in types && it !in MODEL_TYPES }
+
 /** Types the model writes: only these change with the difficulty (the web's LEVEL_TYPES). */
 val LEVEL_TYPES = setOf("fill_blank", "multiple_choice", "short_answer")
 val LEVELS = listOf(Triple(1, "1 · Recall", "기억하기"), Triple(2, "2 · Similar options", "비슷한 선택지"), Triple(3, "3 · Apply a rule", "규칙 적용"))
@@ -129,6 +138,8 @@ data class QuestionUi(
     val finished: Boolean = false,
     /** The last answer could not be saved. */
     val error: String? = null,
+    /** This screen created the quiz (it was not opened by its id). */
+    val created: Boolean = false,
 ) {
     val question: QuestionsEntity? get() = run?.questions?.getOrNull(index)
     val correct: Int get() = answers.values.count { it.grade.correct }
@@ -154,7 +165,16 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
             try {
                 val run = if (runId != null) quiz.run(runId) else generate()
                 if (run == null || run.questions.isEmpty()) { _state.value = QuestionUi(loading = false, failed = true); return@launch }
-                _state.value = QuestionUi(loading = false, run = run, documents = quiz.documentNames(run.questions))
+                // A quiz opened again (the process was killed half way) goes on where it was: the saved answers and the
+                // first question without one. Text half typed is not kept.
+                val answers = if (runId == null) emptyMap() else quiz.results("run-${run.id}").associate { r ->
+                    r.question.id to Answered(r.given, Grade(r.correct, r.question.correctAnswer, r.question.explanation))
+                }
+                val next = run.questions.indexOfFirst { it.id !in answers }
+                _state.value = QuestionUi(
+                    loading = false, run = run, documents = quiz.documentNames(run.questions), answers = answers,
+                    index = if (next < 0) run.questions.lastIndex else next, finished = next < 0, created = runId == null,
+                )
                 shownAt = System.nanoTime()
             } catch (e: CancellationException) {
                 throw e
@@ -166,7 +186,8 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
 
     private suspend fun generate(): QuizRun? {
         val f = prefs.quizForm.first()
-        val types = QUIZ_TYPES.keys.filter { it in f.types }
+        val types = f.usableTypes()
+        if (types.isEmpty()) return null // only model types saved: the form does not let you get here
         val start = System.nanoTime()
         val run = quiz.generate(QuizRequest(documentIds = f.documentIds.toList(), count = f.count, types = types))
         lastGenerationMs = (System.nanoTime() - start) / 1_000_000

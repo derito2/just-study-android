@@ -57,9 +57,11 @@ import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
 @Composable
-fun QuestionScreen(runId: Long?, onLeave: () -> Unit, onResults: (Long) -> Unit, vm: QuestionViewModel = hiltViewModel()) {
+fun QuestionScreen(runId: Long?, onLeave: () -> Unit, onResults: (Long) -> Unit, onCreated: (Long) -> Unit = {}, vm: QuestionViewModel = hiltViewModel()) {
     LaunchedEffect(runId) { vm.open(runId) }
     val ui by vm.state.collectAsStateWithLifecycle()
+    // The saved route gets the quiz id: if the process is killed, coming back opens this quiz, not a new one.
+    LaunchedEffect(ui.created) { if (ui.created) ui.run?.let { onCreated(it.id) } }
     LaunchedEffect(ui.finished) { if (ui.finished) ui.run?.let { onResults(it.id) } }
     QuestionContent(ui, onLeave = onLeave, onType = vm::type, onAnswer = vm::answer, onNext = vm::next)
 }
