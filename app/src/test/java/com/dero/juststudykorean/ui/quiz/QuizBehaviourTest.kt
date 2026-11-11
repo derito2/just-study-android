@@ -67,7 +67,9 @@ class QuizBehaviourTest {
         val vm = QuizHomeViewModel(app.quiz, app.prefs, app.clock)
         val form = QuizForm(count = 7, documentIds = setOf(1), types = setOf("write_ko", "short_answer"), levels = setOf(3))
         vm.setForm(form)
-        idleUntil { runBlocking { app.prefs.quizForm.first() } == form }
+        // Not runBlocking { prefs.quizForm.first() } here: DataStore runs setForm's edit on the caller's dispatcher (Main), so
+        // blocking the main thread on a read while that edit is pending is a deadlock (it hung the CI now and then).
+        idleUntil { vm.form.value == form }
         val reopened = QuizHomeViewModel(app.quiz, app.prefs, app.clock)
         idleUntil { reopened.form.value != null }
         assertEquals(form, reopened.form.value)
