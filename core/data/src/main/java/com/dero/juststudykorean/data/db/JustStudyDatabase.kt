@@ -51,4 +51,5 @@ abstract class JustStudyDatabase : RoomDatabase() {
     abstract fun flashcardReviewsDao(): FlashcardReviewsDao
     abstract fun notesFtsDao(): NotesFtsDao
     abstract fun processingJobsDao(): ProcessingJobsDao
+    abstract fun hotDao(): HotDao
 }

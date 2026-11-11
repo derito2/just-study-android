@@ -157,9 +157,10 @@ class QuizRepository @Inject constructor(
 
     /** A saved quiz and its questions, in order (deleted questions are left out). */
     suspend fun run(runId: Long): QuizRun? = withContext(Dispatchers.IO) {
-        val run = db.quizRunsDao().all().firstOrNull { it.id == runId } ?: return@withContext null
-        val questions = db.questionsDao().all().associateBy { it.id }
-        QuizRun(run.id, ids(run.questionIds).mapNotNull { questions[it] })
+        val run = db.hotDao().quizRun(runId) ?: return@withContext null
+        val wanted = ids(run.questionIds)
+        val questions = db.hotDao().questions(wanted).associateBy { it.id }
+        QuizRun(run.id, wanted.mapNotNull { questions[it] })
     }
 
     /** The answers of a history card ("run-{id}" or "session-{id}"): the last answer to each question, in order. */
@@ -241,10 +242,14 @@ class QuizRepository @Inject constructor(
         return createRun(questions.map { it.id })
     }
 
-    suspend fun answer(runId: Long?, questionId: Long, given: String, elapsedMs: Long): Grade = db.withWriteTransaction {
-        val question = db.questionsDao().all().firstOrNull { it.id == questionId } ?: throw QuizException("Question not found.")
+    suspend fun answer(runId: Long?, questionId: Long, given: String, elapsedMs: Long): Grade = withContext(Dispatchers.IO) {
+        db.withWriteTransaction { answerNow(runId, questionId, given, elapsedMs) }
+    }
+
+    private suspend fun answerNow(runId: Long?, questionId: Long, given: String, elapsedMs: Long): Grade {
+        val question = db.hotDao().question(questionId) ?: throw QuizException("Question not found.")
         if (runId != null) {
-            val run = db.quizRunsDao().all().firstOrNull { it.id == runId } ?: throw QuizException("Quiz not found.")
+            val run = db.hotDao().quizRun(runId) ?: throw QuizException("Quiz not found.")
             if (question.id !in ids(run.questionIds)) throw QuizException("That question is not part of this quiz.")
         }
         if (question.type in CHOICE_TYPES && norm(given) !in Json.parseToJsonElement(question.optionsJson ?: "[]").jsonArray.map { norm(it.jsonPrimitive.content) }) {
@@ -255,7 +260,7 @@ class QuizRepository @Inject constructor(
         val session = progress.attachSession(now, elapsedMs, question.topicId, mode = "quiz")
         db.questionAttemptsDao().insert(QuestionAttemptsEntity(progress.nextId("question_attempts"), question.id, session.id, runId, given, correct, elapsedMs, now))
         question.topicId?.let { progress.recomputeTopic(it) }
-        Grade(correct, question.correctAnswer, question.explanation)
+        return Grade(correct, question.correctAnswer, question.explanation)
     }
 
     /** "Practice saved questions": the ones you got right in the last 7 days, in random order. */

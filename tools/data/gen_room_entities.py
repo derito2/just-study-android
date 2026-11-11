@@ -26,6 +26,7 @@ KINDS = [  # order matters: Boolean before Integer
 
 DB_VERSION = 2  # v2 (phase 4): notes_fts and processing_jobs, see db/AppTables.kt and MIGRATION_1_2
 APP_TABLES = ["NotesFts", "ProcessingJobs"]
+APP_DAOS = ["Hot"]  # hand-written DAOs without a table of their own (db/HotDaos.kt)
 
 
 def kind(column):
@@ -83,7 +84,7 @@ def main() -> None:
     db += ["    ],", f"    version = {DB_VERSION},", "    exportSchema = true,", ")",
            "abstract class JustStudyDatabase : RoomDatabase() {"]
     db += [f"    abstract fun {camel(t.name)}Dao(): {camel(t.name, True)}Dao" for t in tables]
-    db += [f"    abstract fun {name[0].lower() + name[1:]}Dao(): {name}Dao" for name in APP_TABLES]
+    db += [f"    abstract fun {name[0].lower() + name[1:]}Dao(): {name}Dao" for name in APP_TABLES + APP_DAOS]
     db += ["}", ""]
 
     spec = [HEADER, "package com.dero.juststudykorean.data.backup", "",

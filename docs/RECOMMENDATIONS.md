@@ -10,14 +10,14 @@ Se actualiza en cada PR.
 
 | ID | Estado | PR |
 |---|---|---|
-| R-001 | pendiente |  |
+| R-001 | en PR #22 (responder queda en 2,2×; baja con el índice de R-002) | #22 |
 | R-002 | pendiente |  |
 | R-003 | hecho | #20 |
 | R-004 | hecho | #20 |
 | R-005 | hecho (wiggle: solo se recompone una envoltura, ver DECISIONS) | #20 |
 | R-006 | hecho (el teclado tapaba *Show answer* en el OPPO) | #20 |
-| R-007 | en PR #21 | #21 |
-| R-008 | en PR #21 | #21 |
+| R-007 | hecho | #21 |
+| R-008 | hecho | #21 |
 | R-009 | hecho | #20 |
 | R-010 | pendiente |  |
 | R-011 | hecho | #20 |

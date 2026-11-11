@@ -2,6 +2,12 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — R-001: consultas dirigidas en calificar, responder y la lista de mazos
+**Decisión:** `db/HotDaos.kt` (a mano; se registra desde `tools/data/gen_room_entities.py` con `APP_DAOS`) trae las consultas que sustituyen a «cargar la tabla entera y filtrar en Kotlin» en `review`, `reviewedIds`, el mapa `last` de `decksNow`, `history`, `attachSession`, `recomputeTopic`, `QuizRepository.answer` y `QuizRepository.run`. `review` y `answer` corren en `Dispatchers.IO`. Ninguna dorada cambió (18 tablas idénticas); en el OPPO, las 22 pruebas instrumentadas de `:core:data` pasan.
+**Medido (JVM, `HotPathScaleTest`, 50 000 reseñas y 20 000 intentos sintéticos sobre la base dorada, mejor de 25):** calificar 1,6 ms → 1,3 ms; responder 2,1 ms → 4,6 ms.
+**Desviaciones:** (1) `recomputeTopic` no trae todos los intentos del tema: los totales los cuenta SQLite (`topicTotals`) y solo se leen los últimos 10. (2) Responder queda en 2,2× y la auditoría pedía menos de 2×: sin índice en `question_attempts.question_id` SQLite recorre los intentos dos veces por respuesta. La prueba exige 3× y lleva una nota para bajarla a 2× con los índices de R-002. (3) La prueba mide la mejor repetición, no la mediana: con la mediana fallaba por ruido al correr junto a las demás.
+**Sin hacer:** no se midió el código anterior con los mismos datos, y la hipótesis de que el filtrado corría en el hilo principal no se comprobó (ahora da igual: va en IO).
+
 ## 2026-11-11 — Lote C: el formulario de Quiz dice la verdad y el quiz a medias sobrevive
 **R-007:** `MODEL_TYPES` = *Fill in the blank* y *Short answer*. Hasta la fase 6 se ven al 50 %, sin marcar, con la nota *Needs on-device AI* y sin responder al toque; *Difficulty*, igual (muestra lo guardado). Solo cuentan los 6 tipos por reglas (`QuizForm.usableTypes()`), tanto para habilitar *Generate quiz* como al pedir el quiz. La preferencia guardada no se toca. Capturas regrabadas por el cambio de diseño (`design/quiz.md` A.1): `quiz_home`, `quiz_home_full`, `quiz_home_130`.
 **R-008:** al crear un quiz, la ruta guardada pasa de `Question(null)` a `Question(id)`; al abrir un quiz por su id se cargan sus respuestas guardadas (`QuizRepository.results("run-id")`, no hizo falta `answersOf`) y se sigue en la primera pregunta sin responder. El texto a medio escribir no se guarda.
