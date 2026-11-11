@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dero.juststudykorean.ui.theme.JustStudyColors
@@ -105,7 +106,7 @@ internal fun StickerButton(
         if (enabled && !pressed) Box(Modifier.matchParentSize().offset(y = edge).background(paint.edge, shape))
         Column(
             Modifier
-                .offset(y = sink)
+                .offset { IntOffset(0, sink.roundToPx()) }
                 .background(fill, shape)
                 .heightIn(min = height)
                 .padding(horizontal = when (size) { StickerSize.Default -> Tokens.Space4; StickerSize.Small -> Tokens.Space3; StickerSize.Mini -> 10.dp }, vertical = if (size == StickerSize.Mini) Tokens.Space1 else Tokens.Space2),

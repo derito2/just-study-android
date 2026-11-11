@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -97,7 +98,7 @@ fun StudyContent(
 ) {
     val colors = JustStudyTheme.colors
     val ink = MaterialTheme.colorScheme.onSurface
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding().imePadding()) {
         Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(start = Tokens.Space1, end = Tokens.Space4), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { LucideIcon(Lucide.ChevronLeft, contentDescription = "Back to decks", tint = ink) }
             Text(deckName, Modifier.weight(1f).semantics { heading() }, style = MaterialTheme.typography.titleMedium, color = ink, maxLines = 1, overflow = TextOverflow.Ellipsis)

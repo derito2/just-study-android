@@ -47,6 +47,12 @@ data class Fragment(val n: Int, val pageNumber: Int, val section: String?, val t
 /** One entry of All vocabulary: the Korean once, with all its meanings. */
 data class VocabularyWord(val korean: String, val english: String)
 
+/** The All vocabulary filter: [query] in the Korean or in the meaning; the order stays. */
+fun filterVocabulary(words: List<VocabularyWord>, query: String): List<VocabularyWord> {
+    val q = norm(query)
+    return if (q.isEmpty()) words else words.filter { q in norm(it.korean) || q in norm(it.english) }
+}
+
 /** What a document repeats from the others (DuplicateDialog). [combined]: the word's meanings once joined. */
 data class Duplicate(val kind: String, val text: String, val current: List<DuplicateInfo>, val new: DuplicateInfo, val combined: String?)
 
@@ -97,8 +103,7 @@ class DocumentRepository @Inject constructor(
         val ready = db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id }
         val words = cards.mergedWords(ready).values.map { VocabularyWord(it.korean, cards.joinedMeaning(it)) }
             .sortedWith(compareBy({ com.dero.juststudykorean.data.grammar.sortKey(it.korean) }, { it.korean }))
-        val q = norm(query)
-        if (q.isEmpty()) words else words.filter { q in norm(it.korean) || q in norm(it.english) }
+        filterVocabulary(words, query)
     }
 
     /** The words and grammar of [documentId] that other ready documents already had; null if it isn't ready. */

@@ -64,11 +64,13 @@ fun JsTextField(
                 Modifier.fillMaxWidth().heightIn(min = 48.dp)
                     .border(Tokens.Border, borderColor ?: if (focused) colors.brand else colors.line, MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium)
-                    .padding(horizontal = Tokens.Space4, vertical = Tokens.Space3),
+                    // A trailing button brings its own 48 dp target: it takes the vertical padding and half of the end padding.
+                    .padding(start = Tokens.Space4, end = if (trailing != null) Tokens.Space2 else Tokens.Space4),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (leading != null) { leading(); Spacer(Modifier.width(Tokens.Space2)) }
-                Box(Modifier.weight(1f), contentAlignment = if (center) Alignment.Center else Alignment.CenterStart) {
+                // 32 dp with a trailing button: the height the field already had with the old 32 dp button.
+                Box(Modifier.weight(1f).padding(vertical = Tokens.Space3).heightIn(min = if (trailing != null) 32.dp else 0.dp), contentAlignment = if (center) Alignment.Center else Alignment.CenterStart) {
                     if (value.isEmpty() && placeholder != null) Text(placeholder, style = style, color = colors.muted, textAlign = if (center) TextAlign.Center else TextAlign.Start)
                     inner()
                 }

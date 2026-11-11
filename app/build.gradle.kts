@@ -20,6 +20,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Only the OPPO (arm64): the other ABIs of MuPDF and SQLite were 32 MB of the APK.
+        ndk { abiFilters += "arm64-v8a" }
     }
 
     buildTypes {

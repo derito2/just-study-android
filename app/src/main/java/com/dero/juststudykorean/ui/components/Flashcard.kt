@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,9 +58,10 @@ fun FlipCard(flipped: Boolean, front: @Composable (Modifier) -> Unit, back: @Com
         if (reduce || !flipped) angle.snapTo(target) else angle.animateTo(target, tween(400, easing = Motion.EaseOut))
     }
     val density = LocalDensity.current.density
-    val a = angle.value
-    val layer = Modifier.graphicsLayer { rotationY = if (a < 90f) a else a - 180f; cameraDistance = 1000f * density }
-    if (a < 90f) front(modifier.then(layer)) else back(modifier.then(layer))
+    val showFront by remember { derivedStateOf { angle.value < 90f } } // recomposes only when the face changes
+    // The angle is read in the draw phase: the turn does not recompose the faces on every frame.
+    val layer = Modifier.graphicsLayer { val a = angle.value; rotationY = if (a < 90f) a else a - 180f; cameraDistance = 1000f * density }
+    if (showFront) front(modifier.then(layer)) else back(modifier.then(layer))
 }
 
 /** Front: NEW, the word (or its meaning, English → Korean) and, with Type the answer, the field. Fills the free space. */

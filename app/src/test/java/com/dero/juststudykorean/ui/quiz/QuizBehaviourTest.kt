@@ -72,4 +72,15 @@ class QuizBehaviourTest {
         idleUntil { reopened.form.value != null }
         assertEquals(form, reopened.form.value)
     }
+
+    @Test
+    fun answerThatCannotBeSavedShowsAnErrorInsteadOfCrashing() {
+        val vm = started()
+        val q = vm.state.value.question!!
+        app.db.close() // the repository now throws
+        vm.answer(if (answerMode(q.type) == "choice") q.options().first() else "something")
+        idleUntil { vm.state.value.error != null }
+        assertEquals("Couldn't save your answer. Try again.", vm.state.value.error)
+        assertFalse(q.id in vm.state.value.answers)
+    }
 }

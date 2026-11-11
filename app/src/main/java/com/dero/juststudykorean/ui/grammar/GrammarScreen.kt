@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -69,7 +68,7 @@ fun GrammarContent(
         JsTextField(
             ui.query, onQuery, Modifier.fillMaxWidth().padding(horizontal = Tokens.Space4, vertical = Tokens.Space2), placeholder = "Search in Korean or English",
             leading = { LucideIcon(Lucide.Search, contentDescription = null, size = 20.dp, tint = c.muted) },
-            trailing = if (ui.query.isNotEmpty()) ({ IconButton({ onQuery("") }, Modifier.size(32.dp)) { LucideIcon(Lucide.X, contentDescription = "Clear search", size = 20.dp, tint = c.muted) } }) else null,
+            trailing = if (ui.query.isNotEmpty()) ({ IconButton({ onQuery("") }) { LucideIcon(Lucide.X, contentDescription = "Clear search", size = 20.dp, tint = c.muted) } }) else null,
         )
         Box(Modifier.fillMaxSize()) {
             when {

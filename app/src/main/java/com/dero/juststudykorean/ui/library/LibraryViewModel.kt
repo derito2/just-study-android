@@ -34,6 +34,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import com.dero.juststudykorean.ui.components.runCatchingCancellable
+import kotlinx.coroutines.flow.flowOn
+import com.dero.juststudykorean.data.documents.filterVocabulary
 
 /** The documents list: null while loading; [error] if it could not be read. */
 data class DocumentsState(val documents: List<LibraryDocument>? = null, val error: Boolean = false)
@@ -92,7 +95,7 @@ class LibraryViewModel @Inject constructor(
                             if (c.moveToFirst()) c.getString(0) else null
                         }
                     }
-                    val result = runCatching {
+                    val result = runCatchingCancellable {
                         withContext(Dispatchers.IO) { context.contentResolver.openInputStream(uri)!!.use { queue.upload(it, name) } }
                     }.getOrElse { UploadResult.Rejected("Could not read that file.") }
                     when (result) {
@@ -108,7 +111,7 @@ class LibraryViewModel @Inject constructor(
     }
 
     fun reprocess(id: Long) = viewModelScope.launch {
-        runCatching { repo.reprocess(id) }.onFailure { events.send(it.message ?: "Could not reprocess.") }.onSuccess {
+        runCatchingCancellable { repo.reprocess(id) }.onFailure { events.send(it.message ?: "Could not reprocess.") }.onSuccess {
             watching.update { it + id }
             _extracted.update { it - id }
             ProcessingService.start(context)
@@ -116,7 +119,7 @@ class LibraryViewModel @Inject constructor(
     }
 
     fun delete(id: Long, withCards: Boolean) = viewModelScope.launch {
-        runCatching { repo.delete(id, withCards) }.onFailure { events.send("Could not delete the document.") }
+        runCatchingCancellable { repo.delete(id, withCards) }.onFailure { events.send("Could not delete the document.") }
         _extracted.update { it - id }
         if (_open.value == id) _open.value = null
     }
@@ -124,7 +127,7 @@ class LibraryViewModel @Inject constructor(
     /** Save PDF: a copy of the stored file where you choose (CreateDocument). */
     fun savePdf(storedName: String, uri: Uri) = viewModelScope.launch {
         val ok = withContext(Dispatchers.IO) {
-            runCatching {
+            runCatchingCancellable {
                 files.pdf(storedName).inputStream().use { input -> context.contentResolver.openOutputStream(uri, "wt")!!.use { input.copyTo(it) } }
             }.isSuccess
         }
@@ -138,7 +141,7 @@ class LibraryViewModel @Inject constructor(
         if (_extracted.value[id] is ExtractedState.Loaded) return
         _extracted.update { it + (id to ExtractedState.Loading) }
         viewModelScope.launch {
-            val state = runCatching { ExtractedState.Loaded(repo.extracted(id)) }.getOrElse { ExtractedState.Failed }
+            val state = runCatchingCancellable { ExtractedState.Loaded(repo.extracted(id)) }.getOrElse { ExtractedState.Failed }
             _extracted.update { it + (id to state) }
         }
     }
@@ -150,7 +153,7 @@ class LibraryViewModel @Inject constructor(
             watching.update { it - id }
             if (d.document.status != "ready") continue
             viewModelScope.launch {
-                val items = runCatching { repo.duplicates(id) }.getOrNull().orEmpty()
+                val items = runCatchingCancellable { repo.duplicates(id) }.getOrNull().orEmpty()
                 if (items.isNotEmpty() && _duplicates.value == null) _duplicates.value = DuplicatesShown(d.document.originalName, items)
             }
         }
@@ -169,8 +172,11 @@ class AllVocabularyViewModel @Inject constructor(private val repo: DocumentRepos
 
     /** null while loading; failure is an empty list with [failed]. */
     @OptIn(kotlinx.coroutines.FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    val words: StateFlow<VocabularyState> = kotlinx.coroutines.flow.combine(_query.debounce(120), retry) { q, _ -> q }
-        .mapLatest { q -> runCatching { VocabularyState(repo.vocabulary(q), q) }.getOrElse { VocabularyState(null, q, failed = true) } }
+    val words: StateFlow<VocabularyState> = kotlinx.coroutines.flow.combine(
+        retry.mapLatest { runCatchingCancellable { repo.vocabulary() } }, // every word once per load, not per key
+        _query.debounce(120),
+    ) { all, q -> all.fold({ VocabularyState(filterVocabulary(it, q), q) }, { VocabularyState(null, q, failed = true) }) }
+        .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VocabularyState(null, ""))
 
     fun setQuery(q: String) { _query.value = q }

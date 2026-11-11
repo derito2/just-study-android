@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dero.juststudykorean.ui.components.runCatchingCancellable
+import kotlinx.coroutines.CancellationException
 
 data class DecksUi(
     val decks: List<Deck>? = null,
@@ -66,18 +68,18 @@ class DecksViewModel @Inject constructor(private val repo: FlashcardRepository, 
     fun rename(deck: Deck, name: String) = viewModelScope.launch {
         val clean = name.trim()
         if (clean.isEmpty() || clean == deck.name) return@launch
-        runCatching { repo.rename(deck.id, clean) }.onFailure { messages.send(DecksMessage(it.message ?: "Couldn't rename the deck.")) }
+        runCatchingCancellable { repo.rename(deck.id, clean) }.onFailure { messages.send(DecksMessage(it.message ?: "Couldn't rename the deck.")) }
     }
 
     fun reorder(ids: List<Long>) = viewModelScope.launch {
-        runCatching { repo.reorder(ids) }.onFailure { messages.send(DecksMessage(it.message ?: "Couldn't move the deck.")) }
+        runCatchingCancellable { repo.reorder(ids) }.onFailure { messages.send(DecksMessage(it.message ?: "Couldn't move the deck.")) }
     }
 
     /** Combines [ids] (the target first) under [name]; false without a name. */
     fun merge(ids: List<Long>, name: String): Boolean {
         if (name.isBlank()) return false
         viewModelScope.launch {
-            runCatching { repo.merge(ids, name) }
+            runCatchingCancellable { repo.merge(ids, name) }
                 .onSuccess { messages.send(DecksMessage("Combined into \"${name.trim()}\".")) }
                 .onFailure { messages.send(DecksMessage(it.message ?: "Couldn't combine the decks.")) }
         }
@@ -85,12 +87,14 @@ class DecksViewModel @Inject constructor(private val repo: FlashcardRepository, 
     }
 
     fun delete(deck: Deck) = viewModelScope.launch {
-        runCatching { repo.delete(deck.id) }
+        runCatchingCancellable { repo.delete(deck.id) }
             .onSuccess { messages.send(DecksMessage("Deleted ${it.cards.size} cards from ${deck.name}.", undo = it)) }
             .onFailure { messages.send(DecksMessage(it.message ?: "Couldn't delete the deck.")) }
     }
 
-    fun undo(deleted: DeletedDeck) = viewModelScope.launch { repo.undoDelete(deleted) }
+    fun undo(deleted: DeletedDeck) = viewModelScope.launch {
+        runCatchingCancellable { repo.undoDelete(deleted) }.onFailure { messages.send(DecksMessage("Couldn't restore the deck.")) }
+    }
 
     /** Create cards (the web's messages); [documentIds] empty means all documents. */
     fun createCards(documentIds: List<Long>) = viewModelScope.launch {
@@ -104,6 +108,8 @@ class DecksViewModel @Inject constructor(private val repo: FlashcardRepository, 
             } else {
                 "No new cards: every word in ${if (documentIds.isNotEmpty()) "those documents" else "your documents"} already has a card in its deck. Continue it below."
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             notice.value = e.message ?: "Couldn't create cards."
         } finally {

@@ -143,6 +143,7 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                         }
                     }
                 }
+                ui.error?.let { Text(it, Modifier.padding(horizontal = Tokens.Space4), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
                 Box(Modifier.fillMaxWidth().padding(Tokens.Space4)) {
                     when {
                         answered != null -> if (ui.index + 1 < total) {

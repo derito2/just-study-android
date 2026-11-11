@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
+import com.dero.juststudykorean.ui.components.runCatchingCancellable
 
 /** Everything the dashboard shows; null while it loads. */
 data class DashboardUi(
@@ -94,7 +95,7 @@ class DashboardViewModel @Inject constructor(
     /** Practice this: a 5-question quiz on the topic, then Quiz. */
     fun practice(topic: String) = viewModelScope.launch {
         notice.value = null
-        val run = runCatching { quiz.generate(QuizRequest(topic = topic, count = 5)) }.getOrNull()
+        val run = runCatchingCancellable { quiz.generate(QuizRequest(topic = topic, count = 5)) }.getOrNull()
         if (run != null) quizzes.send(run.id) else notice.value = "Not enough material in your notes for that topic yet."
     }
 }

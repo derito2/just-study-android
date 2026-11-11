@@ -32,6 +32,8 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
+import com.dero.juststudykorean.ui.components.runCatchingCancellable
+import kotlinx.coroutines.CancellationException
 
 /** Each question type: name, Korean and hint (the web's TYPE_LABELS), in the form's order. */
 val QUIZ_TYPES = linkedMapOf(
@@ -96,20 +98,20 @@ class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, pr
 
     init {
         viewModelScope.launch {
-            _documents.value = runCatching { quiz.readyDocuments() }.getOrDefault(emptyList())
-            runCatching { quiz.warmUp(_documents.value) }
+            _documents.value = runCatchingCancellable { quiz.readyDocuments() }.getOrDefault(emptyList())
+            runCatchingCancellable { quiz.warmUp(_documents.value) }
         }
     }
 
     fun setForm(f: QuizForm) = viewModelScope.launch { prefs.setQuizForm(f) }
 
     fun practiceSaved() = viewModelScope.launch {
-        val run = runCatching { quiz.practiceSaved() }.getOrNull()
+        val run = runCatchingCancellable { quiz.practiceSaved() }.getOrNull()
         events.send(if (run != null) QuizEvent.Open(run.id) else QuizEvent.Message("You have no saved questions right now."))
     }
 
     fun fixWeaknesses() = viewModelScope.launch {
-        runCatching { quiz.fixWeaknesses() }.getOrNull()?.let { events.send(QuizEvent.Open(it.id)) }
+        runCatchingCancellable { quiz.fixWeaknesses() }.getOrNull()?.let { events.send(QuizEvent.Open(it.id)) }
     }
 }
 
@@ -125,6 +127,8 @@ data class QuestionUi(
     val typed: String = "",
     val documents: Map<Long, String> = emptyMap(),
     val finished: Boolean = false,
+    /** The last answer could not be saved. */
+    val error: String? = null,
 ) {
     val question: QuestionsEntity? get() = run?.questions?.getOrNull(index)
     val correct: Int get() = answers.values.count { it.grade.correct }
@@ -152,6 +156,8 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
                 if (run == null || run.questions.isEmpty()) { _state.value = QuestionUi(loading = false, failed = true); return@launch }
                 _state.value = QuestionUi(loading = false, run = run, documents = quiz.documentNames(run.questions))
                 shownAt = System.nanoTime()
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 _state.value = QuestionUi(loading = false, failed = true)
             }
@@ -179,7 +185,11 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
         viewModelScope.launch {
             try {
                 val grade = quiz.answer(s.run!!.id, q.id, given.trim(), (System.nanoTime() - shownAt) / 1_000_000)
-                _state.value = _state.value.copy(answers = _state.value.answers + (q.id to Answered(given.trim(), grade)))
+                _state.value = _state.value.copy(answers = _state.value.answers + (q.id to Answered(given.trim(), grade)), error = null)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) { // never logs the answer
+                _state.value = _state.value.copy(error = "Couldn't save your answer. Try again.")
             } finally {
                 busy = false
             }
@@ -204,6 +214,6 @@ class ResultsViewModel @Inject constructor(private val quiz: QuizRepository) : V
     fun open(key: String) {
         if (opened) return
         opened = true
-        viewModelScope.launch { _rows.value = runCatching { quiz.results(key) }.getOrDefault(emptyList()) }
+        viewModelScope.launch { _rows.value = runCatchingCancellable { quiz.results(key) }.getOrDefault(emptyList()) }
     }
 }

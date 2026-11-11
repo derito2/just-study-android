@@ -70,15 +70,29 @@ fun DeckCard(
     mark: DropMark = DropMark.None,
     onRename: (String) -> Unit = {},
 ) {
-    val colors = JustStudyTheme.colors
     val angle = if (wiggle) {
         val t = rememberInfiniteTransition(label = "wiggle")
         t.animateFloat(-0.6f, 0.6f, infiniteRepeatable(tween(140), RepeatMode.Reverse, StartOffset(if (alternate) 140 else 0)), label = "angle").value
     } else 0f
+    // Only this thin shell recomposes on every wiggle frame: the card itself is skipped (same arguments).
+    DeckCardBody(deck, onContinue, onDelete, modifier.rotate(angle), editing, dragged, mark, onRename)
+}
+
+@Composable
+private fun DeckCardBody(
+    deck: Deck,
+    onContinue: () -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier,
+    editing: Boolean,
+    dragged: Boolean,
+    mark: DropMark,
+    onRename: (String) -> Unit,
+) {
+    val colors = JustStudyTheme.colors
     val ring = when (mark) { DropMark.On -> colors.brand; else -> colors.line }
     Column(
         modifier
-            .rotate(angle)
             .alpha(if (dragged) 0.5f else 1f)
             .drawBehind {
                 if (mark == DropMark.Before || mark == DropMark.After) {

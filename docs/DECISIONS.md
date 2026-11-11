@@ -2,6 +2,12 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — Lote A+B de la auditoría: dos desviaciones de lo propuesto
+**R-005 (wiggle de los mazos):** no se lee el ángulo en la fase de dibujo (`graphicsLayer { rotationZ }`), como proponía la auditoría: así las tarjetas se dibujan con un suavizado distinto y la captura `flashcards_decks_edit` deja de coincidir. Se mantiene `Modifier.rotate(angle)` y `DeckCard` queda como una envoltura fina que pasa el modificador a `DeckCardBody`: en cada fotograma solo se recompone la envoltura; el cuerpo (textos, botones, campo) se salta porque recibe los mismos argumentos. Sin comprobar en Layout Inspector.
+**R-011 (Clear search):** el botón pasa a 48 dp y el campo conserva la altura que ya tenía con el botón de 32 dp (56 dp con texto, 48 dp vacío), para no cambiar las capturas. Ese salto de 8 dp al escribir ya existía; si diseño quiere el campo siempre a 48 dp, es un cambio de diseño aparte.
+**R-006:** comprobado en el OPPO: con *Type the answer* y el teclado abierto (borde superior en y=1503 px), *Show answer* quedaba en y=2105 px, tapado. Con `imePadding()` queda en y=1348 px y el campo en 969–1095 px.
+**R-003:** la APK de release baja de 53,4 MB a 18,6 MB (solo `arm64-v8a`).
+
 ## 2026-11-11 — Procesado de PDFs: tiempo medido; el segundo plano sigue sin probar con un PDF largo
 **Medido en el OPPO (debug):** `Gramatica_semana_14.pdf` del repo (2 páginas, 61 KB) tarda 0,27 s desde que se copia el PDF hasta la última escritura en la base. Terminó antes de que la app pasara a segundo plano (0,7 s después), así que esta prueba **no** demuestra que el procesado siga con la app en segundo plano o con la pantalla apagada.
 **Pendiente:** repetirla con un PDF de cientos de páginas (en el repo no hay ninguno; todos pesan 60–70 KB). Lo ya comprobado sigue siendo lo de la entrada del 2026-11-09: matado en EXTRACTING, al reabrir continúa y termina.
