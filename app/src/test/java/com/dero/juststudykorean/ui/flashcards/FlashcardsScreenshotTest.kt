@@ -23,6 +23,7 @@ import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.navigation.TopLevel
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import com.dropbox.differ.ImageComparator
 import com.dropbox.differ.Mask
 import com.github.takahirom.roborazzi.RoborazziOptions
@@ -81,7 +82,7 @@ class FlashcardsScreenshotTest {
     private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, options: RoborazziOptions = RoborazziOptions(), content: @Composable () -> Unit) =
         captureRoboImage("src/test/screenshots/$name.png", options) {
             val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale), LocalFrozenMotion provides true) {
                 JustStudyTheme(darkTheme = false) {
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.weight(1f)) { content() }

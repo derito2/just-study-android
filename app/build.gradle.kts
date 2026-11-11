@@ -1,3 +1,5 @@
+import java.time.Duration
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -80,4 +82,11 @@ dependencies {
 
 roborazzi {
     outputDir.set(file("src/test/screenshots"))
+}
+
+// Every unit test is printed when it starts and ends, so a test that hangs has a name in the CI log; and the task
+// gives up after 20 minutes (it takes about 6) instead of running until the job's limit.
+tasks.withType<Test>().configureEach {
+    testLogging { events("started", "passed", "failed", "skipped") }
+    timeout.set(Duration.ofMinutes(20))
 }

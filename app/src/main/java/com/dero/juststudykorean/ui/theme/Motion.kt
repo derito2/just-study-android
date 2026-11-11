@@ -22,3 +22,10 @@ fun reduceMotion(): Boolean {
         android.provider.Settings.Global.getFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
     }
 }
+
+/**
+ * True in screenshot tests: endless animations stand still on their first frame. An endless animation keeps
+ * Robolectric drawing frames while Roborazzi waits for the screen to settle, which made those tests take minutes
+ * or never end in CI.
+ */
+val LocalFrozenMotion = androidx.compose.runtime.staticCompositionLocalOf { false }
