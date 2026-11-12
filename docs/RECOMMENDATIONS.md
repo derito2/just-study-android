@@ -23,7 +23,7 @@ Se actualiza en cada PR.
 | R-011 | hecho | #20 |
 | R-012 | hecho | #20 |
 | R-013 | pendiente (fase 6) |  |
-| R-014 | pendiente |  |
+| R-014 | hecho en fase-5/teacher (`NotesSearch`: raíces como prefijo + filtro por palabra; 454/454 doradas con FTS) |  |
 | R-015 | icono temático hecho (#19); notificación y `onTimeout` pendientes (fase 5) | #19 |
 | R-016 | pendiente |  |
 | R-017 | pendiente (fase 6) |  |
