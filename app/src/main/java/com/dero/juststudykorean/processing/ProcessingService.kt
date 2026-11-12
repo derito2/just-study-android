@@ -2,6 +2,7 @@ package com.dero.juststudykorean.processing
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,7 @@ import android.content.pm.ServiceInfo
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.dero.juststudykorean.MainActivity
 import com.dero.juststudykorean.R
 import com.dero.juststudykorean.data.documents.STAGE_CHUNKING
 import com.dero.juststudykorean.data.documents.STAGE_EXTRACTING
@@ -59,14 +61,27 @@ class ProcessingService : Service() {
         return START_NOT_STICKY // the queue is in Room: the app starts it again when it opens
     }
 
+    /** Android 15+: the daily dataSync time is used up. Stop now; the queue is in Room and goes on when the app opens. */
+    override fun onTimeout(startId: Int, fgsType: Int) {
+        run?.cancel()
+        stopSelf()
+    }
+
     override fun onDestroy() {
         scope.cancel()
         super.onDestroy()
     }
 
+    /** Touching the notification brings the app back (explicit and immutable, like the launcher's own intent). */
+    private val open by lazy {
+        val intent = Intent(this, MainActivity::class.java).setAction(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+        PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
     /** No file names or note text: the stage and how far it is. */
     private fun notification(text: String, percent: Int) = NotificationCompat.Builder(this, CHANNEL)
-        .setSmallIcon(R.drawable.ic_launcher_foreground)
+        .setSmallIcon(R.drawable.ic_stat_processing)
+        .setContentIntent(open)
         .setContentTitle(getString(R.string.processing_title))
         .setContentText(text)
         .setProgress(100, percent, percent == 0)
@@ -88,7 +103,12 @@ class ProcessingService : Service() {
         fun start(context: Context) {
             val manager = context.getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.processing_channel), NotificationManager.IMPORTANCE_LOW))
-            ContextCompat.startForegroundService(context, Intent(context, ProcessingService::class.java))
+            try {
+                ContextCompat.startForegroundService(context, Intent(context, ProcessingService::class.java))
+            } catch (e: IllegalStateException) {
+                // Already in the background (ForegroundServiceStartNotAllowedException): the queue stays in Room and
+                // starts the next time the app opens.
+            }
         }
     }
 }
