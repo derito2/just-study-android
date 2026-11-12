@@ -11,7 +11,7 @@ Se actualiza en cada PR.
 | ID | Estado | PR |
 |---|---|---|
 | R-001 | hecho (con el índice de R-002; ver DECISIONS) | #22 |
-| R-002 | hecho: v3 en #22, el resto (v4) en fase-5/teacher | #22 |
+| R-002 | hecho: v3 en #22, el resto (v4) en fase 5 | #22 / #24 |
 | R-003 | hecho | #20 |
 | R-004 | hecho | #20 |
 | R-005 | hecho (wiggle: solo se recompone una envoltura, ver DECISIONS) | #20 |
@@ -23,9 +23,9 @@ Se actualiza en cada PR.
 | R-011 | hecho | #20 |
 | R-012 | hecho | #20 |
 | R-013 | pendiente (fase 6) |  |
-| R-014 | hecho en fase-5/teacher (`NotesSearch`: raíces como prefijo + filtro por palabra; 454/454 doradas con FTS) |  |
-| R-015 | hecho: icono temático (#19); notificación, `onTimeout` y `setContentIntent` en fase-5/teacher | #19 |
-| R-016 | pendiente |  |
+| R-014 | hecho en fase 5 (`NotesSearch`: raíces como prefijo + filtro por palabra; 454/454 doradas con FTS) | #24 |
+| R-015 | hecho: icono temático (#19); notificación, `onTimeout` y `setContentIntent` en fase 5 | #19 / #24 |
+| R-016 | hecho; el cambio debug → release lo hace el dueño (ver DECISIONS) | #23 |
 | R-017 | pendiente (fase 6) |  |
 | R-018 | hecho | #19 |
 
