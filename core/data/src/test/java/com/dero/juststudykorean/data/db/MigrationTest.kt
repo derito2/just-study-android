@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import java.io.File
 
-/** v1 → v2 (phase 4) only adds notes_fts and processing_jobs, v2 → v3 only indices: every row of the 18 backup tables stays as it was. */
+/** v1 → v2 (phase 4) only adds notes_fts and processing_jobs, v2 → v3 and v3 → v4 only indices: every row of the 18 backup tables stays as it was. */
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [36])
 class MigrationTest {
@@ -54,5 +54,9 @@ class MigrationTest {
         val v3 = helper.runMigrationsAndValidate(3, listOf(MIGRATION_2_3)) // also checks the index against schemas/3.json
         assertEquals(before, dump(v3))
         v3.close()
+
+        val v4 = helper.runMigrationsAndValidate(4, listOf(MIGRATION_3_4)) // all of R-002's indices, against schemas/4.json
+        assertEquals(before, dump(v4))
+        v4.close()
     }
 }

@@ -14,7 +14,7 @@ fun norm(text: String): String =
     casefold(Normalizer.normalize(text, Normalizer.Form.NFC)).replace(notWord, " ").replace(spaces, " ").pyStrip()
 
 // Python's str.casefold(): uppercase then lowercase gives the same full folding for ß, ﬁ, ς and the like.
-internal fun casefold(s: String) = s.uppercase().lowercase()
+fun casefold(s: String) = s.uppercase().lowercase()
 
 /** The answer appears in the source (whole phrase, or all its words; Hangul words also inside longer ones). */
 fun isGrounded(answer: String, source: String): Boolean {

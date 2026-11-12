@@ -34,7 +34,7 @@ import kotlin.math.sin
 enum class Lucide(internal val durationMs: Int) {
     LayoutGrid(800), BookText(600), Layers(600), CircleHelp(500), GraduationCap(700), Menu(300),
     Languages(1000), TrendingUp(400), CalendarDays(400), Moon(1200), Settings(600), ChevronLeft(500), BadgeAlert(500), Download(500), TrendingDown(400), Minus(300),
-    Check(300), X(300), SquarePen(500), Trash2(500), Search(400), Plus(300), RefreshCw(600),
+    Check(300), X(300), SquarePen(500), Trash2(500), Search(400), Plus(300), RefreshCw(600), FileText(0),
 }
 
 /** How one part of an icon moves at progress t (0..1). Pivot in icon units (24 × 24). */
@@ -73,6 +73,7 @@ private fun Lucide.pose(part: Int, t: Float): PartPose = when (this) {
     Lucide.RefreshCw -> PartPose(rotation = 180f * t)
     Lucide.ChevronLeft -> PartPose(dx = -2f * wave(t))
     Lucide.Download -> if (part == 0) PartPose() else PartPose(dy = 2f * wave(t)) // the arrow drops 2 dp
+    Lucide.FileText -> PartPose() // a source line: never animated
     Lucide.BadgeAlert -> PartPose(rotation = 8f * sin(4 * PI * t).toFloat() * (1f - t), scale = 1f + 0.1f * wave(t))
 }
 

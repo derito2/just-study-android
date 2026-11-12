@@ -21,7 +21,7 @@ data class DeckGroupsEntity(
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )
 
-@Entity(tableName = "documents", primaryKeys = ["id"])
+@Entity(tableName = "documents", primaryKeys = ["id"], indices = [Index("sha256"), Index("status")])
 data class DocumentsEntity(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "original_name") val originalName: String,
@@ -39,14 +39,14 @@ data class DocumentsEntity(
     @ColumnInfo(name = "processed_at") val processedAt: Long?,
 )
 
-@Entity(tableName = "quiz_runs", primaryKeys = ["id"])
+@Entity(tableName = "quiz_runs", primaryKeys = ["id"], indices = [Index("started_at")])
 data class QuizRunsEntity(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "question_ids") val questionIds: String,
     @ColumnInfo(name = "started_at") val startedAt: Long,
 )
 
-@Entity(tableName = "study_sessions", primaryKeys = ["id"])
+@Entity(tableName = "study_sessions", primaryKeys = ["id"], indices = [Index("started_at")])
 data class StudySessionsEntity(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "started_at") val startedAt: Long,
@@ -79,7 +79,7 @@ data class DocumentTopicsEntity(
     @ColumnInfo(name = "page_end") val pageEnd: Long?,
 )
 
-@Entity(tableName = "grammar_points", primaryKeys = ["id"])
+@Entity(tableName = "grammar_points", primaryKeys = ["id"], indices = [Index("document_id"), Index("category")])
 data class GrammarPointsEntity(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "document_id") val documentId: Long,
@@ -156,7 +156,7 @@ data class ExamplesEntity(
     @ColumnInfo(name = "document_id") val documentId: Long?,
 )
 
-@Entity(tableName = "flashcards", primaryKeys = ["id"])
+@Entity(tableName = "flashcards", primaryKeys = ["id"], indices = [Index("due_at"), Index("custom_deck_id")])
 data class FlashcardsEntity(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "vocabulary_id") val vocabularyId: Long?,
@@ -178,7 +178,7 @@ data class FlashcardsEntity(
     @ColumnInfo(name = "custom_deck_id") val customDeckId: Long?,
 )
 
-@Entity(tableName = "question_attempts", primaryKeys = ["id"], indices = [Index("question_id")])
+@Entity(tableName = "question_attempts", primaryKeys = ["id"], indices = [Index("quiz_run_id"), Index("created_at"), Index("question_id")])
 data class QuestionAttemptsEntity(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "question_id") val questionId: Long,
@@ -190,7 +190,7 @@ data class QuestionAttemptsEntity(
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )
 
-@Entity(tableName = "flashcard_reviews", primaryKeys = ["id"])
+@Entity(tableName = "flashcard_reviews", primaryKeys = ["id"], indices = [Index("flashcard_id", "reviewed_at")])
 data class FlashcardReviewsEntity(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "flashcard_id") val flashcardId: Long,

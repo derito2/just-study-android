@@ -24,9 +24,16 @@ KINDS = [  # order matters: Boolean before Integer
 ]
 
 
-DB_VERSION = 3  # v2 (phase 4): notes_fts and processing_jobs (MIGRATION_1_2); v3: INDICES (MIGRATION_2_3)
-# Indices the phone adds on top of the web's columns (R-001/R-002), name -> column; each one also in MIGRATION_2_3.
-INDICES = {"question_attempts": ["question_id"]}
+# v2 (phase 4): notes_fts and processing_jobs (MIGRATION_1_2); v3: question_attempts(question_id) (MIGRATION_2_3);
+# v4: the web's index=True columns and flashcard_reviews(flashcard_id, reviewed_at) (MIGRATION_3_4). See R-002.
+DB_VERSION = 4
+SMALL = {"deck_places", "deck_groups", "custom_decks"}  # a handful of rows: no indices (R-002)
+EXTRA_INDICES = {"question_attempts": [("question_id",)], "flashcard_reviews": [("flashcard_id", "reviewed_at")]}
+
+
+def indices(t) -> list[tuple[str, ...]]:
+    web = [] if t.name in SMALL else [(c.name,) for c in t.columns if c.index]
+    return web + EXTRA_INDICES.get(t.name, [])
 APP_TABLES = ["NotesFts", "ProcessingJobs"]
 APP_DAOS = ["Hot"]  # hand-written DAOs without a table of their own (db/HotDaos.kt)
 
@@ -58,7 +65,8 @@ def main() -> None:
         pks = [c.name for c in t.primary_key.columns]
         pk_list = ", ".join(f'"{p}"' for p in pks)
         order = ", ".join(pks)
-        idx = f', indices = [{", ".join(f'Index("{c}")' for c in INDICES[t.name])}]' if t.name in INDICES else ""
+        idx = ", ".join("Index(" + ", ".join(f'"{c}"' for c in cols) + ")" for cols in indices(t))
+        idx = f", indices = [{idx}]" if idx else ""
         entities.append(f'@Entity(tableName = "{t.name}", primaryKeys = [{pk_list}]{idx})')
         entities.append(f"data class {name}Entity(")
         cols = []

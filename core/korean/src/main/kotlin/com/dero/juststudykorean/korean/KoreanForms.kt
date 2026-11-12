@@ -133,3 +133,37 @@ fun hasForm(text: String, form: String, aeo: Set<String> = emptySet()): Boolean 
     }
     return false
 }
+
+// What can follow each form in a conjugated word (conjugation.py), to tell which verb of your notes it comes from.
+private val afterAeo = listOf("", "요", "서", "서요", "도", "야", "라", "줘", "주세요", "봐", "보세요", "있")
+private val afterPast = listOf("어", "다", "습니다", "는데", "지만", "던", "을", "는")
+private val afterStem = listOf(
+    "고", "지", "는", "네", "게", "기", "면", "으면", "니까", "으니까", "세요", "으세요", "습니다",
+    "겠", "다", "던", "을", "은", "잖아", "거든", "더라", "구나", "군", "죠", "대요", "래요",
+)
+
+/** The verbs of your notes a conjugated word can come from: "바빠요" -> [바쁘다] (conjugation.lemmas). */
+fun lemmas(wordIn: String, verbs: Set<String>): List<String> {
+    val word = wordIn.trim(' ', '.', ',', '!', '?')
+    val found = mutableListOf<String>()
+    for (verb in verbs.sorted()) {
+        val stem = verb.dropLast(1)
+        if (stem.isEmpty() || word == verb) continue
+        val options = mutableListOf(Triple(stem, afterStem, true))
+        val last = split(stem.last())
+        if (last != null && last.third == T_L) options += Triple(stem.dropLast(1) + join(last.first, last.second), listOf("는", "니", "세요", "시"), true)
+        for (form in aeoForms(verb)) {
+            options += Triple(form, afterAeo, false)
+            past(form)?.let { options += Triple(it, afterPast, true) }
+        }
+        for ((base, after, prefix) in options) {
+            if (!word.startsWith(base)) continue
+            val rest = word.substring(base.length)
+            if (if (prefix) after.any { it.isNotEmpty() && rest.startsWith(it) } else rest in after) {
+                found += verb
+                break
+            }
+        }
+    }
+    return found
+}

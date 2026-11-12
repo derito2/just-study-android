@@ -473,6 +473,47 @@ class FlashcardRepository @Inject constructor(
         CreateResult(created, skipped, db.flashcardsDao().count())
     }
 
+    /**
+     * A new deck from the coach with those words of your notes (flashcard_service.create_custom_deck): COPIES of the
+     * cards, so no deck of yours nor its progress changes. Returns its deck id (negative, as custom decks are shown).
+     */
+    suspend fun createCustomDeck(name: String, words: List<String>): Long = db.withWriteTransaction {
+        val now = clock.now().toEpochMilli()
+        val wanted = words.map(::norm).filter { it.isNotEmpty() }.distinct()
+        val ready = db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id }
+        val fromNotes = LinkedHashMap<String, Pair<com.dero.juststudykorean.korean.Chunk, com.dero.juststudykorean.korean.VocabPair>>()
+        for (chunk in ready.flatMap(notes::chunks)) for (pair in extractPairs(chunk)) {
+            val key = norm(pair.korean)
+            if (key in wanted && key !in fromNotes) fromNotes[key] = chunk to pair
+        }
+        // What is not in your notes but is a card of yours (from a deleted document, say).
+        val fromCards = LinkedHashMap<String, FlashcardsEntity>()
+        for (card in db.flashcardsDao().all().filter { it.customDeckId == null }) {
+            val key = norm(card.koreanWord)
+            if (key in wanted && key !in fromNotes && key !in fromCards) fromCards[key] = card
+        }
+        if (fromNotes.isEmpty() && fromCards.isEmpty()) throw FlashcardException("None of those words are in your notes.")
+        val deck = CustomDecksEntity(progress.nextId("custom_decks"), name.trim().cut(120), now)
+        db.customDecksDao().insert(deck)
+        val topics = Topics(db, progress)
+        var nextId = progress.nextId("flashcards")
+        for (key in wanted) {
+            val card = fromNotes[key]?.let { (chunk, item) ->
+                FlashcardsEntity(
+                    id = nextId, vocabularyId = null, front = item.korean, back = item.english, koreanWord = item.korean.cut(120),
+                    translation = item.english.cut(255), romanization = item.romanization?.takeIf { it.isNotEmpty() }?.cut(120),
+                    exampleSentence = item.exampleKo, topicId = topics.idFor(chunk), difficulty = 1, ease = 2.5, intervalHours = 0, repetitions = 0,
+                    dueAt = now, sourceChunkId = chunk.chromaId, exampleTranslation = item.exampleEn, createdAt = now, customDeckId = deck.id,
+                )
+            } ?: fromCards[key]?.copy( // without its progress
+                id = nextId, vocabularyId = null, difficulty = 1, ease = 2.5, intervalHours = 0, repetitions = 0, dueAt = now, createdAt = now, customDeckId = deck.id,
+            ) ?: continue
+            db.flashcardsDao().insert(card)
+            nextId++
+        }
+        -deck.id
+    }
+
     /** Words (normalized) of the ready documents uploaded before [documentId]: what a new PDF repeats is not saved again. */
     private fun earlierWords(documentId: Long, ready: List<DocumentsEntity>): Set<String> =
         ready.filter { it.id < documentId }.flatMap(notes::chunks).flatMap(::extractPairs).map { norm(it.korean) }.toSet()

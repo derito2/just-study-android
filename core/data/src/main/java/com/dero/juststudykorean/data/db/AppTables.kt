@@ -118,3 +118,17 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         connection.execSQL("CREATE INDEX IF NOT EXISTS `index_question_attempts_question_id` ON `question_attempts` (`question_id`)")
     }
 }
+
+/** v3 → v4 only adds the rest of R-002's indices (the web's index=True columns and the last-review lookup): no row changes. */
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        for ((table, cols) in listOf(
+            "documents" to listOf("sha256"), "documents" to listOf("status"), "quiz_runs" to listOf("started_at"),
+            "study_sessions" to listOf("started_at"), "grammar_points" to listOf("document_id"), "grammar_points" to listOf("category"),
+            "flashcards" to listOf("due_at"), "flashcards" to listOf("custom_deck_id"), "question_attempts" to listOf("quiz_run_id"),
+            "question_attempts" to listOf("created_at"), "flashcard_reviews" to listOf("flashcard_id", "reviewed_at"),
+        )) {
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_${table}_${cols.joinToString("_")}` ON `$table` (${cols.joinToString { "`$it`" }})")
+        }
+    }
+}

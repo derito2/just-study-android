@@ -11,7 +11,7 @@ Se actualiza en cada PR.
 | ID | Estado | PR |
 |---|---|---|
 | R-001 | hecho (con el índice de R-002; ver DECISIONS) | #22 |
-| R-002 | parcial: índice `question_attempts(question_id)` (v3) en #22; el resto pendiente | #22 |
+| R-002 | hecho: v3 en #22, el resto (v4) en fase 5 | #22 / #24 |
 | R-003 | hecho | #20 |
 | R-004 | hecho | #20 |
 | R-005 | hecho (wiggle: solo se recompone una envoltura, ver DECISIONS) | #20 |
@@ -19,13 +19,13 @@ Se actualiza en cada PR.
 | R-007 | hecho | #21 |
 | R-008 | hecho | #21 |
 | R-009 | hecho | #20 |
-| R-010 | pendiente |  |
+| R-010 | descartada: el teléfono no vibra nunca (ver DECISIONS) | #24 |
 | R-011 | hecho | #20 |
 | R-012 | hecho | #20 |
 | R-013 | pendiente (fase 6) |  |
-| R-014 | pendiente |  |
-| R-015 | icono temático hecho (#19); notificación y `onTimeout` pendientes (fase 5) | #19 |
-| R-016 | en PR (build/release-signing); el cambio debug → release lo hace el dueño |  |
+| R-014 | hecho en fase 5 (`NotesSearch`: raíces como prefijo + filtro por palabra; 454/454 doradas con FTS) | #24 |
+| R-015 | hecho: icono temático (#19); notificación, `onTimeout` y `setContentIntent` en fase 5 | #19 / #24 |
+| R-016 | hecho; el cambio debug → release lo hace el dueño (ver DECISIONS) | #23 |
 | R-017 | pendiente (fase 6) |  |
 | R-018 | hecho | #19 |
 
@@ -80,7 +80,7 @@ Riesgos mayores: degradación gradual con meses de uso (1); release sin firma co
 | R-012 | Rendimiento | All vocabulary: no recalcular por tecla | medio | S | bajo | ya |
 | R-013 | IA (fase 6) | Puerta única de Nano: cola, validar antes de mostrar, caché | alto | M | medio | 6 |
 | R-014 | IA / recuperación | Búsqueda FTS con raíces coreanas y prefijo | alto | S | medio | 5 (tarea 1) |
-| R-015 | Servicio | `ProcessingService`: `onTimeout`, abrir la app al tocar, icono propio | bajo | S | bajo | 5 |
+| R-015 | hecho: icono temático (#19); notificación, `onTimeout` y `setContentIntent` en fase-5/teacher | #19 |
 | R-016 | Build / datos | Firma de release reproducible (adelantar de la fase 7) | medio | S | medio | ya |
 | R-017 | Quiz sin modelo | Fill in the blank por reglas | medio | M | medio | 6 (decisión) |
 | R-018 | Arranque | Pantalla de carga: poder saltarla y medirla | bajo | S | bajo | ya |
@@ -311,7 +311,7 @@ Cada lote es un PR independiente, con CI en verde.
 1. **R-007:** hasta la fase 6, ¿los tipos *Fill in the blank* y *Short answer* y el bloque *Difficulty* se muestran deshabilitados con una nota, o se ocultan?
    - **Respuesta del dueño (2026-11-11):** deshabilitados, con la nota **Needs on-device AI** (`design/quiz.md`, A.1).
 2. **R-010:** ¿quieres vibración al calificar y al acertar o fallar? Si sí, diseño fija en qué acciones.
-   - **Respuesta del dueño (2026-11-11):** vibración sí, solo en las acciones de `design/shell.md` (Respuesta háptica).
+   - **Respuesta del dueño (2026-11-11):** no, sin vibración (`design/shell.md`, *Sin vibración*). Antes había dicho que sí; se cambió tras probarlo en el OPPO.
 3. **R-013:** ¿la caché de explicaciones del modelo puede guardarse en disco (una tabla fuera del respaldo, borrable desde Settings) o solo en memoria? El plan dice que lo que crea el modelo "nunca se guarda como si fuera tuyo".
    - **Respuesta del dueño (2026-11-11):** solo en memoria, nunca en disco.
 4. **R-014:** si la búsqueda por prefijo no basta en tus notas reales, ¿se acepta una migración a otro tokenizador (reindexar todo) en la fase 5?

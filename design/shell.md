@@ -81,23 +81,11 @@ Encima de la lista, el JsTopBar de Settings.
 Como en la web (Progress no está en su menú), el móvil no tiene pantalla Progress. Todo el progreso se ve en la gráfica del Dashboard (`design/dashboard.md`, sección 4). `MoreDestination` queda en Grammar, Calendar y Settings.
 
 
-## Respuesta háptica (R-010)
+## Sin vibración (R-010, descartada)
 
-Solo en estas acciones, una vez y en el mismo fotograma en que se ve el resultado (`LocalHapticFeedback.current.performHapticFeedback`):
+El teléfono **no vibra nunca**: ni al calificar, ni al responder, ni al girar la tarjeta, ni en ningún otro sitio. No se llama a `performHapticFeedback` ni a `Vibrator`. Se quitan las llamadas que se hayan añadido.
 
-| Acción | Dónde | Tipo (`HapticFeedbackType`) |
-|---|---|---|
-| Girar la tarjeta (*Show answer* o tocar la tarjeta) | `StudyScreen`, `Flashcard` | `ContextClick` (toque corto y suave) |
-| Calificar *Good*, *Easy* o *Hard* | `RatingButtons` | `Confirm` |
-| Calificar *Again* | `RatingButtons` | `Reject` |
-| Acierto en el quiz (opción o respuesta escrita) | `QuizOption`, `TypedResult` | `Confirm` |
-| Fallo en el quiz (opción o respuesta escrita) | `QuizOption`, `TypedResult` | `Reject` |
-
-- La respuesta escrita en Flashcards usa `TypedResult`, así que vibra igual: `Confirm` si es correcta y `Reject` si no.
-- **Nunca** al navegar (barra inferior, More, atrás), al escribir, al desplazar, en casillas, interruptores, el selector − / +, *Undo*, la pantalla de carga, Teacher ni ningún otro botón.
-- Sigue el ajuste de vibración táctil del sistema: apagado, no vibra nada. *Quitar animaciones* no lo apaga.
-- Sin el permiso `VIBRATE` ni la API `Vibrator`: solo `performHapticFeedback`.
-- Si `Confirm`, `Reject` o `ContextClick` no existen en el BOM de Compose del proyecto, **parar y avisar**. No hay que sustituirlos por otros tipos.
+El "wiggle" de los mazos en modo edición es solo una animación en pantalla y se queda como está.
 
 ## Icono y nombre en el lanzador
 
