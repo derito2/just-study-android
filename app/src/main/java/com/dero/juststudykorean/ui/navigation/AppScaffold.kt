@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -29,6 +30,7 @@ import com.dero.juststudykorean.ui.quiz.QuestionScreen
 import com.dero.juststudykorean.ui.quiz.QuizHomeScreen
 import com.dero.juststudykorean.ui.quiz.ResultsScreen
 import com.dero.juststudykorean.ui.screens.SettingsScreen
+import com.dero.juststudykorean.ui.teacher.TeacherScreen
 
 /**
  * PhoneLayout (design/shell.md): each screen draws its own JsTopBar under the status bar; JsBottomBar goes to the
@@ -37,6 +39,7 @@ import com.dero.juststudykorean.ui.screens.SettingsScreen
 @Composable
 fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavState = rememberAppNavState()) {
     var moreOpen by rememberSaveable { mutableStateOf(false) }
+    var coachAsks by rememberSaveable { mutableIntStateOf(0) } // Dashboard's "Ask what to do": Teacher in the coach's mode
     // One decorator per tab stack, so a tab keeps its screens' state while another tab is shown.
     val entries = TopLevel.entries.associateWith { tab ->
         rememberDecoratedNavEntries(
@@ -64,7 +67,11 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                         route.section == MoreDestination.Grammar -> GrammarScreen(onMore = more, onBack = back, onLibrary = { nav.select(TopLevel.Library) })
                         route.section == MoreDestination.Calendar -> CalendarScreen(onMore = more, onBack = back)
                         route == Route(TopLevel.Dashboard) -> DashboardScreen(
-                            onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onAsk = { nav.select(TopLevel.Teacher) },
+                            onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onAsk = { coachAsks++; nav.select(TopLevel.Teacher) },
+                        )
+                        route == Route(TopLevel.Teacher) -> TeacherScreen(
+                            coachAsks, onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) },
+                            onOpenFlashcards = { nav.select(TopLevel.Flashcards) },
                         )
                         route == Route(TopLevel.Flashcards) -> DecksScreen(onMore = more, onStudy = { nav.push(TopLevel.Flashcards, Screen.Study(it.id, it.name)) })
                         else -> PlaceholderScreen(route, onMore = more, onBack = if (route.section != null || screen != null) back else null)

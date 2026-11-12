@@ -112,6 +112,13 @@ internal val Lucide.paths: List<String>
             "M5 12h14",
             "M12 5v14",
         )
+        Lucide.FileText -> listOf(
+            "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z",
+            "M14 2v4a2 2 0 0 0 2 2h4",
+            "M10 9H8",
+            "M16 13H8",
+            "M16 17H8",
+        )
         Lucide.RefreshCw -> listOf(
             "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8",
             "M21 3v5h-5",
