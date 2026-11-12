@@ -21,6 +21,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -53,7 +55,8 @@ fun JsTextField(
     val focused by source.collectIsFocusedAsState()
     val ink = MaterialTheme.colorScheme.onSurface
     BasicTextField(
-        value, onValueChange, modifier,
+        // TalkBack names the field by its placeholder (drawn apart, it was an unnamed edit box: phase 7, task 5).
+        value, onValueChange, if (placeholder != null) modifier.semantics { contentDescription = placeholder } else modifier,
         enabled = enabled, singleLine = true, interactionSource = source,
         textStyle = style.copy(color = ink, textAlign = if (center) TextAlign.Center else TextAlign.Start),
         cursorBrush = SolidColor(colors.brand),

@@ -139,9 +139,10 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                                 QuizOption(i + 1, o, state, { onAnswer(o) })
                             }
                         } else {
-                            Text(if (mode == "korean") "Your answer in Korean" else "Your answer", style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
-                            JsTextField(
-                                answered?.given ?: ui.typed, onType, Modifier.fillMaxWidth(), enabled = answered == null,
+                            val label = if (mode == "korean") "Your answer in Korean" else "Your answer"
+                            Text(label, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
+                            JsTextField( // TalkBack names the field (the label above is a separate text: phase 7, task 5)
+                                answered?.given ?: ui.typed, onType, Modifier.fillMaxWidth().semantics { contentDescription = label }, enabled = answered == null,
                                 borderColor = if (answered != null && !answered.grade.correct) c.wrongBorder else null,
                                 style = if (mode == "korean") JustStudyTheme.korean.koBody else MaterialTheme.typography.bodyMedium,
                                 onDone = { if (ui.typed.isNotBlank()) onAnswer(ui.typed) },
