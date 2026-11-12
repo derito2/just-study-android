@@ -65,6 +65,15 @@ class NanoGateTest {
         assertNull(gate(slow, timeoutMs = 50).ask(request) { it })
     }
 
+    /** The 2 s wait between calls doesn't count against the use's deadline (on the OPPO the judge always ran out). */
+    @Test
+    fun theWaitBetweenCallsIsNotPartOfTheDeadline() = runBlocking {
+        val model = Fake()
+        val g = NanoGate(model, NanoState(model).also { runBlocking { it.check() } }, { false }, { clock }, { delay(150); clock += it }, { true }, { 100 })
+        assertEquals("It means coffee.", g.ask(request) { it })
+        assertEquals("It means coffee.", g.ask(request) { it }) // waited 150 ms (real) for the gap, deadline 100 ms
+    }
+
     @Test
     fun busyIsRetriedOnceAfterTheGap() = runBlocking {
         assertEquals("It means coffee.", gate(Fake().apply { busyTimes = 1 }).ask(request) { it })

@@ -87,7 +87,7 @@ class NanoGate internal constructor(
         if (!foreground()) return null.also { log("background") }
         if (guard.pdfsQueued()) return null.also { log("pdf_queued") }
         val text = try {
-            withTimeoutOrNull(timeouts(request.use)) { lock.withLock { call(request) } }
+            lock.withLock { call(request) }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -99,14 +99,17 @@ class NanoGate internal constructor(
         return value
     }
 
-    /** Under the lock: waits for the 2 s since the last call, and retries once on BUSY. */
-    private suspend fun call(request: AiRequest): String {
+    /**
+     * Under the lock: waits for the 2 s since the last call, and retries once on BUSY. The use's deadline counts only
+     * the model's answer, not that wait (on the OPPO, a judge right after another call always ran out). Null: too late.
+     */
+    private suspend fun call(request: AiRequest): String? {
         var busy = false
         while (true) {
             val wait = lastEnd + GAP_MS - now()
             if (wait > 0) pause(wait)
             try {
-                return model.generate(SYSTEM_PROMPT, request.prompt, request.maxTokens, request.temperature)
+                return withTimeoutOrNull(timeouts(request.use)) { model.generate(SYSTEM_PROMPT, request.prompt, request.maxTokens, request.temperature) }
             } catch (e: NanoBusy) {
                 if (busy) throw e
                 busy = true
