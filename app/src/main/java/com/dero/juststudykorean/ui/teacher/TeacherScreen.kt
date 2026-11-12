@@ -268,6 +268,7 @@ internal fun CoachCard(
         modifier = Modifier.background(colors.warnFill, RoundedCornerShape(Tokens.RadiusSm)).padding(horizontal = 8.dp, vertical = 2.dp),
     )
     Text(e.question, style = JustStudyTheme.korean.bodyBold, color = colors.muted)
+    if (answer.ai) AiMark() // use 5: the model wrote the text from the rules' facts
     Text(answer.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     answer.quiz?.let { quiz ->
         Proposal("QUIZ", quiz.words) {

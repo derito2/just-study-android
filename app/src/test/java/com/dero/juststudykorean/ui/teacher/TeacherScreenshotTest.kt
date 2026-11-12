@@ -85,6 +85,11 @@ class TeacherScreenshotTest {
 
     @Test fun coachWithQuizAndDeck() = snap("teacher_coach", one(Exchange(0, "Quiz on my mistakes", coach = coach), TeacherMode.Coach))
 
+    /** Use 5 (phase 6): the model wrote the coach's text from the rules' facts (AiMark); the proposals are the rules'. */
+    @Test fun coachWrittenByTheModel() = snap("teacher_coach_ai", one(Exchange(0, "Quiz on my mistakes", coach = coach.copy(
+        text = "You keep missing a few words: 빠르다, 거울, 가방 and 근처. Press Start quiz and fix them now.", ai = true,
+    )), TeacherMode.Coach))
+
     @Test fun howIDecidedOpen() = snap("teacher_coach_decided", one(Exchange(0, "Quiz on my mistakes", coach = coach), TeacherMode.Coach), openAll = true)
 
     /** Robolectric has no keyboard: the composer with a question typed and Send enabled. */
