@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.data.teacher
 
+import android.util.Log
 import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.korean.teacher.Teacher
 import com.dero.juststudykorean.korean.teacher.TeacherAnswer
@@ -25,8 +26,13 @@ class TeacherService @Inject constructor(db: JustStudyDatabase) {
     suspend fun ask(question: String): TeacherAnswer = lock.withLock {
         withContext(Dispatchers.Default) {
             val version = search.version()
-            if (version != seen) { teacher.invalidate(); seen = version }
-            teacher.ask(question.take(QUESTION_MAX))
+            val start = System.nanoTime()
+            val cold = version != seen
+            if (cold) { teacher.invalidate(); seen = version }
+            teacher.ask(question.take(QUESTION_MAX)).also {
+                // times and paths only, never the question or the answer
+                Log.i("JustStudy", "teacher_answer ms=${(System.nanoTime() - start) / 1_000_000} index=$cold path=${it.promptVersion}")
+            }
         }
     }
 }
