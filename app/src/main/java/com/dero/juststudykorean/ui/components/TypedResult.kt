@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.components
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +43,10 @@ fun typedSummary(typed: String, c: Comparison): String? {
 @Composable
 fun TypedResult(typed: String, c: Comparison, modifier: Modifier = Modifier) {
     val colors = JustStudyTheme.colors
+    val haptic = LocalHapticFeedback.current
+    LaunchedEffect(c) { // R-010: once, when the result shows
+        haptic.performHapticFeedback(if (c.verdict == Verdict.Exact || c.verdict == Verdict.Meaning) HapticFeedbackType.Confirm else HapticFeedbackType.Reject)
+    }
     val (text, color, icon) = when (c.verdict) {
         Verdict.Exact -> Triple("Exactly right", colors.correct, Lucide.Check)
         Verdict.Meaning -> Triple("Right meaning, different words", colors.correct, Lucide.Check)

@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.flashcards
 
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -98,6 +100,8 @@ fun StudyContent(
 ) {
     val colors = JustStudyTheme.colors
     val ink = MaterialTheme.colorScheme.onSurface
+    val haptic = LocalHapticFeedback.current
+    val flip = { haptic.performHapticFeedback(HapticFeedbackType.ContextClick); onFlip() } // R-010: a short, soft tap
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding().imePadding()) {
         Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(start = Tokens.Space1, end = Tokens.Space4), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { LucideIcon(Lucide.ChevronLeft, contentDescription = "Back to decks", tint = ink) }
@@ -147,7 +151,7 @@ fun StudyContent(
                                     if (enToKo) card.card.back else card.card.front, korean = !enToKo, isNew = card.isNew,
                                     modifier = m,
                                     typingField = if (typing) ({
-                                        JsTextField(ui.typed, onType, placeholder = if (enToKo) "Type it in Korean" else "Type the meaning", center = true, onDone = onFlip)
+                                        JsTextField(ui.typed, onType, placeholder = if (enToKo) "Type it in Korean" else "Type the meaning", center = true, onDone = flip)
                                     }) else null,
                                 )
                             },
@@ -176,7 +180,7 @@ fun StudyContent(
         if (!ui.loading && card2 != null) {
             Box(Modifier.fillMaxWidth().padding(Tokens.Space3)) {
                 if (!ui.flipped) {
-                    StickerButton("Show answer", onFlip, Modifier.fillMaxWidth(), ko = "정답 보기")
+                    StickerButton("Show answer", flip, Modifier.fillMaxWidth(), ko = "정답 보기")
                 } else {
                     RatingButtons(preview(card2, scheduling), onRate)
                 }
