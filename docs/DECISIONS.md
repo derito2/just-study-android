@@ -2,6 +2,11 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-12 — R-016: firma de release fuera del repo
+**Decisión:** clave de release en `~/.android/juststudy-release.jks` (PKCS12, RSA 4096, 10 000 días, `CN=Just Study`, alias `juststudy`); ruta y contraseñas en `~/.gradle/gradle.properties` (`JUSTSTUDY_RELEASE_*`, permisos 600). `app/build.gradle.kts` crea `signingConfigs.release` solo si existe `JUSTSTUDY_RELEASE_STORE_FILE`: en el Mac `assembleRelease` da `app-release.apk` (SHA-256 del certificado `b830e028…a551e`); en el CI, sin esas propiedades, sigue saliendo `app-release-unsigned.apk`. Ni la clave ni las contraseñas entran al repo; el dueño respalda **los dos archivos juntos**: perder la clave obliga a desinstalar para actualizar.
+**Paso único debug → release (lo hace el dueño; Claude Code no desinstala):** (1) *Settings → Export backup* y comprobar que el `.jsbackup.zip` se guardó; (2) desinstalar la app de debug (borra sus datos: la firma cambia y Android no deja actualizar encima); (3) `adb install app/build/outputs/apk/release/app-release.apk`; (4) *Settings → Import backup* con ese archivo: deben volver las 18 tablas con los mismos sha256. Desde entonces se actualiza siempre con release y la misma clave (`adb install -r`), sin perder datos.
+**Alternativas descartadas:** firmar en el CI (pondría la clave en GitHub); usar la clave de debug para release (vive solo en este Mac y Android Studio puede regenerarla).
+
 ## 2026-11-11 — R-001: consultas dirigidas en calificar, responder y la lista de mazos
 **Decisión:** `db/HotDaos.kt` (a mano; se registra desde `tools/data/gen_room_entities.py` con `APP_DAOS`) trae las consultas que sustituyen a «cargar la tabla entera y filtrar en Kotlin» en `review`, `reviewedIds`, el mapa `last` de `decksNow`, `history`, `attachSession`, `recomputeTopic`, `QuizRepository.answer` y `QuizRepository.run`. `review` y `answer` corren en `Dispatchers.IO`. Ninguna dorada cambió (18 tablas idénticas); en el OPPO, las 22 pruebas instrumentadas de `:core:data` pasan.
 **Medido (JVM, `HotPathScaleTest`, 50 000 reseñas y 20 000 intentos sintéticos sobre la base dorada, mejor de 25):** calificar 1,6 ms → 1,3 ms (0,96 → 0,81 en el CI); responder, ver (2).
