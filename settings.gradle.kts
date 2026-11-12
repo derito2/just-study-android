@@ -28,5 +28,6 @@ dependencyResolutionManagement {
 rootProject.name = "JustStudyKorean"
 include(":app")
 include(":core:data")
+include(":core:ai")
 include(":core:korean")
 include(":core:pdf")

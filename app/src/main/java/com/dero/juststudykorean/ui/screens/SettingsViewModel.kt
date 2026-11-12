@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.dero.juststudykorean.ai.NanoState
 import javax.inject.Inject
 
 /** Settings: theme and backup. Messages carry counts only, never note content. */
@@ -28,7 +29,15 @@ class SettingsViewModel @Inject constructor(
     private val importer: BackupImporter,
     private val exporter: BackupExporter,
     private val indexer: DocumentIndexer,
+    private val nanoState: NanoState,
 ) : ViewModel() {
+    /** Gemini Nano (On-device AI): the download only starts with Download. */
+    val nano = nanoState.status
+
+    init { nanoState.refresh() }
+
+    fun downloadNano() = nanoState.download()
+
     val themeMode = prefs.themeMode.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ThemeMode.System)
 
     private val _busy = MutableStateFlow(false)

@@ -1,6 +1,7 @@
 package com.dero.juststudykorean.data.processing
 
 import android.util.Log
+import com.dero.juststudykorean.ai.GateGuard
 import androidx.room3.withWriteTransaction
 import com.dero.juststudykorean.data.db.DocumentsEntity
 import com.dero.juststudykorean.data.db.JustStudyDatabase
@@ -62,7 +63,7 @@ class ProcessingQueue @Inject constructor(
     private val files: DocumentFiles,
     private val indexer: DocumentIndexer,
     private val reader: PdfReader,
-) {
+) : GateGuard {
     private val running = Mutex()
     @Volatile private var current: Pair<Long, Job>? = null
 
@@ -177,6 +178,8 @@ class ProcessingQueue @Inject constructor(
 
     /** True while there is something to process (the foreground service runs until this is false). */
     suspend fun hasWork() = db.processingJobsDao().all().isNotEmpty()
+
+    override suspend fun pdfsQueued() = hasWork()
 }
 
 /** MuPDF, on the phone. */

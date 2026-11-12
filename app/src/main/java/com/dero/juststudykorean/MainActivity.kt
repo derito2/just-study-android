@@ -2,6 +2,8 @@ package com.dero.juststudykorean
 
 import android.graphics.Color
 import android.os.Bundle
+import com.dero.juststudykorean.ai.AppForeground
+import com.dero.juststudykorean.ai.NanoState
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -30,6 +32,18 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var prefs: UserPrefs
     @Inject lateinit var queue: ProcessingQueue
     @Inject lateinit var indexer: DocumentIndexer
+    @Inject lateinit var nano: NanoState
+
+    override fun onStart() {
+        super.onStart()
+        AppForeground.visible = true
+        nano.refresh() // AICore's state may have changed while the app was away (never starts a download)
+    }
+
+    override fun onStop() {
+        AppForeground.visible = false
+        super.onStop()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
