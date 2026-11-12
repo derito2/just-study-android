@@ -1,5 +1,12 @@
 package com.dero.juststudykorean.ui.teacher
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.ui.platform.testTag
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -76,6 +83,7 @@ internal val TEMPLATES = listOf(
 internal fun template(text: String) = TextFieldValue(text, TextRange(text.indexOf("___"), text.indexOf("___") + 3))
 
 /** Teacher (design/teacher.md): [coachAsks] grows when the Dashboard's "Ask what to do" opens it in the coach's mode. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TeacherScreen(coachAsks: Int, onMore: () -> Unit, onOpenQuiz: (Long) -> Unit, onOpenFlashcards: () -> Unit, vm: TeacherViewModel = hiltViewModel()) {
     LaunchedEffect(coachAsks) { if (coachAsks > 0) vm.setMode(TeacherMode.Coach) }
@@ -85,6 +93,7 @@ fun TeacherScreen(coachAsks: Int, onMore: () -> Unit, onOpenQuiz: (Long) -> Unit
         ui, input, onInput = { input = it.copy(text = cut(it.text)) }, onSend = { vm.send(input.text); input = TextFieldValue() },
         onMode = vm::setMode, onClear = vm::clear, onRetry = vm::retry, onMore = onMore,
         onStartQuiz = { id, p -> vm.startQuiz(id, p, onOpenQuiz) }, onCreateDeck = vm::createDeck, onOpenFlashcards = onOpenFlashcards,
+        keyboard = WindowInsets.isImeVisible,
     )
 }
 
@@ -103,27 +112,30 @@ fun TeacherContent(
     onCreateDeck: (Long) -> Unit,
     onOpenFlashcards: () -> Unit,
     openAll: Boolean = false, // screenshot tests: sources and "How I decided" already open
+    keyboard: Boolean = false, // design/teacher.md 6: with the keyboard open, room for the conversation
 ) {
     val colors = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val list = rememberLazyListState()
-    LaunchedEffect(ui.exchanges.size, ui.exchanges.lastOrNull()?.pending) { if (ui.exchanges.isNotEmpty()) list.animateScrollToItem(ui.exchanges.size) }
+    LaunchedEffect(ui.exchanges.size, ui.exchanges.lastOrNull()?.pending, keyboard) { if (ui.exchanges.isNotEmpty()) list.animateScrollToItem(ui.exchanges.size) }
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
         JsTopBar(
-            "Teacher", "선생님", "Your teacher answers from your own notes first. For anything else, AI is used.",
-            "선생님은 먼저 네 노트로 대답해. 나머지는 AI를 사용해.", scroll, onMore = onMore, onBack = null,
+            "Teacher", "선생님", "Your teacher answers from your own notes first. For anything else, AI is used.".takeIf { !keyboard },
+            "선생님은 먼저 네 노트로 대답해. 나머지는 AI를 사용해.".takeIf { !keyboard }, scroll, onMore = onMore, onBack = null, forceFolded = keyboard,
         )
-        SelectedGroup(
-            listOf("Ask my notes", "What should I study?"), ui.mode.ordinal, { onMode(TeacherMode.entries[it]) },
-            Modifier.padding(start = Tokens.Space4, end = Tokens.Space4, bottom = Tokens.Space2),
-        )
+        Back(!keyboard) {
+            SelectedGroup(
+                listOf("Ask my notes", "What should I study?"), ui.mode.ordinal, { onMode(TeacherMode.entries[it]) },
+                Modifier.padding(start = Tokens.Space4, end = Tokens.Space4, bottom = Tokens.Space2),
+            )
+        }
         LazyColumn(
-            Modifier.weight(1f).fillMaxWidth().nestedScroll(scroll.nestedScrollConnection),
+            Modifier.weight(1f).fillMaxWidth().nestedScroll(scroll.nestedScrollConnection).testTag("conversation"),
             state = list,
             contentPadding = androidx.compose.foundation.layout.PaddingValues(Tokens.Space4),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space4),
         ) {
-            if (ui.exchanges.isNotEmpty()) item(key = "clear") {
+            if (ui.exchanges.isNotEmpty() && !keyboard) item(key = "clear") {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     StickerButton("Clear answers", onClear, ko = "답변 지우기", color = StickerColor.Gray, size = StickerSize.Small)
                 }
@@ -142,9 +154,14 @@ fun TeacherContent(
                 }
             }
         }
-        Composer(input, onInput, onSend, ui.busy)
+        Composer(input, onInput, onSend, ui.busy, keyboard)
     }
 }
+
+/** What the open keyboard hides: gone at once, back with a 150 ms fade (instant with animations off). */
+@Composable
+private fun Back(visible: Boolean, content: @Composable () -> Unit) =
+    AnimatedVisibility(visible, enter = fadeIn(tween(150)), exit = ExitTransition.None) { content() }
 
 /** Each new answer comes in rising 8 dp (240 ms). */
 @Composable
@@ -301,9 +318,10 @@ private fun HowIDecided(steps: List<Step>, openAll: Boolean) {
 
 /** The templates, the field (1 to 4 lines, 500 characters) and Send, above the keyboard. */
 @Composable
-private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, onSend: () -> Unit, busy: Boolean) {
+private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, onSend: () -> Unit, busy: Boolean, keyboard: Boolean) {
     val colors = JustStudyTheme.colors
     Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
+        Back(!keyboard || input.text.isEmpty()) {
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = Tokens.Space4, vertical = Tokens.Space2), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
             TEMPLATES.forEach { (label, ko, text) ->
                 Column(
@@ -314,6 +332,7 @@ private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, o
                     Text(ko, fontSize = 11.sp, color = colors.muted)
                 }
             }
+        }
         }
         Box(Modifier.fillMaxWidth().height(Tokens.Border).background(colors.line))
         Row(Modifier.fillMaxWidth().padding(Tokens.Space4), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
@@ -329,6 +348,8 @@ private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, o
             )
             StickerButton("Send", onSend, ko = "보내기", color = StickerColor.Go, enabled = canSend(input.text) && !busy)
         }
-        Text("Answers come from all your documents.", fontSize = 12.sp, color = colors.muted, modifier = Modifier.padding(start = Tokens.Space4, bottom = Tokens.Space2))
+        Back(!keyboard) {
+            Text("Answers come from all your documents.", fontSize = 12.sp, color = colors.muted, modifier = Modifier.padding(start = Tokens.Space4, bottom = Tokens.Space2))
+        }
     }
 }

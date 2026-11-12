@@ -4,6 +4,8 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.IntentFilter
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -11,7 +13,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertHeightIsAtLeast
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -138,5 +144,34 @@ class TeacherBehaviourTest {
             JustStudyTheme(darkTheme = false) { TeacherContent(ui, TextFieldValue(), {}, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}) }
         }
         compose.onNodeWithText("OPEN FLASHCARDS").performScrollTo().assertExists().performClick()
+    }
+
+    /**
+     * design/teacher.md 6, with the keyboard open on the OPPO (measured: 2376 x 1080 px at 420 dpi = 905 x 411 dp; Gboard
+     * 873 px = 333 dp; status bar 120 px = 46 dp): what is left for the screen is 526 dp, and the conversation gets 300 dp
+     * or more, with the field empty (templates shown) and while typing (templates hidden).
+     */
+    @Test
+    @Config(qualifiers = "w411dp-h905dp-420dpi")
+    fun keyboardOpenLeavesRoomForTheConversation() {
+        vm.send("What does 근처 mean?")
+        idleUntil { answered() }
+        var text by mutableStateOf("")
+        compose.setContent {
+            val ui by vm.state.collectAsState()
+            JustStudyTheme(darkTheme = false) {
+                Box(Modifier.size(411.dp, 526.dp)) {
+                    TeacherContent(ui, TextFieldValue(text), {}, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, keyboard = true)
+                }
+            }
+        }
+        compose.onNodeWithTag("conversation").assertHeightIsAtLeast(300.dp)
+        compose.onNodeWithText("Ask my notes").assertDoesNotExist()
+        compose.onNodeWithText("Answers come from all your documents.").assertDoesNotExist()
+        compose.onNodeWithText("What does … mean?").assertExists()
+        text = "What does"
+        compose.waitForIdle()
+        compose.onNodeWithText("What does … mean?").assertDoesNotExist()
+        compose.onNodeWithTag("conversation").assertHeightIsAtLeast(300.dp)
     }
 }

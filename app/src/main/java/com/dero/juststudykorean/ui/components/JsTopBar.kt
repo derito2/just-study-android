@@ -50,11 +50,12 @@ fun JsTopBar(
     onMore: (() -> Unit)?,
     onBack: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    forceFolded: Boolean = false,
 ) {
     val ink = MaterialTheme.colorScheme.onBackground
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val state = scrollBehavior.state
-    val folded = state.collapsedFraction > 0.5f || (subtitle == null && subtitleKo == null && state.overlappedFraction > 0f)
+    val folded = forceFolded || state.collapsedFraction > 0.5f || (subtitle == null && subtitleKo == null && state.overlappedFraction > 0f)
     var moreTaps by remember { mutableIntStateOf(0) }
     var backTaps by remember { mutableIntStateOf(0) }
     Column(

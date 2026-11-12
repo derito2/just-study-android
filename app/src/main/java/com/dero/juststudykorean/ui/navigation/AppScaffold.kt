@@ -1,6 +1,7 @@
 package com.dero.juststudykorean.ui.navigation
 
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -87,7 +88,7 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
     ) { padding ->
         NavDisplay(
             entries = nav.visibleTabs.flatMap { entries.getValue(it) },
-            modifier = Modifier.padding(padding),
+            modifier = Modifier.padding(padding).consumeWindowInsets(padding), // so a screen's imePadding doesn't add the bottom bar again
             onBack = { nav.back() },
         )
     }
