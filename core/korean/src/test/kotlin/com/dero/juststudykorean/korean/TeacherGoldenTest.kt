@@ -1,6 +1,7 @@
 package com.dero.juststudykorean.korean
 
 import com.dero.juststudykorean.korean.teacher.MemoryStore
+import com.dero.juststudykorean.korean.teacher.SelfCheck
 import com.dero.juststudykorean.korean.teacher.Teacher
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -36,5 +37,17 @@ class TeacherGoldenTest {
         println("teacher: $total questions, $text same text, $sources same text and sources")
         wrong.take(15).forEach(::println)
         assertEquals("same text and sources", total, sources)
+    }
+
+    /** The self-check asks, on each test PDF, the same questions the goldens recorded (seed 7, sample 40), and finds nothing wrong. */
+    @Test
+    fun selfCheckAsksTheGoldenQuestionsAndPasses() {
+        for (file in File("../../golden/teacher").listFiles { f -> f.extension == "jsonl" }!!.sortedBy { it.name }) {
+            val name = file.nameWithoutExtension
+            val report = SelfCheck(Teacher(MemoryStore(ChunkerGoldenTest.chunks(name)))).run()
+            val want = file.readLines().filter { it.isNotBlank() }.map { JSONObject(it).getString("check") }.groupingBy { it }.eachCount()
+            assertEquals("$name questions per check", want, report.byCheck)
+            assertEquals("$name failures", emptyMap<String, Int>(), report.counts())
+        }
     }
 }

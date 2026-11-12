@@ -23,6 +23,9 @@ const val NOT_IN_NOTES =
     "I couldn't find that in your documents. Try rephrasing the question, choosing a different document or topic, or uploading material that covers it."
 
 private const val NOTES_MODEL = "none (your notes)"
+
+/** [TeacherAnswer.model] of a question only the model can answer (phase 6): the self-check counts it as a failure. */
+const val NEEDS_MODEL = "model (phase 6)"
 private const val TUTOR_VERSION = "tutor.v1"
 private const val MAX_INDEX_CHUNKS = 20000
 
@@ -106,7 +109,7 @@ class Teacher(private val store: NotesStore, private val k: Int = 4, private val
         // Nothing close enough: not even the model is asked.
         Responder { t -> if (!t.retrieval.enoughContext || t.sources.isEmpty()) refuse("no_context", t.retrieval, emptyList()) else null },
         // shortcut: the model's answer is phase 6; until then, the web's "not in your notes" with the sources it would have read.
-        Responder { t -> refuse("not_found", t.retrieval, t.sources) },
+        Responder { t -> refuse("not_found", t.retrieval, t.sources).copy(model = NEEDS_MODEL) },
     )
 
     fun ask(question: String): TeacherAnswer {
