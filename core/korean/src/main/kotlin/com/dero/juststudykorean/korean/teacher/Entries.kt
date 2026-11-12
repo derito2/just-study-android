@@ -330,3 +330,12 @@ fun definingEntries(hits: List<Hit>, words: List<String>): List<Entry> {
 /** Each entry with its [n] and its examples, as written. */
 fun entryText(found: List<Entry>, numbers: Map<String, Int>): String =
     found.joinToString("\n\n") { e -> (listOf("${e.line} [${numbers.getValue(e.hit.id)}]") + e.details).joinToString("\n") }
+
+/** "Give me an example with it", "What does that word mean?": asks about a word the conversation says (a pronoun). */
+fun asksAboutIt(question: String): Boolean {
+    for (pattern in WORD_QUESTIONS + EXAMPLE_QUESTION) {
+        val m = pattern.find(question.pyStrip()) ?: continue
+        return casefold(m.groupValues[1].replaceFirst(LEADING, "").trim { it in QUOTES }) in PRONOUNS
+    }
+    return false
+}

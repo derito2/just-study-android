@@ -1,0 +1,2116 @@
+{
+ "now": "2026-11-09T00:30:00",
+ "phrases": [
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "What should I study?",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "3 topics",
+     "tool": "get_weak_topics"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "What should I focus on today?",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "3 topics",
+     "tool": "get_weak_topics"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "teach me something",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "3 topics",
+     "tool": "get_weak_topics"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "What are my weakest topics?",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "3 topics",
+     "tool": "get_weak_topics"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "How am I doing?",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_recent_progress",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "114 answers, streak 3 days",
+     "tool": "get_recent_progress"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "How's my progress?",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_recent_progress",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "114 answers, streak 3 days",
+     "tool": "get_recent_progress"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "Make me a study plan for this week",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ],
+    [
+     "get_due_flashcards",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "3 topics",
+     "tool": "get_weak_topics"
+    },
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "2 due, 85 new",
+     "tool": "get_due_flashcards"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "I have 20 minutes",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ],
+    [
+     "get_due_flashcards",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. With 20 minutes: 10 minutes on that quiz and 10 minutes on your 2 due cards. Start the quiz with the button. Now, not later.",
+   "steps": []
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "I only have 10 minutes, what should I do?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ],
+    [
+     "get_due_flashcards",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. With 10 minutes: 5 minutes on that quiz and 5 minutes on your 2 due cards. Start the quiz with the button. Now, not later.",
+   "steps": []
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "I have 1 hour",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ],
+    [
+     "get_due_flashcards",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": []
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "How many flashcards are due?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_due_flashcards",
+     {}
+    ]
+   ],
+   "quiz": null,
+   "reply": "You have 2 cards due right now (길이 막혀서 조금 늦을 것 같아요, -(으)면서), and 85 new cards you haven't studied yet. Open Flashcards and clear the due ones first.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "2 due, 85 new",
+     "tool": "get_due_flashcards"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "Do I have cards to review?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_due_flashcards",
+     {}
+    ]
+   ],
+   "quiz": null,
+   "reply": "You have 2 cards due right now (길이 막혀서 조금 늦을 것 같아요, -(으)면서), and 85 new cards you haven't studied yet. Open Flashcards and clear the due ones first.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "2 due, 85 new",
+     "tool": "get_due_flashcards"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "오늘 뭐 공부할까요?",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "get_weak_topics",
+     {}
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "3 topics",
+     "tool": "get_weak_topics"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "hello",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": []
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "Thanks!",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": []
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "What is the capital of France?",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": []
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "mistakes",
+    "value": null
+   },
+   "message": "Quiz on my mistakes",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 6,
+    "title": "Your mistakes",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "빠르다",
+     "거울",
+     "가방",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "공항"
+    ]
+   },
+   "reply": "Here is a quiz with 6 words you keep getting wrong: 빠르다, 거울, 가방, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "mistakes"
+     },
+     "ok": true,
+     "summary": "quiz with 6 words: Your mistakes",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": {
+    "name": "Your mistakes",
+    "words": [
+     "빠르다",
+     "거울",
+     "가방",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "공항"
+    ]
+   },
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "deck",
+    "source": "mistakes",
+    "value": null
+   },
+   "message": "Deck from my mistakes",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Here is a new flashcard deck with 6 words you keep getting wrong: 빠르다, 거울, 가방, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요…. Press Create deck. Your other decks stay exactly as they are.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "mistakes"
+     },
+     "ok": true,
+     "summary": "deck with 6 words: Your mistakes",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "mistakes",
+    "value": null
+   },
+   "message": "make me a quiz of my mistakes",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 6,
+    "title": "Your mistakes",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "빠르다",
+     "거울",
+     "가방",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "공항"
+    ]
+   },
+   "reply": "Here is a quiz with 6 words you keep getting wrong: 빠르다, 거울, 가방, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "mistakes",
+      "value": null
+     },
+     "ok": true,
+     "summary": "quiz with 6 words: Your mistakes",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": 3,
+    "kind": "quiz",
+    "source": "mistakes",
+    "value": null
+   },
+   "message": "Give me 3 questions on my mistakes",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 3,
+    "title": "Your mistakes",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "빠르다",
+     "거울",
+     "가방"
+    ]
+   },
+   "reply": "Here is a quiz with 3 words you keep getting wrong: 빠르다, 거울, 가방. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "mistakes",
+      "value": null
+     },
+     "ok": true,
+     "summary": "quiz with 6 words: Your mistakes",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": {
+    "name": "Your mistakes",
+    "words": [
+     "빠르다",
+     "거울",
+     "가방",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "공항"
+    ]
+   },
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "deck",
+    "source": "mistakes",
+    "value": null
+   },
+   "message": "a deck with the words I got wrong",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Here is a new flashcard deck with 6 words you keep getting wrong: 빠르다, 거울, 가방, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요…. Press Create deck. Your other decks stay exactly as they are.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "mistakes",
+      "value": null
+     },
+     "ok": true,
+     "summary": "deck with 6 words: Your mistakes",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "letter",
+    "value": "ㅂ"
+   },
+   "message": "words that start with ㅂ",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 6,
+    "title": "Words starting with ㅂ",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "밥 먹었어?",
+     "비 오는 날에는 집에서 쉬는 게 최고예요",
+     "붓다",
+     "배고프다",
+     "반하다",
+     "비가 오니까 우산을 챙기세요"
+    ]
+   },
+   "reply": "Here is a quiz with 6 words from your notes (Words starting with ㅂ): 밥 먹었어?, 비 오는 날에는 집에서 쉬는 게 최고예요, 붓다, 배고프다, 반하다…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "letter",
+      "value": "ㅂ"
+     },
+     "ok": true,
+     "summary": "quiz with 6 words: Words starting with ㅂ",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "letter",
+    "value": "ㄱ"
+   },
+   "message": "Quiz me on words that start with ㄱ",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 10,
+    "title": "Words starting with ㄱ",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "괜찮아, 다 잘될 거야",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "그 사람 목소리를 들으면 마음이 편해져요",
+     "계산하다",
+     "굽다",
+     "귀엽다",
+     "그립다",
+     "고맙다",
+     "걱정하다",
+     "기분"
+    ]
+   },
+   "reply": "Here is a quiz with 10 words from your notes (Words starting with ㄱ): 괜찮아, 다 잘될 거야, 길이 막혀서 조금 늦을 것 같아요, 그 사람 목소리를 들으면 마음이 편해져요, 계산하다, 굽다…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "letter",
+      "value": "ㄱ"
+     },
+     "ok": true,
+     "summary": "quiz with 10 words: Words starting with ㄱ",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": {
+    "name": "Words starting with ㅎ",
+    "words": [
+     "혹시 이 근처에 편의점 있어요?",
+     "할 수 있어, 포기하지 마",
+     "힘들다",
+     "행복하다",
+     "후회하다",
+     "헐",
+     "환전하다",
+     "흐르다",
+     "혼자"
+    ]
+   },
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "deck",
+    "source": "letter",
+    "value": "ㅎ"
+   },
+   "message": "Make a deck of words starting with ㅎ",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Here is a new flashcard deck with 9 words from your notes (Words starting with ㅎ): 혹시 이 근처에 편의점 있어요?, 할 수 있어, 포기하지 마, 힘들다, 행복하다, 후회하다…. Press Create deck. Your other decks stay exactly as they are.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "letter",
+      "value": "ㅎ"
+     },
+     "ok": true,
+     "summary": "deck with 9 words: Words starting with ㅎ",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "word_type",
+    "value": "adjective"
+   },
+   "message": "a quiz with adjectives",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 10,
+    "title": "Adjectives",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "맵다",
+     "싱겁다",
+     "짜다",
+     "달다",
+     "배고프다",
+     "진하다",
+     "맛있다 / 맛나다",
+     "설레다",
+     "귀엽다",
+     "외롭다"
+    ]
+   },
+   "reply": "Here is a quiz with 10 words from your notes (Adjectives): 맵다, 싱겁다, 짜다, 달다, 배고프다…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "word_type",
+      "value": "adjective"
+     },
+     "ok": true,
+     "summary": "quiz with 10 words: Adjectives",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": {
+    "name": "Verbs",
+    "words": [
+     "계산하다",
+     "포장하다",
+     "예약하다",
+     "남기다",
+     "데우다",
+     "식다",
+     "굽다",
+     "붓다",
+     "서운하다",
+     "그립다"
+    ]
+   },
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "deck",
+    "source": "word_type",
+    "value": "verb"
+   },
+   "message": "make a verbs deck",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Here is a new flashcard deck with 10 words from your notes (Verbs): 계산하다, 포장하다, 예약하다, 남기다, 데우다…. Press Create deck. Your other decks stay exactly as they are.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "word_type",
+      "value": "verb"
+     },
+     "ok": true,
+     "summary": "deck with 10 words: Verbs",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "word_type",
+    "value": "noun"
+   },
+   "message": "quiz me on nouns",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 10,
+    "title": "Nouns",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "괜찮아, 다 잘될 거야",
+     "생일 축하해, 행복한 하루 보내",
+     "메뉴판",
+     "맛집",
+     "자리",
+     "영수증",
+     "기분",
+     "눈물",
+     "대박",
+     "헐"
+    ]
+   },
+   "reply": "Here is a quiz with 10 words from your notes (Nouns): 괜찮아, 다 잘될 거야, 생일 축하해, 행복한 하루 보내, 메뉴판, 맛집, 자리…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "word_type",
+      "value": "noun"
+     },
+     "ok": true,
+     "summary": "quiz with 10 words: Nouns",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "recent",
+    "value": null
+   },
+   "message": "a quiz with my latest words",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 10,
+    "title": "Your latest words",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "싱겁다",
+     "너무 졸려서 커피를 두 잔이나 마셨어요",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "설레다",
+     "괜찮아, 다 잘될 거야",
+     "요즘 이 노래만 계속 들어요",
+     "공항",
+     "메뉴판",
+     "주말에 시간 있으면 영화 보러 갈래?"
+    ]
+   },
+   "reply": "Here is a quiz with 10 words from your notes (Your latest words): 싱겁다, 너무 졸려서 커피를 두 잔이나 마셨어요, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요, 설레다…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "recent",
+      "value": null
+     },
+     "ok": true,
+     "summary": "quiz with 10 words: Your latest words",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": {
+    "name": "Words you studied today",
+    "words": [
+     "싱겁다",
+     "너무 졸려서 커피를 두 잔이나 마셨어요",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "설레다",
+     "괜찮아, 다 잘될 거야",
+     "요즘 이 노래만 계속 들어요",
+     "공항",
+     "메뉴판",
+     "주말에 시간 있으면 영화 보러 갈래?"
+    ]
+   },
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "deck",
+    "source": "recent",
+    "value": "today"
+   },
+   "message": "flashcards with the words I studied today",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Here is a new flashcard deck with 10 words from your notes (Words you studied today): 싱겁다, 너무 졸려서 커피를 두 잔이나 마셨어요, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요, 설레다…. Press Create deck. Your other decks stay exactly as they are.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "recent",
+      "value": "today"
+     },
+     "ok": true,
+     "summary": "deck with 10 words: Words you studied today",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "recent",
+    "value": "week"
+   },
+   "message": "quiz with the words I reviewed this week",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 10,
+    "title": "Words you studied this week",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "싱겁다",
+     "너무 졸려서 커피를 두 잔이나 마셨어요",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "설레다",
+     "괜찮아, 다 잘될 거야",
+     "요즘 이 노래만 계속 들어요",
+     "공항",
+     "메뉴판",
+     "주말에 시간 있으면 영화 보러 갈래?"
+    ]
+   },
+   "reply": "Here is a quiz with 10 words from your notes (Words you studied this week): 싱겁다, 너무 졸려서 커피를 두 잔이나 마셨어요, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요, 설레다…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "recent",
+      "value": "week"
+     },
+     "ok": true,
+     "summary": "quiz with 10 words: Words you studied this week",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "topic",
+    "value": "food"
+   },
+   "message": "food words",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Vocabulary: cafés and food",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Here is a quiz on Vocabulary: cafés and food: up to 5 questions from your notes (as many as that topic has material for). Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "count": 5,
+      "topic": "Vocabulary: cafés and food"
+     },
+     "ok": true,
+     "summary": "5 questions on Vocabulary: cafés and food",
+     "tool": "propose_quiz"
+    }
+   ]
+  },
+  {
+   "deck": {
+    "name": "Colors words",
+    "words": [
+     "파랗다",
+     "노랗다"
+    ]
+   },
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "deck",
+    "source": "theme",
+    "value": "colors"
+   },
+   "message": "a colors deck",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Here is a new flashcard deck with 2 words from your notes (Colors words): 파랗다, 노랗다. Press Create deck. Your other decks stay exactly as they are.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "theme",
+      "value": "colors"
+     },
+     "ok": true,
+     "summary": "deck with 2 words: Colors words",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "theme",
+    "value": "family"
+   },
+   "message": "family quiz",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Your notes don't have words about family. I only use words from your own notes: upload a PDF with that vocabulary in the Library, then ask me again.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "theme",
+      "value": "family"
+     },
+     "ok": false,
+     "summary": "The student's notes have no words for that (theme: family). Say so and suggest another theme or a quiz on their weak topics.",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "theme",
+    "value": "animals"
+   },
+   "message": "Quiz me on animals",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Your notes don't have words about animals. I only use words from your own notes: upload a PDF with that vocabulary in the Library, then ask me again.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "theme",
+      "value": "animals"
+     },
+     "ok": false,
+     "summary": "The student's notes have no words for that (theme: animals). Say so and suggest another theme or a quiz on their weak topics.",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "theme",
+    "value": "weather"
+   },
+   "message": "practice weather vocabulary",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 3,
+    "title": "Weather words",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "춥다",
+     "식다",
+     "구름"
+    ]
+   },
+   "reply": "Here is a quiz with 3 words from your notes (Weather words): 춥다, 식다, 구름. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "theme",
+      "value": "weather"
+     },
+     "ok": true,
+     "summary": "quiz with 3 words: Weather words",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "theme",
+    "value": "sports"
+   },
+   "message": "sports vocabulary",
+   "modelCalls": [],
+   "needsEmbeddings": true,
+   "planned": [],
+   "quiz": null,
+   "reply": "I can't search your notes right now. Make sure Chroma is running, then ask again.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "theme",
+      "value": "sports"
+     },
+     "ok": false,
+     "summary": "Could not search the notes: no embeddings",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "theme",
+    "value": "quantum physics"
+   },
+   "message": "Quiz me on quantum physics",
+   "modelCalls": [],
+   "needsEmbeddings": true,
+   "planned": [],
+   "quiz": null,
+   "reply": "I can't search your notes right now. Make sure Chroma is running, then ask again.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "theme",
+      "value": "quantum physics"
+     },
+     "ok": false,
+     "summary": "Could not search the notes: no embeddings",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "kind": "quiz",
+    "source": "mistakes",
+    "value": null
+   },
+   "message": "틀린 단어 퀴즈",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 6,
+    "title": "Your mistakes",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "빠르다",
+     "거울",
+     "가방",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "공항"
+    ]
+   },
+   "reply": "Here is a quiz with 6 words you keep getting wrong: 빠르다, 거울, 가방, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "mistakes",
+      "value": null
+     },
+     "ok": true,
+     "summary": "quiz with 6 words: Your mistakes",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": {
+    "name": "Words starting with ㄱ",
+    "words": [
+     "괜찮아, 다 잘될 거야",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "그 사람 목소리를 들으면 마음이 편해져요",
+     "계산하다",
+     "굽다",
+     "귀엽다",
+     "그립다",
+     "고맙다",
+     "걱정하다",
+     "기분"
+    ]
+   },
+   "fallback": false,
+   "intent": {
+    "kind": "deck",
+    "source": "letter",
+    "value": "ㄱ"
+   },
+   "message": "ㄱ으로 시작하는 단어 카드",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "Here is a new flashcard deck with 10 words from your notes (Words starting with ㄱ): 괜찮아, 다 잘될 거야, 길이 막혀서 조금 늦을 것 같아요, 그 사람 목소리를 들으면 마음이 편해져요, 계산하다, 굽다…. Press Create deck. Your other decks stay exactly as they are.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "letter",
+      "value": "ㄱ"
+     },
+     "ok": true,
+     "summary": "deck with 10 words: Words starting with ㄱ",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "kind": "quiz",
+    "source": "word_type",
+    "value": "adjective"
+   },
+   "message": "형용사 퀴즈",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 10,
+    "title": "Adjectives",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "맵다",
+     "싱겁다",
+     "짜다",
+     "달다",
+     "배고프다",
+     "진하다",
+     "맛있다 / 맛나다",
+     "설레다",
+     "귀엽다",
+     "외롭다"
+    ]
+   },
+   "reply": "Here is a quiz with 10 words from your notes (Adjectives): 맵다, 싱겁다, 짜다, 달다, 배고프다…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "word_type",
+      "value": "adjective"
+     },
+     "ok": true,
+     "summary": "quiz with 10 words: Adjectives",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "kind": "quiz",
+    "source": "recent",
+    "value": null
+   },
+   "message": "최근 단어 퀴즈 만들어 줘",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 10,
+    "title": "Your latest words",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "싱겁다",
+     "너무 졸려서 커피를 두 잔이나 마셨어요",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "설레다",
+     "괜찮아, 다 잘될 거야",
+     "요즘 이 노래만 계속 들어요",
+     "공항",
+     "메뉴판",
+     "주말에 시간 있으면 영화 보러 갈래?"
+    ]
+   },
+   "reply": "Here is a quiz with 10 words from your notes (Your latest words): 싱겁다, 너무 졸려서 커피를 두 잔이나 마셨어요, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요, 설레다…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "recent",
+      "value": null
+     },
+     "ok": true,
+     "summary": "quiz with 10 words: Your latest words",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "kind": "quiz",
+    "source": "theme",
+    "value": "가족"
+   },
+   "message": "가족에 대한 퀴즈",
+   "modelCalls": [],
+   "needsEmbeddings": true,
+   "planned": [],
+   "quiz": null,
+   "reply": "I can't search your notes right now. Make sure Chroma is running, then ask again.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "theme",
+      "value": "가족"
+     },
+     "ok": false,
+     "summary": "Could not search the notes: no embeddings",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "kind": "deck",
+    "source": "theme",
+    "value": "음식"
+   },
+   "message": "음식 단어 카드 만들어 줘",
+   "modelCalls": [],
+   "needsEmbeddings": true,
+   "planned": [],
+   "quiz": null,
+   "reply": "I can't search your notes right now. Make sure Chroma is running, then ask again.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "theme",
+      "value": "음식"
+     },
+     "ok": false,
+     "summary": "Could not search the notes: no embeddings",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "kind": "deck",
+    "source": "theme",
+    "value": "날씨"
+   },
+   "message": "날씨 단어 카드",
+   "modelCalls": [],
+   "needsEmbeddings": true,
+   "planned": [],
+   "quiz": null,
+   "reply": "I can't search your notes right now. Make sure Chroma is running, then ask again.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "deck",
+      "source": "theme",
+      "value": "날씨"
+     },
+     "ok": false,
+     "summary": "Could not search the notes: no embeddings",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "topic",
+    "value": "Sentences from dramas and social media"
+   },
+   "message": "Quiz me on Sentences from dramas and social media",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Sentences from dramas and social media",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Here is a quiz on Sentences from dramas and social media: up to 5 questions from your notes (as many as that topic has material for). Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "count": 5,
+      "topic": "Sentences from dramas and social media"
+     },
+     "ok": true,
+     "summary": "5 questions on Sentences from dramas and social media",
+     "tool": "propose_quiz"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "Make a deck from Sentences from dramas and social media",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": []
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "What do my notes say about Sentences from dramas and social media?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "search_knowledge_base",
+     {
+      "query": "Sentences from dramas and social media"
+     }
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Sentences from dramas and social media",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Your notes cover Sentences from dramas and social media. Press Start quiz to practise it, or ask Teacher to explain it.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "0 words in Sentences from dramas and social media",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "topic",
+    "value": "-(으)ㄹ게요"
+   },
+   "message": "Quiz me on -(으)ㄹ게요",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 1,
+    "title": "-(으)ㄹ게요",
+    "topic": "1. -(으)ㄹ게요",
+    "types": [
+     "grammar_selection",
+     "multiple_choice"
+    ],
+    "words": null
+   },
+   "reply": "Here is 1 question on -(으)ㄹ게요 from your notes (a quiz asks each grammar point once). Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "query": "-(으)ㄹ게요"
+     },
+     "ok": true,
+     "summary": "grammar point",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "practice -아/어 보다",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 1,
+    "title": "-아/어 보다",
+    "topic": "2. -아/어 보다",
+    "types": [
+     "grammar_selection",
+     "multiple_choice"
+    ],
+    "words": null
+   },
+   "reply": "Here is 1 question on -아/어 보다 from your notes (a quiz asks each grammar point once). Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "query": "-아/어 보다"
+     },
+     "ok": true,
+     "summary": "grammar point",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "theme",
+    "value": "아서"
+   },
+   "message": "Quiz me on -아서",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "-아서 isn't one of the grammar points in your notes (it may only appear inside an example). Ask Teacher about it, or add it to a PDF in the Library.",
+   "steps": [
+    {
+     "arguments": {
+      "query": "-아서"
+     },
+     "ok": false,
+     "summary": "grammar point",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "What does 근처 mean?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "From your notes:\n근처 = Nearby. Example: 이 근처에는 카페가 없어요. = There are no cafes in this vicinity (Korean_Notes_Example.pdf, p. 1)",
+   "steps": [
+    {
+     "arguments": {
+      "query": "근처"
+     },
+     "ok": true,
+     "summary": "your entry",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "What does 혼자 mean?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "From your notes:\n혼자 = Alone, on one's own. Example: 저 혼자 살아요 = I live alone (Korean_Notes_Example.pdf, p. 1)",
+   "steps": [
+    {
+     "arguments": {
+      "query": "혼자"
+     },
+     "ok": true,
+     "summary": "your entry",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "Example with 혼자",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "From your notes:\n혼자 = Alone, on one's own. Examples: 저 혼자 살아요 = I live alone; 혼자서 = By oneself (Korean_Notes_Example.pdf, p. 1)",
+   "steps": [
+    {
+     "arguments": {
+      "query": "혼자"
+     },
+     "ok": true,
+     "summary": "your entry",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "How do I say nearby in Korean?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "From your notes:\n근처 = Nearby. Example: 이 근처에는 카페가 없어요. = There are no cafes in this vicinity (Korean_Notes_Example.pdf, p. 1)",
+   "steps": [
+    {
+     "arguments": {
+      "query": "nearby"
+     },
+     "ok": true,
+     "summary": "your entry",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "What does 바빠요 mean?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": null,
+   "reply": "“바빠요” isn't in your notes. Add it to a PDF in the Library, or ask Teacher to explain it.",
+   "steps": [
+    {
+     "arguments": {
+      "query": "바빠요"
+     },
+     "ok": true,
+     "summary": "your entry",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": true,
+   "intent": null,
+   "message": "What does 근처 mean? also give me a quiz",
+   "modelCalls": [
+    "chat_tools"
+   ],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Travel",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Stop avoiding it: study Travel next (high priority: mastery 30 % (3 answers)). After that, these need work too: Vocabulary, -(으)면서. Start the quiz with the button. Now, not later.",
+   "steps": []
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": {
+    "count": null,
+    "kind": "quiz",
+    "source": "mistakes",
+    "value": null
+   },
+   "message": "Quiz me on my mistakes and tell me what 근처 means",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [],
+   "quiz": {
+    "count": 6,
+    "title": "Your mistakes",
+    "topic": null,
+    "types": [
+     "en_to_ko",
+     "ko_to_en",
+     "vocab_recognition",
+     "write_ko"
+    ],
+    "words": [
+     "빠르다",
+     "거울",
+     "가방",
+     "날씨가 너무 추워서 밖에 나가기 싫어요",
+     "길이 막혀서 조금 늦을 것 같아요",
+     "공항"
+    ]
+   },
+   "reply": "Here is a quiz with 6 words you keep getting wrong: 빠르다, 거울, 가방, 날씨가 너무 추워서 밖에 나가기 싫어요, 길이 막혀서 조금 늦을 것 같아요…. Press Start quiz.",
+   "steps": [
+    {
+     "arguments": {
+      "kind": "quiz",
+      "source": "mistakes",
+      "value": null
+     },
+     "ok": true,
+     "summary": "quiz with 6 words: Your mistakes",
+     "tool": "make_practice"
+    }
+   ]
+  },
+  {
+   "deck": null,
+   "fallback": false,
+   "intent": null,
+   "message": "What do my notes say about particles?",
+   "modelCalls": [],
+   "needsEmbeddings": false,
+   "planned": [
+    [
+     "search_knowledge_base",
+     {
+      "query": "particles"
+     }
+    ]
+   ],
+   "quiz": {
+    "count": 5,
+    "title": null,
+    "topic": "Particles",
+    "types": [
+     "ko_to_en",
+     "write_ko",
+     "vocab_recognition",
+     "en_to_ko",
+     "fill_blank",
+     "multiple_choice",
+     "grammar_selection"
+    ],
+    "words": null
+   },
+   "reply": "Your notes cover Particles. Press Start quiz to practise it, or ask Teacher to explain it.",
+   "steps": [
+    {
+     "arguments": {},
+     "ok": true,
+     "summary": "0 words in Particles",
+     "tool": "search_knowledge_base"
+    }
+   ]
+  }
+ ]
+}
