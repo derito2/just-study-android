@@ -192,14 +192,29 @@ class QuizRepository @Inject constructor(
         mixed(saved, ai)
     }
 
-    /** The model's questions among the rules' ones, one every other place (as the web takes turns). */
-    private fun <T> mixed(rules: List<T>, ai: List<T>): List<T> {
-        if (ai.isEmpty()) return rules
-        val out = mutableListOf<T>()
-        val r = rules.iterator(); val a = ai.iterator()
-        while (r.hasNext() || a.hasNext()) { if (r.hasNext()) out += r.next(); if (a.hasNext()) out += a.next() }
-        return out
+    /** The model's questions after the rules' ones, in the order they arrived (design/quiz.md A.3). */
+    private fun <T> mixed(rules: List<T>, ai: List<T>): List<T> = rules + ai
+
+    private val aiFailed = java.util.concurrent.ConcurrentHashMap<Long, Int>()
+
+    /** A.3: how many of the model's questions of a quiz couldn't be written (the results say so). */
+    fun aiFailed(runId: Long) = aiFailed[runId] ?: 0
+    fun setAiFailed(runId: Long, n: Int) { if (n > 0) aiFailed[runId] = n }
+
+    /** A.3: a question the model just wrote, added at the end of an open quiz (in memory only). */
+    fun addAi(runId: Long, c: com.dero.juststudykorean.korean.Candidate): QuestionsEntity {
+        val q = aiEntity(c, clock.now().toEpochMilli())
+        aiRuns.merge(runId, listOf(q)) { a, b -> a + b }
+        return q
     }
+
+    private fun aiEntity(c: com.dero.juststudykorean.korean.Candidate, now: Long) = QuestionsEntity(
+        id = -aiIds.incrementAndGet(), type = c.type, prompt = c.prompt,
+        optionsJson = c.options?.let { BackupFormat.pyJson(JsonArray(it.map(::JsonPrimitive))) }, correctAnswer = c.answer,
+        explanation = c.explanation.ifEmpty { null }, difficulty = 1, topicId = null,
+        sourceChunkIds = BackupFormat.pyJson(JsonArray(listOf(JsonPrimitive(c.chunk.chromaId)))),
+        promptVersion = c.promptVersion, model = c.model, createdAt = now,
+    )
 
     /** The document each question comes from (its file name), for the question card and the mistakes. */
     suspend fun documentNames(questions: List<QuestionsEntity>): Map<Long, String> = withContext(Dispatchers.IO) {
@@ -265,22 +280,14 @@ class QuizRepository @Inject constructor(
      * A quiz by rules from your notes; null if there is no material for these settings. [ai]: questions the model wrote
      * (already checked), kept in memory with the quiz; the rules make the rest.
      */
-    suspend fun generate(request: QuizRequest, ai: List<com.dero.juststudykorean.korean.Candidate> = emptyList()): QuizRun? {
-        val rules = request.copy(count = request.count - ai.size)
+    suspend fun generate(request: QuizRequest, ai: List<com.dero.juststudykorean.korean.Candidate> = emptyList(), pendingAi: Int = 0): QuizRun? {
+        val rules = request.copy(count = request.count - ai.size - pendingAi)
         val questions = if (rules.count > 0) generateQuestions(rules, PyRandom(request.seed ?: clock.now().toEpochMilli())).orEmpty() else emptyList()
-        if (questions.isEmpty() && ai.isEmpty()) return null
+        if (questions.isEmpty() && ai.isEmpty() && pendingAi == 0) return null
         val run = createRun(questions.map { it.id })
         if (ai.isEmpty()) return run
         val now = clock.now().toEpochMilli()
-        val mine = ai.map { c ->
-            QuestionsEntity(
-                id = -aiIds.incrementAndGet(), type = c.type, prompt = c.prompt,
-                optionsJson = c.options?.let { BackupFormat.pyJson(JsonArray(it.map(::JsonPrimitive))) }, correctAnswer = c.answer,
-                explanation = c.explanation.ifEmpty { null }, difficulty = 1, topicId = null,
-                sourceChunkIds = BackupFormat.pyJson(JsonArray(listOf(JsonPrimitive(c.chunk.chromaId)))),
-                promptVersion = c.promptVersion, model = c.model, createdAt = now,
-            )
-        }
+        val mine = ai.map { aiEntity(it, now) }
         aiRuns[run.id] = mine
         return QuizRun(run.id, mixed(run.questions, mine))
     }

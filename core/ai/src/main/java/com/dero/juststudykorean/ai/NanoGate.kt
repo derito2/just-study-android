@@ -39,9 +39,19 @@ fun interface GateGuard {
     suspend fun pdfsQueued(): Boolean
 }
 
-/** Whether the app is in the foreground (MainActivity's onStart/onStop): AICore blocks calls in the background. */
+/**
+ * Whether the app is in the foreground: AICore blocks calls in the background. Counts started activities: when Android
+ * starts a new MainActivity over the old one, the new onStart comes before the old onStop (seen on the OPPO, phase 7),
+ * so a single flag ended up false with the app in front.
+ */
 object AppForeground {
-    @Volatile var visible: Boolean = false
+    private val started = java.util.concurrent.atomic.AtomicInteger()
+    fun started() { started.incrementAndGet() }
+    fun stopped() { started.updateAndGet { maxOf(0, it - 1) } }
+    /** Tests set it directly. */
+    var visible: Boolean
+        get() = started.get() > 0
+        set(value) { started.set(if (value) 1 else 0) }
 }
 
 /**

@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.library
 
+import androidx.compose.material3.SnackbarResult
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.dero.juststudykorean.data.ai.MessyNotesState
 import android.Manifest
@@ -72,6 +73,11 @@ fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, vm: LibraryVi
     val duplicates by vm.duplicates.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(Unit) { vm.messages.collect { snackbar.showSnackbar(it) } }
+    LaunchedEffect(Unit) {
+        vm.addedWords.collect { n ->
+            if (snackbar.showSnackbar("Added $n ${if (n == 1) "word" else "words"}.", actionLabel = "Undo") == SnackbarResult.ActionPerformed) vm.undoPairs()
+        }
+    }
 
     val context = LocalContext.current
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { vm.upload(it) }
@@ -95,7 +101,7 @@ fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, vm: LibraryVi
         },
         onReprocess = vm::reprocess, onDetails = vm::toggle, onDelete = vm::delete,
         onSave = { d -> saving = d.document.storedName; save.launch(d.document.originalName) },
-        onRetry = vm::retry, onSkip = vm::skipDuplicate, onSkipAll = vm::skipAllDuplicates, messy = messy,
+        onRetry = vm::retry, onSkip = vm::skipDuplicate, onSkipAll = vm::skipAllDuplicates, messy = messy, onAddPairs = vm::addPairs,
     )
 }
 
@@ -122,6 +128,7 @@ fun LibraryContent(
     onSkipAll: () -> Unit,
     deleteAtStart: LibraryDocument? = null,
     messy: Map<Long, MessyNotesState> = emptyMap(), // use 6 (phase 6)
+    onAddPairs: (Long, List<com.dero.juststudykorean.korean.VocabPair>) -> Unit = { _, _ -> },
 ) {
     val c = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -150,6 +157,7 @@ fun LibraryContent(
                             d, open == d.document.id, extracted[d.document.id], zone,
                             onReprocess = { onReprocess(d.document.id) }, onDetails = { onDetails(d.document.id) },
                             onDelete = { deleting = d }, onSave = { onSave(d) }, messy = messy[d.document.id],
+                            onAddPairs = { onAddPairs(d.document.id, it) },
                         )
                     }
                 }

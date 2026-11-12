@@ -48,7 +48,7 @@ class QuizAi @Inject constructor(private val gate: NanoGate, private val db: Jus
     /** Uses 1 and 3: true only if the rules said wrong, the answer is English and the model says it means the same. */
     suspend fun sameMeaning(asked: String, correct: String, given: String): Boolean {
         if (hasHangul(given) || hasHangul(correct) || given.isBlank()) return false
-        val request = AiRequest(AiUse.Judge, JUDGE_VERSION, judgePrompt(asked, correct, given), "$asked\n$correct\n$given", 32, 0.2f, cache = true)
+        val request = AiRequest(AiUse.Judge, JUDGE_VERSION, judgePrompt(asked, correct, given), "$asked\n$correct\n$given", 32, 0f, cache = true) // temperature 0: 11/30 right paraphrases, 0/30 wrong ones (PoC 2 cases, phase 7)
         return gate.ask(request) { out -> true.takeIf { judgeApproves(out, given) } } == true
     }
 
@@ -63,11 +63,19 @@ class QuizAi @Inject constructor(private val gate: NanoGate, private val db: Jus
      * The model's multiple choice and short answer questions for [request] (at most [AI_MAX_QUESTIONS]), with the
      * difficulty [levels] in turns as in the web, checked like the web. Kept in memory only (the owner's rule).
      */
-    suspend fun questions(request: QuizRequest, levels: List<Int>, seed: Long): List<Candidate> {
+    /** How many questions the model is asked for (design/quiz.md A.3 counts them from the start); 0 without Nano. */
+    fun planned(request: QuizRequest): Int {
         val types = request.types.filter { it in AI_TYPES }
-        if (types.isEmpty() || !gate.ready()) return emptyList()
+        if (types.isEmpty() || !gate.ready()) return 0
         val share = (request.count * types.size + request.types.size - 1) / request.types.size
-        val wanted = minOf(AI_MAX_QUESTIONS, share, request.count)
+        return minOf(AI_MAX_QUESTIONS, share, request.count)
+    }
+
+    /** [onEach]: each question as soon as it is checked (A.3: the quiz has already started with the rules' ones). */
+    suspend fun questions(request: QuizRequest, levels: List<Int>, seed: Long, onEach: suspend (Candidate) -> Unit = {}): List<Candidate> {
+        val types = request.types.filter { it in AI_TYPES }
+        val wanted = planned(request)
+        if (wanted == 0) return emptyList()
         val rng = PyRandom(seed)
         val (chunks, pairs, grammar) = withContext(Dispatchers.Default) {
             val ready = db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id }
@@ -93,6 +101,7 @@ class QuizAi @Inject constructor(private val gate: NanoGate, private val db: Jus
             } ?: continue
             if (out.any { norm(it.prompt) == norm(candidate.prompt) || repeatsOptions(it, candidate) }) continue
             out += candidate.copy(promptVersion = QUESTIONS_VERSION, model = AI_MODEL)
+            onEach(out.last())
         }
         return out
     }

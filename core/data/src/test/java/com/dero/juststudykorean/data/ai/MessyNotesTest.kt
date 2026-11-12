@@ -56,7 +56,10 @@ class MessyNotesTest {
     private fun messy(model: Fake): MessyNotes {
         val state = NanoState(model).also { it.refresh() }
         runBlocking { repeat(50) { if (state.status.value != NanoStatus.Available) delay(20) } }
-        return MessyNotes(NanoGate(model, state) { false }, db, NotesSource(context))
+        val files = com.dero.juststudykorean.data.documents.DocumentFiles(context)
+        val clock = com.dero.juststudykorean.data.time.SystemClock()
+        val indexer = com.dero.juststudykorean.data.documents.DocumentIndexer(db, clock, com.dero.juststudykorean.data.progress.ProgressRepository(db, clock), NotesSource(context), files)
+        return MessyNotes(NanoGate(model, state) { false }, db, NotesSource(context), files, indexer)
     }
 
     @Test
@@ -76,5 +79,14 @@ class MessyNotesTest {
         assertFalse(s.waiting)
         assertEquals(listOf("사과", "우유"), s.pairs.map { it.korean }) // 포도 is not in the notes
         assertTrue(db.flashcardsDao().all().isEmpty()) // never cards on their own
+
+        // Add (design/library.md E): a normal word of the document, in its extracted pages; Undo takes it out again.
+        val added = m.accept(1, s.pairs.take(1))
+        assertEquals(listOf("사과"), added.map { it.korean })
+        assertTrue(notes.chunks(doc).flatMap { com.dero.juststudykorean.korean.extractPairs(it) }.any { it.korean == "사과" && it.english == "apple" })
+        assertEquals(listOf("우유"), m.state.value.getValue(1).pairs.map { it.korean })
+        m.undo(1, added)
+        assertTrue(notes.chunks(doc).flatMap { com.dero.juststudykorean.korean.extractPairs(it) }.none { it.korean == "사과" })
+        assertEquals(setOf("사과", "우유"), m.state.value.getValue(1).pairs.map { it.korean }.toSet())
     }
 }

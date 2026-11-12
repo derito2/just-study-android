@@ -1,0 +1,424 @@
+{
+ "grade": [
+  {
+   "id": "grade-p0",
+   "korean": "포장하다",
+   "correct": "To take out / To wrap up",
+   "given": "to wrap up",
+   "label": true
+  },
+  {
+   "id": "grade-p1",
+   "korean": "예약하다",
+   "correct": "To reserve / To book",
+   "given": "to book",
+   "label": true
+  },
+  {
+   "id": "grade-p2",
+   "korean": "자리",
+   "correct": "Seat / Spot",
+   "given": "spot",
+   "label": true
+  },
+  {
+   "id": "grade-p3",
+   "korean": "굽다",
+   "correct": "To grill / To bake",
+   "given": "to bake",
+   "label": true
+  },
+  {
+   "id": "grade-p4",
+   "korean": "설레다",
+   "correct": "To be excited / To have butterflies",
+   "given": "to have butterflies",
+   "label": true
+  },
+  {
+   "id": "grade-p5",
+   "korean": "서운하다",
+   "correct": "To feel hurt / To feel let down",
+   "given": "to feel let down",
+   "label": true
+  },
+  {
+   "id": "grade-p6",
+   "korean": "무섭다",
+   "correct": "To be scary / To be scared",
+   "given": "to be scared",
+   "label": true
+  },
+  {
+   "id": "grade-p7",
+   "korean": "그립다",
+   "correct": "To miss / To long for",
+   "given": "to long for",
+   "label": true
+  },
+  {
+   "id": "grade-p8",
+   "korean": "힘들다",
+   "correct": "To be hard / To be tiring",
+   "given": "to be tiring",
+   "label": true
+  },
+  {
+   "id": "grade-p9",
+   "korean": "놀다",
+   "correct": "To play / To hang out",
+   "given": "to hang out",
+   "label": true
+  },
+  {
+   "id": "grade-p10",
+   "korean": "근처",
+   "correct": "Nearby",
+   "given": "close by",
+   "label": true
+  },
+  {
+   "id": "grade-p11",
+   "korean": "혼자",
+   "correct": "Alone, on one's own",
+   "given": "by myself",
+   "label": true
+  },
+  {
+   "id": "grade-p12",
+   "korean": "걷다",
+   "correct": "To walk",
+   "given": "to go on foot",
+   "label": true
+  },
+  {
+   "id": "grade-p13",
+   "korean": "계산하다",
+   "correct": "To pay (the bill)",
+   "given": "to settle the bill",
+   "label": true
+  },
+  {
+   "id": "grade-p14",
+   "korean": "외롭다",
+   "correct": "To be lonely",
+   "given": "to feel lonesome",
+   "label": true
+  },
+  {
+   "id": "grade-p15",
+   "korean": "고맙다",
+   "correct": "To be thankful",
+   "given": "to be grateful",
+   "label": true
+  },
+  {
+   "id": "grade-p16",
+   "korean": "걱정하다",
+   "correct": "To worry",
+   "given": "to be worried",
+   "label": true
+  },
+  {
+   "id": "grade-p17",
+   "korean": "대박",
+   "correct": "Awesome",
+   "given": "amazing",
+   "label": true
+  },
+  {
+   "id": "grade-p18",
+   "korean": "짐",
+   "correct": "Luggage",
+   "given": "baggage",
+   "label": true
+  },
+  {
+   "id": "grade-p19",
+   "korean": "길을 잃다",
+   "correct": "To get lost",
+   "given": "to lose one's way",
+   "label": true
+  },
+  {
+   "id": "grade-p20",
+   "korean": "돕다",
+   "correct": "To help",
+   "given": "to assist",
+   "label": true
+  },
+  {
+   "id": "grade-p21",
+   "korean": "쉽다",
+   "correct": "To be easy",
+   "given": "to be simple",
+   "label": true
+  },
+  {
+   "id": "grade-p22",
+   "korean": "빠르다",
+   "correct": "To be fast",
+   "given": "to be quick",
+   "label": true
+  },
+  {
+   "id": "grade-p23",
+   "korean": "낫다",
+   "correct": "To get better",
+   "given": "to recover",
+   "label": true
+  },
+  {
+   "id": "grade-p24",
+   "korean": "밥 먹었어?",
+   "correct": "Did you eat?",
+   "given": "Have you eaten?",
+   "label": true
+  },
+  {
+   "id": "grade-p25",
+   "korean": "할 수 있어, 포기하지 마",
+   "correct": "You can do it, don't give up",
+   "given": "You can do this, don't quit",
+   "label": true
+  },
+  {
+   "id": "grade-p26",
+   "korean": "다음에 또 놀러 오세요",
+   "correct": "Please come visit again next time",
+   "given": "Come over again another time",
+   "label": true
+  },
+  {
+   "id": "grade-p27",
+   "korean": "사진 잘 나왔네요",
+   "correct": "The photo came out well",
+   "given": "The picture turned out nice",
+   "label": true
+  },
+  {
+   "id": "grade-p28",
+   "korean": "괜찮아, 다 잘될 거야",
+   "correct": "It's okay, everything will be fine",
+   "given": "It's alright, it will all work out",
+   "label": true
+  },
+  {
+   "id": "grade-p29",
+   "korean": "짱",
+   "correct": "The best",
+   "given": "number one",
+   "label": true
+  },
+  {
+   "id": "grade-n0",
+   "korean": "근처",
+   "correct": "Nearby",
+   "given": "Inside",
+   "label": false
+  },
+  {
+   "id": "grade-n1",
+   "korean": "구름",
+   "correct": "Cloud",
+   "given": "Bag",
+   "label": false
+  },
+  {
+   "id": "grade-n2",
+   "korean": "감자",
+   "correct": "Potato",
+   "given": "Mirror",
+   "label": false
+  },
+  {
+   "id": "grade-n3",
+   "korean": "맵다",
+   "correct": "To be spicy",
+   "given": "To be salty",
+   "label": false
+  },
+  {
+   "id": "grade-n4",
+   "korean": "울다",
+   "correct": "To cry",
+   "given": "To be funny",
+   "label": false
+  },
+  {
+   "id": "grade-n5",
+   "korean": "여권",
+   "correct": "Passport",
+   "given": "Airport",
+   "label": false
+  },
+  {
+   "id": "grade-n6",
+   "korean": "데우다",
+   "correct": "To heat up",
+   "given": "To get cold",
+   "label": false
+  },
+  {
+   "id": "grade-n7",
+   "korean": "공항",
+   "correct": "Airport",
+   "given": "Passport",
+   "label": false
+  },
+  {
+   "id": "grade-n8",
+   "korean": "밥 먹었어?",
+   "correct": "Did you eat?",
+   "given": "Let's eat together sometime",
+   "label": false
+  },
+  {
+   "id": "grade-n9",
+   "korean": "짐",
+   "correct": "Luggage",
+   "given": "Receipt",
+   "label": false
+  },
+  {
+   "id": "grade-n10",
+   "korean": "행복하다",
+   "correct": "To be happy",
+   "given": "to be sad",
+   "label": false
+  },
+  {
+   "id": "grade-n11",
+   "korean": "쉽다",
+   "correct": "To be easy",
+   "given": "to be difficult",
+   "label": false
+  },
+  {
+   "id": "grade-n12",
+   "korean": "빠르다",
+   "correct": "To be fast",
+   "given": "to be slow",
+   "label": false
+  },
+  {
+   "id": "grade-n13",
+   "korean": "열다",
+   "correct": "To open",
+   "given": "to close",
+   "label": false
+  },
+  {
+   "id": "grade-n14",
+   "korean": "가깝다",
+   "correct": "To be close / near",
+   "given": "to be far",
+   "label": false
+  },
+  {
+   "id": "grade-n15",
+   "korean": "춥다",
+   "correct": "To be cold (weather)",
+   "given": "to be hot",
+   "label": false
+  },
+  {
+   "id": "grade-n16",
+   "korean": "혼자",
+   "correct": "Alone, on one's own",
+   "given": "together",
+   "label": false
+  },
+  {
+   "id": "grade-n17",
+   "korean": "귀엽다",
+   "correct": "To be cute",
+   "given": "to be ugly",
+   "label": false
+  },
+  {
+   "id": "grade-n18",
+   "korean": "낫다",
+   "correct": "To get better",
+   "given": "to get worse",
+   "label": false
+  },
+  {
+   "id": "grade-n19",
+   "korean": "달다",
+   "correct": "To be sweet",
+   "given": "to be bitter",
+   "label": false
+  },
+  {
+   "id": "grade-n20",
+   "korean": "그립다",
+   "correct": "To miss / To long for",
+   "given": "to like",
+   "label": false
+  },
+  {
+   "id": "grade-n21",
+   "korean": "걷다",
+   "correct": "To walk",
+   "given": "to run",
+   "label": false
+  },
+  {
+   "id": "grade-n22",
+   "korean": "실망하다",
+   "correct": "To be disappointed",
+   "given": "to be angry",
+   "label": false
+  },
+  {
+   "id": "grade-n23",
+   "korean": "서운하다",
+   "correct": "To feel hurt / To feel let down",
+   "given": "to be jealous",
+   "label": false
+  },
+  {
+   "id": "grade-n24",
+   "korean": "짜증나다",
+   "correct": "To be annoyed",
+   "given": "to be sad",
+   "label": false
+  },
+  {
+   "id": "grade-n25",
+   "korean": "묻다",
+   "correct": "To ask",
+   "given": "to say",
+   "label": false
+  },
+  {
+   "id": "grade-n26",
+   "korean": "메뉴판",
+   "correct": "Menu",
+   "given": "recipe",
+   "label": false
+  },
+  {
+   "id": "grade-n27",
+   "korean": "영수증",
+   "correct": "Receipt",
+   "given": "ticket",
+   "label": false
+  },
+  {
+   "id": "grade-n28",
+   "korean": "거울",
+   "correct": "Mirror",
+   "given": "window",
+   "label": false
+  },
+  {
+   "id": "grade-n29",
+   "korean": "눈물",
+   "correct": "Tears",
+   "given": "sweat",
+   "label": false
+  }
+ ]
+}

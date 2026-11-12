@@ -74,6 +74,18 @@ class NanoGateTest {
         assertEquals("It means coffee.", g.ask(request) { it }) // waited 150 ms (real) for the gap, deadline 100 ms
     }
 
+    /** A new MainActivity starts before the old one stops: the app is still in front (phase 7, seen on the OPPO). */
+    @Test
+    fun foregroundCountsActivities() {
+        AppForeground.visible = false
+        AppForeground.started() // the old one
+        AppForeground.started() // the new one, before the old one's onStop
+        AppForeground.stopped()
+        assertTrue(AppForeground.visible)
+        AppForeground.stopped()
+        assertTrue(!AppForeground.visible)
+    }
+
     @Test
     fun busyIsRetriedOnceAfterTheGap() = runBlocking {
         assertEquals("It means coffee.", gate(Fake().apply { busyTimes = 1 }).ask(request) { it })

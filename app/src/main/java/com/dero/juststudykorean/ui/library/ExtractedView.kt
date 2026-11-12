@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.library
 
+import com.dero.juststudykorean.ui.components.StickerSize
+import com.dero.juststudykorean.ui.components.StickerColor
+import com.dero.juststudykorean.ui.components.StickerButton
 import com.dero.juststudykorean.ui.components.AiMark
 import com.dero.juststudykorean.korean.VocabPair
 import androidx.compose.foundation.background
@@ -28,7 +31,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 
 /** What the app extracted (design/library.md B): Words, Grammar and Fragments, as the quiz, cards and teacher use them. */
 @Composable
-internal fun ExtractedView(state: ExtractedState?, modifier: Modifier = Modifier, aiPairs: List<VocabPair> = emptyList()) {
+internal fun ExtractedView(state: ExtractedState?, modifier: Modifier = Modifier, aiPairs: List<VocabPair> = emptyList(), onAdd: (List<VocabPair>) -> Unit = {}) {
     val c = JustStudyTheme.colors
     val small = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
     Column(modifier.fillMaxWidth().padding(top = Tokens.Space2), verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
@@ -47,18 +50,26 @@ internal fun ExtractedView(state: ExtractedState?, modifier: Modifier = Modifier
         when (tab) {
             0 -> {
                 Text("Words detected (${e.words.size + ai.size}), as the quiz and flashcards use them", style = small, color = c.muted)
+                // design/library.md E (phase 7): the model's pairs first; they are yours only once you add them.
+                if (ai.isNotEmpty()) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+                        Text("Found by AI in messy notes", Modifier.weight(1f), style = JustStudyTheme.korean.bodyBold.copy(fontSize = 14.sp), color = ink)
+                        AiMark(short = true)
+                    }
+                    StickerButton("Add all", { onAdd(ai) }, color = StickerColor.Action, size = StickerSize.Small)
+                    ai.forEach { p ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(p.korean, Modifier.weight(1f), style = JustStudyTheme.korean.koBody.copy(fontWeight = FontWeight.Bold), color = ink)
+                            Text(p.english, Modifier.weight(1f).padding(end = Tokens.Space2), style = MaterialTheme.typography.bodyMedium, color = c.muted, textAlign = TextAlign.End)
+                            StickerButton("Add", { onAdd(listOf(p)) }, color = StickerColor.Gray, size = StickerSize.Small)
+                        }
+                    }
+                }
                 e.words.forEach { w ->
                     Row(verticalAlignment = Alignment.Top) {
                         Text(w.korean, Modifier.weight(1f), style = JustStudyTheme.korean.koBody.copy(fontWeight = FontWeight.Bold), color = ink)
                         Spacer(Modifier.width(Tokens.Space2))
                         Text(w.english, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = c.muted, textAlign = TextAlign.End)
-                    }
-                }
-                ai.forEach { p ->
-                    Row(verticalAlignment = Alignment.Top) {
-                        Text(p.korean, Modifier.weight(1f), style = JustStudyTheme.korean.koBody.copy(fontWeight = FontWeight.Bold), color = ink)
-                        AiMark(Modifier.padding(horizontal = Tokens.Space2), short = true)
-                        Text(p.english, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = c.muted, textAlign = TextAlign.End)
                     }
                 }
             }

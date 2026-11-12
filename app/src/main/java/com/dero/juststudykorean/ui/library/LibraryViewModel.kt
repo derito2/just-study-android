@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.library
 
+import com.dero.juststudykorean.korean.VocabPair
 import com.dero.juststudykorean.data.ai.MessyNotesState
 import com.dero.juststudykorean.data.ai.MessyNotes
 import android.content.Context
@@ -65,6 +66,30 @@ class LibraryViewModel @Inject constructor(
     val messy: StateFlow<Map<Long, MessyNotesState>> = messyNotes?.state ?: MutableStateFlow(emptyMap())
 
     /** On every return to the Library (the app in front): goes on with the messy notes not read yet. */
+    /** The last pairs added (for Undo): document and pairs. */
+    private var lastAdded: Pair<Long, List<VocabPair>>? = null
+    private val added = Channel<Int>(Channel.BUFFERED)
+    /** "Added {n} words." with Undo (design/library.md E). */
+    val addedWords = added.receiveAsFlow()
+
+    /** Add / Add all: the model's pairs become normal words of the document. */
+    fun addPairs(documentId: Long, pairs: List<VocabPair>) {
+        val m = messyNotes ?: return
+        viewModelScope.launch {
+            val done = runCatchingCancellable { m.accept(documentId, pairs) }.getOrDefault(emptyList())
+            if (done.isEmpty()) return@launch
+            lastAdded = documentId to done
+            reload(documentId) // read again with the new words
+            added.send(done.size)
+        }
+    }
+
+    fun undoPairs() {
+        val (id, pairs) = lastAdded ?: return
+        lastAdded = null
+        messyNotes?.let { m -> viewModelScope.launch { runCatchingCancellable { m.undo(id, pairs) }; reload(id) } }
+    }
+
     fun readMessyNotes() { messyNotes?.let { m -> viewModelScope.launch { runCatchingCancellable { m.readReady() } } } }
 
     private val retry = MutableStateFlow(0)
@@ -148,6 +173,10 @@ class LibraryViewModel @Inject constructor(
         if (_open.value == id) { _open.value = null; return }
         _open.value = id
         if (_extracted.value[id] is ExtractedState.Loaded) return
+        reload(id)
+    }
+
+    private fun reload(id: Long) {
         _extracted.update { it + (id to ExtractedState.Loading) }
         viewModelScope.launch {
             val state = runCatchingCancellable { ExtractedState.Loaded(repo.extracted(id)) }.getOrElse { ExtractedState.Failed }

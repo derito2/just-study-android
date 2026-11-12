@@ -131,6 +131,12 @@ class QuizScreenshotTest {
         )
     }
 
+    /** A.3: the counter already counts the model's questions; "Writing 2 more with AI…" while they come. */
+    @Test
+    fun writingWithAi() = snap("quiz_writing_ai", bar = false) {
+        QuestionContent(QuestionUi(loading = false, run = run, index = 0, documents = docs, pendingAi = 2), {}, {}, {}, {})
+    }
+
     @Test
     fun wrongWithExplanation() = snap("quiz_wrong_ai", bar = false) {
         QuestionContent(
