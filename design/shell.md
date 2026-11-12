@@ -110,3 +110,13 @@ Se queda como está (`design/splash-icon-context.txt`): una imagen al azar, **15
   - sin vibración.
 - Si ya está desvaneciéndose sola (1230–1500 ms), el toque no hace nada.
 - No sale al volver de segundo plano ni al girar el teléfono, como hoy.
+
+## AiMark (fase 6)
+
+Marca de todo lo que no sale de tus notas. Va arriba a la izquierda de la Card o recuadro con la salida del modelo.
+
+- Píldora (`CircleShape`), fondo `canvas`, borde de 1 dp `line`, relleno de 2 × 8 dp.
+- Icono `sparkles` de 12 dp en `muted` y, a 4 dp, el texto **AI · not from your notes** (`caption`, 12 sp, 700, `muted`). Sin coreano.
+- En espacios estrechos (el juez del quiz y *Words detected*): solo **AI** con el icono.
+- TalkBack: "AI, not from your notes".
+- No se anima. Sin colores nuevos.
