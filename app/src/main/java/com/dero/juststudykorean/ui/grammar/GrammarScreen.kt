@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.grammar
 
+import com.dero.juststudykorean.ui.components.GrammarCardAi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +43,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 @Composable
 fun GrammarScreen(onMore: () -> Unit, onBack: () -> Unit, onLibrary: () -> Unit, vm: GrammarViewModel = hiltViewModel()) {
     val ui by vm.state.collectAsStateWithLifecycle()
-    GrammarContent(ui, onMore, onBack, onLibrary, vm::setFilter, vm::setQuery, vm::toggle, vm::retry)
+    GrammarContent(ui, onMore, onBack, onLibrary, vm::setFilter, vm::setQuery, vm::toggle, vm::retry, vm::explainSimpler, vm::practiceSentence)
 }
 
 /** Grammar (design/grammar-calendar-settings.md): filters, search and the cards in a LazyColumn. */
@@ -57,6 +58,8 @@ fun GrammarContent(
     onQuery: (String) -> Unit,
     onToggle: (Long) -> Unit,
     onRetry: () -> Unit,
+    onSimpler: (Long) -> Unit = {},
+    onPractice: (Long) -> Unit = {},
 ) {
     val c = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -82,7 +85,10 @@ fun GrammarContent(
                     contentPadding = PaddingValues(start = Tokens.Space4, end = Tokens.Space4, top = Tokens.Space2, bottom = Tokens.Space6),
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
                 ) {
-                    items(ui.points, key = { it.id }) { p -> GrammarCard(p, p.id == ui.open, { onToggle(p.id) }) }
+                    items(ui.points, key = { it.id }) { p ->
+                        val ai = if (ui.ai) GrammarCardAi(ui.written[p.id] ?: GrammarWritten(), { onSimpler(p.id) }, { onPractice(p.id) }) else null
+                        GrammarCard(p, p.id == ui.open, { onToggle(p.id) }, ai = ai)
+                    }
                 }
             }
         }

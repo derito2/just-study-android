@@ -58,6 +58,15 @@ class GrammarCalendarScreenshotTest {
     @Test
     fun grammarOpen() = snap("grammar_open") { Grammar(GrammarUi(points = points, open = 1)) }
 
+    /** Phase 6, use 7: with Nano, Explain it simpler and Practice sentence, and what the model wrote (AiMark, PRACTICE). */
+    @Test
+    fun grammarOpenAi() = snap("grammar_open_ai") {
+        Grammar(GrammarUi(points = points, open = 1, ai = true, written = mapOf(1L to com.dero.juststudykorean.ui.grammar.GrammarWritten(
+            simpler = "Use it to say something happened before something else, like in your example.",
+            practice = "학교에 가서 공부해요." to "I go to school and study.",
+        ))))
+    }
+
     @Test
     fun grammarEmpty() = snap("grammar_empty") { Grammar(GrammarUi(points = emptyList(), any = false)) }
 

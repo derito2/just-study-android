@@ -1,5 +1,10 @@
 package com.dero.juststudykorean.ui.components
 
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Box
+import com.dero.juststudykorean.ui.grammar.GrammarWritten
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -36,7 +41,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
  * open, `tint` with `tint-border` (dark: `line`) and Meaning · Structure · Explanation · Examples · Notes.
  */
 @Composable
-fun GrammarCard(point: GrammarPointUi, open: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, dark: Boolean = isSystemInDarkTheme()) {
+fun GrammarCard(point: GrammarPointUi, open: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, dark: Boolean = isSystemInDarkTheme(), ai: GrammarCardAi? = null) {
     val c = JustStudyTheme.colors
     val ink = MaterialTheme.colorScheme.onSurface
     val turn by animateFloatAsState(if (open) -90f else 0f, tween(Motion.Base), label = "chevron")
@@ -74,6 +79,38 @@ fun GrammarCard(point: GrammarPointUi, open: Boolean, onToggle: () -> Unit, modi
                 }
             }
             if (point.notes.isNotEmpty()) section("Notes") { point.notes.forEach { Text(it, style = ko, color = ink) } }
+            if (ai != null) Written(ai)
         }
     }
 }
+
+/** Phase 6, use 7 (design/grammar-calendar-settings.md 5): only when Gemini Nano is Available. */
+data class GrammarCardAi(val written: GrammarWritten, val onSimpler: () -> Unit, val onPractice: () -> Unit)
+
+@Composable
+private fun Written(ai: GrammarCardAi) {
+    val c = JustStudyTheme.colors
+    val ink = MaterialTheme.colorScheme.onSurface
+    Box(Modifier.fillMaxWidth().height(2.dp).background(c.line))
+    Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+        StickerButton("Explain it simpler", ai.onSimpler, color = StickerColor.Action, size = StickerSize.Small, enabled = !ai.written.busy)
+        StickerButton("Practice sentence", ai.onPractice, color = StickerColor.Go, size = StickerSize.Small, enabled = !ai.written.busy)
+    }
+    val w = ai.written
+    if (w.simpler != null || w.practice != null) Column(
+        Modifier.fillMaxWidth().background(c.canvas, MaterialTheme.shapes.medium).padding(Tokens.Space3),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space2),
+    ) {
+        AiMark()
+        w.simpler?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = ink) }
+        w.practice?.let { (ko, en) ->
+            Text(
+                "PRACTICE", style = MaterialTheme.typography.labelMedium, color = c.brandText,
+                modifier = Modifier.background(c.tint, CircleShape).padding(horizontal = Tokens.Space2, vertical = 2.dp), // badge-tint, as NEW on a card
+            )
+            Text(ko, style = JustStudyTheme.korean.koBody, color = ink)
+            Text(en, style = MaterialTheme.typography.bodyMedium, color = c.muted)
+        }
+    }
+}
+

@@ -108,6 +108,10 @@ class DashboardScreenshotTest {
     @Test
     fun dashboardStudied() = snap("dashboard_studied", studied)
 
+    /** Phase 6, use 8: the week's sentence written by the model (AiMark), under the week's figures. */
+    @Test
+    fun dashboardWeekAi() = snap("dashboard_week_ai", studied.copy(week = com.dero.juststudykorean.data.ai.WeekSentence("You learned 4 words this week and got 80% of your quiz answers right. Keep going!", ai = true)))
+
     @Test
     fun dashboardEmpty() = snap("dashboard_empty", nothing)
 

@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.dashboard
 
+import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import androidx.compose.material3.Text
+import com.dero.juststudykorean.ui.components.AiMark
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -87,6 +90,15 @@ fun DashboardContent(
                     "Quiz accuracy this week", w?.let { percent(it.accuracyThisWeek) } ?: "—",
                     Modifier.weight(1f).fillMaxHeight(), trend = w?.let { accuracyTrend(it.accuracyThisWeek, it.accuracyLastWeek) },
                 )
+            }
+            ui.week?.let { week -> // phase 6, use 8: only with Gemini Nano Available
+                Column(
+                    Modifier.fillMaxWidth().background(JustStudyTheme.colors.canvas, MaterialTheme.shapes.medium).padding(Tokens.Space3),
+                    verticalArrangement = Arrangement.spacedBy(Tokens.Space2),
+                ) {
+                    if (week.ai) AiMark()
+                    Text(week.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+                }
             }
             TodayHero(s?.today, ui.recommended, onPractice, onAsk, photo = photo, notice = ui.notice)
             ui.calendar?.let { CalendarMonthCompact(it, ui.today) }
