@@ -10,8 +10,8 @@ Se actualiza en cada PR.
 
 | ID | Estado | PR |
 |---|---|---|
-| R-001 | en PR #22 (responder queda en 2,2×; baja con el índice de R-002) | #22 |
-| R-002 | pendiente |  |
+| R-001 | en PR #22 (con el índice de R-002; ver DECISIONS) | #22 |
+| R-002 | parcial: índice `question_attempts(question_id)` (v3) en #22; el resto pendiente | #22 |
 | R-003 | hecho | #20 |
 | R-004 | hecho | #20 |
 | R-005 | hecho (wiggle: solo se recompone una envoltura, ver DECISIONS) | #20 |

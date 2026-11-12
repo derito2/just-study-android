@@ -27,7 +27,7 @@ import androidx.room3.RoomDatabase
         NotesFtsEntity::class,
         ProcessingJobsEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class JustStudyDatabase : RoomDatabase() {

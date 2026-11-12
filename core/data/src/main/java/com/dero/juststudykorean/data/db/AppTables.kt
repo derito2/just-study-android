@@ -111,3 +111,10 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         )
     }
 }
+
+/** v2 → v3 only adds indices (R-001/R-002): no row changes, so the backup stays the same (MigrationTest). */
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("CREATE INDEX IF NOT EXISTS `index_question_attempts_question_id` ON `question_attempts` (`question_id`)")
+    }
+}

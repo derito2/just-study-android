@@ -24,7 +24,9 @@ KINDS = [  # order matters: Boolean before Integer
 ]
 
 
-DB_VERSION = 2  # v2 (phase 4): notes_fts and processing_jobs, see db/AppTables.kt and MIGRATION_1_2
+DB_VERSION = 3  # v2 (phase 4): notes_fts and processing_jobs (MIGRATION_1_2); v3: INDICES (MIGRATION_2_3)
+# Indices the phone adds on top of the web's columns (R-001/R-002), name -> column; each one also in MIGRATION_2_3.
+INDICES = {"question_attempts": ["question_id"]}
 APP_TABLES = ["NotesFts", "ProcessingJobs"]
 APP_DAOS = ["Hot"]  # hand-written DAOs without a table of their own (db/HotDaos.kt)
 
@@ -45,7 +47,7 @@ def camel(name: str, upper: bool = False) -> str:
 def main() -> None:
     tables = [t for t in Base.metadata.sorted_tables if t.name not in SKIP]
     entities = [HEADER, "package com.dero.juststudykorean.data.db", "",
-                "import androidx.room3.ColumnInfo", "import androidx.room3.Entity", "",
+                "import androidx.room3.ColumnInfo", "import androidx.room3.Entity", "import androidx.room3.Index", "",
                 "// One entity per backup table, columns 1:1 with the web; dates as epoch millis (UTC); JSON as text.", ""]
     daos = [HEADER, "package com.dero.juststudykorean.data.db", "",
             "import androidx.room3.Dao", "import androidx.room3.Delete", "import androidx.room3.Insert",
@@ -56,7 +58,8 @@ def main() -> None:
         pks = [c.name for c in t.primary_key.columns]
         pk_list = ", ".join(f'"{p}"' for p in pks)
         order = ", ".join(pks)
-        entities.append(f'@Entity(tableName = "{t.name}", primaryKeys = [{pk_list}])')
+        idx = f', indices = [{", ".join(f'Index("{c}")' for c in INDICES[t.name])}]' if t.name in INDICES else ""
+        entities.append(f'@Entity(tableName = "{t.name}", primaryKeys = [{pk_list}]{idx})')
         entities.append(f"data class {name}Entity(")
         cols = []
         for c in t.columns:
