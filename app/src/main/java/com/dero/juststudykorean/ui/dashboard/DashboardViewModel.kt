@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.dashboard
 
+import com.dero.juststudykorean.data.ai.WeekSentence
+import com.dero.juststudykorean.data.ai.GrammarAi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dero.juststudykorean.data.prefs.UserPrefs
@@ -45,6 +47,8 @@ data class DashboardUi(
     val previousStreak: Int? = null,
     val error: Boolean = false,
     val notice: String? = null,
+    /** Phase 6, use 8: the week in one or two sentences, only with Gemini Nano Available. */
+    val week: WeekSentence? = null,
 )
 
 private data class Loaded(val summary: ProgressSummary, val weekly: Weekly, val calendar: CalendarMonth, val recommended: List<Recommendation>, val timeline: Timeline)
@@ -57,7 +61,9 @@ class DashboardViewModel @Inject constructor(
     private val quiz: QuizRepository,
     private val prefs: UserPrefs,
     clock: AppClock,
+    private val grammarAi: GrammarAi? = null,
 ) : ViewModel() {
+    private val week = MutableStateFlow<WeekSentence?>(null)
     private val today = clock.now().atZone(clock.zone).toLocalDate()
     private val retry = MutableStateFlow(0)
     private val previousStreak = MutableStateFlow<Int?>(null)
@@ -77,16 +83,23 @@ class DashboardViewModel @Inject constructor(
             val summary = progress.summary()
             previousStreak.filterNotNull().first()
             prefs.setLastStreak(summary.streakDays)
-            Loaded(summary, progress.weekly(), month, progress.recommended(3), progress.timeline(unit))
+            Loaded(summary, progress.weekly(), month, progress.recommended(3), progress.timeline(unit)).also(::writeWeek)
         }.catch { emit(null) }
     }
 
-    val state: StateFlow<DashboardUi> = combine(loaded, prefs.chartUnit, previousStreak, notice) { data, unit, previous, notice ->
+    val state: StateFlow<DashboardUi> = combine(loaded, prefs.chartUnit, previousStreak, notice, week) { data, unit, previous, notice, week ->
         DashboardUi(
             today = today, summary = data?.summary, weekly = data?.weekly, calendar = data?.calendar, recommended = data?.recommended,
-            timeline = data?.timeline, unit = unit, previousStreak = previous, error = data == null, notice = notice,
+            timeline = data?.timeline, unit = unit, previousStreak = previous, error = data == null, notice = notice, week = week,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DashboardUi(today))
+
+    /** Use 8: from the same figures the Dashboard shows (the model, or the template if it adds anything or is late). */
+    private fun writeWeek(data: Loaded) {
+        val ai = grammarAi ?: return
+        if (!ai.ready()) { week.value = null; return }
+        viewModelScope.launch { week.value = runCatchingCancellable { ai.week(data.weekly, data.recommended.firstOrNull()?.name) }.getOrNull() }
+    }
 
     fun setUnit(unit: TimelineUnit) = viewModelScope.launch { prefs.setChartUnit(unit) }
 

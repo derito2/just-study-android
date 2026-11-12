@@ -21,8 +21,10 @@ sqlite = "2.7.1"
 kotlinxSerialization = "1.11.0"
 hiltCompose = "1.4.0"
 lifecycle = "2.11.0"
+genaiPrompt = "1.0.0-beta5" # Gemini Nano (phase 6); PoC 2 checked it on the OPPO
 
 [libraries]
+mlkit-genai-prompt = { group = "com.google.mlkit", name = "genai-prompt", version.ref = "genaiPrompt" }
 mupdf-fitz = { group = "com.artifex.mupdf", name = "fitz", version.ref = "mupdf" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

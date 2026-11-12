@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.screens
 
+import com.dero.juststudykorean.ui.components.StickerSize
+import com.dero.juststudykorean.ui.library.Pill
+import com.dero.juststudykorean.ai.NanoStatus
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -60,6 +63,7 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
     val theme by vm.themeMode.collectAsStateWithLifecycle()
     val busy by vm.busy.collectAsStateWithLifecycle()
     val error by vm.error.collectAsStateWithLifecycle()
+    val nano by vm.nano.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(vm) { vm.messages.collect { snackbar.showSnackbar(it) } }
 
@@ -89,6 +93,7 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
                     exportTaps++
                     save.launch("juststudy-backup-${LocalDate.now()}.jsbackup.zip")
                 }
+                OnDeviceAiRow(nano, vm::downloadNano)
                 Column(Modifier.padding(horizontal = Tokens.Space4), verticalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
                     if (busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = JustStudyTheme.colors.brand, trackColor = JustStudyTheme.colors.tint, gapSize = 0.dp)
                     error?.let { ErrorState(it, onRetry = { pick.launch(BACKUP_TYPES) }, title = "Couldn't finish") }
@@ -136,3 +141,32 @@ private fun SettingsRow(
         }
     }
 }
+
+/** Settings → On-device AI (design/grammar-calendar-settings.md): AICore's state and, only if Downloadable, Download. */
+@Composable
+internal fun OnDeviceAiRow(status: NanoStatus, onDownload: () -> Unit) {
+    val colors = JustStudyTheme.colors
+    Column {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) { SettingsRow(Lucide.Sparkles, "On-device AI", "Gemini Nano runs on your phone. No internet.", animateKey = null) }
+            Box(Modifier.padding(end = Tokens.Space6)) {
+                when (status) {
+                    NanoStatus.Available -> Pill("Ready", colors.correctFill, colors.correct)
+                    NanoStatus.Downloadable -> StickerButton("Download", onDownload, color = StickerColor.Action, size = StickerSize.Small)
+                    is NanoStatus.Downloading -> Text(status.percent?.let { "$it %" } ?: "Downloading…", style = MaterialTheme.typography.bodySmall, color = colors.muted)
+                    NanoStatus.Unavailable -> Pill("Not available", colors.canvas, colors.muted)
+                }
+            }
+        }
+        val below = Modifier.padding(start = Tokens.Space6 + 24.dp + Tokens.Space4, end = Tokens.Space6, bottom = Tokens.Space2)
+        when (status) {
+            NanoStatus.Downloadable -> Text("Needs Wi-Fi and a few GB of space.", below, style = MaterialTheme.typography.bodySmall, color = colors.muted)
+            is NanoStatus.Downloading -> status.percent?.let { pct ->
+                LinearProgressIndicator({ pct / 100f }, below.fillMaxWidth(), color = colors.brand, trackColor = colors.tint, gapSize = 0.dp)
+            } ?: LinearProgressIndicator(below.fillMaxWidth(), color = colors.brand, trackColor = colors.tint, gapSize = 0.dp)
+            NanoStatus.Unavailable -> Text("The app works the same without it.", below, style = MaterialTheme.typography.bodySmall, color = colors.muted)
+            NanoStatus.Available -> Unit
+        }
+    }
+}
+

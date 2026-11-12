@@ -1,5 +1,9 @@
 package com.dero.juststudykorean.ui.grammar
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
+import com.dero.juststudykorean.ui.components.runCatchingCancellable
+import com.dero.juststudykorean.data.ai.GrammarAi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dero.juststudykorean.data.grammar.GrammarFilter
@@ -26,12 +30,19 @@ data class GrammarUi(
     val any: Boolean = true,
     val open: Long? = null,
     val error: Boolean = false,
+    /** Gemini Nano Available: the open card shows Explain it simpler and Practice sentence (phase 6, use 7). */
+    val ai: Boolean = false,
+    val written: Map<Long, GrammarWritten> = emptyMap(),
 )
+
+/** What the model wrote for a point (never saved): a simpler explanation and a practice sentence (Korean, English). */
+data class GrammarWritten(val busy: Boolean = false, val simpler: String? = null, val practice: Pair<String, String>? = null)
 
 /** Grammar (design/grammar-calendar-settings.md): filter pills, search as you type, one card open at a time. */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class GrammarViewModel @Inject constructor(private val repo: GrammarRepository) : ViewModel() {
+class GrammarViewModel @Inject constructor(private val repo: GrammarRepository, private val grammarAi: GrammarAi? = null) : ViewModel() {
+    private val written = MutableStateFlow<Map<Long, GrammarWritten>>(emptyMap())
     private val filter = MutableStateFlow(GrammarFilter.All)
     private val query = MutableStateFlow("")
     private val open = MutableStateFlow<Long?>(null)
@@ -42,9 +53,9 @@ class GrammarViewModel @Inject constructor(private val repo: GrammarRepository) 
     }
     private val any = retry.flatMapLatest { repo.points(GrammarFilter.All, "").map { it.isNotEmpty() }.catch { emit(true) } }
 
-    val state: StateFlow<GrammarUi> = combine(filter, query, points, any, open) { f, q, p, a, o ->
+    val state: StateFlow<GrammarUi> = combine(combine(filter, query, points, any, open) { f, q, p, a, o ->
         GrammarUi(f, q, p, a, o, error = p == null) // combine emits once points did: null here is a failure
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GrammarUi())
+    }, written) { ui, w -> ui.copy(ai = grammarAi?.ready() == true, written = w) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GrammarUi())
 
     fun setFilter(f: GrammarFilter) { filter.value = f; open.value = null }
     fun setQuery(q: String) { query.value = q }
@@ -53,4 +64,19 @@ class GrammarViewModel @Inject constructor(private val repo: GrammarRepository) 
     fun toggle(id: Long) { open.value = if (open.value == id) null else id }
 
     fun retry() { retry.value++ }
+
+    /** 7a / 7b: one at a time per point; nothing is saved. */
+    fun explainSimpler(id: Long) = write(id) { p, w -> w.copy(simpler = grammarAi!!.simpler(p) ?: w.simpler) }
+    fun practiceSentence(id: Long) = write(id) { p, w -> w.copy(practice = grammarAi!!.practice(p) ?: w.practice) }
+
+    private fun write(id: Long, block: suspend (GrammarPointUi, GrammarWritten) -> GrammarWritten) {
+        val p = state.value.points?.firstOrNull { it.id == id } ?: return
+        val now = written.value[id] ?: GrammarWritten()
+        if (grammarAi == null || now.busy) return
+        written.update { it + (id to now.copy(busy = true)) }
+        viewModelScope.launch {
+            val done = runCatchingCancellable { block(p, now) }.getOrDefault(now)
+            written.update { it + (id to done.copy(busy = false)) }
+        }
+    }
 }

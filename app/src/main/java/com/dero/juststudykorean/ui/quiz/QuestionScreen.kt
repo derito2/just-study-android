@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.AiMark
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -117,6 +118,7 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                                 Text(type?.first ?: q.type, Modifier.alignByBaseline(), style = MaterialTheme.typography.bodySmall, color = c.muted)
                                 if (type != null) KoSide(type.second, 12.sp, Modifier.alignByBaseline(), color = c.muted)
                             }
+                            if (q.id < 0) AiMark(Modifier.padding(end = Tokens.Space2), short = true) // written by the model (kept in memory only)
                             ui.documents[q.id]?.let { Text(it.substringBeforeLast("."), style = MaterialTheme.typography.bodySmall, color = c.muted, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                         }
                         val korean = Regex("[가-힣]").containsMatchIn(q.prompt)
@@ -142,7 +144,12 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                                 onDone = { if (ui.typed.isNotBlank()) onAnswer(ui.typed) },
                             )
                             if (answered != null) AnswerFeedback(answered.grade.correct, answered.given, answered.grade.correctAnswer, korean = mode == "korean")
+                            if (answered?.grade?.aiAccepted == true) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+                                Text("accepted: same meaning", fontSize = 12.sp, color = c.correct)
+                                AiMark(short = true)
+                            }
                         }
+                        answered?.explanation?.let { MistakeExplanation(it, answered.aiExplanation) }
                     }
                 }
                 ui.error?.let { Text(it, Modifier.padding(horizontal = Tokens.Space4), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
@@ -176,6 +183,19 @@ private fun Count(label: String, ko: String, value: String, color: androidx.comp
             KoSide(ko, MaterialTheme.typography.labelMedium.fontSize, Modifier.alignByBaseline(), color = JustStudyTheme.colors.muted)
         }
         Text(value, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.ExtraBold), color = color)
+    }
+}
+
+/** Why you got it wrong (design/quiz.md A.2): in a `canvas` box, with AiMark when the model wrote it. */
+@Composable
+private fun MistakeExplanation(text: String, ai: Boolean) {
+    val c = JustStudyTheme.colors
+    Column(
+        Modifier.fillMaxWidth().background(c.canvas, MaterialTheme.shapes.medium).padding(Tokens.Space3),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space2),
+    ) {
+        if (ai) AiMark()
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     }
 }
 

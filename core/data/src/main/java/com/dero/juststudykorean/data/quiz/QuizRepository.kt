@@ -45,7 +45,8 @@ data class QuizRun(val id: Long, val questions: List<QuestionsEntity>)
 /** One answered question of a quiz: what you answered (the last time) and whether it was right. */
 data class ResultRow(val question: QuestionsEntity, val given: String, val correct: Boolean)
 
-data class Grade(val correct: Boolean, val correctAnswer: String, val explanation: String?)
+/** [aiAccepted]: the rules said wrong and the meaning judge (the model) said it means the same (design/quiz.md A.2). */
+data class Grade(val correct: Boolean, val correctAnswer: String, val explanation: String?, val aiAccepted: Boolean = false)
 
 /** A question you got wrong and have not got right since; [lastAt] in epoch millis. */
 data class Mistake(val question: QuestionsEntity, val lastAt: Long, val times: Int)
@@ -67,6 +68,20 @@ class QuizRepository @Inject constructor(
     private val progress: ProgressRepository,
     private val notes: NotesSource,
 ) {
+    /**
+     * Questions the model wrote (phase 6): only in memory, never in `questions` or `question_attempts` (the owner's rule:
+     * the model's output goes to no backup table). Negative ids; lost when the app's process ends.
+     */
+    private val aiRuns = java.util.concurrent.ConcurrentHashMap<Long, List<QuestionsEntity>>()
+    private val aiAnswers = java.util.concurrent.ConcurrentHashMap<Long, Pair<String, Boolean>>()
+    private val aiIds = java.util.concurrent.atomic.AtomicLong(0)
+
+    /** True for a question the model wrote (kept in memory only). */
+    fun isAiQuestion(question: QuestionsEntity) = question.id < 0
+
+    /** What the rules say about [given] (no write). */
+    fun check(question: QuestionsEntity, given: String) = isCorrect(question.type, given, question.correctAnswer)
+
     private fun ids(json: String?): List<Long> = json?.let { Json.parseToJsonElement(it).jsonArray.map { e -> e.jsonPrimitive.long } }.orEmpty()
 
     private suspend fun lastAttempts(): Map<Long, QuestionAttemptsEntity> =
@@ -160,7 +175,7 @@ class QuizRepository @Inject constructor(
         val run = db.hotDao().quizRun(runId) ?: return@withContext null
         val wanted = ids(run.questionIds)
         val questions = db.hotDao().questions(wanted).associateBy { it.id }
-        QuizRun(run.id, wanted.mapNotNull { questions[it] })
+        QuizRun(run.id, mixed(wanted.mapNotNull { questions[it] }, aiRuns[run.id].orEmpty()))
     }
 
     /** The answers of a history card ("run-{id}" or "session-{id}"): the last answer to each question, in order. */
@@ -172,7 +187,18 @@ class QuizRepository @Inject constructor(
         val last = LinkedHashMap<Long, com.dero.juststudykorean.data.db.QuestionAttemptsEntity>()
         attempts.forEach { last[it.questionId] = it }
         val order = if (kind == "run") db.quizRunsDao().all().firstOrNull { it.id == id }?.let { ids(it.questionIds) }.orEmpty() else last.keys.toList()
-        order.mapNotNull { q -> last[q]?.let { a -> questions[q]?.let { ResultRow(it, a.userAnswer, a.isCorrect) } } }
+        val saved = order.mapNotNull { q -> last[q]?.let { a -> questions[q]?.let { ResultRow(it, a.userAnswer, a.isCorrect) } } }
+        val ai = if (kind == "run") aiRuns[id].orEmpty().mapNotNull { q -> aiAnswers[q.id]?.let { (given, ok) -> ResultRow(q, given, ok) } } else emptyList()
+        mixed(saved, ai)
+    }
+
+    /** The model's questions among the rules' ones, one every other place (as the web takes turns). */
+    private fun <T> mixed(rules: List<T>, ai: List<T>): List<T> {
+        if (ai.isEmpty()) return rules
+        val out = mutableListOf<T>()
+        val r = rules.iterator(); val a = ai.iterator()
+        while (r.hasNext() || a.hasNext()) { if (r.hasNext()) out += r.next(); if (a.hasNext()) out += a.next() }
+        return out
     }
 
     /** The document each question comes from (its file name), for the question card and the mistakes. */
@@ -235,18 +261,42 @@ class QuizRepository @Inject constructor(
         }
     }
 
-    /** A quiz by rules from your notes; null if there is no material for these settings. */
-    suspend fun generate(request: QuizRequest): QuizRun? {
-        val questions = generateQuestions(request, PyRandom(request.seed ?: clock.now().toEpochMilli())) ?: return null
-        if (questions.isEmpty()) return null
-        return createRun(questions.map { it.id })
+    /**
+     * A quiz by rules from your notes; null if there is no material for these settings. [ai]: questions the model wrote
+     * (already checked), kept in memory with the quiz; the rules make the rest.
+     */
+    suspend fun generate(request: QuizRequest, ai: List<com.dero.juststudykorean.korean.Candidate> = emptyList()): QuizRun? {
+        val rules = request.copy(count = request.count - ai.size)
+        val questions = if (rules.count > 0) generateQuestions(rules, PyRandom(request.seed ?: clock.now().toEpochMilli())).orEmpty() else emptyList()
+        if (questions.isEmpty() && ai.isEmpty()) return null
+        val run = createRun(questions.map { it.id })
+        if (ai.isEmpty()) return run
+        val now = clock.now().toEpochMilli()
+        val mine = ai.map { c ->
+            QuestionsEntity(
+                id = -aiIds.incrementAndGet(), type = c.type, prompt = c.prompt,
+                optionsJson = c.options?.let { BackupFormat.pyJson(JsonArray(it.map(::JsonPrimitive))) }, correctAnswer = c.answer,
+                explanation = c.explanation.ifEmpty { null }, difficulty = 1, topicId = null,
+                sourceChunkIds = BackupFormat.pyJson(JsonArray(listOf(JsonPrimitive(c.chunk.chromaId)))),
+                promptVersion = c.promptVersion, model = c.model, createdAt = now,
+            )
+        }
+        aiRuns[run.id] = mine
+        return QuizRun(run.id, mixed(run.questions, mine))
     }
 
-    suspend fun answer(runId: Long?, questionId: Long, given: String, elapsedMs: Long): Grade = withContext(Dispatchers.IO) {
-        db.withWriteTransaction { answerNow(runId, questionId, given, elapsedMs) }
+    /** [accepted]: the meaning judge approved an English answer the rules rejected; only this true/false is saved. */
+    suspend fun answer(runId: Long?, questionId: Long, given: String, elapsedMs: Long, accepted: Boolean = false): Grade = withContext(Dispatchers.IO) {
+        if (questionId < 0) {
+            val q = runId?.let { aiRuns[it] }?.firstOrNull { it.id == questionId } ?: throw QuizException("Question not found.")
+            val ok = check(q, given) || accepted
+            aiAnswers[questionId] = given to ok
+            return@withContext Grade(ok, q.correctAnswer, q.explanation, aiAccepted = accepted && !check(q, given))
+        }
+        db.withWriteTransaction { answerNow(runId, questionId, given, elapsedMs, accepted) }
     }
 
-    private suspend fun answerNow(runId: Long?, questionId: Long, given: String, elapsedMs: Long): Grade {
+    private suspend fun answerNow(runId: Long?, questionId: Long, given: String, elapsedMs: Long, accepted: Boolean): Grade {
         val question = db.hotDao().question(questionId) ?: throw QuizException("Question not found.")
         if (runId != null) {
             val run = db.hotDao().quizRun(runId) ?: throw QuizException("Quiz not found.")
@@ -255,12 +305,13 @@ class QuizRepository @Inject constructor(
         if (question.type in CHOICE_TYPES && norm(given) !in Json.parseToJsonElement(question.optionsJson ?: "[]").jsonArray.map { norm(it.jsonPrimitive.content) }) {
             throw QuizException("That answer is not one of the options.")
         }
-        val correct = isCorrect(question.type, given, question.correctAnswer)
+        val byRules = isCorrect(question.type, given, question.correctAnswer)
+        val correct = byRules || accepted
         val now = clock.now().toEpochMilli()
         val session = progress.attachSession(now, elapsedMs, question.topicId, mode = "quiz")
         db.questionAttemptsDao().insert(QuestionAttemptsEntity(progress.nextId("question_attempts"), question.id, session.id, runId, given, correct, elapsedMs, now))
         question.topicId?.let { progress.recomputeTopic(it) }
-        return Grade(correct, question.correctAnswer, question.explanation)
+        return Grade(correct, question.correctAnswer, question.explanation, aiAccepted = accepted && !byRules)
     }
 
     /** "Practice saved questions": the ones you got right in the last 7 days, in random order. */

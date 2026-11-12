@@ -26,7 +26,8 @@ data class QuizProposal(val topic: String?, val title: String?, val words: List<
 /** The "Create deck" card: a NEW deck with these words of your notes. */
 data class DeckProposal(val name: String, val words: List<String>)
 
-data class CoachAnswer(val text: String, val steps: List<Step>, val quiz: QuizProposal?, val deck: DeckProposal?, val fallback: Boolean)
+/** [ai]: the text was written by the model from the rules' facts (phase 6, use 5; AiMark on screen). */
+data class CoachAnswer(val text: String, val steps: List<Step>, val quiz: QuizProposal?, val deck: DeckProposal?, val fallback: Boolean, val ai: Boolean = false)
 
 private val NUMBERING = py("^\\s*\\d{1,3}[.)]\\s+")
 

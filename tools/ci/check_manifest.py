@@ -39,6 +39,8 @@ ALLOWED_PERMISSIONS = {
     "android.permission.FOREGROUND_SERVICE",
     "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
     "android.permission.USE_BIOMETRIC",
+    # Phase 6 (owner's OK, 2026-11-12): ML Kit genai-prompt binds to AICore, the system app that runs Gemini Nano.
+    "com.google.android.apps.aicore.service.BIND_SERVICE",
 }
 OWN_PREFIX = "com.dero.juststudykorean."  # the app's own signature permissions (e.g. DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION)
 

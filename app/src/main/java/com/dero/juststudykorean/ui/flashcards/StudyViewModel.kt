@@ -2,7 +2,11 @@ package com.dero.juststudykorean.ui.flashcards
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dero.juststudykorean.data.ai.QuizAi
 import com.dero.juststudykorean.data.flashcards.CardDetails
+import com.dero.juststudykorean.korean.Verdict
+import com.dero.juststudykorean.korean.compareAnswer
+import com.dero.juststudykorean.ui.components.runCatchingCancellable
 import com.dero.juststudykorean.data.flashcards.CardSource
 import com.dero.juststudykorean.data.flashcards.FlashcardRepository
 import com.dero.juststudykorean.data.flashcards.StudyCard
@@ -34,6 +38,8 @@ data class StudyUi(
     val sources: Map<Long, CardSource> = emptyMap(),
     val reviewed: Int = 0,
     val error: String? = null,
+    /** The card whose typed meaning the model accepted (use 3), shown with AiMark; nothing is saved. */
+    val aiAccepted: Long? = null,
 ) {
     val card: StudyCard? get() = queue.firstOrNull()
 }
@@ -56,7 +62,7 @@ fun preview(card: StudyCard, cfg: Scheduling): Map<Rating, String> {
 
 /** A review session (design/flashcards.md C). Each rating is saved at once; a second tap on the same card is ignored. */
 @HiltViewModel
-class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, private val prefs: UserPrefs) : ViewModel() {
+class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, private val prefs: UserPrefs, private val ai: QuizAi? = null) : ViewModel() {
     private val _state = MutableStateFlow(StudyUi())
     val state = _state.asStateFlow()
     val direction: StateFlow<CardDirection> = prefs.cardDirection.stateIn(viewModelScope, SharingStarted.Eagerly, CardDirection.KoToEn)
@@ -81,7 +87,7 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
             val cards = repo.queue(deckId, prefs.cardDirection.first(), limit = 2000)
             val entities = cards.map { it.card }
             _state.value = _state.value.copy(
-                loading = false, queue = cards, flipped = false, typed = "", error = null,
+                loading = false, queue = cards, flipped = false, typed = "", error = null, aiAccepted = null,
                 details = repo.details(entities), sources = repo.sources(entities),
             )
             shownAt = System.nanoTime()
@@ -92,7 +98,20 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
         }
     }
 
-    fun flip() { if (_state.value.card != null) _state.value = _state.value.copy(flipped = true) }
+    /**
+     * Shows the back. [meaning]: (front, back) when you typed the meaning; if compareAnswer says it is wrong, the meaning
+     * judge (use 3) may accept it. Only the screen changes: the rating stays yours.
+     */
+    fun flip(meaning: Pair<String, String>? = null) {
+        val card = _state.value.card ?: return
+        _state.value = _state.value.copy(flipped = true)
+        val typed = _state.value.typed
+        if (meaning == null || ai?.ready() != true || compareAnswer(typed, meaning.second, korean = false).verdict !in setOf(Verdict.Wrong, Verdict.Almost)) return
+        viewModelScope.launch {
+            val same = runCatchingCancellable { ai.sameMeaning("What does '${meaning.first}' mean?", meaning.second, typed) }.getOrDefault(false)
+            if (same && _state.value.card?.card?.id == card.card.id) _state.value = _state.value.copy(aiAccepted = card.card.id)
+        }
+    }
 
     fun type(text: String) { _state.value = _state.value.copy(typed = text) }
 
@@ -111,7 +130,7 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
                 repo.review(card.card.id, value, (System.nanoTime() - shownAt) / 1_000_000, scheduling.value)
                 val rest = s.queue.drop(1)
                 if (rest.isNotEmpty()) {
-                    _state.value = _state.value.copy(queue = rest, flipped = false, typed = "", reviewed = s.reviewed + 1)
+                    _state.value = _state.value.copy(queue = rest, flipped = false, typed = "", reviewed = s.reviewed + 1, aiAccepted = null)
                     shownAt = System.nanoTime()
                 } else {
                     _state.value = _state.value.copy(reviewed = s.reviewed + 1)

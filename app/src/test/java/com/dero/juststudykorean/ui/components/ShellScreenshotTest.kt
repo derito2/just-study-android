@@ -17,7 +17,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.dero.juststudykorean.ai.NanoStatus
 import com.dero.juststudykorean.ui.navigation.TopLevel
+import com.dero.juststudykorean.ui.screens.OnDeviceAiRow
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -118,6 +120,23 @@ class ShellScreenshotTest {
             )
             LoadingState("Loading decks…", Modifier, delayMs = 0, progress = 0.4f)
             ErrorState("Something went wrong reading the database.", onRetry = {}, title = "Couldn't load your decks")
+        }
+    }
+
+    /** AiMark (design/shell.md, phase 6): the full mark and the short one. */
+    @Test
+    fun aiMark() = snap("aimark") {
+        Column(Modifier.padding(Tokens.Space4), verticalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
+            AiMark()
+            AiMark(short = true)
+        }
+    }
+
+    /** Settings → On-device AI in its 4 states (design/grammar-calendar-settings.md). */
+    @Test
+    fun onDeviceAi() = snap("settings_ai") {
+        Column {
+            for (status in listOf(NanoStatus.Available, NanoStatus.Downloadable, NanoStatus.Downloading(42), NanoStatus.Unavailable)) OnDeviceAiRow(status) {}
         }
     }
 }

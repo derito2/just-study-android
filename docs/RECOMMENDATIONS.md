@@ -22,11 +22,11 @@ Se actualiza en cada PR.
 | R-010 | descartada: el teléfono no vibra nunca (ver DECISIONS) | #24 |
 | R-011 | hecho | #20 |
 | R-012 | hecho | #20 |
-| R-013 | pendiente (fase 6) |  |
+| R-013 | hecho: `:core:ai`, `NanoGate` (ver DECISIONS 2026-11-12) | fase 6 (PR pendiente) |
 | R-014 | hecho en fase 5 (`NotesSearch`: raíces como prefijo + filtro por palabra; 454/454 doradas con FTS) | #24 |
 | R-015 | hecho: icono temático (#19); notificación, `onTimeout` y `setContentIntent` en fase 5 | #19 / #24 |
 | R-016 | hecho; el cambio debug → release lo hace el dueño (ver DECISIONS) | #23 |
-| R-017 | pendiente (fase 6) |  |
+| R-017 | hecho: *Fill in the blank* por reglas, siempre habilitado | fase 6 (PR pendiente) |
 | R-018 | hecho | #19 |
 
 ## 1. Resumen ejecutivo

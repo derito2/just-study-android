@@ -31,6 +31,9 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import com.dero.juststudykorean.ai.NanoState
+import com.dero.juststudykorean.data.ai.QuizAi
+import com.dero.juststudykorean.ai.NanoStatus
 import javax.inject.Inject
 import com.dero.juststudykorean.ui.components.runCatchingCancellable
 import kotlinx.coroutines.CancellationException
@@ -48,13 +51,16 @@ val QUIZ_TYPES = linkedMapOf(
 )
 
 /**
- * Types only the model can write. Until phase 6 there is no model on the phone: the form shows them as unavailable
- * and they never count (design/quiz.md A.1). The saved preference keeps them.
+ * Types only the model can write. Without Nano the form shows them as unavailable and they never count
+ * (design/quiz.md A.1); the saved preference keeps them. Fill in the blank is made by the rules (R-017, A.2).
  */
-val MODEL_TYPES = setOf("fill_blank", "short_answer")
+val MODEL_TYPES = setOf("short_answer")
 
-/** The types of [this] form a quiz can be built from today. */
-fun QuizForm.usableTypes(): List<String> = QUIZ_TYPES.keys.filter { it in types && it !in MODEL_TYPES }
+/** The types of [this] form a quiz can be built from now ([ai]: Gemini Nano is Available). */
+fun QuizForm.usableTypes(ai: Boolean = false): List<String> = QUIZ_TYPES.keys.filter { it in types && (ai || it !in MODEL_TYPES) }
+
+/** Difficulty only counts with a type the model writes (multiple choice or short answer) and Nano Available. */
+fun QuizForm.levelsCount(ai: Boolean) = ai && types.any { it == "multiple_choice" || it == "short_answer" }
 
 /** Types the model writes: only these change with the difficulty (the web's LEVEL_TYPES). */
 val LEVEL_TYPES = setOf("fill_blank", "multiple_choice", "short_answer")
@@ -86,7 +92,9 @@ sealed interface QuizEvent {
 
 /** Quiz home (design/quiz.md A): the form (kept in DataStore), your weaknesses and the history. */
 @HiltViewModel
-class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, private val prefs: UserPrefs, private val clock: AppClock) : ViewModel() {
+class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, private val prefs: UserPrefs, private val clock: AppClock, nano: NanoState? = null) : ViewModel() {
+    /** Gemini Nano is Available: Short answer and Difficulty can be used (design/quiz.md A.2). */
+    val ai: StateFlow<Boolean> = (nano?.status ?: MutableStateFlow(NanoStatus.Unavailable)).map { it == NanoStatus.Available }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val form: StateFlow<QuizForm?> = prefs.quizForm.stateIn(viewModelScope, SharingStarted.Eagerly, null)
     private val _documents = MutableStateFlow<List<DocumentsEntity>>(emptyList())
     val documents = _documents.asStateFlow()
@@ -124,8 +132,11 @@ class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, pr
     }
 }
 
-/** What you answered to a question, and its grade. */
-data class Answered(val given: String, val grade: Grade)
+/**
+ * What you answered to a question, and its grade. Wrong, with Nano Available: [explanation] is the model's (AiMark) or
+ * your grammar point as it is ([explaining] while the model writes; design/quiz.md A.2).
+ */
+data class Answered(val given: String, val grade: Grade, val explanation: String? = null, val aiExplanation: Boolean = false, val explaining: Boolean = false)
 
 data class QuestionUi(
     val loading: Boolean = true,
@@ -147,7 +158,7 @@ data class QuestionUi(
 
 /** A quiz (design/quiz.md B and C): created from the saved form when [open] gets no run; each answer is saved at once. */
 @HiltViewModel
-class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, private val prefs: UserPrefs) : ViewModel() {
+class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, private val prefs: UserPrefs, private val ai: QuizAi? = null) : ViewModel() {
     private val _state = MutableStateFlow(QuestionUi())
     val state = _state.asStateFlow()
     private var opened = false
@@ -186,10 +197,14 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
 
     private suspend fun generate(): QuizRun? {
         val f = prefs.quizForm.first()
-        val types = f.usableTypes()
+        val nano = ai?.ready() == true
+        val types = f.usableTypes(nano)
         if (types.isEmpty()) return null // only model types saved: the form does not let you get here
         val start = System.nanoTime()
-        val run = quiz.generate(QuizRequest(documentIds = f.documentIds.toList(), count = f.count, types = types))
+        val request = QuizRequest(documentIds = f.documentIds.toList(), count = f.count, types = types)
+        // The model writes some multiple choice / short answer questions (kept in memory only); the rules, the rest.
+        val written = if (nano) runCatchingCancellable { ai!!.questions(request, f.levels.sorted(), System.currentTimeMillis()) }.getOrDefault(emptyList()) else emptyList()
+        val run = quiz.generate(request, written)
         lastGenerationMs = (System.nanoTime() - start) / 1_000_000
         Log.i("JustStudy", "quiz generated: ${run?.questions?.size ?: 0} of ${f.count} questions in $lastGenerationMs ms") // counts only, never content
         return run
@@ -205,8 +220,14 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
         busy = true
         viewModelScope.launch {
             try {
-                val grade = quiz.answer(s.run!!.id, q.id, given.trim(), (System.nanoTime() - shownAt) / 1_000_000)
-                _state.value = _state.value.copy(answers = _state.value.answers + (q.id to Answered(given.trim(), grade)), error = null)
+                val elapsed = (System.nanoTime() - shownAt) / 1_000_000
+                val text = given.trim()
+                // Uses 1: only a typed English answer the rules rejected goes to the meaning judge; it can only approve.
+                val accepted = ai != null && answerMode(q.type) == "text" && !quiz.check(q, text) && ai.sameMeaning(q.prompt, q.correctAnswer, text)
+                val grade = quiz.answer(s.run!!.id, q.id, text, elapsed, accepted)
+                val explain = !grade.correct && ai?.ready() == true
+                _state.value = _state.value.copy(answers = _state.value.answers + (q.id to Answered(text, grade, explaining = explain)), error = null)
+                if (explain) explain(q, text, grade)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) { // never logs the answer
@@ -215,6 +236,13 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
                 busy = false
             }
         }
+    }
+
+    /** Use 2: the model explains the mistake; if it can't (or its answer is rejected), your grammar point as it is. */
+    private fun explain(q: QuestionsEntity, given: String, grade: Grade) = viewModelScope.launch {
+        val written = runCatchingCancellable { ai!!.explainMistake(q.prompt, q.correctAnswer, given, q.explanation) }.getOrNull()
+        val a = _state.value.answers[q.id] ?: return@launch
+        _state.value = _state.value.copy(answers = _state.value.answers + (q.id to a.copy(explanation = written ?: grade.explanation, aiExplanation = written != null, explaining = false)))
     }
 
     fun next() {

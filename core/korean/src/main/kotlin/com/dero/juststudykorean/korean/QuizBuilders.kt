@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.korean
 
+import com.dero.juststudykorean.korean.teacher.patternForms
+
 // Ports of backend/app/quiz/generator.py (widen_answer) and, below, quiz/builders.py and quiz/grammar.py.
 
 private val hangulWord = py("[가-힣]+")
@@ -352,4 +354,120 @@ private fun fromYourChoices(kind: String, point: GrammarPoint, chunk: Chunk, gro
     var explanation = "Your notes: ${point.pattern}."
     if (point.explanation != null) explanation += " ${point.explanation}"
     return Built.ok(Candidate(kind, prompt, answer, shuffled(answer, distractors, rng), explanation.pyTake(300), chunk, "$GRAMMAR_VERSION+anki", "rules"))
+}
+
+// ---- R-017: Fill in the blank by rules (the web asks the model; here, an example of your notes)
+/**
+ * A fill_blank from [example] (Korean, as written in [chunk]): the form of [point]'s pattern comes out of it, once and
+ * attached to a stem, and the options are the forms of other patterns of the same document ([others]). Goes through
+ * [buildBlank], so the sentence is literal in your notes and no Korean is invented. Built.no if the form isn't there.
+ */
+fun buildBlankFromExample(point: GrammarPoint, example: String, others: List<GrammarPoint>, chunk: Chunk, grounding: String, rng: PyRandom): Built {
+    val text = nfc(example).pyStrip()
+    val forms = patternForms(point.pattern).filter { HANGUL.containsMatchIn(it) && " " !in it }.sortedByDescending { it.length }
+    val form = forms.firstOrNull { f ->
+        val i = text.indexOf(f)
+        i > 0 && text.countOf(f) == 1 && text[i - 1] in '가'..'힣' // an ending: right after a stem
+    } ?: return Built.no("form_not_found")
+    val mine = forms.toSet()
+    val distractors = others.asSequence().filter { norm(it.pattern) != norm(point.pattern) }
+        .mapNotNull { o -> patternForms(o.pattern).firstOrNull { HANGUL.containsMatchIn(it) && " " !in it } }
+        .filter { it !in mine }.distinctBy(::norm).toList()
+    if (distractors.size < N_DISTRACTORS) return Built.no("too_few_distractors")
+    val sentence = text.replaceFirst(form, "___")
+    val picked = rng.sample(distractors, N_DISTRACTORS)
+    return buildBlank("fill_blank", GeneratedBlank(sentence, form, picked, point.meaning), chunk, grounding, rng)
+}
+
+// ---- quiz/generator.py: questions the model writes (multiple_choice, short_answer), checked like the web's
+/** A question proposed by the model (the web's GeneratedQuestion). */
+data class GeneratedQuestion(val type: String, val prompt: String, val answer: String, val distractors: List<String> = emptyList(), val explanation: String = "")
+
+private val aboutTheDocument = py("\\b(notes?|sections?|documents?|pdf|pages?|chapters?|headings?)\\b", ignoreCase = true)
+private val inlineOption = py("^\\s*\\(?[A-Da-d][.)]\\s+(.+?)\\s*$")
+private val openPrompt = py(
+    "^\\s*(?:which|what)\\s+sentence\\b|\\b(?:write|make|create|give)\\s+(?:a|an|one)\\s+(?:sentence|example)\\b|\\buse\\b.*\\bin\\s+a\\s+sentence\\b",
+    ignoreCase = true,
+)
+private val inKoreanEnd = py("\\s+in\\s+korean(?=\\s*[?.!]*\\s*$)", ignoreCase = true)
+private val leadNumber = py("^[\\s\\d.)•*-]*")
+const val MAX_SHORT_ANSWER_WORDS = 4
+const val MAX_SHORT_ANSWER_CHARS = 40
+
+/** "What does '말다' mean in Korean?" asks for the meaning: without "in Korean". */
+fun meaningPrompt(prompt: String): String = if (!HANGUL.containsMatchIn(prompt)) prompt else inKoreanEnd.replaceFirst(prompt, "")
+
+/** A Korean answer must be a word of your pairs or a whole Korean line of the chunk ("곁에 있어요" was invented). */
+fun groundedAnswer(answer: String, pool: List<VocabPair>, text: String): Boolean {
+    if (!HANGUL.containsMatchIn(answer)) return true
+    if (pool.any { norm(it.korean) == norm(answer) }) return true
+    val wanted = norm(answer).trimEnd('.', '?', '!')
+    return text.pySplitlines().any { line ->
+        val korean = leadNumber.replaceFirst(line.split("=", limit = 2)[0], "").pyStrip()
+        korean.isNotEmpty() && norm(korean).trimEnd('.', '?', '!') == wanted
+    }
+}
+
+/** The wrong options become other meanings (or words, or grammar meanings) of your notes, with the same shape. */
+private fun notesOptions(c: Candidate, pairs: List<VocabPair>, grammar: List<GrammarPoint>, rng: PyRandom): Candidate {
+    val answer = c.answer
+    val wrong = if (HANGUL.containsMatchIn(answer)) {
+        if (pairs.none { norm(it.korean) == norm(answer) }) return c
+        pickDistractors(answer, pairs.filter { norm(it.korean) != norm(answer) }.map { it.korean }, rng, true)
+    } else {
+        val senses = englishSenses(answer)
+        val mine = pairs.filter { (englishSenses(it.english) intersect senses).isNotEmpty() }
+        val points = grammar.filter { norm(it.meaning) == norm(answer) }
+        when {
+            mine.isNotEmpty() -> pickDistractors(answer, pairs.filter { (englishSenses(it.english) intersect senses).isEmpty() }.map { it.english }, rng, true)
+            points.isNotEmpty() -> pickDistractors(answer, alike(answer, grammar.filter { norm(it.meaning) != norm(answer) }.map { it.meaning }), rng)
+            else -> return c
+        }
+    }
+    return if (wrong.size >= N_DISTRACTORS) c.copy(options = shuffled(answer, wrong.take(N_DISTRACTORS), rng)) else c
+}
+
+/**
+ * A model question checked like the web (build_candidate and the checks of _free_step): the answer is in the chunk,
+ * not in the question, no invented Korean; a short answer is not an open question and its Korean is in your notes
+ * (widened like the rules'); a multiple choice takes its wrong options from your notes when it can.
+ */
+fun buildModelQuestion(gq: GeneratedQuestion, chunk: Chunk, allowed: Collection<String>, pairs: List<VocabPair>, grammar: List<GrammarPoint>, rng: PyRandom): Built {
+    var prompt = gq.prompt.pyStrip()
+    var answer = gq.answer.pyStrip()
+    val raw = gq.distractors.toMutableList()
+    if (gq.type == "multiple_choice") {
+        val (kept, inline) = prompt.pySplitlines().partition { inlineOption.pyMatch(it) == null }
+        prompt = kept.joinToString("\n").pyStrip()
+        raw += inline.mapNotNull { inlineOption.pyMatch(it)?.groupValues?.get(1) }.filter { norm(it) != norm(answer) }
+    }
+    if (gq.type !in allowed) return Built.no("type_not_requested")
+    if (aboutTheDocument.containsMatchIn(prompt)) return Built.no("about_the_document")
+    if (gq.type == "multiple_choice" && gq.explanation.isBlank()) return Built.no("no_explanation")
+    if (prompt.pyLen !in 5..300 || answer.pyLen !in 1..120) return Built.no("bad_length")
+    if (gq.type == "short_answer" && (answer.pySplit().size > MAX_SHORT_ANSWER_WORDS || answer.pyLen > MAX_SHORT_ANSWER_CHARS)) return Built.no("answer_too_long")
+    if (!isGrounded(answer, chunk.text)) return Built.no("answer_not_in_source")
+    if (leaksAnswer(prompt, answer)) return Built.no("answer_in_question")
+    var options: List<String>? = null
+    var distractors = emptyList<String>()
+    if (gq.type == "multiple_choice") {
+        val seen = mutableSetOf(norm(answer))
+        distractors = raw.map { it.pyStrip() }.filter { it.isNotEmpty() && it.pyLen <= 120 && seen.add(norm(it)) }
+        if (distractors.size < N_DISTRACTORS) return Built.no("too_few_distractors")
+        val (a, d) = sameCase(answer, distractors.take(N_DISTRACTORS))
+        answer = a; distractors = d
+        options = shuffled(answer, distractors, rng)
+    }
+    if (findUngroundedKorean((listOf(prompt, answer) + distractors).joinToString(" "), chunk.text, "").isNotEmpty()) return Built.no("invented_korean")
+    var c = Candidate(gq.type, prompt, answer, options, gq.explanation.pyStrip().pyTake(300), chunk)
+    if (gq.type == "short_answer") {
+        if (openPrompt.containsMatchIn(c.prompt)) return Built.no("open_question")
+        if (!groundedAnswer(c.answer, pairs, chunk.text)) return Built.no("answer_not_in_notes")
+        val asked = meaningPrompt(c.prompt)
+        val wide = widenAnswer(c.answer, pairs, asked, chunk.text) ?: return Built.no("answer_not_korean")
+        c = c.copy(prompt = asked, answer = wide)
+    } else {
+        c = notesOptions(c, pairs, grammar, rng)
+    }
+    return Built.ok(c)
 }

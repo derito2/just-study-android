@@ -93,7 +93,7 @@ fun StudyContent(
     onDirection: (CardDirection) -> Unit,
     onTypeAnswer: (Boolean) -> Unit,
     onType: (String) -> Unit,
-    onFlip: () -> Unit,
+    onFlip: (meaning: Pair<String, String>?) -> Unit,
     onRate: (Rating) -> Unit,
 ) {
     val colors = JustStudyTheme.colors
@@ -130,6 +130,7 @@ fun StudyContent(
                     val side = sideFor(direction, card)
                     val enToKo = side == CardDirection.EnToKo
                     val typing = typingFor(typeAnswer, card, ui.details)
+                    val meaning = if (typing && !enToKo) card.card.front to card.card.back else null // what the meaning judge may check
                     // The next card comes up 8 dp (240 ms).
                     val rise = remember(card.card.id) { Animatable(if (ui.reviewed > 0) 1f else 0f) }
                     val reduce = reduceMotion()
@@ -147,7 +148,7 @@ fun StudyContent(
                                     if (enToKo) card.card.back else card.card.front, korean = !enToKo, isNew = card.isNew,
                                     modifier = m,
                                     typingField = if (typing) ({
-                                        JsTextField(ui.typed, onType, placeholder = if (enToKo) "Type it in Korean" else "Type the meaning", center = true, onDone = onFlip)
+                                        JsTextField(ui.typed, onType, placeholder = if (enToKo) "Type it in Korean" else "Type the meaning", center = true, onDone = { onFlip(meaning) })
                                     }) else null,
                                 )
                             },
@@ -156,7 +157,7 @@ fun StudyContent(
                                     card.card.front, card.card.romanization,
                                     card.card.back, source, m,
                                     meaningFirst = typing && enToKo,
-                                    typed = if (typing) ({ TypedResult(ui.typed, compareAnswer(ui.typed, if (enToKo) card.card.front else card.card.back, korean = enToKo)) }) else null,
+                                    typed = if (typing) ({ TypedResult(ui.typed, compareAnswer(ui.typed, if (enToKo) card.card.front else card.card.back, korean = enToKo), aiAccepted = ui.aiAccepted == card.card.id) }) else null,
                                 )
                             },
                         )
@@ -176,7 +177,8 @@ fun StudyContent(
         if (!ui.loading && card2 != null) {
             Box(Modifier.fillMaxWidth().padding(Tokens.Space3)) {
                 if (!ui.flipped) {
-                    StickerButton("Show answer", onFlip, Modifier.fillMaxWidth(), ko = "정답 보기")
+                    val meaning = if (typingFor(typeAnswer, card2, ui.details) && sideFor(direction, card2) != CardDirection.EnToKo) card2.card.front to card2.card.back else null
+                    StickerButton("Show answer", { onFlip(meaning) }, Modifier.fillMaxWidth(), ko = "정답 보기")
                 } else {
                     RatingButtons(preview(card2, scheduling), onRate)
                 }

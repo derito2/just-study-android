@@ -84,9 +84,10 @@ class LibraryScreenshotTest {
         duplicates: DuplicatesShown? = null,
         deleteAtStart: LibraryDocument? = null,
         error: Boolean = false,
+        messy: Map<Long, com.dero.juststudykorean.data.ai.MessyNotesState> = emptyMap(),
     ) = LibraryContent(
         DocumentsState(docs, error), false, open, open?.let { mapOf(it to ExtractedState.Loaded(extracted)) }.orEmpty(), duplicates,
-        remember { SnackbarHostState() }, zone, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, deleteAtStart = deleteAtStart,
+        remember { SnackbarHostState() }, zone, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, deleteAtStart = deleteAtStart, messy = messy,
     )
 
     @Test fun libraryEmpty() = snap("library_empty") { Library(emptyList()) }
@@ -98,6 +99,17 @@ class LibraryScreenshotTest {
     @Test fun libraryFailed() = snap("library_failed") { Library(listOf(corrupt, failed)) }
 
     @Test fun detailsWords() = snap("library_details_words") { Library(listOf(warned, ready), open = warned.document.id) }
+
+    /** design/library.md E (use 6): messy notes waiting for the app, and the model's pairs with AiMark in Words detected. */
+    @Test fun messyNotes() = snap("library_messy_ai") {
+        Library(
+            listOf(warned, ready), open = warned.document.id,
+            messy = mapOf(
+                warned.document.id to com.dero.juststudykorean.data.ai.MessyNotesState(done = true, pairs = listOf(com.dero.juststudykorean.korean.VocabPair("사과", "apple", source = "llm"))),
+                ready.document.id to com.dero.juststudykorean.data.ai.MessyNotesState(waiting = true),
+            ),
+        )
+    }
 
     @Test fun duplicateWord() = snap("library_duplicate_word") {
         val info = { file: String -> DuplicateInfo("To pay (the bill)", "오늘은 제가 계산할게요.", "I'll pay today", file, 1) }

@@ -91,6 +91,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.room3.runtime) // phase 6, task 7: the 8 uses on a copy of the database
+    androidTestImplementation(libs.androidx.sqlite.bundled)
 }
 
 roborazzi {

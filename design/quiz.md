@@ -55,6 +55,16 @@ Sin modelo en el teléfono, *Fill in the blank*, *Short answer* y el bloque *Dif
 - **Nada más cambia:** ni el orden de las 8 casillas, ni la rejilla de 2 columnas, ni los colores.
 - **En la fase 6:** con Nano `AVAILABLE`, todo vuelve a la sección A. Con Nano no disponible, sigue como aquí.
 
+### A.2 · En la fase 6
+
+- ***Fill in the blank*:** queda habilitado siempre, con o sin modelo, porque lo hacen las reglas (R-017). Vuelve su pista *Pick what goes in the gap*.
+- **Con Nano `Available`:**
+  - *Short answer* y *Difficulty* vuelven a la sección A;
+  - *Difficulty* solo cuenta si hay marcado *Multiple choice* o *Short answer*; si no, queda al 50 % como en la sección A.
+- **Con Nano no disponible:** *Short answer* y *Difficulty* siguen como en A.1.
+- **Juez de significado:** debajo del resultado de una respuesta escrita aceptada por el modelo, *accepted: same meaning* (12 sp, `correct`) con AiMark corto.
+- **Explicación del error:** debajo de la respuesta correcta, en un recuadro `canvas` con AiMark. Sin modelo, la explicación del punto de gramática tal cual, si existe, sin AiMark.
+
 ## B · Generando
 
 Tras **Generate quiz**, la pantalla de la pregunta muestra el estado de carga de `shell.md` con *Creating your quiz…* (las preguntas por reglas tardan menos de 300 ms, así que casi nunca se ve). Si no se pudo crear ninguna: el recuadro de error con *No questions could be created this time.* y *Try other question types, another document, or try again.*, más **Back** (Gray).

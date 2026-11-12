@@ -39,7 +39,8 @@ room3 {
 
 dependencies {
     api(project(":core:korean")) // the app shows Rating, Comparison… from the repositories
-    api(project(":core:pdf")) // the pipeline parses PDFs with MuPDF (its types are in DocumentIndexer)
+    api(project(":core:pdf"))
+    api(project(":core:ai")) // Gemini Nano behind NanoGate (phase 6) // the pipeline parses PDFs with MuPDF (its types are in DocumentIndexer)
     implementation(libs.room3.runtime)
     implementation(libs.androidx.sqlite.bundled)
     ksp(libs.room3.compiler)

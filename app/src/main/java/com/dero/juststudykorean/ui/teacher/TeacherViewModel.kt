@@ -2,6 +2,7 @@ package com.dero.juststudykorean.ui.teacher
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dero.juststudykorean.data.ai.CoachAi
 import com.dero.juststudykorean.data.coach.CoachEngine
 import com.dero.juststudykorean.data.flashcards.FlashcardException
 import com.dero.juststudykorean.data.flashcards.FlashcardRepository
@@ -94,6 +95,7 @@ class TeacherViewModel @Inject constructor(
     private val coach: CoachEngine,
     private val quiz: QuizRepository,
     private val flashcards: FlashcardRepository,
+    private val coachAi: CoachAi? = null,
 ) : ViewModel() {
     private val _state = MutableStateFlow(TeacherUi())
     val state = _state.asStateFlow()
@@ -119,7 +121,7 @@ class TeacherViewModel @Inject constructor(
         ticker = viewModelScope.launch { while (true) { delay(1000); _state.update { it.copy(thinkingSeconds = it.thinkingSeconds + 1) } } }
         viewModelScope.launch {
             val result = runCatchingCancellable {
-                if (mode == TeacherMode.Coach) coach.ask(question, history).let { a -> { e: Exchange -> e.copy(coach = a) } }
+                if (mode == TeacherMode.Coach) coach.ask(question, history).let { coachAi?.write(it) ?: it }.let { a -> { e: Exchange -> e.copy(coach = a) } }
                 else teacher.ask(question).let { a -> { e: Exchange -> e.copy(notes = a) } }
             } // never logs the question or the answer
             change(id) { e -> result.getOrNull()?.invoke(e) ?: e.copy(failed = true) }

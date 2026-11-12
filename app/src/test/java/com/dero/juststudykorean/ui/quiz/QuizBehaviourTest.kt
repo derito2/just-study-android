@@ -88,8 +88,11 @@ class QuizBehaviourTest {
 
     @Test
     fun modelTypesNeverCount() {
-        assertFalse("only model types: Generate quiz is off", QuizForm(types = setOf("fill_blank", "short_answer")).usableTypes().isNotEmpty())
-        val vm = started(QuizForm(count = 5, types = setOf("ko_to_en", "fill_blank", "short_answer")))
+        // design/quiz.md A.2: without Nano only Short answer is the model's; Fill in the blank is made by the rules (R-017).
+        assertFalse("only model types: Generate quiz is off", QuizForm(types = setOf("short_answer")).usableTypes().isNotEmpty())
+        assertEquals(listOf("fill_blank"), QuizForm(types = setOf("fill_blank", "short_answer")).usableTypes())
+        assertEquals(listOf("fill_blank", "short_answer"), QuizForm(types = setOf("fill_blank", "short_answer")).usableTypes(ai = true))
+        val vm = started(QuizForm(count = 5, types = setOf("ko_to_en", "short_answer")))
         val run = vm.state.value.run!!
         assertEquals(5, run.questions.size)
         assertTrue(run.questions.all { it.type == "ko_to_en" })
