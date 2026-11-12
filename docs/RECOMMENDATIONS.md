@@ -19,7 +19,7 @@ Se actualiza en cada PR.
 | R-007 | hecho | #21 |
 | R-008 | hecho | #21 |
 | R-009 | hecho | #20 |
-| R-010 | hecho en fase-5/teacher |  |
+| R-010 | descartada: el teléfono no vibra nunca (ver DECISIONS) | #24 |
 | R-011 | hecho | #20 |
 | R-012 | hecho | #20 |
 | R-013 | pendiente (fase 6) |  |
@@ -311,7 +311,7 @@ Cada lote es un PR independiente, con CI en verde.
 1. **R-007:** hasta la fase 6, ¿los tipos *Fill in the blank* y *Short answer* y el bloque *Difficulty* se muestran deshabilitados con una nota, o se ocultan?
    - **Respuesta del dueño (2026-11-11):** deshabilitados, con la nota **Needs on-device AI** (`design/quiz.md`, A.1).
 2. **R-010:** ¿quieres vibración al calificar y al acertar o fallar? Si sí, diseño fija en qué acciones.
-   - **Respuesta del dueño (2026-11-11):** vibración sí, solo en las acciones de `design/shell.md` (Respuesta háptica).
+   - **Respuesta del dueño (2026-11-11):** no, sin vibración (`design/shell.md`, *Sin vibración*). Antes había dicho que sí; se cambió tras probarlo en el OPPO.
 3. **R-013:** ¿la caché de explicaciones del modelo puede guardarse en disco (una tabla fuera del respaldo, borrable desde Settings) o solo en memoria? El plan dice que lo que crea el modelo "nunca se guarda como si fuera tuyo".
    - **Respuesta del dueño (2026-11-11):** solo en memoria, nunca en disco.
 4. **R-014:** si la búsqueda por prefijo no basta en tus notas reales, ¿se acepta una migración a otro tokenizador (reindexar todo) en la fase 5?

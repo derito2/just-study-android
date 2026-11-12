@@ -2,6 +2,10 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — R-010 descartada: sin vibración
+**Decisión (del dueño):** el teléfono no vibra nunca (`design/shell.md`, *Sin vibración*). Se quitan las cuatro llamadas a `performHapticFeedback` (`RatingButtons`, `QuizOption`, `TypedResult`, `StudyScreen`): se revierte el commit de R-010. El *wiggle* de editar mazos es solo animación y no cambia.
+**Por qué:** en el OPPO la vibración táctil del sistema está apagada y el dueño no quiere vibración en la app.
+
 ## 2026-11-12 — Fase 5: Teacher y Coach sin modelo
 **Respondedores (tarea 1):** `:core:korean/teacher` porta `rag/tutor.py` (las respuestas sin modelo), `rag/entries.py` y `conjugation.lemmas` como una lista ordenada de `Responder`, en el orden de `Tutor.ask_stream`: punto con ese nombre exacto (partículas), comparar, entrada de la palabra (o su verbo, o los ejemplos donde sale), forma conjugada, gramática (o tus frases que la usan), frase en inglés, revisar frase, palabra solo en ejemplos, palabra coreana sin entrada, nada cercano (`no_context`) y, al final, lo que respondería el modelo (fase 6): hasta entonces sale el mensaje de la web (`not_found`, marcado `NEEDS_MODEL`). Se agrupan en cuatro archivos (`Search`, `Entries`, `NotesIndex`, `Teacher`) en vez de uno por respondedor: comparten estado de la pregunta (`Turn`, perezoso).
 **Búsqueda (R-014):** `NotesSearch` sobre `notes_fts` sustituye a Chroma: las raíces de la pregunta como prefijos (`"학교*" OR "공부해*"`; en FTS4 el `*` va dentro de las comillas) y un fragmento solo cuenta para una raíz coreana si una de sus palabras, sin terminación ni partícula, es esa raíz (`학` no encuentra `학생`). Sin búsqueda por significado en el teléfono: se ordena por raíces distintas y luego por `rowid`. Con las doradas el prefijo basta (no hizo falta cambiar de tokenizador); con tus notas también: el selfcheck en el OPPO (tarea 4, `SelfCheckTest` sobre una copia de tu base en el paquete de pruebas) hizo 248 preguntas sobre 141 fragmentos, 0 fallos (ni coreano inventado ni citas inválidas). Teacher p50 45 ms y p90 109 ms (la primera, en frío, 1,3 s); Coach p50 75 ms y p90 111 ms; índice en 438 ms. Tu base, con el mismo sha256 antes y después. **En frío** (app cerrada con `force-stop`, abierta y primera pregunta de Teacher, 3 veces): la app abre en 301–310 ms y la primera respuesta de una palabra tarda 14–18 ms (`teacher_answer` en logcat: solo tiempos y ruta, nunca texto). El índice de gramática y frases se construye solo cuando una pregunta lo necesita (438 ms en el selfcheck), así que la primera pregunta de gramática tras abrir en frío puede tardar ~0,5 s.
@@ -57,7 +61,7 @@ Revisado en solo lectura con el lector de referencia (el del web, igual al de Ko
 ## 2026-11-11 — Respuestas a las preguntas de la auditoría (`docs/RECOMMENDATIONS.md`, sección 7)
 **Decisión (del dueño):**
 1. **R-007:** hasta la fase 6, *Fill in the blank*, *Short answer* y *Difficulty* se ven deshabilitados con la nota **Needs on-device AI** (`design/quiz.md`, A.1).
-2. **R-010:** vibración sí, solo en las acciones de `design/shell.md` (Respuesta háptica).
+2. **R-010:** vibración sí, solo en las acciones de `design/shell.md` (Respuesta háptica). *Cambiado el mismo día: sin vibración (entrada "R-010 descartada").*
 3. **R-013:** la caché del modelo va solo en memoria, nunca en disco.
 4. **R-014:** se cambia de tokenizador (y se reindexa) solo si la búsqueda por prefijo falla con las notas reales; antes de cambiarlo se para y se avisa.
 5. **R-016:** la clave de release se crea ya, fuera del repo. El cambio debug → release lo hace el dueño después, con respaldo antes; Claude Code no desinstala nada.

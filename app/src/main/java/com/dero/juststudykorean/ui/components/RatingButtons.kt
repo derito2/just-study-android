@@ -1,7 +1,5 @@
 package com.dero.juststudykorean.ui.components
 
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,17 +19,13 @@ private val looks = listOf(
 /** Again · Hard · Good · Easy in a 2 × 2 grid (8 × 12 dp apart), each with the interval it would give ([next]). */
 @Composable
 fun RatingButtons(next: Map<Rating, String>, onRate: (Rating) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
-    val haptic = LocalHapticFeedback.current // R-010: Again = Reject, the others = Confirm
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
         looks.chunked(2).forEach { row ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
                 row.forEach { (rating, ko, color) ->
                     val interval = next[rating].orEmpty()
                     StickerButton(
-                        rating.name, {
-                            haptic.performHapticFeedback(if (rating == Rating.Again) HapticFeedbackType.Reject else HapticFeedbackType.Confirm)
-                            onRate(rating)
-                        },
+                        rating.name, { onRate(rating) },
                         Modifier.weight(1f).semantics { contentDescription = "${rating.name}, next review in $interval" },
                         ko = ko, color = color, enabled = enabled, detail = interval,
                     )

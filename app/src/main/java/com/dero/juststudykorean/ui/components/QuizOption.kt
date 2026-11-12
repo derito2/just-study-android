@@ -1,10 +1,5 @@
 package com.dero.juststudykorean.ui.components
 
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -43,16 +38,6 @@ fun QuizOption(number: Int, text: String, state: OptionState, onClick: () -> Uni
     val reduce = reduceMotion()
     val scale = remember { Animatable(1f) }
     val shake = remember { Animatable(0f) }
-    // R-010: the option you picked answers with a tap: Confirm if right, Reject if wrong (also with reduced motion).
-    val haptic = LocalHapticFeedback.current
-    var picked by remember { mutableStateOf(false) }
-    LaunchedEffect(state) {
-        when {
-            state == OptionState.Open -> picked = false
-            state == OptionState.Chosen -> haptic.performHapticFeedback(HapticFeedbackType.Reject)
-            state == OptionState.Correct && picked -> haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-        }
-    }
     LaunchedEffect(state) {
         if (reduce) return@LaunchedEffect
         if (state == OptionState.Correct) { scale.animateTo(1.04f, tween(120, easing = Motion.Spring)); scale.animateTo(1f, tween(120, easing = Motion.Spring)) }
@@ -69,7 +54,7 @@ fun QuizOption(number: Int, text: String, state: OptionState, onClick: () -> Uni
             .graphicsLayer { scaleX = scale.value; scaleY = scale.value; translationX = shake.value * density }
             .heightIn(min = 48.dp)
             .background(bg, MaterialTheme.shapes.medium)
-            .clickable(enabled = state == OptionState.Open, role = Role.Button) { picked = true; onClick() }
+            .clickable(enabled = state == OptionState.Open, role = Role.Button, onClick = onClick)
             .padding(horizontal = Tokens.Space4, vertical = Tokens.Space3),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Tokens.Space3),
