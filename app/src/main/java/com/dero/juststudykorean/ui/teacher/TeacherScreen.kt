@@ -6,6 +6,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -320,12 +323,14 @@ private fun HowIDecided(steps: List<Step>, openAll: Boolean) {
 @Composable
 private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, onSend: () -> Unit, busy: Boolean, keyboard: Boolean) {
     val colors = JustStudyTheme.colors
+    val field = remember { FocusRequester() }
+    val ime = LocalSoftwareKeyboardController.current
     Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
-        Back(!keyboard || input.text.isEmpty()) {
+        Back(!keyboard) {
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = Tokens.Space4, vertical = Tokens.Space2), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
             TEMPLATES.forEach { (label, ko, text) ->
                 Column(
-                    Modifier.heightIn(min = 48.dp).background(colors.pill, RoundedCornerShape(Tokens.RadiusFull)).clickable { onInput(template(text)) }
+                    Modifier.heightIn(min = 48.dp).background(colors.pill, RoundedCornerShape(Tokens.RadiusFull)).clickable { onInput(template(text)); field.requestFocus(); ime?.show() }
                         .padding(horizontal = 14.dp, vertical = 6.dp),
                 ) {
                     Text(label, style = JustStudyTheme.korean.chip, color = MaterialTheme.colorScheme.onSurface)
@@ -337,7 +342,7 @@ private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, o
         Box(Modifier.fillMaxWidth().height(Tokens.Border).background(colors.line))
         Row(Modifier.fillMaxWidth().padding(Tokens.Space4), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
             BasicTextField(
-                input, onInput, Modifier.weight(1f).background(colors.surface, MaterialTheme.shapes.medium).border(Tokens.Border, colors.line, MaterialTheme.shapes.medium)
+                input, onInput, Modifier.weight(1f).focusRequester(field).background(colors.surface, MaterialTheme.shapes.medium).border(Tokens.Border, colors.line, MaterialTheme.shapes.medium)
                     .padding(12.dp),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface), minLines = 1, maxLines = 4,
                 cursorBrush = SolidColor(colors.brand),

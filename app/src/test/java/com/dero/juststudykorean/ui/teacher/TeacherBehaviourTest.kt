@@ -19,6 +19,8 @@ import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -149,7 +151,7 @@ class TeacherBehaviourTest {
     /**
      * design/teacher.md 6, with the keyboard open on the OPPO (measured: 2376 x 1080 px at 420 dpi = 905 x 411 dp; Gboard
      * 873 px = 333 dp; status bar 120 px = 46 dp): what is left for the screen is 526 dp, and the conversation gets 300 dp
-     * or more, with the field empty (templates shown) and while typing (templates hidden).
+     * or more, with the field empty and while typing (templates hidden in both).
      */
     @Test
     @Config(qualifiers = "w411dp-h905dp-420dpi")
@@ -168,10 +170,20 @@ class TeacherBehaviourTest {
         compose.onNodeWithTag("conversation").assertHeightIsAtLeast(300.dp)
         compose.onNodeWithText("Ask my notes").assertDoesNotExist()
         compose.onNodeWithText("Answers come from all your documents.").assertDoesNotExist()
-        compose.onNodeWithText("What does … mean?").assertExists()
+        compose.onNodeWithText("What does … mean?").assertDoesNotExist()
         text = "What does"
         compose.waitForIdle()
         compose.onNodeWithText("What does … mean?").assertDoesNotExist()
         compose.onNodeWithTag("conversation").assertHeightIsAtLeast(300.dp)
+    }
+
+    /** design/teacher.md 6: a template is chosen before the keyboard opens; tapping one puts its text in the field and focuses it. */
+    @Test
+    fun templateFocusesTheField() {
+        var value by mutableStateOf(TextFieldValue())
+        compose.setContent { JustStudyTheme(darkTheme = false) { TeacherContent(TeacherUi(), value, { value = it }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}) } }
+        compose.onNodeWithText("What does … mean?").performClick()
+        compose.onNode(hasSetTextAction()).assertIsFocused()
+        assertTrue(value.text, value.text.startsWith("What does"))
     }
 }

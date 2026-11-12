@@ -2,10 +2,13 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — Datos de prueba en la app del OPPO: se quedan
+**Decisión (del dueño):** el quiz respondido (un fallo), el mazo *Your mistakes* (Made by Teacher) y el historial de pruebas de la fase 5 se quedan en la app. Se reinician solo cuando el dueño lo diga, al final. Desde ahora, en el OPPO no se responden quizzes, no se califican tarjetas ni se crean mazos; si una prueba escribe datos, usa una copia de la base y la restaura.
+
 ## 2026-11-11 — Teacher con el teclado abierto (`design/teacher.md`, punto 6) y gramática en coreano en el OPPO
 **Causa de los 26 px:** `imePadding` de la pantalla sumaba la barra inferior (que queda bajo el teclado) a la altura del teclado. `AppScaffold` ahora hace `consumeWindowInsets(padding)`: el composer queda justo encima del teclado en todas las pantallas.
-**Punto 6:** con el teclado abierto, JsTopBar plegado (64 dp, sin subtítulos), sin selector de modo, *Clear answers* ni la línea de documentos; las plantillas solo con el campo vacío; vuelven con un fundido de 150 ms; la conversación baja al último mensaje. Prueba de Compose con el tamaño del OPPO menos Gboard (411 × 526 dp): ≥ 300 dp.
-**En el OPPO (Gboard, 333 dp; pantalla 905 dp a 420 dpi):** conversación de **294 dp con el campo vacío** (plantillas visibles) y **363 dp al escribir**. Con el campo vacío faltan 6 dp para la meta: en el teléfono el chip de plantilla mide 53 dp (en Robolectric, menos), así que la prueba pasa y el teléfono no. Queda para diseño.
+**Punto 6:** con el teclado abierto, JsTopBar plegado (64 dp, sin subtítulos), sin selector de modo, *Clear answers*, la línea de documentos ni las plantillas (se eligen antes de abrirlo: al tocar una, el campo toma el texto y se abre el teclado); vuelven con un fundido de 150 ms; la conversación baja al último mensaje. Prueba de Compose con el tamaño del OPPO menos Gboard (411 × 526 dp): ≥ 300 dp.
+**En el OPPO (Gboard, 333 dp; pantalla 905 dp a 420 dpi):** conversación de **394 dp con el campo vacío** y **399 dp con texto** (559 dp con el teclado cerrado). Antes, con las plantillas visibles con el campo vacío, eran 294 dp: por eso diseño las oculta también.
 **Gramática en coreano:** `TeacherGrammarTest` (instrumentada, `performTextInput`, sin teclado ni ajustes) toma la primera regla de tus notas y la pregunta: responde por `grammar.v1` con fuente (78 ms, primera pregunta con el índice). Tu base, 18/18 tablas iguales (filas y sha256 de la exportación) antes y después.
 
 ## 2026-11-11 — R-010 descartada: sin vibración
