@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.library
 
+import com.dero.juststudykorean.ui.components.AiMark
+import com.dero.juststudykorean.korean.VocabPair
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,7 +28,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 
 /** What the app extracted (design/library.md B): Words, Grammar and Fragments, as the quiz, cards and teacher use them. */
 @Composable
-internal fun ExtractedView(state: ExtractedState?, modifier: Modifier = Modifier) {
+internal fun ExtractedView(state: ExtractedState?, modifier: Modifier = Modifier, aiPairs: List<VocabPair> = emptyList()) {
     val c = JustStudyTheme.colors
     val small = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
     Column(modifier.fillMaxWidth().padding(top = Tokens.Space2), verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
@@ -38,16 +40,25 @@ internal fun ExtractedView(state: ExtractedState?, modifier: Modifier = Modifier
         e!!
         var tab by rememberSaveable { mutableIntStateOf(0) }
         // The three tabs share the width on one line each: the name, its count below; the sentence under them says what they are.
-        SelectedGroup(listOf("Words", "Grammar", "Fragments"), tab, { tab = it }, ko = listOf(e.words.size, e.grammar.size, e.fragments.size).map(Int::toString))
+        val mine = e.words.map { it.korean }.toSet()
+        val ai = aiPairs.filter { it.korean !in mine } // use 6: the model's pairs of your messy notes (never cards on their own)
+        SelectedGroup(listOf("Words", "Grammar", "Fragments"), tab, { tab = it }, ko = listOf(e.words.size + ai.size, e.grammar.size, e.fragments.size).map(Int::toString))
         val ink = MaterialTheme.colorScheme.onSurface
         when (tab) {
             0 -> {
-                Text("Words detected (${e.words.size}), as the quiz and flashcards use them", style = small, color = c.muted)
+                Text("Words detected (${e.words.size + ai.size}), as the quiz and flashcards use them", style = small, color = c.muted)
                 e.words.forEach { w ->
                     Row(verticalAlignment = Alignment.Top) {
                         Text(w.korean, Modifier.weight(1f), style = JustStudyTheme.korean.koBody.copy(fontWeight = FontWeight.Bold), color = ink)
                         Spacer(Modifier.width(Tokens.Space2))
                         Text(w.english, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = c.muted, textAlign = TextAlign.End)
+                    }
+                }
+                ai.forEach { p ->
+                    Row(verticalAlignment = Alignment.Top) {
+                        Text(p.korean, Modifier.weight(1f), style = JustStudyTheme.korean.koBody.copy(fontWeight = FontWeight.Bold), color = ink)
+                        AiMark(Modifier.padding(horizontal = Tokens.Space2), short = true)
+                        Text(p.english, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = c.muted, textAlign = TextAlign.End)
                     }
                 }
             }

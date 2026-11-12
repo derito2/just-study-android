@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.library
 
+import com.dero.juststudykorean.data.ai.MessyNotesState
+import com.dero.juststudykorean.data.ai.MessyNotes
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -57,7 +59,14 @@ class LibraryViewModel @Inject constructor(
     private val repo: DocumentRepository,
     private val queue: ProcessingQueue,
     private val files: DocumentFiles,
+    private val messyNotes: MessyNotes? = null,
 ) : ViewModel() {
+    /** Use 6: the model's pairs of each document's messy notes, and whether they wait for the app (design/library.md E). */
+    val messy: StateFlow<Map<Long, MessyNotesState>> = messyNotes?.state ?: MutableStateFlow(emptyMap())
+
+    /** On every return to the Library (the app in front): goes on with the messy notes not read yet. */
+    fun readMessyNotes() { messyNotes?.let { m -> viewModelScope.launch { runCatchingCancellable { m.readReady() } } } }
+
     private val retry = MutableStateFlow(0)
     /** Documents uploaded or reprocessed here: when one is ready, its repeats are shown (DuplicateDialog). */
     private val watching = MutableStateFlow(emptySet<Long>())

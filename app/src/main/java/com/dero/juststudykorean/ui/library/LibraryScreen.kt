@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.library
 
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.dero.juststudykorean.data.ai.MessyNotesState
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -64,6 +66,8 @@ fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, vm: LibraryVi
     val docs by vm.documents.collectAsStateWithLifecycle()
     val uploading by vm.uploading.collectAsStateWithLifecycle()
     val open by vm.open.collectAsStateWithLifecycle()
+    val messy by vm.messy.collectAsStateWithLifecycle()
+    LifecycleResumeEffect(vm) { vm.readMessyNotes(); onPauseOrDispose {} }
     val extracted by vm.extracted.collectAsStateWithLifecycle()
     val duplicates by vm.duplicates.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
@@ -91,7 +95,7 @@ fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, vm: LibraryVi
         },
         onReprocess = vm::reprocess, onDetails = vm::toggle, onDelete = vm::delete,
         onSave = { d -> saving = d.document.storedName; save.launch(d.document.originalName) },
-        onRetry = vm::retry, onSkip = vm::skipDuplicate, onSkipAll = vm::skipAllDuplicates,
+        onRetry = vm::retry, onSkip = vm::skipDuplicate, onSkipAll = vm::skipAllDuplicates, messy = messy,
     )
 }
 
@@ -117,6 +121,7 @@ fun LibraryContent(
     onSkip: () -> Unit,
     onSkipAll: () -> Unit,
     deleteAtStart: LibraryDocument? = null,
+    messy: Map<Long, MessyNotesState> = emptyMap(), // use 6 (phase 6)
 ) {
     val c = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -144,7 +149,7 @@ fun LibraryContent(
                         DocumentCard(
                             d, open == d.document.id, extracted[d.document.id], zone,
                             onReprocess = { onReprocess(d.document.id) }, onDetails = { onDetails(d.document.id) },
-                            onDelete = { deleting = d }, onSave = { onSave(d) },
+                            onDelete = { deleting = d }, onSave = { onSave(d) }, messy = messy[d.document.id],
                         )
                     }
                 }

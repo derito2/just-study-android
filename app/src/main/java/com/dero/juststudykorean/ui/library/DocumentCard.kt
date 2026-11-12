@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.library
 
+import com.dero.juststudykorean.data.ai.MessyNotesState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -73,6 +74,7 @@ internal fun DocumentCard(
     onDelete: () -> Unit,
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
+    messy: MessyNotesState? = null,
 ) {
     val c = JustStudyTheme.colors
     val doc = item.document
@@ -103,10 +105,14 @@ internal fun DocumentCard(
                 Text(STAGES[step].second, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
             }
             DocState.Queued -> Unit
-            DocState.Ready -> Text(
-                listOf(plural(doc.pageCount.toInt(), "page"), plural(doc.tableCount.toInt(), "table"), plural(doc.charCount.toInt(), "character")).joinToString(" · "),
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted,
-            )
+            DocState.Ready -> {
+                Text(
+                    listOf(plural(doc.pageCount.toInt(), "page"), plural(doc.tableCount.toInt(), "table"), plural(doc.charCount.toInt(), "character")).joinToString(" · "),
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted,
+                )
+                // design/library.md E: the messy notes wait for the app.
+                if (messy?.waiting == true) Text("Waiting for you to open the app to read messy notes.", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
+            }
             DocState.Failed, DocState.NotSupported -> doc.errorMessage?.let {
                 Text(it, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp), color = c.wrong)
             }
@@ -125,7 +131,7 @@ internal fun DocumentCard(
                 LucideIcon(Lucide.Download, contentDescription = "Save PDF", size = 20.dp, tint = c.control, animateKey = taps)
             }
         }
-        if (open) ExtractedView(extracted)
+        if (open) ExtractedView(extracted, aiPairs = messy?.pairs.orEmpty())
     }
 }
 
