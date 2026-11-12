@@ -10,8 +10,8 @@ Se actualiza en cada PR.
 
 | ID | Estado | PR |
 |---|---|---|
-| R-001 | en PR #22 (con el índice de R-002; ver DECISIONS) | #22 |
-| R-002 | `question_attempts(question_id)` (v3) en #22; el resto (v4) en la rama fase-5/teacher | #22 |
+| R-001 | hecho (con el índice de R-002; ver DECISIONS) | #22 |
+| R-002 | hecho: v3 en #22, el resto (v4) en fase-5/teacher | #22 |
 | R-003 | hecho | #20 |
 | R-004 | hecho | #20 |
 | R-005 | hecho (wiggle: solo se recompone una envoltura, ver DECISIONS) | #20 |
@@ -19,12 +19,12 @@ Se actualiza en cada PR.
 | R-007 | hecho | #21 |
 | R-008 | hecho | #21 |
 | R-009 | hecho | #20 |
-| R-010 | pendiente |  |
+| R-010 | hecho en fase-5/teacher |  |
 | R-011 | hecho | #20 |
 | R-012 | hecho | #20 |
 | R-013 | pendiente (fase 6) |  |
 | R-014 | hecho en fase-5/teacher (`NotesSearch`: raíces como prefijo + filtro por palabra; 454/454 doradas con FTS) |  |
-| R-015 | icono temático hecho (#19); notificación y `onTimeout` pendientes (fase 5) | #19 |
+| R-015 | hecho: icono temático (#19); notificación, `onTimeout` y `setContentIntent` en fase-5/teacher | #19 |
 | R-016 | pendiente |  |
 | R-017 | pendiente (fase 6) |  |
 | R-018 | hecho | #19 |
@@ -80,7 +80,7 @@ Riesgos mayores: degradación gradual con meses de uso (1); release sin firma co
 | R-012 | Rendimiento | All vocabulary: no recalcular por tecla | medio | S | bajo | ya |
 | R-013 | IA (fase 6) | Puerta única de Nano: cola, validar antes de mostrar, caché | alto | M | medio | 6 |
 | R-014 | IA / recuperación | Búsqueda FTS con raíces coreanas y prefijo | alto | S | medio | 5 (tarea 1) |
-| R-015 | Servicio | `ProcessingService`: `onTimeout`, abrir la app al tocar, icono propio | bajo | S | bajo | 5 |
+| R-015 | hecho: icono temático (#19); notificación, `onTimeout` y `setContentIntent` en fase-5/teacher | #19 |
 | R-016 | Build / datos | Firma de release reproducible (adelantar de la fase 7) | medio | S | medio | ya |
 | R-017 | Quiz sin modelo | Fill in the blank por reglas | medio | M | medio | 6 (decisión) |
 | R-018 | Arranque | Pantalla de carga: poder saltarla y medirla | bajo | S | bajo | ya |
