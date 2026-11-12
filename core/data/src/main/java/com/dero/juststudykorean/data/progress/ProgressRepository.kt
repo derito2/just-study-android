@@ -358,7 +358,7 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
     /** The automatic session: goes on with the last one of the same [mode] if you were active recently. */
     internal suspend fun attachSession(now: Long, responseMs: Long, topicId: Long?, mode: String): StudySessionsEntity {
         val dao = db.studySessionsDao()
-        val last = dao.all().filter { it.mode == mode }.sortedWith(compareByDescending<StudySessionsEntity> { it.startedAt }.thenByDescending { it.id }).firstOrNull()
+        val last = db.hotDao().lastSession(mode)
         fun lastActivity(s: StudySessionsEntity) = s.startedAt + s.durationSeconds * 1000
         var session = if (last != null && last.endedAt == null && now - lastActivity(last) <= SESSION_IDLE.toMillis()) last else {
             if (last != null && last.endedAt == null) dao.update(last.copy(endedAt = lastActivity(last))) // closed for inactivity
@@ -368,7 +368,7 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
         }
         session = session.copy(durationSeconds = maxOf(session.durationSeconds, Math.floorDiv(now - session.startedAt, 1000L)))
         dao.update(session)
-        if (topicId != null && db.studySessionTopicsDao().all().none { it.sessionId == session.id && it.topicId == topicId }) {
+        if (topicId != null && !db.hotDao().sessionHasTopic(session.id, topicId)) {
             db.studySessionTopicsDao().insert(StudySessionTopicsEntity(session.id, topicId))
         }
         return session
@@ -376,15 +376,12 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
 
     /** user_topic_progress is a cache: recomputed after every answer. */
     internal suspend fun recomputeTopic(topicId: Long) {
-        val questions = db.questionsDao().all().filter { it.topicId == topicId }.map { it.id }.toSet()
-        val rows = db.questionAttemptsDao().all().filter { it.questionId in questions }
-            .sortedWith(compareByDescending<com.dero.juststudykorean.data.db.QuestionAttemptsEntity> { it.createdAt }.thenByDescending { it.id })
-        if (rows.isEmpty()) return
-        val results = rows.map { it.isCorrect }
-        val correct = results.count { it }.toLong()
+        val totals = db.hotDao().topicTotals(topicId)
+        if (totals.attempts == 0L) return
+        val latest = db.hotDao().latestAttemptsOfTopic(topicId, MASTERY_WINDOW) // the totals are counted by SQLite
         val row = UserTopicProgressEntity(
-            topicId, results.size.toLong(), correct, correct.toDouble() / results.size,
-            results.take(MASTERY_WINDOW).count { it }.toDouble() / MASTERY_WINDOW, rows[0].createdAt, clock.now().toEpochMilli(),
+            topicId, totals.attempts, totals.correct, totals.correct.toDouble() / totals.attempts,
+            latest.count { it.isCorrect }.toDouble() / MASTERY_WINDOW, latest[0].createdAt, clock.now().toEpochMilli(),
         )
         val dao = db.userTopicProgressDao()
         if (dao.all().any { it.topicId == topicId }) dao.update(row) else dao.insert(row)

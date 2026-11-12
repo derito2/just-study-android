@@ -126,7 +126,7 @@ class FlashcardRepository @Inject constructor(
     private val zone get() = clock.zone
     private fun local(millis: Long): ZonedDateTime = Instant.ofEpochMilli(millis).atZone(zone)
 
-    private suspend fun reviewedIds(): Set<Long> = db.flashcardReviewsDao().all().map { it.flashcardId }.toSet()
+    private suspend fun reviewedIds(): Set<Long> = db.hotDao().reviewedCardIds().toSet()
 
     /** The decks behind an id: itself or, for a combined deck, the ones it combines. */
     private suspend fun members(deckId: Long?): List<Long>? = when {
@@ -151,7 +151,7 @@ class FlashcardRepository @Inject constructor(
     /** Each deck with its counters, what you reviewed last and when, arranged as you left them. */
     suspend fun decksNow(): List<Deck> = withContext(Dispatchers.IO) {
         val now = clock.now().toEpochMilli()
-        val last = db.flashcardReviewsDao().all().groupBy { it.flashcardId }.mapValues { (_, r) -> r.maxOf { it.reviewedAt } }
+        val last = db.hotDao().lastReviews().associate { it.flashcardId to it.reviewedAt }
         val docs = db.documentsDao().all().associateBy { it.id }
         val customs = db.customDecksDao().all().associateBy { it.id }
         val groups = LinkedHashMap<Long, MutableList<FlashcardsEntity>>()
@@ -260,8 +260,8 @@ class FlashcardRepository @Inject constructor(
     suspend fun history(limit: Int, deckId: Long? = null): List<ReviewItem> = withContext(Dispatchers.IO) {
         val decks = members(deckId)
         val cards = db.flashcardsDao().all().associateBy { it.id }
-        db.flashcardReviewsDao().all().filter { r -> cards[r.flashcardId]?.let { inDecks(it, decks) } == true }
-            .sortedWith(compareByDescending<FlashcardReviewsEntity> { it.reviewedAt }.thenByDescending { it.id }).take(limit)
+        // Without a deck the database cuts the list; with one, the deck filter has to come before the cut.
+        db.hotDao().latestReviews(if (decks == null) limit else -1).filter { r -> inDecks(cards.getValue(r.flashcardId), decks) }.take(limit)
             .map { r ->
                 val c = cards.getValue(r.flashcardId)
                 ReviewItem(c.id, deckOf(c), c.koreanWord, c.translation, r.rating, local(r.reviewedAt), r.newInterval)
@@ -320,9 +320,13 @@ class FlashcardRepository @Inject constructor(
     // ---------- writes ----------
 
     /** Applies the button, saves the review and counts it in a flashcards session. */
-    suspend fun review(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling = Scheduling()): Next = db.withWriteTransaction {
+    suspend fun review(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling = Scheduling()): Next = withContext(Dispatchers.IO) {
+        db.withWriteTransaction { reviewNow(cardId, rating, elapsedMs, cfg) }
+    }
+
+    private suspend fun reviewNow(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling): Next {
         val now = clock.now().toEpochMilli()
-        val card = db.flashcardsDao().all().firstOrNull { it.id == cardId } ?: throw FlashcardException("Flashcard not found.")
+        val card = db.hotDao().flashcard(cardId) ?: throw FlashcardException("Flashcard not found.")
         val next = schedule(CardState(card.ease, card.intervalHours.toInt(), card.repetitions.toInt()), rating, cfg)
         db.flashcardReviewsDao().insert(
             FlashcardReviewsEntity(progress.nextId("flashcard_reviews"), card.id, rating.name.lowercase(), now, card.intervalHours, next.intervalHours.toLong()),
@@ -331,7 +335,7 @@ class FlashcardRepository @Inject constructor(
             card.copy(ease = next.ease, intervalHours = next.intervalHours.toLong(), repetitions = next.repetitions.toLong(), dueAt = now + next.dueInMinutes * 60_000),
         )
         progress.attachSession(now, elapsedMs, card.topicId, mode = "flashcards")
-        next
+        return next
     }
 
     private suspend fun checkName(name: String): String {

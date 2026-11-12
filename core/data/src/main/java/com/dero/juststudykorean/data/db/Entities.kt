@@ -3,6 +3,7 @@ package com.dero.juststudykorean.data.db
 
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
+import androidx.room3.Index
 
 // One entity per backup table, columns 1:1 with the web; dates as epoch millis (UTC); JSON as text.
 
@@ -177,7 +178,7 @@ data class FlashcardsEntity(
     @ColumnInfo(name = "custom_deck_id") val customDeckId: Long?,
 )
 
-@Entity(tableName = "question_attempts", primaryKeys = ["id"])
+@Entity(tableName = "question_attempts", primaryKeys = ["id"], indices = [Index("question_id")])
 data class QuestionAttemptsEntity(
     @ColumnInfo(name = "id") val id: Long,
     @ColumnInfo(name = "question_id") val questionId: Long,

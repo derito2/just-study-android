@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import java.io.File
 
-/** v1 → v2 (phase 4) only adds notes_fts and processing_jobs: every row of the 18 backup tables stays as it was. */
+/** v1 → v2 (phase 4) only adds notes_fts and processing_jobs, v2 → v3 only indices: every row of the 18 backup tables stays as it was. */
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [36])
 class MigrationTest {
@@ -50,5 +50,9 @@ class MigrationTest {
         v2.execSQL("INSERT INTO notes_fts (document_id, chroma_id, page, section, topic, content_type, text_hash, text) VALUES (25, '25:1:0', 1, NULL, 'General', 'general', 'h', '배고파서 먹어요')")
         v2.prepare("SELECT COUNT(*) FROM notes_fts WHERE notes_fts MATCH '배고파서'").use { it.step(); assertEquals(1L, it.getLong(0)) }
         v2.close()
+
+        val v3 = helper.runMigrationsAndValidate(3, listOf(MIGRATION_2_3)) // also checks the index against schemas/3.json
+        assertEquals(before, dump(v3))
+        v3.close()
     }
 }
