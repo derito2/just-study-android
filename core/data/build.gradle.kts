@@ -30,6 +30,7 @@ android.sourceSets {
     getByName("test").kotlin.srcDir("src/sharedTest/java")
     getByName("androidTest").kotlin.srcDir("src/sharedTest/java")
     getByName("androidTest").assets.srcDir("../../golden/db") // only the synthetic db goldens, never golden/private
+    getByName("androidTest").assets.srcDir("../pdf/src/androidTest/assets") // the synthetic PDFs (phase 7: 10 PDFs in a row)
     getByName("test").assets.srcDir("schemas") // MigrationTest reads the exported schemas
 }
 

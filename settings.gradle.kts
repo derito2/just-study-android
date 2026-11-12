@@ -29,5 +29,6 @@ rootProject.name = "JustStudyKorean"
 include(":app")
 include(":core:data")
 include(":core:ai")
+include(":macrobenchmark")
 include(":core:korean")
 include(":core:pdf")

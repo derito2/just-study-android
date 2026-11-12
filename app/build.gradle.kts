@@ -46,6 +46,15 @@ android {
                 packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
             }
         }
+        // Phase 7: release as it ships, but its own app (its own data, filled from a backup) for the macrobenchmarks;
+        // profileable and with ProfileInstallReceiver (src/benchmark/AndroidManifest.xml). Never replaces your app.
+        create("benchmark") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.findByName("release")
+            applicationIdSuffix = ".benchmark"
+            matchingFallbacks += listOf("release")
+            proguardFiles("benchmark-rules.pro")
+        }
     }
     buildFeatures {
         compose = true
