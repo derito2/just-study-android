@@ -2,6 +2,12 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-11 — Teacher con el teclado abierto (`design/teacher.md`, punto 6) y gramática en coreano en el OPPO
+**Causa de los 26 px:** `imePadding` de la pantalla sumaba la barra inferior (que queda bajo el teclado) a la altura del teclado. `AppScaffold` ahora hace `consumeWindowInsets(padding)`: el composer queda justo encima del teclado en todas las pantallas.
+**Punto 6:** con el teclado abierto, JsTopBar plegado (64 dp, sin subtítulos), sin selector de modo, *Clear answers* ni la línea de documentos; las plantillas solo con el campo vacío; vuelven con un fundido de 150 ms; la conversación baja al último mensaje. Prueba de Compose con el tamaño del OPPO menos Gboard (411 × 526 dp): ≥ 300 dp.
+**En el OPPO (Gboard, 333 dp; pantalla 905 dp a 420 dpi):** conversación de **294 dp con el campo vacío** (plantillas visibles) y **363 dp al escribir**. Con el campo vacío faltan 6 dp para la meta: en el teléfono el chip de plantilla mide 53 dp (en Robolectric, menos), así que la prueba pasa y el teléfono no. Queda para diseño.
+**Gramática en coreano:** `TeacherGrammarTest` (instrumentada, `performTextInput`, sin teclado ni ajustes) toma la primera regla de tus notas y la pregunta: responde por `grammar.v1` con fuente (78 ms, primera pregunta con el índice). Tu base, 18/18 tablas iguales (filas y sha256 de la exportación) antes y después.
+
 ## 2026-11-11 — R-010 descartada: sin vibración
 **Decisión (del dueño):** el teléfono no vibra nunca (`design/shell.md`, *Sin vibración*). Se quitan las cuatro llamadas a `performHapticFeedback` (`RatingButtons`, `QuizOption`, `TypedResult`, `StudyScreen`): se revierte el commit de R-010. El *wiggle* de editar mazos es solo animación y no cambia.
 **Por qué:** en el OPPO la vibración táctil del sistema está apagada y el dueño no quiere vibración en la app.
