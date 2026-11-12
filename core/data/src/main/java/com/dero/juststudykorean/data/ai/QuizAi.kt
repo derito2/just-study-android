@@ -8,6 +8,7 @@ import com.dero.juststudykorean.data.notes.NotesSource
 import com.dero.juststudykorean.data.quiz.QuizRequest
 import com.dero.juststudykorean.korean.Candidate
 import com.dero.juststudykorean.korean.PyRandom
+import com.dero.juststudykorean.korean.ai.AI_MODEL
 import com.dero.juststudykorean.korean.ai.EXPLAIN_MISTAKE_VERSION
 import com.dero.juststudykorean.korean.ai.JUDGE_VERSION
 import com.dero.juststudykorean.korean.ai.QUESTIONS_VERSION
@@ -91,7 +92,7 @@ class QuizAi @Inject constructor(private val gate: NanoGate, private val db: Jus
                 buildModelQuestion(gq, chunk, types, pairs[chunk.documentId].orEmpty(), grammar[chunk.documentId].orEmpty(), rng).candidate
             } ?: continue
             if (out.any { norm(it.prompt) == norm(candidate.prompt) || repeatsOptions(it, candidate) }) continue
-            out += candidate.copy(promptVersion = QUESTIONS_VERSION, model = "gemini-nano")
+            out += candidate.copy(promptVersion = QUESTIONS_VERSION, model = AI_MODEL)
         }
         return out
     }

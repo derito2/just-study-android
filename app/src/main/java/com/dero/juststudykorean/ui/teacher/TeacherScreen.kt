@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.teacher
 
+import com.dero.juststudykorean.ui.components.AiMark
+import com.dero.juststudykorean.korean.ai.AI_MODEL
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
@@ -197,6 +199,7 @@ private fun Card(content: @Composable () -> Unit) {
 @Composable
 internal fun AnswerCard(question: String, answer: TeacherAnswer, openAll: Boolean = false) = Card {
     val colors = JustStudyTheme.colors
+    if (answer.model == AI_MODEL) AiMark() // design/teacher.md: the model's answer (use 4)
     Text(question, style = JustStudyTheme.korean.bodyBold, color = colors.muted)
     when (answer.status) {
         "not_found" -> Refusal("Your notes don't cover this", "Your teacher read the closest passages and the answer isn't there. Add it to your notes.")

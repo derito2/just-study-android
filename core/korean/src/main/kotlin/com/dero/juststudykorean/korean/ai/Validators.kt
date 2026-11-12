@@ -53,14 +53,17 @@ fun citationsValid(output: String, sources: Set<Int>) = CITATION.findAll(output)
 fun citations(output: String): List<Int> = CITATION.findAll(output).map { it.groupValues[1].toInt() }.distinct().toList()
 
 /**
- * Written in English: at least [minWords] English words, no kana or Han, and more English words than Korean ones
+ * Written in English: at least [minWords] English words, no kana or Han, and at least as many English words as Korean ones
  * (Korean quoted from the input is allowed; an answer in Korean is not).
  */
 fun isEnglish(output: String, minWords: Int = 3): Boolean {
     if (OTHER_SCRIPTS.containsMatchIn(output)) return false
     val english = LATIN_WORD.findAll(output).count()
-    return english >= minWords && english > HANGUL_WORD.findAll(output).count()
+    return english >= minWords && english >= HANGUL_WORD.findAll(output).count()
 }
 
 /** Any Hangul at all (the meaning judge only judges English answers). */
 fun hasHangul(text: String) = HANGUL_OR_JAMO.containsMatchIn(text)
+
+/** The `model` of whatever Gemini Nano wrote (AiMark on screen; never saved as yours). */
+const val AI_MODEL = "gemini-nano"

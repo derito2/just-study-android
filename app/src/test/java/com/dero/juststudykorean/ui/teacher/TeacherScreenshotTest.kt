@@ -75,6 +75,12 @@ class TeacherScreenshotTest {
 
     @Test fun answerWithSourcesOpen() = snap("teacher_answer_sources", one(Exchange(0, "What does 근처 mean?", notes = entry)), openAll = true)
 
+    /** Use 4 (phase 6): the model's answer from your fragments, with AiMark and its valid citations. */
+    @Test fun aiAnswer() = snap("teacher_answer_ai", one(Exchange(0, "When do I use 근처?", notes = TeacherAnswer(
+        "answered", "Your notes use 근처 for places that are close by, as in 학교가 집 근처에 있어요 [1].",
+        listOf(source(1, chunk), source(2, other, cited = false)), "teacher.nano.v1", com.dero.juststudykorean.korean.ai.AI_MODEL,
+    ))))
+
     @Test fun notCovered() = snap("teacher_not_covered", one(Exchange(0, "How do I say spaceship?", notes = notCovered)))
 
     @Test fun coachWithQuizAndDeck() = snap("teacher_coach", one(Exchange(0, "Quiz on my mistakes", coach = coach), TeacherMode.Coach))
