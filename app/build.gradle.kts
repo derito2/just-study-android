@@ -26,8 +26,21 @@ android {
         ndk { abiFilters += "arm64-v8a" }
     }
 
+    // R-016: the release key lives outside the repo; its path and passwords come from ~/.gradle/gradle.properties.
+    // Without them (CI) release stays unsigned, as before.
+    val releaseStore = providers.gradleProperty("JUSTSTUDY_RELEASE_STORE_FILE").orNull
+    signingConfigs {
+        if (releaseStore != null) create("release") {
+            storeFile = file(releaseStore)
+            storePassword = providers.gradleProperty("JUSTSTUDY_RELEASE_STORE_PASSWORD").get()
+            keyAlias = providers.gradleProperty("JUSTSTUDY_RELEASE_KEY_ALIAS").get()
+            keyPassword = providers.gradleProperty("JUSTSTUDY_RELEASE_KEY_PASSWORD").get()
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             optimization {
                 enable = true
                 packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")

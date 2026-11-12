@@ -10,7 +10,7 @@ Se actualiza en cada PR.
 
 | ID | Estado | PR |
 |---|---|---|
-| R-001 | en PR #22 (con el índice de R-002; ver DECISIONS) | #22 |
+| R-001 | hecho (con el índice de R-002; ver DECISIONS) | #22 |
 | R-002 | parcial: índice `question_attempts(question_id)` (v3) en #22; el resto pendiente | #22 |
 | R-003 | hecho | #20 |
 | R-004 | hecho | #20 |
@@ -25,7 +25,7 @@ Se actualiza en cada PR.
 | R-013 | pendiente (fase 6) |  |
 | R-014 | pendiente |  |
 | R-015 | icono temático hecho (#19); notificación y `onTimeout` pendientes (fase 5) | #19 |
-| R-016 | pendiente |  |
+| R-016 | en PR (build/release-signing); el cambio debug → release lo hace el dueño |  |
 | R-017 | pendiente (fase 6) |  |
 | R-018 | hecho | #19 |
 
