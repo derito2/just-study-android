@@ -113,4 +113,33 @@ class QuizScreenshotTest {
             {}, {},
         )
     }
+
+    /** design/quiz.md A.2 with Gemini Nano Available: Short answer and Difficulty can be used. */
+    @Test
+    fun homeWithNano() = snap("quiz_home_ai") { QuizHomeContent(QuizForm(), emptyList(), mistakes, history, remember { SnackbarHostState() }, {}, {}, {}, {}, {}, {}, ai = true) }
+
+    /** A.2: a typed answer the meaning judge accepted, and a wrong one with the model's explanation (AiMark). */
+    @Test
+    fun questionWithNano() = snap("quiz_question_ai", bar = false) {
+        val ai = q(-1, "short_answer", "What does 근처 mean?", "near, nearby")
+        val mixed = QuizRun(9, listOf(ai) + questions)
+        QuestionContent(
+            QuestionUi(
+                loading = false, run = mixed, index = 0, documents = docs,
+                answers = mapOf(-1L to Answered("close by", Grade(true, "near, nearby", null, aiAccepted = true))),
+            ), {}, {}, {}, {},
+        )
+    }
+
+    @Test
+    fun wrongWithExplanation() = snap("quiz_wrong_ai", bar = false) {
+        QuestionContent(
+            QuestionUi(
+                loading = false, run = run, index = 3, documents = docs,
+                answers = answered(1L to "near, nearby", 2L to "도서관", 3L to "school") + (4L to Answered(
+                    "도서간", Grade(false, "도서관", null), explanation = "You wrote 도서간, but the word in your notes is 도서관: the last syllable is 관.", aiExplanation = true,
+                )),
+            ), {}, {}, {}, {},
+        )
+    }
 }

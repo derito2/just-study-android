@@ -38,7 +38,7 @@ fun typedSummary(typed: String, c: Comparison): String? {
 
 /** Type the answer, on the back (design/flashcards.md C): the verdict, your answer letter by letter, and a summary. */
 @Composable
-fun TypedResult(typed: String, c: Comparison, modifier: Modifier = Modifier) {
+fun TypedResult(typed: String, c: Comparison, modifier: Modifier = Modifier, aiAccepted: Boolean = false) {
     val colors = JustStudyTheme.colors
     val (text, color, icon) = when (c.verdict) {
         Verdict.Exact -> Triple("Exactly right", colors.correct, Lucide.Check)
@@ -70,5 +70,10 @@ fun TypedResult(typed: String, c: Comparison, modifier: Modifier = Modifier) {
                 style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold), textAlign = TextAlign.Center)
         }
         typedSummary(typed, c)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = colors.muted, textAlign = TextAlign.Center) }
+        // Use 3 (design/quiz.md A.2): the meaning judge approved what the rules didn't.
+        if (aiAccepted) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+            Text("accepted: same meaning", fontSize = 12.sp, color = colors.correct)
+            AiMark(short = true)
+        }
     }
 }

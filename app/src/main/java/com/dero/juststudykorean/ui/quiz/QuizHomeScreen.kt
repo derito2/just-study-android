@@ -65,13 +65,14 @@ fun QuizHomeScreen(onMore: () -> Unit, onGenerate: () -> Unit, onOpenRun: (Long)
     val documents by vm.documents.collectAsStateWithLifecycle()
     val mistakes by vm.mistakes.collectAsStateWithLifecycle()
     val history by vm.history.collectAsStateWithLifecycle()
+    val ai by vm.ai.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(vm) {
         vm.messages.collect { e -> when (e) { is QuizEvent.Open -> onOpenRun(e.runId); is QuizEvent.Message -> snackbar.showSnackbar(e.text) } }
     }
     QuizHomeContent(
         form ?: return, documents, mistakes, history, snackbar, onMore = onMore, onForm = { vm.setForm(it) }, onGenerate = onGenerate,
-        onPracticeSaved = { vm.practiceSaved() }, onFix = { vm.fixWeaknesses() }, onDetails = onDetails,
+        onPracticeSaved = { vm.practiceSaved() }, onFix = { vm.fixWeaknesses() }, onDetails = onDetails, ai = ai,
     )
 }
 
@@ -91,6 +92,7 @@ fun QuizHomeContent(
     onFix: () -> Unit,
     onDetails: (String) -> Unit,
     photo: Boolean = true,
+    ai: Boolean = false, // Gemini Nano Available (design/quiz.md A.2)
 ) {
     val c = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -117,20 +119,26 @@ fun QuizHomeContent(
                     }
                     Column {
                         Label("Question types", "문제 유형")
-                        // design/quiz.md A.1: until the phone has a model, the types it writes are shown but cannot be used.
+                        // design/quiz.md A.1/A.2: without Nano, the types only it writes are shown but cannot be used.
                         Grid(QUIZ_TYPES.entries.toList()) { (id, t) ->
-                            if (id in MODEL_TYPES) CheckItem(t.first, t.second, NEEDS_AI, checked = false, unavailable = true, modifier = Modifier.alpha(0.5f)) {}
+                            if (id in MODEL_TYPES && !ai) CheckItem(t.first, t.second, NEEDS_AI, checked = false, unavailable = true, modifier = Modifier.alpha(0.5f)) {}
                             else CheckItem(t.first, t.second, t.third, id in form.types) { onForm(form.copy(types = if (id in form.types) form.types - id else form.types + id)) }
                         }
-                        if (form.usableTypes().isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
+                        if (form.usableTypes(ai).isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
                     }
-                    Column(Modifier.alpha(0.5f)) {
+                    val levelsCount = form.levelsCount(ai)
+                    Column(Modifier.alpha(if (levelsCount) 1f else 0.5f)) {
                         Label("Difficulty", "난이도")
-                        Text(NEEDS_AI, style = MaterialTheme.typography.bodySmall, color = c.muted)
-                        Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels, unavailable = true) {} } // shows what is saved
+                        Text(if (ai) "Only questions written by the model change with it." else NEEDS_AI, style = MaterialTheme.typography.bodySmall, color = c.muted)
+                        if (ai) {
+                            Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels) { onForm(form.copy(levels = if (n in form.levels) form.levels - n else form.levels + n)) } }
+                            if (levelsCount && form.levels.isEmpty()) Text("Choose at least one difficulty.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
+                        } else {
+                            Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels, unavailable = true) {} } // shows what is saved
+                        }
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-                        val ok = form.usableTypes().isNotEmpty()
+                        val ok = form.usableTypes(ai).isNotEmpty() && !(levelsCount && form.levels.isEmpty())
                         StickerButton("Generate quiz", onGenerate, Modifier.fillMaxWidth(), ko = "퀴즈 만들기", color = StickerColor.Go, enabled = ok)
                         StickerButton("Practice saved questions", onPracticeSaved, Modifier.fillMaxWidth(), ko = "저장된 문제 연습")
                     }

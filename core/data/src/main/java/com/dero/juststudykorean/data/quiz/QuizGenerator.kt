@@ -5,6 +5,7 @@ import com.dero.juststudykorean.korean.Chunk
 import com.dero.juststudykorean.korean.GrammarPoint
 import com.dero.juststudykorean.korean.PyRandom
 import com.dero.juststudykorean.korean.VocabPair
+import com.dero.juststudykorean.korean.buildBlankFromExample
 import com.dero.juststudykorean.korean.buildFromPair
 import com.dero.juststudykorean.korean.buildGrammar
 import com.dero.juststudykorean.korean.extractGrammar
@@ -56,6 +57,8 @@ internal class RuleRun(
     private val usedWords = mutableSetOf<String>()
     private val queues = LinkedHashMap<String, MutableList<Pair<Chunk, VocabPair>>>()
     private val grammarQueues = LinkedHashMap<String, MutableList<Triple<Chunk, GrammarPoint, String>>>()
+    /** R-017: (chunk, point, example) for fill_blank by rules; only when fill_blank is asked for. */
+    private val blankQueue = mutableListOf<Triple<Chunk, GrammarPoint, String>>()
 
     init {
         val texts = LinkedHashMap<Long, MutableList<String>>()
@@ -69,6 +72,7 @@ internal class RuleRun(
         pairItems = chunks.flatMap { c -> extractPairs(c).map { c to it } }
         for (g in groups) if (g in RULE_TYPES) queues[g] = pairItems.filter { pairFilter?.invoke(it.second) ?: true }.toMutableList()
         if ("grammar_selection" in groups) grammarQueues["grammar_selection"] = grammarItems("grammar_selection", chunks).toMutableList()
+        if ("fill_blank" in groups) for (c in chunks) for (p in extractGrammar(c)) for ((ko, _) in p.examples) blankQueue += Triple(c, p, ko)
         val mc = if ("multiple_choice" in types) grammarItems("multiple_choice", chunks) else emptyList()
         if (mc.isNotEmpty()) {
             groups.add(groups.indexOf("free").takeIf { it >= 0 } ?: groups.size, "grammar_mc")
@@ -82,6 +86,7 @@ internal class RuleRun(
             queues[g] = byTurns(queues.getValue(g)) { it.first.documentId }.toMutableList()
         }
         for (items in grammarQueues.values) rng.shuffle(items)
+        if (blankQueue.isNotEmpty()) rng.shuffle(blankQueue)
         val exhausted = mutableSetOf<String>()
         var turn = 0
         while (candidates.size < count && exhausted.size < groups.size) {
@@ -150,6 +155,7 @@ internal class RuleRun(
         group in RULE_TYPES -> ruleStep(group, seen, rng)
         group == "grammar_mc" -> grammarStep("multiple_choice", group, seen, rng)
         group == "grammar_selection" && !grammarQueues[group].isNullOrEmpty() -> grammarStep(group, group, seen, rng)
+        group == "fill_blank" -> blankStep(seen, rng)
         else -> false // written by the model: none on the phone yet
     }
 
@@ -162,6 +168,17 @@ internal class RuleRun(
         val before = candidates.size
         accept(built.candidate, seen)
         if (candidates.size > before) usedWords += norm(pair.korean)
+        return true
+    }
+
+    /** R-017: a gap in an example of your notes; one per grammar point and quiz. */
+    private fun blankStep(seen: MutableSet<Pair<String, String>>, rng: PyRandom): Boolean {
+        while (blankQueue.isNotEmpty() && (blankQueue[0].first.documentId to norm(blankQueue[0].second.pattern)) in usedPoints) blankQueue.removeAt(0)
+        if (blankQueue.isEmpty()) return false
+        val (chunk, point, example) = blankQueue.removeAt(0)
+        val built = buildBlankFromExample(point, example, poolGrammar.getValue(chunk.documentId), chunk, grounding.getValue(chunk.documentId), rng)
+        if (built.candidate != null) usedPoints += chunk.documentId to norm(point.pattern)
+        accept(built.candidate, seen)
         return true
     }
 
