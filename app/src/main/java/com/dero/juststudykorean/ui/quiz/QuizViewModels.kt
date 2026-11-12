@@ -1,6 +1,7 @@
 package com.dero.juststudykorean.ui.quiz
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dero.juststudykorean.data.db.DocumentsEntity
@@ -149,8 +150,6 @@ data class QuestionUi(
     val finished: Boolean = false,
     /** The last answer could not be saved. */
     val error: String? = null,
-    /** This screen created the quiz (it was not opened by its id). */
-    val created: Boolean = false,
     /** A.3: questions asked of the model that haven't arrived yet (the counter already counts them). */
     val pendingAi: Int = 0,
 ) {
@@ -160,7 +159,12 @@ data class QuestionUi(
 
 /** A quiz (design/quiz.md B and C): created from the saved form when [open] gets no run; each answer is saved at once. */
 @HiltViewModel
-class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, private val prefs: UserPrefs, private val ai: QuizAi? = null) : ViewModel() {
+class QuestionViewModel @Inject constructor(
+    private val quiz: QuizRepository,
+    private val prefs: UserPrefs,
+    private val ai: QuizAi? = null,
+    private val saved: SavedStateHandle = SavedStateHandle(),
+) : ViewModel() {
     private val _state = MutableStateFlow(QuestionUi())
     val state = _state.asStateFlow()
     private var opened = false
@@ -171,16 +175,19 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
     var lastGenerationMs: Long = -1
         private set
 
-    fun open(runId: Long?) {
+    fun open(route: Long?) {
         if (opened) return
         opened = true
+        // R-008: the quiz this screen created is kept in its saved state (not in a new route: that would clear this
+        // ViewModel and cancel the model's questions, phase 7), so a killed process opens it again, not a new one.
+        val runId = route ?: saved.get<Long>(RUN_ID)
         viewModelScope.launch {
             try {
-                val run = if (runId != null) quiz.run(runId) else generate()
+                val run = if (runId != null) quiz.run(runId) else generate()?.also { saved[RUN_ID] = it.id }
                 val pending = if (runId == null) planned else 0
                 if (run == null || (run.questions.isEmpty() && pending == 0)) { _state.value = QuestionUi(loading = false, failed = true); return@launch }
                 if (run.questions.isEmpty()) { // A.3: all from the model: state B until the first one
-                    _state.value = QuestionUi(loading = true, run = run, created = true, pendingAi = pending)
+                    _state.value = QuestionUi(loading = true, run = run, pendingAi = pending)
                     return@launch
                 }
                 // A quiz opened again (the process was killed half way) goes on where it was: the saved answers and the
@@ -191,7 +198,7 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
                 val next = run.questions.indexOfFirst { it.id !in answers }
                 _state.value = QuestionUi(
                     loading = false, run = run, documents = quiz.documentNames(run.questions), answers = answers,
-                    index = if (next < 0) run.questions.lastIndex else next, finished = next < 0, created = runId == null, pendingAi = pending,
+                    index = if (next < 0) run.questions.lastIndex else next, finished = next < 0, pendingAi = pending,
                 )
                 shownAt = System.nanoTime()
             } catch (e: CancellationException) {
@@ -201,6 +208,8 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
             }
         }
     }
+
+    private companion object { const val RUN_ID = "runId" }
 
     /** A.3: how many questions the model was asked for when this quiz was created. */
     private var planned = 0

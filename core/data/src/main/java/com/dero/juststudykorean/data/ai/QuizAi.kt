@@ -98,7 +98,7 @@ class QuizAi @Inject constructor(private val gate: NanoGate, private val db: Jus
             val candidate = gate.ask(AiRequest(AiUse.Questions, QUESTIONS_VERSION, questionPrompt(type, level, chunk), chunk.text, 200, 0f)) { text ->
                 val gq = parseQuestion(text, type) ?: return@ask null
                 buildModelQuestion(gq, chunk, types, pairs[chunk.documentId].orEmpty(), grammar[chunk.documentId].orEmpty(), rng).candidate
-            } ?: continue
+            } ?: if (gate.lastResult == "stuck") break else continue // AICore still on a hung call: the rules write the rest now
             if (out.any { norm(it.prompt) == norm(candidate.prompt) || repeatsOptions(it, candidate) }) continue
             out += candidate.copy(promptVersion = QUESTIONS_VERSION, model = AI_MODEL)
             onEach(out.last())

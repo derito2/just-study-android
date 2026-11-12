@@ -55,7 +55,6 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                         screen is Screen.Study -> StudyScreen(screen.deckId, screen.deckName, onBack = back)
                         screen is Screen.Question -> QuestionScreen(
                             screen.runId, onLeave = back, onResults = { nav.push(TopLevel.Quiz, Screen.Results("run-$it"), replace = true) },
-                            onCreated = { nav.push(TopLevel.Quiz, Screen.Question(it), replace = true) },
                         )
                         screen is Screen.Results -> ResultsScreen(screen.key, onClose = back, onNewQuiz = back)
                         screen is Screen.Vocabulary -> AllVocabularyScreen(onBack = back)

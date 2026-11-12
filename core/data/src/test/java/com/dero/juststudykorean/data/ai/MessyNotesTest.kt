@@ -53,12 +53,14 @@ class MessyNotesTest {
         }
     }
 
+    private val files = com.dero.juststudykorean.data.documents.DocumentFiles(context)
+    private val indexer = com.dero.juststudykorean.data.time.SystemClock().let { clock ->
+        com.dero.juststudykorean.data.documents.DocumentIndexer(db, clock, com.dero.juststudykorean.data.progress.ProgressRepository(db, clock), NotesSource(context), files)
+    }
+
     private fun messy(model: Fake): MessyNotes {
         val state = NanoState(model).also { it.refresh() }
         runBlocking { repeat(50) { if (state.status.value != NanoStatus.Available) delay(20) } }
-        val files = com.dero.juststudykorean.data.documents.DocumentFiles(context)
-        val clock = com.dero.juststudykorean.data.time.SystemClock()
-        val indexer = com.dero.juststudykorean.data.documents.DocumentIndexer(db, clock, com.dero.juststudykorean.data.progress.ProgressRepository(db, clock), NotesSource(context), files)
         return MessyNotes(NanoGate(model, state) { false }, db, NotesSource(context), files, indexer)
     }
 
@@ -88,5 +90,22 @@ class MessyNotesTest {
         m.undo(1, added)
         assertTrue(notes.chunks(doc).flatMap { com.dero.juststudykorean.korean.extractPairs(it) }.none { it.korean == "사과" })
         assertEquals(setOf("사과", "우유"), m.state.value.getValue(1).pairs.map { it.korean }.toSet())
+    }
+
+    /** Phase 7: reprocessing the PDF (same text from MuPDF) keeps the words you added from messy notes. */
+    @Test
+    fun reprocessingKeepsTheAddedPairs() = runBlocking {
+        AppForeground.visible = true
+        val m = messy(Fake())
+        m.readReady()
+        m.accept(1, m.state.value.getValue(1).pairs.take(1))
+        val pdf = com.dero.juststudykorean.pdf.PageContent(1, page, emptyList(), "Vocabulary", emptyList(), 0, page.length)
+        indexer.saveExtracted(1, com.dero.juststudykorean.pdf.ParsedDocument(1, listOf(pdf), page.length, 0, 0, emptyList()))
+        indexer.index(1)
+        val doc = db.documentsDao().all().single()
+        val words = NotesSource(context).chunks(doc).flatMap { com.dero.juststudykorean.korean.extractPairs(it) }
+        assertEquals(1, words.count { it.korean == "사과" && it.english == "apple" })
+        indexer.saveExtracted(1, com.dero.juststudykorean.pdf.ParsedDocument(1, listOf(pdf), page.length, 0, 0, emptyList())) // twice: never doubled
+        assertEquals(1, files.extracted(1).readText().split("사과 = apple").size - 1)
     }
 }

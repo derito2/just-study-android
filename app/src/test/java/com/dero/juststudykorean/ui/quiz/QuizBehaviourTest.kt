@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.quiz
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dero.juststudykorean.data.prefs.QuizForm
 import com.dero.juststudykorean.data.quiz.options
@@ -26,9 +27,9 @@ class QuizBehaviourTest {
 
     private fun attempts() = runBlocking { app.db.questionAttemptsDao().all().size }
 
-    private fun started(form: QuizForm = QuizForm()): QuestionViewModel {
+    private fun started(form: QuizForm = QuizForm(), saved: SavedStateHandle = SavedStateHandle()): QuestionViewModel {
         runBlocking { app.prefs.setQuizForm(form) }
-        return QuestionViewModel(app.quiz, app.prefs).also { vm -> vm.open(null); idleUntil { !vm.state.value.loading } }
+        return QuestionViewModel(app.quiz, app.prefs, null, saved).also { vm -> vm.open(null); idleUntil { !vm.state.value.loading } }
     }
 
     @Test
@@ -101,9 +102,9 @@ class QuizBehaviourTest {
 
     @Test
     fun aQuizOpenedAgainGoesOnWhereItWas() {
-        val vm = started(QuizForm(count = 5))
+        val saved = SavedStateHandle()
+        val vm = started(QuizForm(count = 5), saved)
         val run = vm.state.value.run!!
-        assertTrue(vm.state.value.created)
         repeat(2) {
             val q = vm.state.value.question!!
             vm.answer(if (answerMode(q.type) == "choice") q.options().first() else "something")
@@ -113,10 +114,12 @@ class QuizBehaviourTest {
         val given = vm.state.value.answers
         val runs = runBlocking { app.db.quizRunsDao().all().size }
 
-        val again = QuestionViewModel(app.quiz, app.prefs).also { it.open(run.id); idleUntil { !it.state.value.loading } }
+        // The process is killed: the same screen comes back with its saved state (the route still has no quiz id).
+        val restored = SavedStateHandle(saved.keys().associateWith { saved.get<Any>(it) })
+        val again = QuestionViewModel(app.quiz, app.prefs, null, restored).also { it.open(null); idleUntil { !it.state.value.loading } }
+        assertEquals(run.id, again.state.value.run!!.id)
         assertEquals(2, again.state.value.index)
         assertEquals(given, again.state.value.answers)
-        assertFalse(again.state.value.created)
         assertFalse(again.state.value.finished)
         assertEquals("no new quiz", runs, runBlocking { app.db.quizRunsDao().all().size })
     }

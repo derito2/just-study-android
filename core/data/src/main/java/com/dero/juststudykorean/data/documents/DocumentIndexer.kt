@@ -14,7 +14,13 @@ import com.dero.juststudykorean.korean.GENERAL_TOPIC
 import com.dero.juststudykorean.korean.norm
 import com.dero.juststudykorean.korean.referencePoints
 import com.dero.juststudykorean.pdf.ParsedDocument
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -34,6 +40,8 @@ private fun strings(list: List<String>) = JsonArray(list.map(::JsonPrimitive))
 /** sha256 of the chunk's text, as Chunk.text_hash: the same chunk in an earlier document is not indexed again. */
 internal fun textHash(text: String) = MessageDigest.getInstance("SHA-256").digest(text.toByteArray()).joinToString("") { "%02x".format(it) }
 
+private val PAIR_LINE = Regex("^[^=\\n]*[가-힣][^=\\n]* = [^=\\n]+$")
+
 @Singleton
 class DocumentIndexer @Inject constructor(
     private val db: JustStudyDatabase,
@@ -43,11 +51,25 @@ class DocumentIndexer @Inject constructor(
     private val files: DocumentFiles,
 ) {
     /** EXTRACTING: the parsed pages to extracted/<id>.json (the web's asdict(page)) and the document's counts. */
+    /**
+     * Reprocessing (phase 7): the words added from messy notes (MessyNotes.accept) are "Korean = English" lines of the
+     * extracted text, not of the PDF. Per page, the ones of the old text that the new one doesn't have; MuPDF gives the
+     * same text for the same PDF, so these are only the added ones.
+     */
+    private fun addedLines(old: String, parsed: ParsedDocument): Map<Int, List<String>> =
+        Json.parseToJsonElement(old).jsonObject["pages"]?.jsonArray.orEmpty().associate { p ->
+            val o = p.jsonObject
+            val n = o.getValue("page_number").jsonPrimitive.int
+            val now = parsed.pages.firstOrNull { it.pageNumber == n }?.text.orEmpty().lines().toSet()
+            n to (o["text"]?.jsonPrimitive?.contentOrNull ?: "").lines().filter { PAIR_LINE.matches(it) && it !in now }
+        }
+
     suspend fun saveExtracted(documentId: Long, parsed: ParsedDocument) {
+        val kept = files.extracted(documentId).takeIf { it.isFile }?.let { runCatching { addedLines(it.readText(), parsed) }.getOrNull() }.orEmpty()
         val pages = JsonArray(parsed.pages.map { p ->
             buildJsonObject {
                 put("page_number", p.pageNumber)
-                put("text", p.text)
+                put("text", p.text + kept[p.pageNumber].orEmpty().joinToString("") { "\n$it" })
                 put("headings", strings(p.headings))
                 put("section", p.section?.let(::JsonPrimitive) ?: JsonNull)
                 put("tables", JsonArray(p.tables.map { t ->
