@@ -17,6 +17,14 @@ Sin captura propia. La referencia visual es el componente **TeacherChat** del De
    - TextField de 1 a 4 líneas: *Ask something worth asking. For example: how do I say school?*
    - **Send** · 보내기 (`Go`): deshabilitado con menos de 2 caracteres; `pop` al habilitarse.
    - Debajo, *Answers come from all your documents.* (12 sp, `muted`).
+6. **Con el teclado abierto**, para que la conversación tenga sitio (hoy quedan 26 px):
+   - JsTopBar plegado a 64 dp, sin subtítulos, mientras el teclado esté abierto;
+   - se ocultan el selector de modo (2), *Clear answers* (3) y la línea *Answers come from all your documents.* (5);
+   - también se ocultan las plantillas (4) mientras el teclado esté abierto: se eligen antes de abrirlo. Al tocar una, se abre el teclado con su texto en el campo;
+   - el composer y el TextField de 1 a 4 líneas no cambian de tamaño;
+   - al cerrar el teclado, todo vuelve como estaba, sin animación de salto (fundido de 150 ms; con *Quitar animaciones*, al instante);
+   - la conversación baja sola al último mensaje cuando se abre el teclado.
+   Meta: con el teclado de Gboard abierto en el OPPO, la conversación mide al menos 300 dp de alto.
 
 ## Mensajes
 
