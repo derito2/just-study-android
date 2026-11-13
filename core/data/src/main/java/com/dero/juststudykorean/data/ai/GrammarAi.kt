@@ -45,7 +45,7 @@ class GrammarAi @Inject constructor(private val gate: NanoGate, private val db: 
     }
 
     /** 7b: a practice sentence with the pattern and only words of that document's notes; null → your examples. */
-    suspend fun practice(p: GrammarPointUi): Pair<String, String>? {
+    suspend fun practice(p: GrammarPointUi): String? {
         val pairs = withContext(Dispatchers.Default) {
             val doc = db.documentsDao().all().firstOrNull { it.id == p.source.documentId } ?: return@withContext emptyList()
             notes.chunks(doc).flatMap(::extractPairs).distinctBy { it.korean }

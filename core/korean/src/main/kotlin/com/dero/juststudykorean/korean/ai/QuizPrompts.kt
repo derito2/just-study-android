@@ -17,7 +17,7 @@ fun judgePrompt(asked: String, correct: String, given: String) =
 fun judgeApproves(output: String, given: String) = !hasHangul(given) && output.trimStart().uppercase().startsWith("YES")
 
 // ---- Use 2: explain your mistake, from your grammar point and the two answers.
-const val EXPLAIN_MISTAKE_VERSION = "mistake.v1"
+const val EXPLAIN_MISTAKE_VERSION = "mistake.v2"
 
 /** What the explanation may use: its Korean can only come from here. */
 fun mistakeInput(asked: String, correct: String, given: String, point: String) =
@@ -25,7 +25,9 @@ fun mistakeInput(asked: String, correct: String, given: String, point: String) =
 
 fun mistakePrompt(input: String) =
     "A Korean learner got this quiz question wrong. In one or two short English sentences, explain why the learner's " +
-        "answer is wrong, using the grammar point. Quote Korean only from the text below; write no other Korean.\n\n$input"
+        "answer is wrong. State the rule as the grammar point from the learner's notes gives it (for example, which form " +
+        "goes after a consonant and which after a vowel) and do not leave out any of its uses: keep every use it lists. " +
+        "Quote Korean only from the text below; write no other Korean.\n\n$input"
 
 /** The explanation, if it is English, short and quotes only Korean of [input]; else null (the point as it is). */
 fun validMistake(output: String, input: String): String? {

@@ -18,7 +18,7 @@ class GrammarPromptsTest {
 
     @Test
     fun practiceUsesOnlyYourWordsAndThePattern() {
-        assertEquals("학교에 가서 밥을 먹어요." to "I go to school and eat.", validPractice("KOREAN: 학교에 가서 밥을 먹어요.\nENGLISH: I go to school and eat.", "-아서/어서", notes))
+        assertEquals("학교에 가서 밥을 먹어요.", validPractice("KOREAN: 학교에 가서 밥을 먹어요.\nENGLISH: I go to school and eat.", "-아서/어서", notes))
         assertNull(validPractice("KOREAN: 커피를 마셔서 좋아요.\nENGLISH: I drank coffee, so it's good.", "-아서/어서", notes)) // 커피, 마시다: not in your notes
         assertNull(validPractice("KOREAN: 학교에 가요.\nENGLISH: I go to school.", "-아서/어서", notes)) // no -어서
         assertNull(validPractice("학교에 가서 밥을 먹어요.", "-아서/어서", notes))

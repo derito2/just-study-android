@@ -63,7 +63,7 @@ class TeacherService @Inject constructor(db: JustStudyDatabase, private val gate
     private suspend fun modelAnswer(question: String, rules: TeacherAnswer, gate: NanoGate): TeacherAnswer? {
         val sources = rules.sources.take(TEACHER_AI_SOURCES)
         if (sources.isEmpty()) {
-            val text = gate.ask(AiRequest(AiUse.Teacher, TEACHER_AI_NO_SOURCES_VERSION, teacherNoSourcesPrompt(question), question, 200, cache = true)) { validNoSources(it) }
+            val text = gate.ask(AiRequest(AiUse.Teacher, TEACHER_AI_NO_SOURCES_VERSION, teacherNoSourcesPrompt(question), question, 200, cache = true)) { validNoSources(it, question) }
                 ?: return null
             return TeacherAnswer("answered", text, emptyList(), TEACHER_AI_NO_SOURCES_VERSION, AI_MODEL)
         }

@@ -132,4 +132,10 @@ class NanoGateTest {
         assertEquals("Other.", g.ask(cached.copy(promptVersion = "test.v2")) { it })
         assertEquals(2, calls.size)
     }
+
+    @Test
+    fun theModelsTextIsPlain() = runBlocking { // R1-03 (design/shell.md)
+        val g = gate(Fake(answer = "## Why\n**-(으)ㄴ/는데(요)** is __soft__.\n- one use\n* another"))
+        assertEquals("Why\n-(으)ㄴ/는데(요) is soft.\none use\nanother", g.ask(request) { it })
+    }
 }

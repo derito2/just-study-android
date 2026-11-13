@@ -21,14 +21,15 @@ import com.dero.juststudykorean.ui.theme.JustStudyTheme
 
 /**
  * AiMark (design/shell.md): on everything that doesn't come from your notes. [short]: only "AI" (the quiz judge and
- * Words detected). Not animated, no new colors.
+ * Words detected). [fromNotes]: the model wrote it from your notes and cites them (R1-11). Not animated, no new colors.
  */
 @Composable
-fun AiMark(modifier: Modifier = Modifier, short: Boolean = false) {
+fun AiMark(modifier: Modifier = Modifier, short: Boolean = false, fromNotes: Boolean = false) {
+    val label = if (fromNotes) "from your notes" else "not from your notes"
     val colors = JustStudyTheme.colors
     Row(
         modifier
-            .clearAndSetSemantics { contentDescription = "AI, not from your notes" }
+            .clearAndSetSemantics { contentDescription = "AI, $label" }
             .background(colors.canvas, CircleShape)
             .border(1.dp, colors.line, CircleShape)
             .padding(horizontal = 8.dp, vertical = 2.dp),
@@ -36,6 +37,6 @@ fun AiMark(modifier: Modifier = Modifier, short: Boolean = false) {
     ) {
         LucideIcon(Lucide.Sparkles, contentDescription = null, size = 12.dp, tint = colors.muted)
         Spacer(Modifier.width(4.dp))
-        Text(if (short) "AI" else "AI · not from your notes", style = MaterialTheme.typography.labelMedium.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold), color = colors.muted)
+        Text(if (short) "AI" else "AI · $label", style = MaterialTheme.typography.labelMedium.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold), color = colors.muted)
     }
 }

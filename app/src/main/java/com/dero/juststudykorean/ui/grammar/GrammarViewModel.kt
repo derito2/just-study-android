@@ -35,8 +35,8 @@ data class GrammarUi(
     val written: Map<Long, GrammarWritten> = emptyMap(),
 )
 
-/** What the model wrote for a point (never saved): a simpler explanation and a practice sentence (Korean, English). */
-data class GrammarWritten(val busy: Boolean = false, val simpler: String? = null, val practice: Pair<String, String>? = null)
+/** What the model wrote for a point (never saved): a simpler explanation and a practice sentence (Korean only, R1-18). */
+data class GrammarWritten(val busy: Boolean = false, val simpler: String? = null, val practice: String? = null)
 
 /** Grammar (design/grammar-calendar-settings.md): filter pills, search as you type, one card open at a time. */
 @OptIn(ExperimentalCoroutinesApi::class)

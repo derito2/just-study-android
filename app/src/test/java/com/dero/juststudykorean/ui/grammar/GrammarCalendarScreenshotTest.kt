@@ -63,7 +63,7 @@ class GrammarCalendarScreenshotTest {
     fun grammarOpenAi() = snap("grammar_open_ai") {
         Grammar(GrammarUi(points = points, open = 1, ai = true, written = mapOf(1L to com.dero.juststudykorean.ui.grammar.GrammarWritten(
             simpler = "Use it to say something happened before something else, like in your example.",
-            practice = "학교에 가서 공부해요." to "I go to school and study.",
+            practice = "학교에 가서 공부해요.",
         ))))
     }
 

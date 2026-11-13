@@ -5,14 +5,15 @@ import com.dero.juststudykorean.korean.casefold
 // Phase 6, task 4 (use 5): the coach's text, written by the model from the facts the rules computed (CoachEngine). The
 // proposals (Start quiz, Create deck) stay the rules'. Also use 8 (Dashboard) checks its sentences the same way.
 
-const val COACH_AI_VERSION = "coach.nano.v1"
+const val COACH_AI_VERSION = "coach.nano.v2"
 
 private val NUMBER = Regex("\\d+(?:[.,]\\d+)?")
 
 fun coachPrompt(facts: String) =
     "You are a friendly Korean study coach. Rewrite the study plan below for the learner in 2 to 4 short English " +
-        "sentences, talking to them as \"you\". Use only these facts: do not add any number, Korean word or topic that is " +
-        "not in them, and keep the ones you use exactly as written.\n\nFacts:\n$facts"
+        "sentences, talking to them as \"you\", in natural, simple English, as a teacher would say it (not a list of " +
+        "facts). Name a quiz or a deck once, by its name in quotes. Use only these facts: do not add any number, Korean " +
+        "word or topic that is not in them, and keep the ones you use exactly as written.\n\nFacts:\n$facts"
 
 /**
  * The model's text if it only uses the facts: English, every number and Korean word from [facts], and no topic of

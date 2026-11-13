@@ -24,7 +24,7 @@ class TeacherPromptsTest {
 
     @Test
     fun withoutSourcesNoKoreanAtAll() {
-        assertEquals("Honorifics show respect to the listener.", validNoSources("Honorifics show respect to the listener."))
-        assertNull(validNoSources("Honorifics like 습니다 show respect."))
+        assertEquals("Honorifics show respect to the listener.", validNoSources("Honorifics show respect to the listener.", "What are honorifics?"))
+        assertNull(validNoSources("Honorifics like 습니다 show respect.", "What are honorifics?"))
     }
 }
