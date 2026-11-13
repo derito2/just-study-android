@@ -101,10 +101,16 @@ class Teacher(private val store: NotesStore, private val k: Int = 4, private val
         },
         // A word that only appears in an example of another one.
         Responder { t -> t.word?.let { w -> exampleMentions(t.retrieval.hits, variants(w))?.let { noEntry(w, it, t.retrieval) } } },
-        // A Korean word without an entry: the sentences where it appears, or "not in your notes".
+        // A Korean word without an entry: the sentences where it appears, or "not in your notes". R1-01 (the app departs
+        // from the web): "How do I say school?" also looks for the word in the translations of your sentences.
         Responder { t ->
             val word = t.word ?: return@Responder null
-            if (!hasHangul(word) || isGrammarWord(word) || asksSentence(t.question)) null else wordInSentences(word, t.retrieval)
+            when {
+                isGrammarWord(word) || asksSentence(t.question) -> null
+                hasHangul(word) -> wordInSentences(word, t.retrieval) ?: refuse("not_found", t.retrieval, emptyList())
+                askedPhrase(t.question) != null -> wordInSentences(word, t.retrieval)
+                else -> null
+            }
         },
         // Nothing close enough: not even the model is asked.
         Responder { t -> if (!t.retrieval.enoughContext || t.sources.isEmpty()) refuse("no_context", t.retrieval, emptyList()) else null },
@@ -269,10 +275,17 @@ class Teacher(private val store: NotesStore, private val k: Int = 4, private val
         return notesAnswer(text, sourcesFor(used), "entry.v1")
     }
 
-    private fun wordInSentences(word: String, retrieval: Retrieval): TeacherAnswer {
+    /** The sentences of your notes with [word]: in their Korean (학교 also as 학교가) or, for English, in their translation. */
+    private fun wordInSentences(word: String, @Suppress("UNUSED_PARAMETER") retrieval: Retrieval): TeacherAnswer? {
         val target = word.trim { it in " .?!\"'“”‘’" }
-        val found = index().sentences.filter { (ln, _) -> target in ln.split("=", limit = 2)[0] }.take(MAX_EXAMPLES)
-        if (found.isEmpty()) return refuse("not_found", retrieval, emptyList())
+        val korean = hasHangul(target)
+        val forms = variants(target)
+        val english = forms.map { py("\\b${Regex.escape(it)}\\b", ignoreCase = true) }
+        val found = index().sentences.filter { (ln, _) ->
+            val parts = ln.split("=", limit = 2)
+            if (korean) forms.any { it in parts[0] } else parts.size == 2 && english.any { it.containsMatchIn(parts[1]) }
+        }.take(MAX_EXAMPLES)
+        if (found.isEmpty()) return null
         val used = uniqueHits(found.map { it.second })
         val n = used.withIndex().associate { (i, h) -> h.id to i + 1 }
         val lines = listOf("Your notes don't have an entry for “$target”. It appears in these sentences:") +
@@ -381,10 +394,12 @@ class Teacher(private val store: NotesStore, private val k: Int = 4, private val
             val forms = patternForms(point.pattern).filter { it.length >= 2 }
             val used = forms.filter { hasForm(flat, it, index.aeo) }
             val titleWords = TWO_HANGUL.findAll(point.pattern).map { it.value }.filter { it in wordSet }.toSet()
-            if (used.isEmpty() && titleWords.isEmpty()) continue
+            // R1-12: a form listed in the point's structure ("+기 전에") whose word your sentence has (전에).
+            val listed = point.structure.firstOrNull { f -> !LATIN.containsMatchIn(f) && TWO_HANGUL.findAll(f).any { it.value in wordSet } }
+            if (used.isEmpty() && titleWords.isEmpty() && listed == null) continue
             ruleForms += used
             ruleForms += forms.filter { f -> f.length >= 3 && titleWords.any { it in f } }
-            val rule = "${point.pattern} = ${point.meaning}"
+            val rule = "${point.pattern}${listed?.let { " (${it.trimStart('-', ' ')})" } ?: ""} = ${point.meaning}"
             if (rules.none { it.first == rule }) rules += rule to hit
         }
         val mine = flat.filter { it in '가'..'힣' }.toSet() - COMMON
