@@ -89,6 +89,8 @@ private fun pattern(chunk: Chunk, lines: List<String>): GrammarPoint? {
                     examples.isNotEmpty() && part == "translation" -> examples.last()[1] += " $line"
                     HANGUL.containsMatchIn(line) && !G_LATIN.containsMatchIn(line) && (examples.isEmpty() || examples.last()[0].pyLen < WRAPPED_LINE) ->
                         examples += arrayOf(line, "") // a Korean-only line of its own: another example
+                    // R1-21: English never goes on the Korean side; a wrapped translation goes on with the translation.
+                    examples.isNotEmpty() && !HANGUL.containsMatchIn(line) -> examples.last()[1] = "${examples.last()[1]} $line".pyStrip()
                     examples.isNotEmpty() -> examples.last()[0] += " $line"
                 }
             }

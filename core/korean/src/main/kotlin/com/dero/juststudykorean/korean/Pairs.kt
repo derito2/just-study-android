@@ -31,9 +31,14 @@ fun extractPairs(chunk: Chunk): List<VocabPair> {
     val pairs = linkedMapOf<String, VocabPair>()
     for (item in parseLines(body)) {
         if (item.grammar) continue
+        if (illustratesGrammar(chunk, item.korean)) continue
         val ko = headword(item.korean)
         val (exampleKo, exampleEn) = item.example
         pairs.putIfAbsent(norm(ko), VocabPair(ko, item.english, item.romanization, exampleKo, exampleEn, examples = item.examples.toList(), notes = item.notes.toList()))
     }
     return pairs.values.toList()
 }
+
+/** R1-16 (the app departs from the web): a numbered sentence inside an explanation illustrates grammar; it is not a card. */
+fun illustratesGrammar(chunk: Chunk, korean: String): Boolean =
+    chunk.contentType == "explanation" && com.dero.juststudykorean.korean.teacher.isSentence(korean)

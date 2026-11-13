@@ -16,6 +16,7 @@ private val ROMAN = py("\\s*\\((?<rom>[A-Za-z][A-Za-z' .-]*)\\)\\s*$")
 private val PAREN_PAIR = py("(?<ko>[$H][$H]*(?: [$H]+)?)\\s*\\((?<en>[A-Za-z][^()]*)\\)")
 internal val GRAMMAR_HEAD = py("^(?:-|~|\\(으\\)|\\(이\\)|\\(스\\)|\\(느\\))\\s*[$H(]")
 private val TABLE_CELL = py("\\s*\\|\\s*")
+private val ARROW = py("->|→")
 internal const val MAX_ENGLISH_CHARS = 120
 private const val MAX_FREE_KOREAN_WORDS = 6
 private const val MAX_DETAILS = 30
@@ -35,6 +36,19 @@ internal class NoteItem(
     val example: Pair<String?, String?>
         get() = examples.firstOrNull { it.second.isNotEmpty() }?.let { it.first to it.second }
             ?: if (examples.isNotEmpty()) examples[0].first to null else null to null
+}
+
+// The stem without its last syllable when it has two or more (계산하다 -> 계산: 계산할게요, 가르치다 -> 가르: 가르쳐요).
+private fun verbCore(verb: String): String = verb.dropLast(1).let { if (it.length >= 2) it.dropLast(1) else it }
+
+/** [phrase] uses the entry [korean] (any of its "가장 / 제일" forms, also conjugated). */
+internal fun usesEntry(korean: String, phrase: String): Boolean {
+    val variants = koreanVariants(korean).map { it.replace(" ", "") }
+    val words = phrase.split(" ").map { it.trim('.', ',', '!', '?') }
+    return variants.any { v ->
+        v.isNotEmpty() && (hasForm(phrase, v) ||
+            (v.endsWith("다") && v.length >= 2 && (words.any { w -> w.startsWith(verbCore(v)) || aeoForms(v).any { w.startsWith(it) } || lemmas(w, setOf(v)).isNotEmpty() })))
+    }
 }
 
 internal fun nfc(text: String): String = Normalizer.normalize(text, Normalizer.Form.NFC)
@@ -91,13 +105,25 @@ private fun addDetail(item: NoteItem, raw: String) {
                 item.english = if (item.grammar && LATIN.containsMatchIn(value)) value.pyTake(MAX_GRAMMAR_MEANING_CHARS).trimEnd('.') else cleanEnglish(value) ?: ""
             key == "translation" && item.examples.isNotEmpty() && item.examples.last().second.isEmpty() ->
                 item.examples[item.examples.lastIndex] = item.examples.last().first to value
-            key in setOf("example", "examples", "ex") && value.isNotEmpty() -> item.examples += example(value) ?: (value to "")
+            key in setOf("example", "examples", "ex") && value.isNotEmpty() ->
+                if (aboutAnother(item, value)) item.notes += value else item.examples += example(value) ?: (value to "")
             value.isNotEmpty() -> item.notes += value
         }
         return
     }
     val ex = example(text)
-    if (ex != null) item.examples += ex else item.notes += text
+    if (ex != null && !aboutAnother(item, text)) item.examples += ex else item.notes += text
+}
+
+/**
+ * R1-15 (the app departs from the web): "X -> Y", "X → Y", "X - Y", "== X" or "X = Y" below a word, where X does not
+ * use the word, is a note about another word (a synonym, a comparison), not an example of it.
+ */
+private fun aboutAnother(item: NoteItem, text: String): Boolean {
+    if (item.grammar) return false
+    if (!text.startsWith("==") && !ARROW.containsMatchIn(text) && splitPair(text) == null) return false
+    val korean = text.removePrefix("==").split(SEP, limit = 2)[0].pyStrip()
+    return korean.isNotEmpty() && !usesEntry(item.korean, korean)
 }
 
 private fun legacyHead(input: String): Pair<String, String?>? {

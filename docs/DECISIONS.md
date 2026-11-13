@@ -2,6 +2,16 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-13 — Ronda 1: el lector y Teacher se apartan de la web
+**Decisión del dueño:** en estos puntos la app puede dar algo distinto que la web (`backend/app`), y las doradas que cambien se regeneran:
+- **R1-15:** debajo de una palabra, una línea `X -> Y`, `X → Y`, `X - Y`, `X = Y` o `== X` cuya parte coreana no usa la palabra (ni conjugada) es una **nota** de la entrada (sinónimo, comparación), no su ejemplo. La que sí la usa sigue siendo ejemplo (`이 중에서 하나를 고르세요 → Choose one`). También vale para `Example:` con flecha.
+- **R1-16:** las frases numeradas dentro de una explicación (trozo `explanation`) ilustran gramática: no son tarjetas.
+- **R1-21:** un ejemplo de gramática termina con su coreano; una línea sin hangul que sigue es la continuación de la traducción.
+- **R1-01** y **R1-12** (Teacher): ver sus entradas más abajo en esta misma ronda.
+**Cómo llega a tus tarjetas:** solo al reprocesar el documento (`DocumentIndexer.refreshCards`): la tarjeta cuyo ejemplo es ahora una nota toma el ejemplo de la palabra, y la frase de gramática que era tarjeta se quita (sus repasos se quedan: es tu historial). Los mazos del Coach y los ejemplos que vienen de otro documento no se tocan. Lo que se calcula al vuelo (reverso *From your notes*, quiz, Teacher) cambia al instalar.
+**Doradas:** ninguna de `golden/` cambia con estas reglas (sus notas sintéticas no tienen esos casos); las pruebas nuevas están en `ReaderRoundOneTest` y `RefreshCardsTest`.
+**Descartado:** elegir siempre "la primera frase que contenga la palabra" sin mirar el tipo de línea: cambiaba 34 tarjetas de tus notas en vez de 17, la mayoría sin error (el ejemplo era la propia palabra).
+
 ## 2026-11-12 — Fase 7, tareas 6 y 7: robustez en el OPPO y versión 0.9.0
 **Todo sobre la copia (app de benchmark), con los ajustes que el dueño autorizó, cada uno restaurado y comprobado:**
 - *Background process limit* → *No background processes*: con un quiz a la mitad (1 respondida), ColorOS mató el proceso en segundo plano; al volver, el mismo quiz en la pregunta 2 con la respuesta guardada y sin quiz nuevo (R-008 con el `SavedStateHandle`). La pregunta del modelo, que vive solo en memoria, se pierde (4 de 5): es lo esperado. Los otros dos casos (a mitad de una respuesta del modelo y a mitad de procesar) no se pudieron provocar: ColorOS mantuvo la app viva (adj 430) más de 30 s, el modelo responde en ~3 s y el PDF de 30 páginas se procesa en 0,25 s. Reanudar por etapas tiene sus pruebas en `ProcessingQueueTest`.
