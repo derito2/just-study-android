@@ -58,11 +58,9 @@ import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
 @Composable
-fun QuestionScreen(runId: Long?, onLeave: () -> Unit, onResults: (Long) -> Unit, onCreated: (Long) -> Unit = {}, vm: QuestionViewModel = hiltViewModel()) {
+fun QuestionScreen(runId: Long?, onLeave: () -> Unit, onResults: (Long) -> Unit, vm: QuestionViewModel = hiltViewModel()) {
     LaunchedEffect(runId) { vm.open(runId) }
     val ui by vm.state.collectAsStateWithLifecycle()
-    // The saved route gets the quiz id: if the process is killed, coming back opens this quiz, not a new one.
-    LaunchedEffect(ui.created) { if (ui.created) ui.run?.let { onCreated(it.id) } }
     LaunchedEffect(ui.finished) { if (ui.finished) ui.run?.let { onResults(it.id) } }
     QuestionContent(ui, onLeave = onLeave, onType = vm::type, onAnswer = vm::answer, onNext = vm::next)
 }
@@ -85,7 +83,7 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
     var leaving by remember { mutableStateOf(leaveAtStart) }
     val run = ui.run
     BackHandler(enabled = run != null) { leaving = true }
-    val total = run?.questions?.size ?: 0
+    val total = (run?.questions?.size ?: 0) + ui.pendingAi // A.3: counts the ones the model is still writing
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding().imePadding()) {
         SmallBar(Lucide.X, "Leave quiz", "Quiz", if (run != null) "${ui.index + 1} of $total" else null) { if (run != null) leaving = true else onLeave() }
         when {
@@ -93,6 +91,7 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
             ui.failed || run == null -> Column(Modifier.padding(Tokens.Space4)) {
                 ErrorState("Try other question types, another document, or try again.", onLeave, title = "No questions could be created this time.", retryLabel = "Back")
             }
+            ui.question == null -> Box(Modifier.padding(Tokens.Space4)) { LoadingState("Writing the next question…") } // A.3
             else -> {
                 val q = ui.question!!
                 val answered = ui.answers[q.id]
@@ -101,6 +100,10 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                     { done.toFloat() / total }, Modifier.fillMaxWidth().padding(horizontal = Tokens.Space4).height(6.dp),
                     color = c.brand, trackColor = c.canvas, gapSize = 0.dp, drawStopIndicator = {}, strokeCap = androidx.compose.ui.graphics.StrokeCap.Round,
                 )
+                if (ui.pendingAi > 0) Row(Modifier.padding(horizontal = Tokens.Space4, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+                    Text("Writing ${ui.pendingAi} more with AI…", fontSize = 12.sp, color = c.muted)
+                    AiMark(short = true)
+                }
                 Row(Modifier.fillMaxWidth().padding(Tokens.Space4)) {
                     Count("Done", "완료", "$done/$total", MaterialTheme.colorScheme.onSurface, Modifier.weight(1f))
                     Count("Correct", "정답", "${ui.correct}", c.correct, Modifier.weight(1f))
@@ -136,9 +139,10 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                                 QuizOption(i + 1, o, state, { onAnswer(o) })
                             }
                         } else {
-                            Text(if (mode == "korean") "Your answer in Korean" else "Your answer", style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
-                            JsTextField(
-                                answered?.given ?: ui.typed, onType, Modifier.fillMaxWidth(), enabled = answered == null,
+                            val label = if (mode == "korean") "Your answer in Korean" else "Your answer"
+                            Text(label, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
+                            JsTextField( // TalkBack names the field (the label above is a separate text: phase 7, task 5)
+                                answered?.given ?: ui.typed, onType, Modifier.fillMaxWidth().semantics { contentDescription = label }, enabled = answered == null,
                                 borderColor = if (answered != null && !answered.grade.correct) c.wrongBorder else null,
                                 style = if (mode == "korean") JustStudyTheme.korean.koBody else MaterialTheme.typography.bodyMedium,
                                 onDone = { if (ui.typed.isNotBlank()) onAnswer(ui.typed) },

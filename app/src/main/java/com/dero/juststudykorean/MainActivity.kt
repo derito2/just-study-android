@@ -36,12 +36,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        AppForeground.visible = true
+        AppForeground.started()
         nano.refresh() // AICore's state may have changed while the app was away (never starts a download)
     }
 
     override fun onStop() {
-        AppForeground.visible = false
+        AppForeground.stopped()
         super.onStop()
     }
 

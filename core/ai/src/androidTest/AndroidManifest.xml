@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The judge batch (phase 7) needs an app in front: AICore blocks calls from the background. Test APK only. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity android:name="com.dero.juststudykorean.ai.FrontActivity" android:exported="false" />
+    </application>
+</manifest>

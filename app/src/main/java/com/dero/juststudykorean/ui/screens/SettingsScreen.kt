@@ -37,6 +37,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -98,6 +99,9 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
                     if (busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = JustStudyTheme.colors.brand, trackColor = JustStudyTheme.colors.tint, gapSize = 0.dp)
                     error?.let { ErrorState(it, onRetry = { pick.launch(BACKUP_TYPES) }, title = "Couldn't finish") }
                 }
+                val context = LocalContext.current
+                val version = remember { context.packageManager.getPackageInfo(context.packageName, 0).versionName }
+                Text("Version $version", Modifier.padding(Tokens.Space4), style = MaterialTheme.typography.bodySmall, color = JustStudyTheme.colors.muted)
             }
         }
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))

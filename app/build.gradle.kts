@@ -19,7 +19,7 @@ android {
         minSdk = 31
         targetSdk = 37
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Only the OPPO (arm64): the other ABIs of MuPDF and SQLite were 32 MB of the APK.
@@ -45,6 +45,15 @@ android {
                 enable = true
                 packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
             }
+        }
+        // Phase 7: release as it ships, but its own app (its own data, filled from a backup) for the macrobenchmarks;
+        // profileable and with ProfileInstallReceiver (src/benchmark/AndroidManifest.xml). Never replaces your app.
+        create("benchmark") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.findByName("release")
+            applicationIdSuffix = ".benchmark"
+            matchingFallbacks += listOf("release")
+            proguardFiles("benchmark-rules.pro")
         }
     }
     buildFeatures {

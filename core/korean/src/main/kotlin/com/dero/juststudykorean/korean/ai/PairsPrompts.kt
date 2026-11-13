@@ -32,6 +32,7 @@ fun validLlmPair(korean: String, english: String, chunk: Chunk): VocabPair? {
     val ko = nfc(korean).trim().trimStart('-', '•', '*', ' ')
     val en = cleanEnglish(english) ?: return null
     if (ko.isEmpty() || !HANGUL_ONLY.matches(ko)) return null
+    if (en !in nfc(chunk.text)) return null // phase 7 (design/library.md E): the English too, literal in your notes
     val lines = chunk.text.lines().map(::nfc)
     val koLines = lines.indices.filter { ko in lines[it] }
     val enLines = lines.indices.filter { isGrounded(en, lines[it]) }

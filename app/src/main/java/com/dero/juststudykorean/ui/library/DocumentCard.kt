@@ -75,6 +75,7 @@ internal fun DocumentCard(
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
     messy: MessyNotesState? = null,
+    onAddPairs: (List<com.dero.juststudykorean.korean.VocabPair>) -> Unit = {},
 ) {
     val c = JustStudyTheme.colors
     val doc = item.document
@@ -131,7 +132,7 @@ internal fun DocumentCard(
                 LucideIcon(Lucide.Download, contentDescription = "Save PDF", size = 20.dp, tint = c.control, animateKey = taps)
             }
         }
-        if (open) ExtractedView(extracted, aiPairs = messy?.pairs.orEmpty())
+        if (open) ExtractedView(extracted, aiPairs = messy?.pairs.orEmpty(), onAdd = onAddPairs)
     }
 }
 

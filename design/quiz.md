@@ -65,6 +65,14 @@ Sin modelo en el teléfono, *Fill in the blank*, *Short answer* y el bloque *Dif
 - **Juez de significado:** debajo del resultado de una respuesta escrita aceptada por el modelo, *accepted: same meaning* (12 sp, `correct`) con AiMark corto.
 - **Explicación del error:** debajo de la respuesta correcta, en un recuadro `canvas` con AiMark. Sin modelo, la explicación del punto de gramática tal cual, si existe, sin AiMark.
 
+### A.3 · Fase 7: preguntas del modelo sin esperar
+
+- **Al tocar Generate quiz**, el quiz empieza en cuanto están las preguntas de reglas (menos de 300 ms). Las del modelo se escriben mientras tanto y se añaden al final, en el orden en que llegan.
+- **Contador *"{n} of {total}"*:** cuenta ya las pedidas al modelo. Mientras quede alguna por llegar, debajo de la barra de progreso sale *Writing {k} more with AI…* (12 sp, `muted`, con AiMark corto).
+- **Si llegas al final antes de que llegue una:** la Card muestra el estado de carga de `shell.md` con *Writing the next question…*, como mucho hasta el plazo del modelo.
+- **Si el modelo falla o vence el plazo:** esa pregunta se quita sin aviso de error, el total baja, y en los resultados sale *{k} AI questions couldn't be written this time.* (12 sp, `muted`).
+- **Si todas son de modelo:** se ve el estado B (*Creating your quiz…*) hasta la primera.
+
 ## B · Generando
 
 Tras **Generate quiz**, la pantalla de la pregunta muestra el estado de carga de `shell.md` con *Creating your quiz…* (las preguntas por reglas tardan menos de 300 ms, así que casi nunca se ve). Si no se pudo crear ninguna: el recuadro de error con *No questions could be created this time.* y *Try other question types, another document, or try again.*, más **Back** (Gray).

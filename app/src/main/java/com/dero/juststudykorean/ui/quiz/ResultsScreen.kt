@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.quiz
 
+import androidx.compose.ui.unit.sp
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,13 +42,14 @@ import com.dero.juststudykorean.ui.theme.Tokens
 fun ResultsScreen(key: String, onClose: () -> Unit, onNewQuiz: () -> Unit, vm: ResultsViewModel = hiltViewModel()) {
     LaunchedEffect(key) { vm.open(key) }
     val rows by vm.rows.collectAsStateWithLifecycle()
+    val aiFailed by vm.aiFailed.collectAsStateWithLifecycle()
     BackHandler(onBack = onClose)
-    ResultsContent(rows, onClose, onNewQuiz)
+    ResultsContent(rows, onClose, onNewQuiz, aiFailed)
 }
 
 /** Results (design/quiz.md D): the score, the sentence for it and each answer. */
 @Composable
-fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () -> Unit) {
+fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () -> Unit, aiFailed: Int = 0) {
     val c = JustStudyTheme.colors
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding()) {
         SmallBar(Lucide.X, "Close results", "Results", null, onClose)
@@ -65,6 +67,7 @@ fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () ->
                     else -> "That was weak. Go again."
                 }
                 Text("$line Your answers were saved and count towards your progress.", style = MaterialTheme.typography.bodyMedium, color = c.muted)
+                if (aiFailed > 0) Text("$aiFailed AI ${if (aiFailed == 1) "question" else "questions"} couldn't be written this time.", fontSize = 12.sp, color = c.muted) // A.3
                 Column(Modifier.fillMaxWidth().border(Tokens.Border, c.line, MaterialTheme.shapes.medium)) {
                     rows.forEachIndexed { i, r ->
                         if (i > 0) HorizontalDivider(thickness = Tokens.Border, color = c.line)

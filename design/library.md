@@ -64,6 +64,14 @@ Debajo, tres recuadros: *Now in the app* (`canvas`), *In the new PDF* (`tint`) y
 
 Si las reglas no entienden un fragmento (`needs_llm_pairs`), el modelo propone pares *coreano = inglés*, validados como en la web. Solo corre con la app abierta: si sales, se pausa y la Card dice *"Waiting for you to open the app to read messy notes."* (12 sp, `muted`). Los pares que crea el modelo llevan AiMark en *Words detected*.
 
+**Aceptar pares (fase 7):** en *Words detected*, los pares del modelo van agrupados al principio, bajo *Found by AI in messy notes* (`section-title` de 14 sp, con AiMark).
+- Cada fila lleva a la derecha **Add** (Gray, Small).
+- Arriba del grupo, **Add all** (`Action`, Small).
+- **Al añadir:** el par pasa a ser una palabra normal del documento, igual que las de reglas, y la fila pierde AiMark y el botón. Solo se puede añadir si el coreano **y** el inglés aparecen literales en ese fragmento de tus notas: entonces son tuyos y el modelo solo los encontró.
+- Un par que no cumple eso no se muestra.
+- **Sin aceptar:** no están en Quiz, Flashcards ni Teacher.
+- Snackbar *Added {n} words.* con **Undo**.
+
 ## Estados de la pantalla
 
 - **Sin documentos:** la Card de subir y debajo *No documents yet. Upload a PDF and get to work.* (14 sp, `muted`).

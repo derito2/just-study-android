@@ -1,6 +1,7 @@
 package com.dero.juststudykorean.ui.quiz
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dero.juststudykorean.data.db.DocumentsEntity
@@ -149,8 +150,8 @@ data class QuestionUi(
     val finished: Boolean = false,
     /** The last answer could not be saved. */
     val error: String? = null,
-    /** This screen created the quiz (it was not opened by its id). */
-    val created: Boolean = false,
+    /** A.3: questions asked of the model that haven't arrived yet (the counter already counts them). */
+    val pendingAi: Int = 0,
 ) {
     val question: QuestionsEntity? get() = run?.questions?.getOrNull(index)
     val correct: Int get() = answers.values.count { it.grade.correct }
@@ -158,7 +159,12 @@ data class QuestionUi(
 
 /** A quiz (design/quiz.md B and C): created from the saved form when [open] gets no run; each answer is saved at once. */
 @HiltViewModel
-class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, private val prefs: UserPrefs, private val ai: QuizAi? = null) : ViewModel() {
+class QuestionViewModel @Inject constructor(
+    private val quiz: QuizRepository,
+    private val prefs: UserPrefs,
+    private val ai: QuizAi? = null,
+    private val saved: SavedStateHandle = SavedStateHandle(),
+) : ViewModel() {
     private val _state = MutableStateFlow(QuestionUi())
     val state = _state.asStateFlow()
     private var opened = false
@@ -169,13 +175,21 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
     var lastGenerationMs: Long = -1
         private set
 
-    fun open(runId: Long?) {
+    fun open(route: Long?) {
         if (opened) return
         opened = true
+        // R-008: the quiz this screen created is kept in its saved state (not in a new route: that would clear this
+        // ViewModel and cancel the model's questions, phase 7), so a killed process opens it again, not a new one.
+        val runId = route ?: saved.get<Long>(RUN_ID)
         viewModelScope.launch {
             try {
-                val run = if (runId != null) quiz.run(runId) else generate()
-                if (run == null || run.questions.isEmpty()) { _state.value = QuestionUi(loading = false, failed = true); return@launch }
+                val run = if (runId != null) quiz.run(runId) else generate()?.also { saved[RUN_ID] = it.id }
+                val pending = if (runId == null) planned else 0
+                if (run == null || (run.questions.isEmpty() && pending == 0)) { _state.value = QuestionUi(loading = false, failed = true); return@launch }
+                if (run.questions.isEmpty()) { // A.3: all from the model: state B until the first one
+                    _state.value = QuestionUi(loading = true, run = run, pendingAi = pending)
+                    return@launch
+                }
                 // A quiz opened again (the process was killed half way) goes on where it was: the saved answers and the
                 // first question without one. Text half typed is not kept.
                 val answers = if (runId == null) emptyMap() else quiz.results("run-${run.id}").associate { r ->
@@ -184,7 +198,7 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
                 val next = run.questions.indexOfFirst { it.id !in answers }
                 _state.value = QuestionUi(
                     loading = false, run = run, documents = quiz.documentNames(run.questions), answers = answers,
-                    index = if (next < 0) run.questions.lastIndex else next, finished = next < 0, created = runId == null,
+                    index = if (next < 0) run.questions.lastIndex else next, finished = next < 0, pendingAi = pending,
                 )
                 shownAt = System.nanoTime()
             } catch (e: CancellationException) {
@@ -192,6 +206,34 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
             } catch (e: Exception) {
                 _state.value = QuestionUi(loading = false, failed = true)
             }
+        }
+    }
+
+    private companion object { const val RUN_ID = "runId" }
+
+    /** A.3: how many questions the model was asked for when this quiz was created. */
+    private var planned = 0
+
+    /** A.3: the model writes while you answer; each question goes at the end; the ones it couldn't write drop out. */
+    private fun write(request: QuizRequest, levels: List<Int>, run: QuizRun) = viewModelScope.launch {
+        var got = 0
+        runCatchingCancellable {
+            ai!!.questions(request, levels, System.currentTimeMillis()) { c ->
+                val q = quiz.addAi(run.id, c)
+                got++
+                val s = _state.value
+                val r = s.run ?: run
+                _state.value = s.copy(run = r.copy(questions = r.questions + q), pendingAi = (planned - got).coerceAtLeast(0), loading = false)
+                if (s.loading || s.question == null) shownAt = System.nanoTime()
+            }
+        }.onFailure { Log.w("JustStudy", "ai questions failed error=${it.javaClass.name}") } // the class only, never text
+        quiz.setAiFailed(run.id, planned - got)
+        val s = _state.value
+        val size = s.run?.questions?.size ?: 0
+        _state.value = when {
+            size == 0 -> s.copy(pendingAi = 0, loading = false, failed = true)
+            s.index >= size -> s.copy(pendingAi = 0, index = size - 1, finished = true) // you were waiting at the end
+            else -> s.copy(pendingAi = 0)
         }
     }
 
@@ -203,8 +245,9 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
         val start = System.nanoTime()
         val request = QuizRequest(documentIds = f.documentIds.toList(), count = f.count, types = types)
         // The model writes some multiple choice / short answer questions (kept in memory only); the rules, the rest.
-        val written = if (nano) runCatchingCancellable { ai!!.questions(request, f.levels.sorted(), System.currentTimeMillis()) }.getOrDefault(emptyList()) else emptyList()
-        val run = quiz.generate(request, written)
+        planned = if (nano) ai!!.planned(request) else 0
+        val run = quiz.generate(request, pendingAi = planned)
+        if (run != null && planned > 0) write(request, f.levels.sorted(), run)
         lastGenerationMs = (System.nanoTime() - start) / 1_000_000
         Log.i("JustStudy", "quiz generated: ${run?.questions?.size ?: 0} of ${f.count} questions in $lastGenerationMs ms") // counts only, never content
         return run
@@ -248,7 +291,9 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
     fun next() {
         val s = _state.value
         val total = s.run?.questions?.size ?: return
-        if (s.index + 1 >= total) _state.value = s.copy(finished = true)
+        // A.3: at the end with a model question still coming: wait for it ("Writing the next question…").
+        if (s.index + 1 >= total && s.pendingAi > 0) _state.value = s.copy(index = s.index + 1, typed = "")
+        else if (s.index + 1 >= total) _state.value = s.copy(finished = true)
         else { _state.value = s.copy(index = s.index + 1, typed = ""); shownAt = System.nanoTime() }
     }
 }
@@ -258,11 +303,17 @@ class QuestionViewModel @Inject constructor(private val quiz: QuizRepository, pr
 class ResultsViewModel @Inject constructor(private val quiz: QuizRepository) : ViewModel() {
     private val _rows = MutableStateFlow<List<ResultRow>?>(null)
     val rows = _rows.asStateFlow()
+    private val _aiFailed = MutableStateFlow(0)
+    /** A.3: "{k} AI questions couldn't be written this time." */
+    val aiFailed = _aiFailed.asStateFlow()
     private var opened = false
 
     fun open(key: String) {
         if (opened) return
         opened = true
-        viewModelScope.launch { _rows.value = runCatchingCancellable { quiz.results(key) }.getOrDefault(emptyList()) }
+        viewModelScope.launch {
+            _rows.value = runCatchingCancellable { quiz.results(key) }.getOrDefault(emptyList())
+            _aiFailed.value = key.removePrefix("run-").toLongOrNull()?.takeIf { key.startsWith("run-") }?.let(quiz::aiFailed) ?: 0
+        }
     }
 }
