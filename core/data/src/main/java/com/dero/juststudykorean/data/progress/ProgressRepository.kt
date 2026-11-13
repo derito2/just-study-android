@@ -162,7 +162,9 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
             accuracy = accuracy(correct, rows.size),
             sessions = sessions.size,
             totalStudySeconds = sessions.sumOf { it.durationSeconds },
-            streakDays = streak(rows.map { day(it.createdAt) }.toSet(), today),
+            // R1-06: a day with card reviews or a session counts as studied too.
+            streakDays = streak(rows.map { day(it.createdAt) }.toSet() + sessions.map { day(it.startedAt) } +
+                db.flashcardReviewsDao().all().map { day(it.reviewedAt) }, today),
             lastStudiedAt = last?.let(::local),
             today = Today(
                 today, todayRows.size, todayCorrect, accuracy(todayCorrect, todayRows.size),
@@ -194,7 +196,7 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
     }
 
     fun calendar(year: Int, month: Int): Flow<CalendarMonth> =
-        db.invalidationTracker.createFlow("question_attempts", "study_sessions", "questions", "topics").map { calendarNow(year, month) }
+        db.invalidationTracker.createFlow("question_attempts", "study_sessions", "questions", "topics", "flashcard_reviews").map { calendarNow(year, month) }
 
     suspend fun calendarNow(year: Int, month: Int): CalendarMonth = withContext(Dispatchers.IO) {
         val first = LocalDate.of(year, month, 1)
@@ -211,10 +213,11 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
         }
         val seconds = HashMap<LocalDate, Long>()
         for (s in db.studySessionsDao().all().filter { it.startedAt in start until end }) seconds.merge(day(s.startedAt), s.durationSeconds, Long::plus)
+        val reviewed = db.flashcardReviewsDao().all().filter { it.reviewedAt in start until end }.map { day(it.reviewedAt) }.toSet()
         val days = generateSequence(first) { it.plusDays(1) }.takeWhile { it < next }.map { d ->
             val info = perDay[d] ?: Info()
             CalendarDay(
-                d, info.questions > 0, pyRound((seconds[d] ?: 0L) / 60.0), info.questions, info.correct,
+                d, info.questions > 0 || d in seconds || d in reviewed, pyRound((seconds[d] ?: 0L) / 60.0), info.questions, info.correct,
                 accuracy(info.correct, info.questions), info.topics.toList(), dayStatus(info.questions, info.correct),
             )
         }.toList()
