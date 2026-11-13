@@ -54,7 +54,10 @@ data class Mistake(val question: QuestionsEntity, val lastAt: Long, val times: I
 data class HistoryItem(val questionId: Long, val prompt: String, val result: String)
 
 /** A quiz of the last 15 days (or, before quizzes were saved, a quiz session); [startedAt] in epoch millis. */
-data class HistoryCard(val key: String, val title: String, val startedAt: Long, val items: List<HistoryItem>)
+data class HistoryCard(val key: String, val title: String, val startedAt: Long, val items: List<HistoryItem>) {
+    /** R1-08: you left it with questions unanswered (design/quiz.md A.4: *Left early*). */
+    val leftEarly: Boolean get() = items.any { it.result == "unanswered" }
+}
 
 class QuizException(message: String) : Exception(message)
 

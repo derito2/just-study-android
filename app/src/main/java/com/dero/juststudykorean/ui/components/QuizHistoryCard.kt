@@ -26,7 +26,7 @@ import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
 /** One quiz in the history: score, where its questions came from and when. */
-data class HistoryLine(val key: String, val correct: Int, val total: Int, val title: String, val date: String)
+data class HistoryLine(val key: String, val correct: Int, val total: Int, val title: String, val date: String, val leftEarly: Boolean = false)
 
 /** Quiz history (design/quiz.md A.4): a 44 dp ring with the score, the document and the date, and Details. */
 @Composable
@@ -48,7 +48,7 @@ fun QuizHistoryCard(lines: List<HistoryLine>, onDetails: (String) -> Unit, modif
                 }
                 Column(Modifier.weight(1f)) {
                     Text(l.title, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(l.date, style = MaterialTheme.typography.bodySmall, color = c.muted)
+                    Text(if (l.leftEarly) "${l.date} · Left early" else l.date, style = MaterialTheme.typography.bodySmall, color = c.muted) // R1-08
                 }
                 StickerButton("Details", { onDetails(l.key) }, ko = "자세히", color = StickerColor.Gray, size = StickerSize.Small)
             }

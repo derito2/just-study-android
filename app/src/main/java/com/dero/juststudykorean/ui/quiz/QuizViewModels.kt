@@ -111,7 +111,7 @@ class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, pr
     }.catch { emit(emptyList()) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val history: StateFlow<List<HistoryLine>> = quiz.history().map { cards ->
-        cards.map { h -> HistoryLine(h.key, h.items.count { it.result == "correct" }, h.items.size, h.title, whenText(h.startedAt, clock.now(), clock.zone)) }
+        cards.map { h -> HistoryLine(h.key, h.items.count { it.result == "correct" }, h.items.size, h.title, whenText(h.startedAt, clock.now(), clock.zone), h.leftEarly) }
     }.catch { emit(emptyList()) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
