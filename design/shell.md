@@ -120,3 +120,13 @@ Marca de todo lo que no sale de tus notas. Va arriba a la izquierda de la Card o
 - En espacios estrechos (el juez del quiz y *Words detected*): solo **AI** con el icono.
 - TalkBack: "AI, not from your notes".
 - No se anima. Sin colores nuevos.
+
+### AiMark con fuentes (ronda 1, R1-11)
+
+- **La salida del modelo cita tus notas** (Teacher con fuentes y Coach): el texto es **AI · from your notes**, con el mismo aspecto.
+- **Sin fuentes:** sigue *AI · not from your notes*.
+- **La forma corta** (*AI*) no cambia.
+
+### Texto del modelo (ronda 1, R1-03)
+
+Se muestra como texto plano: se quitan `**`, `__`, `#` y los guiones de lista, y nunca se pintan negritas.

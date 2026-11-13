@@ -73,7 +73,12 @@ Sin modelo en el teléfono, *Fill in the blank*, *Short answer* y el bloque *Dif
 - **Si el modelo falla o vence el plazo:** esa pregunta se quita sin aviso de error, el total baja, y en los resultados sale *{k} AI questions couldn't be written this time.* (12 sp, `muted`).
 - **Si todas son de modelo:** se ve el estado B (*Creating your quiz…*) hasta la primera.
 
-## B · Generando
+### A.4 · Ronda 1
+
+- **Opciones de gramática (R1-09):** todas se escriben igual, con un solo guion inicial si el patrón de tus notas lo lleva. Ninguna opción se distingue de las demás por el guion.
+- **Resultados con preguntas del modelo (R1-07):** debajo de la puntuación, *{k} of these were written by AI and aren't saved in your history.* (12 sp, `muted`, con AiMark corto). En History se ve solo lo guardado.
+- **Quiz que dejas a medias (R1-08):** si respondiste al menos una, aparece en History con *Left early* (12 sp, `muted`) después de la fecha.
+
 
 Tras **Generate quiz**, la pantalla de la pregunta muestra el estado de carga de `shell.md` con *Creating your quiz…* (las preguntas por reglas tardan menos de 300 ms, así que casi nunca se ve). Si no se pudo crear ninguna: el recuadro de error con *No questions could be created this time.* y *Try other question types, another document, or try again.*, más **Back** (Gray).
 
