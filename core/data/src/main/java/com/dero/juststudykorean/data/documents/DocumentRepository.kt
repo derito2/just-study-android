@@ -89,7 +89,11 @@ class DocumentRepository @Inject constructor(
         val chunks = notes.chunks(doc)
         val words = LinkedHashMap<String, ExtractedWord>()
         for (chunk in chunks) for (p in extractPairs(chunk)) {
-            words.getOrPut(norm(p.korean)) { ExtractedWord(p.korean, p.english, p.romanization, p.exampleKo, p.exampleEn, p.examples, p.notes, chunk.pageNumber) }
+            val key = norm(p.korean)
+            val seen = words[key]
+            // Phase 8, 0b: a long entry split in several chunks shows the examples and notes of all of them.
+            words[key] = seen?.copy(examples = (seen.examples + p.examples).distinct(), notes = (seen.notes + p.notes).distinct())
+                ?: ExtractedWord(p.korean, p.english, p.romanization, p.exampleKo, p.exampleEn, p.examples, p.notes, chunk.pageNumber)
         }
         val grammar = chunks.flatMap { c ->
             extractGrammar(c).map { ExtractedGrammar(it.kind, it.pattern, it.meaning, it.forms, it.examples, it.explanation, c.pageNumber) }

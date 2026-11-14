@@ -2,6 +2,18 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-14 — Fase 8, tarea 0b: el lector no pierde nada por un tope (se aparta de la web)
+**Decisión del dueño:** una palabra puede tener muchos ejemplos y notas, y un punto de gramática toda su explicación, su estructura y muchos ejemplos; nada se descarta por un tope. Un texto largo se guarda entero y la pantalla decide cuánto enseña.
+**Qué cambia frente a la web (`backend/app/quiz`):**
+- Sin tope de 30 líneas por entrada (`MAX_DETAILS`).
+- El significado de una **entrada numerada** se acepta con cualquier largo (la web la descartaba con más de 120 caracteres). En las líneas de debajo sigue el límite de 120 para distinguir una traducción de una explicación: una línea larga no se pierde, queda como nota.
+- El significado de un punto de gramática no se corta a 160 caracteres.
+- Un punto de gramática no se parte en trozos aunque pase de 1500 caracteres (los trozos sin su `Meaning:` no se leían).
+- Un ejemplo coreano de 70 caracteres o más **que termina** (`.`, `?`, `!`…) ya no se une a la línea siguiente; solo se une si no terminó (la partió el PDF).
+- Library → *Details* junta los ejemplos y notas de todos los trozos de una entrada larga.
+**Con las notas del dueño** (5 documentos): no cambia nada. Ninguna entrada llegaba a esos topes; ninguna tarjeta, ejemplo, significado ni punto de gramática cambia. **Doradas:** ninguna cambia. La plantilla `docs/NOTES_TEMPLATE.md` y su PDF (`tools/fixtures`) lo prueban (`NotesTemplateTest`).
+**Las tarjetas** siguen guardando un solo ejemplo (columna del respaldo, sin cambios); el reverso ya enseñaba todos los ejemplos y notas leyéndolos de las notas.
+
 ## 2026-11-14 — Fase 8 (Games): decisiones D8-1…D8-9
 **Decisión del dueño:** todas como las propone `docs/FASE_8_PLAN.md` (sección 0):
 - **D8-1:** Games entra por una fila **Games** en MoreSheet, la primera (la barra inferior ya tiene 5 destinos).

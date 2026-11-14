@@ -2,7 +2,6 @@ package com.dero.juststudykorean.korean
 
 // Port of backend/app/quiz/grammar.py (extract_grammar), checked against golden/grammar/*.json.
 
-private const val MAX_MEANING_CHARS = 160
 private const val WRAPPED_LINE = 70 // a line this long was cut by the PDF: the next one goes on with it
 
 private val G_NUMBERED = py("^\\s*\\d{1,3}[.)]\\s*(?<rest>.+)$")
@@ -12,6 +11,7 @@ private val G_LATIN = py("[A-Za-z]{2,}") // a word in English (Vㄴ/는대요 is
 private val TRANSLATION = py("^\\s*[○◦•\\-*]?\\s*Translation\\s*:\\s*(?<value>.+)$", ignoreCase = true)
 private val TABLE_HEADER = setOf("particle", "main function", "function", "example", "examples", "meaning")
 private val CHOICE = py("^\\s*(?<letter>[A-F])\\)\\s*(?<text>.+?)\\s*$")
+private val ENDS_SENTENCE = py("[.!?:)\\]\"”]$") // as Reference.kt: a line that ended is not wrapped
 private val NUMBER_PREFIX = py("^\\s*\\d{1,3}[.)]\\s*")
 
 /** A pattern ("-(으)면서") or a particle-table row ("을/를"); [choices]: the options written in your notes. */
@@ -87,7 +87,9 @@ private fun pattern(chunk: Chunk, lines: List<String>): GrammarPoint? {
                         examples += arrayOf(numbered.groups["rest"]!!.value.pyStrip(), ""); part = "examples"
                     }
                     examples.isNotEmpty() && part == "translation" -> examples.last()[1] += " $line"
-                    HANGUL.containsMatchIn(line) && !G_LATIN.containsMatchIn(line) && (examples.isEmpty() || examples.last()[0].pyLen < WRAPPED_LINE) ->
+                    // A Korean-only line of its own unless the one before filled the line and did not end (the PDF wrapped it).
+                    HANGUL.containsMatchIn(line) && !G_LATIN.containsMatchIn(line) &&
+                        (examples.isEmpty() || examples.last()[0].pyLen < WRAPPED_LINE || ENDS_SENTENCE.find(examples.last()[0]) != null) ->
                         examples += arrayOf(line, "") // a Korean-only line of its own: another example
                     // R1-21: English never goes on the Korean side; a wrapped translation goes on with the translation.
                     examples.isNotEmpty() && !HANGUL.containsMatchIn(line) -> examples.last()[1] = "${examples.last()[1]} $line".pyStrip()
@@ -107,7 +109,7 @@ private fun pattern(chunk: Chunk, lines: List<String>): GrammarPoint? {
     return GrammarPoint(
         kind = "pattern",
         pattern = pattern,
-        meaning = meaning.pyTake(MAX_MEANING_CHARS),
+        meaning = meaning, // phase 8, 0b: whole; the screen decides how much it shows
         forms = forms.filter { HANGUL.containsMatchIn(it) },
         examples = examples.filter { it[0].pyStrip().isNotEmpty() }.map { it[0].pyStrip() to it[1].pyStrip() },
         explanation = explanation.joinToString(" ").ifEmpty { null },
@@ -135,7 +137,7 @@ private fun particles(lines: List<String>): List<GrammarPoint> {
         val function = left.substring(0, first.range.first).pyStrip()
         val korean = left.substring(first.range.first).pyStrip()
         if (function.isNotEmpty() && korean.isNotEmpty()) {
-            points += GrammarPoint("particle", row[0], function.pyTake(MAX_MEANING_CHARS), examples = listOf(korean to english.pyStrip()))
+            points += GrammarPoint("particle", row[0], function, examples = listOf(korean to english.pyStrip()))
         }
     }
     return points
@@ -143,7 +145,7 @@ private fun particles(lines: List<String>): List<GrammarPoint> {
 
 /** Grammar written on one line, like vocabulary: "-지만 = But" (examples below). */
 private fun oneLiners(lines: List<String>): List<GrammarPoint> = parseLines(lines).filter { it.grammar }.map {
-    GrammarPoint("pattern", it.korean, it.english.pyTake(MAX_MEANING_CHARS), examples = it.examples.toList(), explanation = it.notes.joinToString(" ").ifEmpty { null })
+    GrammarPoint("pattern", it.korean, it.english, examples = it.examples.toList(), explanation = it.notes.joinToString(" ").ifEmpty { null })
 }
 
 private val grammarCache = java.util.Collections.synchronizedMap(java.util.WeakHashMap<Chunk, List<GrammarPoint>>()) // as extractPairs'

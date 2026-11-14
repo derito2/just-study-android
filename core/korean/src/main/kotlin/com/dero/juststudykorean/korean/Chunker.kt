@@ -231,7 +231,8 @@ private fun segmentPieces(segment: Segment, maxChars: Int): List<Piece> {
         else -> return pack(units(lines), maxChars).map { Piece(section, it, false, null) }
     }
     val body = lines.joinToString("\n")
-    val bodies = if (body.pyLen <= GRAMMAR_MAX_CHARS) listOf(body) else pack(units(lines), GRAMMAR_MAX_CHARS)
+    // Phase 8, 0b: a grammar point stays in one chunk however long, or the pieces after its "Meaning:" are not read.
+    val bodies = if (kind == "grammar" || body.pyLen <= GRAMMAR_MAX_CHARS) listOf(body) else pack(units(lines), GRAMMAR_MAX_CHARS)
     return bodies.map { Piece(section, it, false, kind) }
 }
 

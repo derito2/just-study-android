@@ -343,6 +343,16 @@ Sorteo ponderado sin repetición. Los distractores salen del resto del banco sin
 
 **Tarea 0 · Decisiones y base.** `DECISIONS.md` con D8-1…D8-9 respondidas. Grupo `games` en `design/tokens.json` y `Tokens.kt` regenerado (`tools/design/gen_tokens.py`); `Splash.kt` usa el token `night`. Iconos nuevos (`gamepad-2`, `pause`, `play`, `flame`, `volume-2`, `delete`, `mic`, `lightbulb`, y `clock`, que ya está en `design/icons/`) desde Lucide a `design/icons/` y a `Lucide`. *Hecho cuando:* `TokensTest` y las capturas existentes siguen en verde sin regrabar.
 
+**Tarea 0b · Lector completo y plantilla de notas** (añadida por el dueño). Una palabra tiene su significado y puede tener muchos ejemplos y notas; un punto de gramática tiene su significado, su estructura, toda su explicación y muchos ejemplos. Nada de eso se puede perder, y Games y las tarjetas deben poder usarlo todo.
+- 📱 Medir en la app QA, con los 5 documentos del dueño, cuánto se pierde hoy (solo números): entradas que llegan al tope de 30 líneas (`MAX_DETAILS`) y líneas que quedan fuera; entradas descartadas porque el significado pasa de 120 caracteres; significados de gramática cortados a 160; líneas coreanas de 70 caracteres o más a las que se les pega la siguiente (`WRAPPED_LINE`); ejemplos por entrada (mínimo, mediana, máximo) y cuántos no llegan a ningún sitio de la app.
+- Arreglar lo que pierda contenido: ningún ejemplo, nota ni línea de explicación se descarta por un tope. Un texto largo se guarda entero y la pantalla decide cuánto enseña.
+- `GameBank` (4.1): cada palabra lleva **todos** sus ejemplos y notas; cada punto de gramática, toda su explicación, su estructura y todos sus ejemplos. Las frases de Games salen de todos los ejemplos con traducción, no solo del primero (se hace en la tarea 2).
+- Las tarjetas guardan un solo ejemplo en la tabla (columna del respaldo): la tabla **no cambia**. El reverso enseña todos los ejemplos leyéndolos de las notas.
+- `docs/NOTES_TEMPLATE.md` (en español): cómo escribir una palabra y un punto de gramática para que la app lo lea todo, con ejemplos inventados.
+- Un PDF sintético con esa plantilla (`tools/fixtures`): una palabra de 40 ejemplos, una explicación de 30 líneas y una frase coreana de 90 caracteres, y una prueba que lo lee entero (mismos conteos que lo escrito).
+- 📱 Reprocesar los documentos del dueño en la app QA: tabla antes → después (tarjetas, ejemplos, puntos de gramática, líneas de explicación). Ningún significado cambia y ninguna tarjeta desaparece.
+- Es un cambio del lector que se aparta de la web: va en `DECISIONS.md`. Si una dorada cambia, se lista cada caso antes → después y se espera el OK del dueño.
+
 **Tarea 1 · Hangul.** 3.1 y 3.2 con sus pruebas. `KoreanForms.kt` pasa a usar `Hangul` sin cambiar resultados. *Hecho cuando:* `HangulTest`, `HangulImeTest` y todas las doradas de `:core:korean` en verde.
 
 **Tarea 2 · Banco y fábricas.** `GameBankBuilder`, las 13 fábricas, `Evaluators`, `Particles`, `MinimalPairs`, con notas **inventadas** en las pruebas (nunca texto del dueño). Por cada fábrica: genera con contenido suficiente; devuelve `null` con contenido insuficiente; cumple sus garantías (4.3–4.10) en 500 semillas; misma semilla → misma ronda. *Hecho cuando:* `./gradlew :core:korean:test` en verde.
