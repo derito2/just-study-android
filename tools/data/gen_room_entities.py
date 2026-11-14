@@ -25,8 +25,9 @@ KINDS = [  # order matters: Boolean before Integer
 
 
 # v2 (phase 4): notes_fts and processing_jobs (MIGRATION_1_2); v3: question_attempts(question_id) (MIGRATION_2_3);
+# v5: Games' phone-only tables (MIGRATION_4_5, phase 8).
 # v4: the web's index=True columns and flashcard_reviews(flashcard_id, reviewed_at) (MIGRATION_3_4). See R-002.
-DB_VERSION = 4
+DB_VERSION = 5
 SMALL = {"deck_places", "deck_groups", "custom_decks"}  # a handful of rows: no indices (R-002)
 EXTRA_INDICES = {"question_attempts": [("question_id",)], "flashcard_reviews": [("flashcard_id", "reviewed_at")]}
 
@@ -34,7 +35,7 @@ EXTRA_INDICES = {"question_attempts": [("question_id",)], "flashcard_reviews": [
 def indices(t) -> list[tuple[str, ...]]:
     web = [] if t.name in SMALL else [(c.name,) for c in t.columns if c.index]
     return web + EXTRA_INDICES.get(t.name, [])
-APP_TABLES = ["NotesFts", "ProcessingJobs"]
+APP_TABLES = ["NotesFts", "ProcessingJobs", "GameSessions", "GameRounds", "GameItemProgress"]  # v5: Games (db/GameTables.kt)
 APP_DAOS = ["Hot"]  # hand-written DAOs without a table of their own (db/HotDaos.kt)
 
 
