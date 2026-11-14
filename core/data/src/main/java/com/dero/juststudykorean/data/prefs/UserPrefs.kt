@@ -49,6 +49,10 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         Scheduling(it[AGAIN] ?: d.againMinutes, it[HARD] ?: d.hardHours, it[GOOD] ?: d.goodHours, it[EASY] ?: d.easyHours)
     }
 
+    /** Games (design/games.md 9): the clock of the typing games; on by default. */
+    val typingTimer: Flow<Boolean> = store.data.map { it[TYPING_TIMER] ?: true }
+    suspend fun setTypingTimer(on: Boolean) { store.edit { it[TYPING_TIMER] = on } }
+
     /** R1-14: repeats you skipped ("{document}:{kind}:{text}"), not asked again when the document is reprocessed. */
     val skippedDuplicates: Flow<Set<String>> = store.data.map { it[SKIPPED_DUPLICATES].orEmpty() }
     suspend fun addSkippedDuplicates(keys: Collection<String>) { store.edit { it[SKIPPED_DUPLICATES] = it[SKIPPED_DUPLICATES].orEmpty() + keys } }
@@ -71,6 +75,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     private companion object {
         val THEME = stringPreferencesKey("theme_mode")
         val SKIPPED_DUPLICATES = stringSetPreferencesKey("skipped_duplicates")
+        val TYPING_TIMER = booleanPreferencesKey("typing_timer")
         val CARD_DIRECTION = stringPreferencesKey("card_direction")
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
         val CHART_UNIT = stringPreferencesKey("chart_unit")

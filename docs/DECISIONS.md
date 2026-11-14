@@ -2,6 +2,13 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-14 — Fase 8, PR B: respuestas al informe del PR A
+**Decisión del dueño:**
+- **Hangul Builder:** la bandeja se rellena con otros jamo del mismo tipo (consonante o vocal), cada uno comprobado para que no forme otra respuesta válida. La bandeja sigue siendo de 6 piezas (nivel 3: 8).
+- **Aceptado como se hizo:** el enfriamiento se acorta (8 → 4 → 0) solo si ningún juego puede hacer ronda con él; el "ahora" de los pesos es el inicio de la sesión y una candidata preparada solo se usa si el resultado coincide con su hipótesis; `GameTables.kt` en `data/db`; el teclado del modo jamo de Hangman incluye las vocales compuestas; en el PR A solo la interfaz `KoreanVoice`; los iconos de `lucide-static` 0.460.0.
+- **Capturas de MoreSheet:** la fila **Games** (D8-1) cambia `moresheet_light.png` y `moresheet_dark.png`; el dueño autorizó regrabar solo esas dos.
+- **Juegos de escucha:** Listen & Guess y Sound Detective no salen en el PR B (ni apagados con aviso): el motor solo recibe los juegos de `PLAYABLE`.
+
 ## 2026-11-14 — Fase 8, tarea 0b: el lector no pierde nada por un tope (se aparta de la web)
 **Decisión del dueño:** una palabra puede tener muchos ejemplos y notas, y un punto de gramática toda su explicación, su estructura y muchos ejemplos; nada se descarta por un tope. Un texto largo se guarda entero y la pantalla decide cuánto enseña.
 **Qué cambia frente a la web (`backend/app/quiz`):**

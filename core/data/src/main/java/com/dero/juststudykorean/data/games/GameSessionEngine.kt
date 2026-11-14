@@ -3,6 +3,7 @@ package com.dero.juststudykorean.data.games
 import com.dero.juststudykorean.data.audio.KoreanVoice
 import com.dero.juststudykorean.data.audio.VoiceState
 import com.dero.juststudykorean.data.time.AppClock
+import com.dero.juststudykorean.korean.games.GameType
 import com.dero.juststudykorean.korean.games.MIN_BANK_WORDS
 import com.dero.juststudykorean.korean.games.Outcome
 import com.dero.juststudykorean.korean.games.RoundPlan
@@ -59,6 +60,8 @@ class GameSessionEngine(
     private val scope: CoroutineScope,
     private val work: CoroutineDispatcher = Dispatchers.Default,
     private val newSeed: () -> Long = { Random.nextLong() },
+    /** The games this build can show (PR B: no listening games); the rest are never planned. */
+    private val games: Set<GameType> = GameType.entries.toSet(),
 ) {
     private val _state = MutableStateFlow<SessionState>(SessionState.Preparing)
     val state: StateFlow<SessionState> = _state.asStateFlow()
@@ -75,7 +78,7 @@ class GameSessionEngine(
         try {
             _state.value = SessionState.Preparing
             val bank = content.bank()
-            val available = availableGames(bank, voice?.state?.value == VoiceState.Ready)
+            val available = availableGames(bank, voice?.state?.value == VoiceState.Ready).filterKeys { it in games }
             if (bank.words.size < MIN_BANK_WORDS || available.isEmpty()) { _state.value = SessionState.Empty; return@withLock }
             val old = resume?.let { repository.session(it.sessionId) }
             val now = clock.now().toEpochMilli()

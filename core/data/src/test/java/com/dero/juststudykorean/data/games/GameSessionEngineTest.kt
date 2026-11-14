@@ -77,7 +77,7 @@ class GameSessionEngineTest {
     private fun db() = Room.inMemoryDatabaseBuilder(context, JustStudyDatabase::class.java).setDriver(AndroidSQLiteDriver()).build().also { dbs += it }
 
     private fun engine(db: JustStudyDatabase, voice: Boolean = true, seed: Long = 42) =
-        GameSessionEngine({ bank }, GameRepository(db, clock), clock, FakeKoreanVoice(voice), scope, Dispatchers.Default) { seed }
+        GameSessionEngine({ bank }, GameRepository(db, clock), clock, FakeKoreanVoice(voice), scope, Dispatchers.Default, newSeed = { seed })
 
     private fun result(spec: RoundSpec, won: Boolean) =
         RoundResult(if (won) Outcome.WON else Outcome.LOST, if (won) 0 else 1, 3000, spec.targets, if (won) emptyList() else spec.targets)

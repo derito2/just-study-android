@@ -58,6 +58,7 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                         )
                         screen is Screen.Results -> ResultsScreen(screen.key, onClose = back, onNewQuiz = back)
                         screen is Screen.Vocabulary -> AllVocabularyScreen(onBack = back)
+                        screen is Screen.Games -> com.dero.juststudykorean.ui.games.GamesScreen(onBack = back, onLibrary = { nav.back(); nav.select(TopLevel.Library) })
                         route == Route(TopLevel.Library) -> LibraryScreen(onMore = more, onAllVocabulary = { nav.push(TopLevel.Library, Screen.Vocabulary) })
                         route == Route(TopLevel.Quiz) -> QuizHomeScreen(
                             onMore = more, onGenerate = { nav.push(TopLevel.Quiz, Screen.Question(null)) },
@@ -97,6 +98,7 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
             onDarkMode = onDarkMode,
             onOpen = { moreOpen = false; nav.open(it) },
             onDismiss = { moreOpen = false },
+            onGames = { moreOpen = false; nav.push(nav.current, Screen.Games) },
         )
     }
 }
