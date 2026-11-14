@@ -61,7 +61,6 @@ private fun arts(context: Context): List<SplashArt> = FlashArts + (1..11)
 
 private const val TotalMs = 1500
 private const val FadeFrom = 0.82f // the splash fades out by itself from here (1230 ms)
-private val Navy = Color(0xFF00143E)
 
 private fun ramp(t: Float, from: Float, to: Float) = ((t - from) / (to - from)).coerceIn(0f, 1f)
 
@@ -103,7 +102,7 @@ internal fun SplashContent(art: SplashArt, modifier: Modifier = Modifier, t: () 
             .fillMaxSize()
             .then(modifier)
             .graphicsLayer { alpha = 1f - ramp(t(), FadeFrom, 1f) }
-            .background(Navy),
+            .background(com.dero.juststudykorean.ui.theme.Tokens.Night),
     ) {
         Image(
             painter = painterResource(art.image),

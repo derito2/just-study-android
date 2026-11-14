@@ -58,5 +58,9 @@ class MigrationTest {
         val v4 = helper.runMigrationsAndValidate(4, listOf(MIGRATION_3_4)) // all of R-002's indices, against schemas/4.json
         assertEquals(before, dump(v4))
         v4.close()
+
+        val v5 = helper.runMigrationsAndValidate(5, listOf(MIGRATION_4_5)) // phase 8: Games' phone-only tables, against schemas/5.json
+        assertEquals(before, dump(v5))
+        v5.close()
     }
 }

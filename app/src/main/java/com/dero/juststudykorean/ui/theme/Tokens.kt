@@ -93,6 +93,14 @@ object Tokens {
     val ScrimDark = Color(0x99252B2F)
     val Tooltip = Color(0xFF252B2F)
     val OnTooltipAction = Color(0xFF8AB8FF)
+    val Night = Color(0xFF00143E)
+    val NightDeep = Color(0xFF000E2C)
+    val NightShade = Color(0xFF002864)
+    val SkyMid = Color(0xFF468CE1)
+    val SkyLight = Color(0xFFBFD9FF)
+    val Lantern = Color(0xFFFFD27A)
+    val LanternRed = Color(0xFFE5484D)
+    val Petal = Color(0xFFF58FB0)
 
     val Space1 = 4.dp
     val Space2 = 8.dp

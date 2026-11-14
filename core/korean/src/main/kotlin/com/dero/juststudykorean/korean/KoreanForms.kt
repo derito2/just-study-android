@@ -15,13 +15,10 @@ private const val HIEUT = 18
 private val hangul = Regex("[가-힣]")
 private val hangulWords = Regex("[가-힣]+")
 
-private fun split(ch: Char): Triple<Int, Int, Int>? {
-    val code = ch.code - BASE
-    if (code !in 0 until 11172) return null
-    return Triple(code / 588, (code % 588) / 28, code % 28)
-}
+// The syllable parts come from hangul/Hangul.kt (phase 8): same formula, one place.
+private fun split(ch: Char): Triple<Int, Int, Int>? = com.dero.juststudykorean.korean.hangul.indexesOf(ch)
 
-private fun join(lead: Int, vowel: Int, tail: Int = 0) = ((BASE + (lead * 21 + vowel) * 28 + tail)).toChar().toString()
+private fun join(lead: Int, vowel: Int, tail: Int = 0) = com.dero.juststudykorean.korean.hangul.syllableOf(lead, vowel, tail).toString()
 
 private fun bright(ch: Char) = split(ch)?.second in setOf(A, V_O, YA)
 

@@ -19,8 +19,6 @@ private val TABLE_CELL = py("\\s*\\|\\s*")
 private val ARROW = py("->|→")
 internal const val MAX_ENGLISH_CHARS = 120
 private const val MAX_FREE_KOREAN_WORDS = 6
-private const val MAX_DETAILS = 30
-private const val MAX_GRAMMAR_MEANING_CHARS = 160
 
 internal class NoteItem(
     var korean: String,
@@ -53,14 +51,17 @@ internal fun usesEntry(korean: String, phrase: String): Boolean {
 
 internal fun nfc(text: String): String = Normalizer.normalize(text, Normalizer.Form.NFC)
 
-internal fun cleanEnglish(text: String): String? {
+internal fun cleanEnglish(text: String, maxChars: Int = MAX_ENGLISH_CHARS): String? {
     val t = text.pyStrip().trimEnd('.').pyStrip()
-    if (t.isEmpty() || t.pyLen > MAX_ENGLISH_CHARS || NOTE_HANGUL.containsMatchIn(t)) return null
+    if (t.isEmpty() || t.pyLen > maxChars || NOTE_HANGUL.containsMatchIn(t)) return null
     return if (LATIN.containsMatchIn(t)) t else null
 }
 
-/** "학교 (hakgyo) = School" -> (학교, hakgyo, School). Korean goes first. */
-internal fun splitPair(input: String): Triple<String, String?, String>? {
+/**
+ * "학교 (hakgyo) = School" -> (학교, hakgyo, School). Korean goes first. [maxEnglish]: a longer English side is prose,
+ * not a meaning; a numbered entry passes no limit (phase 8, 0b: its meaning is kept whole).
+ */
+internal fun splitPair(input: String, maxEnglish: Int = MAX_ENGLISH_CHARS): Triple<String, String?, String>? {
     val text = input.pyStrip()
     if (text.isEmpty() || (NOTE_HANGUL.pyMatch(text) == null && GRAMMAR_HEAD.pyMatch(text) == null)) return null
     for (sep in SEP.findAll(text)) {
@@ -73,7 +74,7 @@ internal fun splitPair(input: String): Triple<String, String?, String>? {
             left = left.substring(0, roman.range.first).pyStrip()
         }
         if (LATIN.containsMatchIn(left)) return null // the English is before the separator
-        val english = cleanEnglish(right)
+        val english = cleanEnglish(right, maxEnglish)
         return if (english != null) Triple(left, rom, english) else null
     }
     return null
@@ -95,14 +96,14 @@ private fun example(text: String): Pair<String, String>? {
 
 private fun addDetail(item: NoteItem, raw: String) {
     val text = BULLET.replaceFirst(NOTE_PREFIX.replaceFirst(raw, ""), "").pyStrip()
-    if (text.isEmpty() || item.examples.size + item.notes.size >= MAX_DETAILS) return
+    if (text.isEmpty()) return // phase 8, 0b: no limit on the lines of an entry
     val label = LABEL.pyMatch(text)
     if (label != null) {
         val key = label.groups["key"]!!.value.lowercase()
         val value = label.groups["value"]!!.value.pyStrip()
         when {
             key == "meaning" && item.english.isEmpty() ->
-                item.english = if (item.grammar && LATIN.containsMatchIn(value)) value.pyTake(MAX_GRAMMAR_MEANING_CHARS).trimEnd('.') else cleanEnglish(value) ?: ""
+                item.english = if (item.grammar && LATIN.containsMatchIn(value)) value.trimEnd('.') else cleanEnglish(value) ?: ""
             key == "translation" && item.examples.isNotEmpty() && item.examples.last().second.isEmpty() ->
                 item.examples[item.examples.lastIndex] = item.examples.last().first to value
             key in setOf("example", "examples", "ex") && value.isNotEmpty() ->
@@ -150,7 +151,7 @@ internal fun parseLines(lines: List<String>): List<NoteItem> {
         val numbered = NUMBER.pyMatch(line)
         if (numbered != null) {
             val text = line.substring(numbered.range.last + 1)
-            val pair = splitPair(text)
+            val pair = splitPair(text, Int.MAX_VALUE)
             if (pair != null) {
                 current = NoteItem(pair.first, pair.third, pair.second, numbered = true).also { items += it }
                 continue
