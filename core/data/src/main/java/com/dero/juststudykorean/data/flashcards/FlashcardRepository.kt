@@ -98,6 +98,16 @@ data class CardDetails(
 data class CardSource(val filename: String, val page: Int)
 
 private val LEARN_AHEAD = Duration.ofMinutes(20)
+
+/** R1-13: more than 2 min without flipping or rating does not count as studying. */
+val CARD_IDLE_CAP: Duration = Duration.ofMinutes(2)
+
+/** A card's active time: from shown to flipped and from flipped to rated, each wait at most [CARD_IDLE_CAP]. */
+fun activeCardMs(shownAt: Long, flippedAt: Long?, ratedAt: Long): Long {
+    val cap = CARD_IDLE_CAP.toMillis()
+    if (flippedAt == null) return minOf(ratedAt - shownAt, cap)
+    return minOf(flippedAt - shownAt, cap) + minOf(ratedAt - flippedAt, cap)
+}
 private const val GROUP_BASE = 1_000_000_000L
 private const val GRAMMAR_DIFFICULTY = 2L
 private const val NEW_CANDIDATES = 2000
@@ -320,11 +330,12 @@ class FlashcardRepository @Inject constructor(
     // ---------- writes ----------
 
     /** Applies the button, saves the review and counts it in a flashcards session. */
-    suspend fun review(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling = Scheduling()): Next = withContext(Dispatchers.IO) {
-        db.withWriteTransaction { reviewNow(cardId, rating, elapsedMs, cfg) }
+    /** [activeMs]: the card's active time (activeCardMs), for the session's time (R1-13); null: [elapsedMs]. */
+    suspend fun review(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling = Scheduling(), activeMs: Long? = null): Next = withContext(Dispatchers.IO) {
+        db.withWriteTransaction { reviewNow(cardId, rating, elapsedMs, cfg, activeMs) }
     }
 
-    private suspend fun reviewNow(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling): Next {
+    private suspend fun reviewNow(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling, activeMs: Long?): Next {
         val now = clock.now().toEpochMilli()
         val card = db.hotDao().flashcard(cardId) ?: throw FlashcardException("Flashcard not found.")
         val next = schedule(CardState(card.ease, card.intervalHours.toInt(), card.repetitions.toInt()), rating, cfg)
@@ -334,7 +345,7 @@ class FlashcardRepository @Inject constructor(
         db.flashcardsDao().update(
             card.copy(ease = next.ease, intervalHours = next.intervalHours.toLong(), repetitions = next.repetitions.toLong(), dueAt = now + next.dueInMinutes * 60_000),
         )
-        progress.attachSession(now, elapsedMs, card.topicId, mode = "flashcards")
+        progress.attachSession(now, elapsedMs, card.topicId, mode = "flashcards", activeMs = activeMs)
         return next
     }
 

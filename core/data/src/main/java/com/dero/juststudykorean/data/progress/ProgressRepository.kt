@@ -359,17 +359,22 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
     // ---- writes used by answers and reviews (inside their transaction)
 
     /** The automatic session: goes on with the last one of the same [mode] if you were active recently. */
-    internal suspend fun attachSession(now: Long, responseMs: Long, topicId: Long?, mode: String): StudySessionsEntity {
+    /** [activeMs]: cards (R1-13) count only the active time of each card, not the whole wait (null: as before). */
+    internal suspend fun attachSession(now: Long, responseMs: Long, topicId: Long?, mode: String, activeMs: Long? = null): StudySessionsEntity {
         val dao = db.studySessionsDao()
         val last = db.hotDao().lastSession(mode)
         fun lastActivity(s: StudySessionsEntity) = s.startedAt + s.durationSeconds * 1000
-        var session = if (last != null && last.endedAt == null && now - lastActivity(last) <= SESSION_IDLE.toMillis()) last else {
+        val open = last != null && last.endedAt == null && now - lastActivity(last) <= SESSION_IDLE.toMillis()
+        var session = if (open) last!! else {
             if (last != null && last.endedAt == null) dao.update(last.copy(endedAt = lastActivity(last))) // closed for inactivity
             // The session starts when you started thinking the first answer (at most the idle time).
-            val thinking = minOf(responseMs, SESSION_IDLE.toMillis())
+            val thinking = minOf(activeMs ?: responseMs, SESSION_IDLE.toMillis())
             StudySessionsEntity(nextId("study_sessions"), now - thinking, null, 0, mode).also { dao.insert(it) }
         }
-        session = session.copy(durationSeconds = maxOf(session.durationSeconds, Math.floorDiv(now - session.startedAt, 1000L)))
+        session = if (activeMs != null && open) {
+            // R1-13: an open session's span would count the waits; it grows only by the card's active time.
+            session.copy(durationSeconds = session.durationSeconds + (minOf(activeMs, now - lastActivity(session)) + 500) / 1000)
+        } else session.copy(durationSeconds = maxOf(session.durationSeconds, Math.floorDiv(now - session.startedAt, 1000L)))
         dao.update(session)
         if (topicId != null && !db.hotDao().sessionHasTopic(session.id, topicId)) {
             db.studySessionTopicsDao().insert(StudySessionTopicsEntity(session.id, topicId))
