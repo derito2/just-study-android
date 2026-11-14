@@ -10,7 +10,9 @@ import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +21,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import com.google.mlkit.genai.common.DownloadStatus
 import com.google.mlkit.genai.speechrecognition.SpeechRecognition
 import com.google.mlkit.genai.speechrecognition.SpeechRecognizerOptions
 import kotlinx.coroutines.launch
@@ -40,7 +43,13 @@ class PocActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                Text(lines.joinToString("\n"), Modifier.padding(16.dp).verticalScroll(rememberScrollState()))
+                Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
+                    // The owner presses these, with network: the system does the download (plan §2, step 1).
+                    Button(::downloadB) { Text("Download B (ko-KR)") }
+                    Button(::downloadA) { Text("Download A Basic (ko-KR)") }
+                    Button({ checkB(); checkA() }) { Text("Check again") }
+                    Text(lines.joinToString("\n"))
+                }
             }
         }
         checkB()
@@ -53,8 +62,7 @@ class PocActivity : ComponentActivity() {
         log("B recognitionAvailable=${SpeechRecognizer.isRecognitionAvailable(this)} onDeviceAvailable=${SpeechRecognizer.isOnDeviceRecognitionAvailable(this)}")
         if (!SpeechRecognizer.isOnDeviceRecognitionAvailable(this)) return
         val recognizer = SpeechRecognizer.createOnDeviceSpeechRecognizer(this)
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).putExtra(RecognizerIntent.EXTRA_LANGUAGE, KOREAN.toLanguageTag())
-        recognizer.checkRecognitionSupport(intent, mainExecutor, object : RecognitionSupportCallback {
+        recognizer.checkRecognitionSupport(koIntent(), mainExecutor, object : RecognitionSupportCallback {
             override fun onSupportResult(s: RecognitionSupport) {
                 val ko = KOREAN.toLanguageTag()
                 val state = when {
@@ -84,6 +92,31 @@ class PocActivity : ComponentActivity() {
                 SpeechRecognition.getClient(options).use { log("A $name ko-KR: ${status(it.checkStatus())}") }
             } catch (e: Exception) {
                 log("A $name ko-KR: ${e.javaClass.simpleName} ${e.message}")
+            }
+        }
+    }
+
+    private fun koIntent() = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).putExtra(RecognizerIntent.EXTRA_LANGUAGE, KOREAN.toLanguageTag())
+
+    // API 33: the system shows its own screen to confirm the language pack; no result callback (that is API 34's listener).
+    private fun downloadB() {
+        val recognizer = SpeechRecognizer.createOnDeviceSpeechRecognizer(this)
+        recognizer.triggerModelDownload(koIntent())
+        log("B triggerModelDownload(ko-KR) sent; press Check again when the system finishes")
+        recognizer.destroy()
+    }
+
+    private fun downloadA() = lifecycleScope.launch {
+        val options = SpeechRecognizerOptions.builder().apply { locale = KOREAN; preferredMode = SpeechRecognizerOptions.Mode.MODE_BASIC }.build()
+        SpeechRecognition.getClient(options).use { client ->
+            var lastMb = -10L
+            client.download().collect { d ->
+                when (d) {
+                    is DownloadStatus.DownloadStarted -> log("A download started: ${d.bytesToDownload / 1_000_000} MB")
+                    is DownloadStatus.DownloadProgress -> (d.totalBytesDownloaded / 1_000_000).let { mb -> if (mb >= lastMb + 10) { lastMb = mb; log("A download: $mb MB") } }
+                    is DownloadStatus.DownloadCompleted -> log("A download completed")
+                    is DownloadStatus.DownloadFailed -> log("A download failed: ${d.e.errorCode} ${d.e.message}")
+                }
             }
         }
     }
