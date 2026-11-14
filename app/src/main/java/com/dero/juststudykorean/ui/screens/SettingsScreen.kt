@@ -69,6 +69,7 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
     LaunchedEffect(vm) { vm.messages.collect { snackbar.showSnackbar(it) } }
 
     var pending by rememberSaveable { mutableStateOf<String?>(null) } // chosen file, waiting for confirmation
+    var licenses by rememberSaveable { mutableStateOf(false) }
     var importTaps by remember { mutableIntStateOf(0) }
     var exportTaps by remember { mutableIntStateOf(0) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> pending = uri?.toString() }
@@ -99,6 +100,7 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
                     if (busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = JustStudyTheme.colors.brand, trackColor = JustStudyTheme.colors.tint, gapSize = 0.dp)
                     error?.let { ErrorState(it, onRetry = { pick.launch(BACKUP_TYPES) }, title = "Couldn't finish") }
                 }
+                SettingsRow(Lucide.FileText, "Licenses", "Poppins (OFL), Lucide (MIT), MuPDF (AGPL).", animateKey = null) { licenses = true } // R1-04
                 val context = LocalContext.current
                 val version = remember { context.packageManager.getPackageInfo(context.packageName, 0).versionName }
                 Text("Version $version", Modifier.padding(Tokens.Space4), style = MaterialTheme.typography.bodySmall, color = JustStudyTheme.colors.muted)
@@ -106,6 +108,8 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
         }
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
     }
+
+    if (licenses) LicensesScreen { licenses = false }
 
     pending?.let { uri ->
         AlertDialog(
@@ -174,3 +178,20 @@ internal fun OnDeviceAiRow(status: NanoStatus, onDownload: () -> Unit) {
     }
 }
 
+
+/** R1-04 (design/grammar-calendar-settings.md): the licenses' texts, from assets/licenses (no internet). */
+@Composable
+private fun LicensesScreen(onClose: () -> Unit) {
+    val context = LocalContext.current
+    val texts = remember {
+        context.assets.list("licenses").orEmpty().sorted().map { name -> context.assets.open("licenses/$name").bufferedReader().use { it.readText() } }
+    }
+    androidx.compose.ui.window.Dialog(onClose, androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)) {
+        Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+            com.dero.juststudykorean.ui.quiz.SmallBar(Lucide.X, "Close licenses", "Licenses", null, onClose)
+            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Tokens.Space4), verticalArrangement = Arrangement.spacedBy(Tokens.Space4)) {
+                texts.forEach { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface) }
+            }
+        }
+    }
+}

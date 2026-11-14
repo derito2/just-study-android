@@ -504,7 +504,7 @@ class FlashcardRepository @Inject constructor(
             if (key in wanted && key !in fromNotes && key !in fromCards) fromCards[key] = card
         }
         if (fromNotes.isEmpty() && fromCards.isEmpty()) throw FlashcardException("None of those words are in your notes.")
-        val deck = CustomDecksEntity(progress.nextId("custom_decks"), name.trim().cut(120), now)
+        val deck = CustomDecksEntity(progress.nextId("custom_decks"), freeName(name.trim().cut(110)), now)
         db.customDecksDao().insert(deck)
         val topics = Topics(db, progress)
         var nextId = progress.nextId("flashcards")
@@ -523,6 +523,15 @@ class FlashcardRepository @Inject constructor(
             nextId++
         }
         -deck.id
+    }
+
+    /** R1-28 (design/flashcards.md): "Your mistakes", then "Your mistakes · 13 Nov", then "… (2)", "… (3)". */
+    private suspend fun freeName(name: String): String {
+        val taken = db.customDecksDao().all().map { it.name }.toSet()
+        if (name !in taken) return name
+        val dated = "$name · " + clock.now().atZone(zone).format(java.time.format.DateTimeFormatter.ofPattern("d MMM", java.util.Locale.US))
+        if (dated !in taken) return dated
+        return generateSequence(2) { it + 1 }.map { "$dated ($it)" }.first { it !in taken }
     }
 
     /** Words (normalized) of the ready documents uploaded before [documentId]: what a new PDF repeats is not saved again. */

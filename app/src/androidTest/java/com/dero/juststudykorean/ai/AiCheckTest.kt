@@ -118,7 +118,9 @@ class AiCheckTest {
                 File(sandbox.filesDir, "${BackupFormat.FILES_DIR}/${BackupFormat.extractedEntry("990001")}").apply { parentFile!!.mkdirs() }
                     .writeText("""{"pages": [{"page_number": 1, "section": "Vocabulary", "text": "Meaning: the words below\n사과\napple\n우유\nmilk", "tables": []}]}""")
                 db.documentsDao().insert(DocumentsEntity(990001, "messy.pdf", "messy.pdf", "sha", 1, "ready", true, 0, 0, 0, "[]", null, 0, 0))
-                val messy = MessyNotes(gate, db, NotesSource(sandbox as Context))
+                val sandboxNotes = NotesSource(sandbox as Context)
+                val sandboxFiles = com.dero.juststudykorean.data.documents.DocumentFiles(sandbox)
+                val messy = MessyNotes(gate, db, sandboxNotes, sandboxFiles, com.dero.juststudykorean.data.documents.DocumentIndexer(db, clock, progress, sandboxNotes, sandboxFiles))
                 measure("6 messy notes", gate) { messy.readReady() }
                 // Uses 7 and 8.
                 val grammarAi = GrammarAi(gate, db, notes)

@@ -101,7 +101,7 @@ fun DecksScreen(onMore: () -> Unit, onStudy: (Deck) -> Unit, vm: DecksViewModel 
     LaunchedEffect(vm) {
         vm.events.collect { m ->
             launch {
-                val r = snackbar.showSnackbar(m.text, actionLabel = if (m.undo != null) "Undo" else null, duration = SnackbarDuration.Short)
+                val r = snackbar.showSnackbar(m.text, actionLabel = if (m.undo != null) "Undo" else null, duration = if (m.undo != null) SnackbarDuration.Long else SnackbarDuration.Short) // R1-26
                 if (r == SnackbarResult.ActionPerformed && m.undo != null) vm.undo(m.undo)
             }
         }

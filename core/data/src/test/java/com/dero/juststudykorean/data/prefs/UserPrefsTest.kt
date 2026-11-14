@@ -44,4 +44,11 @@ class UserPrefsTest {
         withPrefs(file) { it.setThemeMode(ThemeMode.Dark) }
         assertEquals(ThemeMode.Dark, withPrefs(file) { it.themeMode.first() })
     }
+
+    @Test
+    fun skippedRepeatsPersist() { // R1-14
+        val file = File(tmp.root, "prefs.preferences_pb")
+        withPrefs(file) { it.addSkippedDuplicates(listOf("3:word:학교")); it.addSkippedDuplicates(listOf("3:grammar:거든")) }
+        assertEquals(setOf("3:word:학교", "3:grammar:거든"), withPrefs(file) { it.skippedDuplicates.first() })
+    }
 }

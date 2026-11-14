@@ -67,6 +67,17 @@ internal fun niceMax(value: Int): Int {
     return (ceil(value / step) * step).toInt()
 }
 
+/** R1-27: what TalkBack reads: the period's totals, so the chart is not just a picture. */
+internal fun chartDescription(timeline: Timeline): String {
+    val p = timeline.points
+    val minutes = p.sumOf { it.minutes }
+    val answers = p.sumOf { it.answers }
+    val right = p.sumOf { pt -> pt.accuracy?.let { Math.round(it * pt.answers).toInt() } ?: 0 }
+    val unit = timeline.unit.name.lowercase()
+    val accuracy = if (answers > 0) ", ${Math.round(100.0 * right / answers)}% right" else ""
+    return "Progress over time, by $unit, last ${p.size} ${unit}s: $minutes min studied, $answers quiz answers$accuracy."
+}
+
 /** Every how many periods a label is written, so they don't overlap (the web's `every`, 56 dp per label). */
 internal fun labelEvery(points: Int, plotWidthDp: Float): Int = max(1, ceil(points / max(1f, floor(plotWidthDp / 56f))).toInt())
 
@@ -144,7 +155,7 @@ private fun Chart(timeline: Timeline) {
         val axis = TextStyle(fontSize = 10.sp, color = c.muted)
         Canvas(
             Modifier.fillMaxSize()
-                .semantics { contentDescription = "Progress over time" }
+                .semantics { contentDescription = chartDescription(timeline) }
                 .pointerInput(points) {
                     detectTapGestures { pos ->
                         val slot = plotW.dp.toPx() / points.size

@@ -116,7 +116,7 @@ class LibraryScreenshotTest {
         Library(
             listOf(ready, warned),
             duplicates = DuplicatesShown(
-                "Copy_of_Vocab_cafe_y_comida.pdf",
+                2, "Copy_of_Vocab_cafe_y_comida.pdf",
                 listOf(
                     Duplicate("word", "계산하다", listOf(info("Vocab_cafe_y_comida.pdf")), info("Copy_of_Vocab_cafe_y_comida.pdf"), "To pay (the bill)"),
                     Duplicate("word", "메뉴판", listOf(info("Vocab_cafe_y_comida.pdf")), info("Copy_of_Vocab_cafe_y_comida.pdf"), "Menu"),

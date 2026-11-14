@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.dero.juststudykorean.data.progress.TimelineUnit
 import com.dero.juststudykorean.korean.Scheduling
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +49,10 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         Scheduling(it[AGAIN] ?: d.againMinutes, it[HARD] ?: d.hardHours, it[GOOD] ?: d.goodHours, it[EASY] ?: d.easyHours)
     }
 
+    /** R1-14: repeats you skipped ("{document}:{kind}:{text}"), not asked again when the document is reprocessed. */
+    val skippedDuplicates: Flow<Set<String>> = store.data.map { it[SKIPPED_DUPLICATES].orEmpty() }
+    suspend fun addSkippedDuplicates(keys: Collection<String>) { store.edit { it[SKIPPED_DUPLICATES] = it[SKIPPED_DUPLICATES].orEmpty() + keys } }
+
     suspend fun setThemeMode(mode: ThemeMode) { store.edit { it[THEME] = mode.name } }
     suspend fun setCardDirection(direction: CardDirection) { store.edit { it[CARD_DIRECTION] = direction.name } }
     suspend fun setTypeAnswer(on: Boolean) { store.edit { it[TYPE_ANSWER] = on } }
@@ -65,6 +70,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
 
     private companion object {
         val THEME = stringPreferencesKey("theme_mode")
+        val SKIPPED_DUPLICATES = stringSetPreferencesKey("skipped_duplicates")
         val CARD_DIRECTION = stringPreferencesKey("card_direction")
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
         val CHART_UNIT = stringPreferencesKey("chart_unit")

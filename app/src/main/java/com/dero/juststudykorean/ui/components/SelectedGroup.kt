@@ -39,7 +39,7 @@ fun SelectedGroup(options: List<String>, selected: Int, onSelect: (Int) -> Unit,
                 Modifier
                     .weight(1f)
                     .minimumInteractiveComponentSize()
-                    .selectable(chosen, interactionSource = null, indication = null, role = Role.RadioButton) { onSelect(i) }
+                    .selectable(chosen, interactionSource = null, indication = null, role = Role.Tab) { onSelect(i) } // R1-23: Tab exposes "selected" (RadioButton only "checked")
                     .padding(bottom = Tokens.EdgeMd), // room for the tallest edge, so all faces line up when not chosen
                 propagateMinConstraints = true,
             ) {

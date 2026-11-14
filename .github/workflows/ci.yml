@@ -33,7 +33,7 @@ jobs:
 
       - name: Tests, screenshots, lint and builds
         timeout-minutes: 35 # below the job's 45, so the reports below are still uploaded
-        run: ./gradlew test verifyRoborazziDebug lint assembleDebug assembleRelease
+        run: ./gradlew test verifyRoborazziDebug lint assembleDebug assembleRelease assembleDebugAndroidTest # R1-05: androidTest must compile too
 
       - uses: actions/setup-python@v7
         with:
