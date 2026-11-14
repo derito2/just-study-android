@@ -120,7 +120,7 @@ fun GameStage(scope: StageScope, parallaxKey: Any?, burst: Int, modifier: Modifi
                 drawPath(ridge(listOf(0f to 118f, 120f to 104f, 250f to 112f, 411f to 98f), STAGE_DP, -12f * u * shift), Tokens.NightShade)
                 translate(left = -20f * u * shift) {
                     drawPagoda(u, ::y)
-                    scope.lanterns?.let { (total, lit) -> drawLanterns(u, ::y, total, lit) }
+                    scope.lanterns?.let { (total, lit) -> drawLanterns(u, ::y, total, lit) } // between the middle and near mountains
                 }
                 drawPath(ridge(listOf(0f to 140f, 90f to 130f, 330f to 138f, 411f to 126f), STAGE_DP * 4, -20f * u * shift), Tokens.NightDeep)
                 if (petals.value < 1f) drawPetals(u, petals.value)
@@ -160,17 +160,21 @@ private fun DrawScope.drawPagoda(u: Float, y: (Float) -> Float) {
     drawPath(roof, Tokens.NightDeep)
 }
 
-/** 4.2: lanterns hang from the lower eave; lit ones glow, the rest are dark. */
+/** 4.2: a string of lanterns from the pagoda's eave, spread between x = 110 and x = 250; lit ones glow, the rest are dark. */
 private fun DrawScope.drawLanterns(u: Float, y: (Float) -> Float, total: Int, lit: Int) {
-    val x0 = 46f * u
-    val top = y(132f) - 46f * u * 0.45f
+    val rope = Path().apply { moveTo(96f * u, y(90f)); quadraticTo(180f * u, y(102f), 264f * u, y(88f)) }
+    drawPath(rope, Tokens.SkyMid.copy(alpha = 0.6f), style = Stroke(1f * u))
     for (i in 0 until total) {
-        val cx = x0 + (6f + i * 18f) * u
+        val x = if (total == 1) 180f else 110f + 140f * i / (total - 1)
+        val t = (x - 96f) / 168f
+        val ropeY = (1 - t) * (1 - t) * 90f + 2 * (1 - t) * t * 102f + t * t * 88f // the quadratic's y at that x (close enough)
+        val cx = x * u
+        val top = y(ropeY)
         val on = i < lit
-        drawLine(Tokens.NightShade, Offset(cx, top), Offset(cx, top + 8f * u), 1f * u)
-        if (on) drawCircle(Tokens.Lantern.copy(alpha = 0.3f), 14f * u, Offset(cx, top + 16f * u))
-        drawRoundRect(if (on) Tokens.LanternRed else Tokens.NightShade, Offset(cx - 6f * u, top + 8f * u), Size(12f * u, 16f * u), CornerRadius(4f * u))
-        if (on) drawRoundRect(Tokens.Lantern, Offset(cx - 3f * u, top + 11f * u), Size(6f * u, 10f * u), CornerRadius(2f * u))
+        drawLine(Tokens.SkyMid.copy(alpha = 0.6f), Offset(cx, top), Offset(cx, top + 4f * u), 1f * u)
+        if (on) drawCircle(Tokens.Lantern.copy(alpha = 0.3f), 14f * u, Offset(cx, top + 12f * u))
+        drawRoundRect(if (on) Tokens.LanternRed else Tokens.SkyMid.copy(alpha = 0.45f), Offset(cx - 6f * u, top + 4f * u), Size(12f * u, 16f * u), CornerRadius(4f * u))
+        if (on) drawRoundRect(Tokens.Lantern, Offset(cx - 3f * u, top + 7f * u), Size(6f * u, 10f * u), CornerRadius(2f * u))
     }
 }
 

@@ -66,4 +66,19 @@ class GamesScreenshotTest {
     @Test fun summaryDark() = snap("games_summary_dark", dark = true) { Games(SessionState.Ended(SessionSummary(9, 7, 5, 412))) }
     @Test fun empty() = snap("games_empty") { Games(SessionState.Empty, SessionCounts()) }
     @Test fun emptyDark() = snap("games_empty_dark", dark = true) { Games(SessionState.Empty, SessionCounts()) }
+
+    // Task 6: one capture per tile game, in its initial state.
+    @Test fun memoryFlip() = snap("games_memory_flip") {
+        val items = WORDS.take(6)
+        Games(SessionState.Playing(REF, RoundSpec.MemoryFlip(1, items, items.indices.flatMap { listOf(it to false, it to true) }.shuffled(kotlin.random.Random(3)), 3, 1000)))
+    }
+    @Test fun wordScramble() = snap("games_word_scramble") { Games(SessionState.Playing(REF, RoundSpec.WordScramble(1, GameFixtures.library, listOf("관", "도", "서"), null))) }
+    @Test fun sentenceBuilder() = snap("games_sentence_builder") {
+        val item = GameFixtures.sentence("저는 학교에 가요.", "I go to school")
+        Games(SessionState.Playing(REF, RoundSpec.SentenceBuilder(1, item, listOf("가요", "저는", "학교에"), listOf("저는", "학교에", "가요"), ".", emptyList())))
+    }
+    @Test fun wordRecall() = snap("games_word_recall") {
+        val sequence = listOf(GameFixtures.school, GameFixtures.water, GameFixtures.friend)
+        Games(SessionState.Playing(REF, RoundSpec.WordRecall(1, sequence, sequence.reversed())))
+    }
 }

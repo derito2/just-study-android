@@ -4,11 +4,15 @@ import androidx.compose.runtime.Composable
 import com.dero.juststudykorean.korean.games.GameType
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.games.RoundSpec
+import com.dero.juststudykorean.ui.games.minigames.MemoryFlipGame
+import com.dero.juststudykorean.ui.games.minigames.SentenceBuilderGame
 import com.dero.juststudykorean.ui.games.minigames.WordMatchGame
+import com.dero.juststudykorean.ui.games.minigames.WordRecallGame
+import com.dero.juststudykorean.ui.games.minigames.WordScrambleGame
 import com.dero.juststudykorean.ui.games.stage.StageScope
 
 /** The games this PR shows (FASE_8_PLAN, PR B). Listening games come in PR C: the engine never plans them here. */
-val PLAYABLE: Set<GameType> = setOf(GameType.WordMatch)
+val PLAYABLE: Set<GameType> = setOf(GameType.WordMatch, GameType.MemoryFlip, GameType.WordScramble, GameType.SentenceBuilder, GameType.WordRecall)
 
 /**
  * One round of a minigame (FASE_8_PLAN 2): XGame(spec, paused, onResult, stage). A game doesn't know which comes next
@@ -18,6 +22,10 @@ val PLAYABLE: Set<GameType> = setOf(GameType.WordMatch)
 fun GameRound(spec: RoundSpec, paused: Boolean, stage: StageScope, timer: Boolean, onResult: (RoundResult) -> Unit) {
     when (spec) {
         is RoundSpec.WordMatch -> WordMatchGame(spec, paused, onResult, stage)
+        is RoundSpec.MemoryFlip -> MemoryFlipGame(spec, paused, onResult, stage)
+        is RoundSpec.WordScramble -> WordScrambleGame(spec, paused, onResult, stage)
+        is RoundSpec.SentenceBuilder -> SentenceBuilderGame(spec, paused, onResult, stage)
+        is RoundSpec.WordRecall -> WordRecallGame(spec, paused, onResult, stage)
         else -> Unit // not in this build (PLAYABLE)
     }
 }
