@@ -146,8 +146,12 @@ private fun oneLiners(lines: List<String>): List<GrammarPoint> = parseLines(line
     GrammarPoint("pattern", it.korean, it.english.pyTake(MAX_MEANING_CHARS), examples = it.examples.toList(), explanation = it.notes.joinToString(" ").ifEmpty { null })
 }
 
+private val grammarCache = java.util.Collections.synchronizedMap(java.util.WeakHashMap<Chunk, List<GrammarPoint>>()) // as extractPairs'
+
 /** Grammar points of a chunk. */
-fun extractGrammar(chunk: Chunk): List<GrammarPoint> {
+fun extractGrammar(chunk: Chunk): List<GrammarPoint> = grammarCache.getOrPut(chunk) { readGrammar(chunk) }
+
+private fun readGrammar(chunk: Chunk): List<GrammarPoint> {
     var lines = body(chunk)
     if (isGrammarEntry(chunk.section, lines)) return listOfNotNull(pattern(chunk, lines))
     if (isParticleTable(lines)) return particles(lines)

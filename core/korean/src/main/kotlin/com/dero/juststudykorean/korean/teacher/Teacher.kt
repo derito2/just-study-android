@@ -48,6 +48,12 @@ class Teacher(private val store: NotesStore, private val k: Int = 4, private val
         return buildIndex(store.find(null, MAX_INDEX_CHUNKS)).also { cached = key to it }
     }
 
+    /** Builds the index and the verbs of every word of your sentences, what checking a sentence needs (point 6). */
+    fun warm() {
+        val index = index()
+        for ((line, _) in index.sentences) HANGUL_WORDS.findAll(line.split("=", limit = 2)[0]).forEach { index.lemmasOf(it.value) }
+    }
+
     /** What every responder may need from the question, computed once and only when asked for. */
     inner class Turn(val question: String) {
         val word: String? = askedWord(question)

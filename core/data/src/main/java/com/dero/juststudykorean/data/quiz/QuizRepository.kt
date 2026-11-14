@@ -12,6 +12,8 @@ import com.dero.juststudykorean.data.progress.ProgressRepository
 import com.dero.juststudykorean.data.time.AppClock
 import com.dero.juststudykorean.korean.PyRandom
 import com.dero.juststudykorean.korean.isCorrect
+import com.dero.juststudykorean.korean.extractGrammar
+import com.dero.juststudykorean.korean.extractPairs
 import com.dero.juststudykorean.korean.norm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -232,7 +234,9 @@ class QuizRepository @Inject constructor(
     suspend fun readyDocuments() = withContext(Dispatchers.IO) { db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id } }
 
     /** Fills the chunk cache of [docs] so the first quiz doesn't pay for reading and chunking the notes. */
-    suspend fun warmUp(docs: List<DocumentsEntity>) = withContext(Dispatchers.Default) { docs.forEach(notes::chunks) }
+    suspend fun warmUp(docs: List<DocumentsEntity>) = withContext(Dispatchers.Default) {
+        docs.flatMap(notes::chunks).forEach { extractPairs(it); extractGrammar(it) } // point 6: the quiz finds them read
+    }
 
     // ---------- writes ----------
 
