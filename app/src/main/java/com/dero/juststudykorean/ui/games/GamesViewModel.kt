@@ -19,7 +19,14 @@ import com.dero.juststudykorean.korean.games.GameBank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import com.dero.juststudykorean.data.audio.KoreanVoice
+import com.dero.juststudykorean.data.audio.KoreanVoices
+import com.dero.juststudykorean.data.audio.VoiceState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -43,6 +50,7 @@ data class SessionCounts(
 
 private const val ROUND_CAP_MS = 120_000L // as the repository: a round untouched for 2 min counts 2 min
 private const val SESSION_KEY = "games_session"
+private const val VOICE_CHECK_MS = 4_000L // the TTS engine binds in well under a second; past this the listening games stay off
 
 /**
  * Games' screen state over [GameSessionEngine] (FASE_8_PLAN 5): the engine plays, this counts what the screen shows and
@@ -51,13 +59,17 @@ private const val SESSION_KEY = "games_session"
 @HiltViewModel
 class GamesViewModel @Inject constructor(
     private val content: GameContentProvider,
-    repository: GameRepository,
+    private val repository: GameRepository,
     private val clock: AppClock,
     private val prefs: UserPrefs,
     private val saved: SavedStateHandle,
+    voices: KoreanVoices,
 ) : ViewModel() {
     private val source: BankSource = content
-    private val engine = GameSessionEngine(source, repository, clock, voice = null, scope = viewModelScope, games = PLAYABLE)
+    /** 4.11: made when Games opens, released when it closes; a call or another app taking the audio pauses. */
+    val voice: KoreanVoice = voices.create().also { v -> v.onInterrupted = { viewModelScope.launch(Dispatchers.Main) { pause() } } }
+    val voiceMissing: StateFlow<Boolean> = voice.state.map { it == VoiceState.Missing }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val engine = GameSessionEngine(source, repository, clock, voice = voice, scope = viewModelScope, games = PLAYABLE)
     val state: StateFlow<SessionState> = engine.state
     private val _counts = MutableStateFlow(SessionCounts())
     val counts: StateFlow<SessionCounts> = _counts.asStateFlow()
@@ -72,6 +84,7 @@ class GamesViewModel @Inject constructor(
         started = true
         viewModelScope.launch {
             val ref = saved.get<String>(SESSION_KEY)?.split(":")?.let { (id, seed, n) -> SessionRef(id.toLong(), seed.toLong(), n.toInt()) }
+            withTimeoutOrNull(VOICE_CHECK_MS) { voice.state.first { it != VoiceState.Checking } } // the listening games need to know
             runCatchingCancellable { engine.start(ref) }
             runCatchingCancellable { content.bank() }.onSuccess { _bank.value = it } // cached by the provider
             remember()
@@ -102,7 +115,17 @@ class GamesViewModel @Inject constructor(
 
     fun feedbackDone() = viewModelScope.launch { engine.feedbackDone(); remember() }
 
-    fun pause() { engine.pause(); if (pausedAt == null && state.value is SessionState.Paused) pausedAt = clock.now().toEpochMilli() }
+    fun pause() {
+        engine.pause()
+        val paused = state.value as? SessionState.Paused ?: return
+        if (pausedAt == null) pausedAt = clock.now().toEpochMilli()
+        // The pause's figures are the saved session's (task 10): what the summary will say.
+        viewModelScope.launch {
+            runCatchingCancellable { repository.session(paused.ref.sessionId) }.getOrNull()?.let { row ->
+                _counts.update { it.copy(rounds = row.rounds.toInt(), won = row.won.toInt(), bestStreak = row.bestStreak.toInt(), seconds = row.durationSeconds) }
+            }
+        }
+    }
 
     /** After more than 30 min paused, the session closes itself and the summary shows (games.md 9). */
     fun resume() {
@@ -112,6 +135,8 @@ class GamesViewModel @Inject constructor(
     }
 
     fun end() = viewModelScope.launch { engine.end() }
+
+    override fun onCleared() = voice.release()
 
     /** Play again: a new session, the counts from zero. */
     fun playAgain() {
