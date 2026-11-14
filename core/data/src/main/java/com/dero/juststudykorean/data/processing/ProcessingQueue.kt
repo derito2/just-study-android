@@ -138,6 +138,7 @@ class ProcessingQueue @Inject constructor(
                     STAGE_CHUNKING -> { indexer.index(id); stage = STAGE_INDEXING }
                     STAGE_INDEXING -> {
                         indexer.syncTopics(id)
+                        indexer.refreshCards(id)
                         db.withWriteTransaction {
                             db.documentsDao().all().firstOrNull { it.id == id }?.let {
                                 db.documentsDao().update(it.copy(status = "ready", processedAt = clock.now().toEpochMilli()))

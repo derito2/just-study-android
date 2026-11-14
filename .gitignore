@@ -57,3 +57,6 @@ __pycache__/
 picsIcons/
 app/src/main/res/drawable-nodpi/splash_photo_*.webp
 tools/design/splash_scenes.py
+
+# QA round reports: they quote the owner's notes, never on GitHub
+/qa/

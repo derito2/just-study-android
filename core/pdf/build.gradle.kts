@@ -26,7 +26,9 @@ val syncGolden = tasks.register<Sync>("syncGoldenAssets") {
     into(goldenAssets)
 }
 android.sourceSets.getByName("androidTest").assets.srcDir(goldenAssets)
-tasks.matching { it.name.startsWith("merge") && it.name.endsWith("AndroidTestAssets") }.configureEach { dependsOn(syncGolden) }
+// The assets are read by the merge and, since R1-05 (CI builds androidTest with lint), by lint's model and analysis.
+tasks.matching { (it.name.startsWith("merge") && it.name.endsWith("AndroidTestAssets")) || (it.name.contains("AndroidTest") && it.name.contains("lint", ignoreCase = true)) }
+    .configureEach { dependsOn(syncGolden) }
 
 dependencies {
     implementation(project(":core:korean")) // Python string semantics (isspace, strip, split, len)

@@ -75,4 +75,13 @@ class MidnightTest {
         assertEquals(0, next.today.questions)
         assertEquals(2, next.streakDays)
     }
+
+    @Test
+    fun aDayWithOnlyCardsIsStudied() = runBlocking { // R1-06
+        db.flashcardReviewsDao().insert(com.dero.juststudykorean.data.db.FlashcardReviewsEntity(1, 1, "good", at(6, 10, 0).toEpochMilli(), 0, 24))
+        answerAt(at(7, 10, 0))
+        clock.instant = at(7, 12, 0)
+        assertEquals(2, progress.summary().streakDays)
+        assertEquals(true, progress.calendarNow(2026, 11).days.first { it.date.dayOfMonth == 6 }.studied)
+    }
 }

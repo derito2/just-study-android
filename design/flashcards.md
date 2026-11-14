@@ -99,3 +99,10 @@ Base: `design/shell.md`. Valores en `design/tokens.json`. Pantalla de 411 × 905
 ## Datos
 
 Lo mismo que la web: tarjetas por documento, SM-2 de `scheduler.py` (pruebas doradas en `golden/sm2.json`), `compareAnswer` (`golden/compare_answer.json`) y las opciones de repaso (Again en minutos; Hard, Good y Easy en horas). Todo en `:core:korean` y `:core:data`; la pantalla solo lee `StateFlow`.
+
+## Ronda 1
+
+- **Combine sin nombre (R1-10):** el campo del nombre viene ya relleno con *"{A} + {B}"* y seleccionado. Si lo vacías, **Combine** se deshabilita y debajo sale *Give the new deck a name.* (12 sp, `wrong`).
+- **Mazo del Coach con nombre repetido (R1-28):** si ya existe *Your mistakes*, el nuevo se llama *Your mistakes · {d MMM}*; si también existe, se añade *(2)*, *(3)*…
+- **Undo al borrar un mazo (R1-26):** Snackbar con `SnackbarDuration.Long` (unos 10 s).
+- **Type the answer en tarjetas de gramática (R1-25):** el interruptor sigue funcionando. En una tarjeta de gramática, en lugar del campo sale *Typing works on word cards.* (12 sp, `muted`), y la tarjeta se estudia normal.

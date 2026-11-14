@@ -21,8 +21,15 @@ import javax.inject.Singleton
  * The 8 uses of docs/PLAN.md 10.1 (plus the model's quiz questions) and how long each may take before the version
  * without the model is shown (PoC 2 p90 + margin, R-013 point 3).
  */
+private val MARKDOWN_LINE = Regex("(?m)^[ \\t]*(?:#{1,6}[ \\t]+|[-*•][ \\t]+)")
+private val MARKDOWN_EMPHASIS = Regex("\\*\\*|__")
+private val MARKDOWN_ITALIC = Regex("(?<![*\\w])\\*(?=\\S)([^*\\n]+?)(?<=\\S)\\*(?![*\\w])") // *why* -> why
+
+/** R1-03 (design/shell.md): the model's text is shown plain, without `**`, `__`, headings or list marks. */
+internal fun plainText(text: String): String = text.replace(MARKDOWN_EMPHASIS, "").replace(MARKDOWN_ITALIC, "$1").replace(MARKDOWN_LINE, "")
+
 enum class AiUse(val timeoutMs: Long) {
-    Judge(2_000), ExplainMistake(6_000), Questions(6_000), Teacher(6_000), Coach(3_000), MessyNotes(10_000), Grammar(6_000), Dashboard(3_000),
+    Judge(2_000), ExplainMistake(6_000), Questions(6_000), Teacher(6_000), Coach(5_000), MessyNotes(10_000), Grammar(6_000), Dashboard(3_000),
 }
 
 /**
@@ -112,8 +119,8 @@ class NanoGate internal constructor(
         } catch (e: Exception) {
             return null.also { log(when (e) { is NanoBusy -> "busy"; is Stuck -> "stuck"; else -> "error:${e.javaClass.simpleName}" }) } // an AICore error mid-answer: the version without the model
         } ?: return null.also { log("timeout") }
-        val value = validate(text) ?: return null.also { log("rejected") }
-        if (request.cache) cache[key(request)] = text
+        val value = validate(plainText(text)) ?: return null.also { log("rejected") }
+        if (request.cache) cache[key(request)] = plainText(text)
         log("ok")
         return value
     }

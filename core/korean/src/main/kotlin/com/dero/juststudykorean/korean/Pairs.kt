@@ -20,8 +20,14 @@ data class VocabPair(
 /** Synonyms always as "가장 / 제일" (so any of them is accepted when typing). */
 private fun headword(korean: String) = koreanVariants(korean.pyStrip().replace(SYNONYM_SLASH, "/")).joinToString(" / ")
 
+// Round 1, point 6: a quiz read every chunk of your notes again (~0.4 s on the OPPO); the same chunk gives the same
+// result. Weak keys: the chunks go when NotesSource drops a document's (its text changed or it was deleted).
+private val pairsCache = java.util.Collections.synchronizedMap(java.util.WeakHashMap<Chunk, List<VocabPair>>())
+
 /** Vocabulary and sentence pairs of a chunk. Grammar points are not pairs. */
-fun extractPairs(chunk: Chunk): List<VocabPair> {
+fun extractPairs(chunk: Chunk): List<VocabPair> = pairsCache.getOrPut(chunk) { readPairs(chunk) }
+
+private fun readPairs(chunk: Chunk): List<VocabPair> {
     val lines = chunk.text.pySplitlines()
     val section = (chunk.section ?: "").pyStrip()
     var body = lines.filter { it.pyStrip().isNotEmpty() }.map { it.pyStrip() }
@@ -31,9 +37,14 @@ fun extractPairs(chunk: Chunk): List<VocabPair> {
     val pairs = linkedMapOf<String, VocabPair>()
     for (item in parseLines(body)) {
         if (item.grammar) continue
+        if (illustratesGrammar(chunk, item.korean)) continue
         val ko = headword(item.korean)
         val (exampleKo, exampleEn) = item.example
         pairs.putIfAbsent(norm(ko), VocabPair(ko, item.english, item.romanization, exampleKo, exampleEn, examples = item.examples.toList(), notes = item.notes.toList()))
     }
     return pairs.values.toList()
 }
+
+/** R1-16 (the app departs from the web): a numbered sentence inside an explanation illustrates grammar; it is not a card. */
+fun illustratesGrammar(chunk: Chunk, korean: String): Boolean =
+    chunk.contentType == "explanation" && com.dero.juststudykorean.korean.teacher.isSentence(korean)

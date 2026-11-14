@@ -12,6 +12,8 @@ import com.dero.juststudykorean.data.progress.ProgressRepository
 import com.dero.juststudykorean.data.time.AppClock
 import com.dero.juststudykorean.korean.PyRandom
 import com.dero.juststudykorean.korean.isCorrect
+import com.dero.juststudykorean.korean.extractGrammar
+import com.dero.juststudykorean.korean.extractPairs
 import com.dero.juststudykorean.korean.norm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -54,7 +56,10 @@ data class Mistake(val question: QuestionsEntity, val lastAt: Long, val times: I
 data class HistoryItem(val questionId: Long, val prompt: String, val result: String)
 
 /** A quiz of the last 15 days (or, before quizzes were saved, a quiz session); [startedAt] in epoch millis. */
-data class HistoryCard(val key: String, val title: String, val startedAt: Long, val items: List<HistoryItem>)
+data class HistoryCard(val key: String, val title: String, val startedAt: Long, val items: List<HistoryItem>) {
+    /** R1-08: you left it with questions unanswered (design/quiz.md A.4: *Left early*). */
+    val leftEarly: Boolean get() = items.any { it.result == "unanswered" }
+}
 
 class QuizException(message: String) : Exception(message)
 
@@ -229,7 +234,9 @@ class QuizRepository @Inject constructor(
     suspend fun readyDocuments() = withContext(Dispatchers.IO) { db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id } }
 
     /** Fills the chunk cache of [docs] so the first quiz doesn't pay for reading and chunking the notes. */
-    suspend fun warmUp(docs: List<DocumentsEntity>) = withContext(Dispatchers.Default) { docs.forEach(notes::chunks) }
+    suspend fun warmUp(docs: List<DocumentsEntity>) = withContext(Dispatchers.Default) {
+        docs.flatMap(notes::chunks).forEach { extractPairs(it); extractGrammar(it) } // point 6: the quiz finds them read
+    }
 
     // ---------- writes ----------
 

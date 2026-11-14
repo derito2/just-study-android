@@ -2,6 +2,7 @@ package com.dero.juststudykorean.ui.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -80,7 +81,7 @@ fun DocumentsSheet(documents: List<DocumentsEntity>, selected: Set<Long>, onChan
 @Composable
 private fun CheckRow(text: String, checked: Boolean, onClick: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable(role = Role.Checkbox, onClick = onClick).padding(horizontal = Tokens.Space6),
+        Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(checked, role = Role.Checkbox) { onClick() }.padding(horizontal = Tokens.Space6), // R1-24: each row says if it is checked
         verticalAlignment = Alignment.CenterVertically,
     ) {
         JsCheckbox(checked)

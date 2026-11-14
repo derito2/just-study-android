@@ -162,7 +162,9 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
             accuracy = accuracy(correct, rows.size),
             sessions = sessions.size,
             totalStudySeconds = sessions.sumOf { it.durationSeconds },
-            streakDays = streak(rows.map { day(it.createdAt) }.toSet(), today),
+            // R1-06: a day with card reviews or a session counts as studied too.
+            streakDays = streak(rows.map { day(it.createdAt) }.toSet() + sessions.map { day(it.startedAt) } +
+                db.flashcardReviewsDao().all().map { day(it.reviewedAt) }, today),
             lastStudiedAt = last?.let(::local),
             today = Today(
                 today, todayRows.size, todayCorrect, accuracy(todayCorrect, todayRows.size),
@@ -194,7 +196,7 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
     }
 
     fun calendar(year: Int, month: Int): Flow<CalendarMonth> =
-        db.invalidationTracker.createFlow("question_attempts", "study_sessions", "questions", "topics").map { calendarNow(year, month) }
+        db.invalidationTracker.createFlow("question_attempts", "study_sessions", "questions", "topics", "flashcard_reviews").map { calendarNow(year, month) }
 
     suspend fun calendarNow(year: Int, month: Int): CalendarMonth = withContext(Dispatchers.IO) {
         val first = LocalDate.of(year, month, 1)
@@ -211,10 +213,11 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
         }
         val seconds = HashMap<LocalDate, Long>()
         for (s in db.studySessionsDao().all().filter { it.startedAt in start until end }) seconds.merge(day(s.startedAt), s.durationSeconds, Long::plus)
+        val reviewed = db.flashcardReviewsDao().all().filter { it.reviewedAt in start until end }.map { day(it.reviewedAt) }.toSet()
         val days = generateSequence(first) { it.plusDays(1) }.takeWhile { it < next }.map { d ->
             val info = perDay[d] ?: Info()
             CalendarDay(
-                d, info.questions > 0, pyRound((seconds[d] ?: 0L) / 60.0), info.questions, info.correct,
+                d, info.questions > 0 || d in seconds || d in reviewed, pyRound((seconds[d] ?: 0L) / 60.0), info.questions, info.correct,
                 accuracy(info.correct, info.questions), info.topics.toList(), dayStatus(info.questions, info.correct),
             )
         }.toList()
@@ -356,17 +359,22 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
     // ---- writes used by answers and reviews (inside their transaction)
 
     /** The automatic session: goes on with the last one of the same [mode] if you were active recently. */
-    internal suspend fun attachSession(now: Long, responseMs: Long, topicId: Long?, mode: String): StudySessionsEntity {
+    /** [activeMs]: cards (R1-13) count only the active time of each card, not the whole wait (null: as before). */
+    internal suspend fun attachSession(now: Long, responseMs: Long, topicId: Long?, mode: String, activeMs: Long? = null): StudySessionsEntity {
         val dao = db.studySessionsDao()
         val last = db.hotDao().lastSession(mode)
         fun lastActivity(s: StudySessionsEntity) = s.startedAt + s.durationSeconds * 1000
-        var session = if (last != null && last.endedAt == null && now - lastActivity(last) <= SESSION_IDLE.toMillis()) last else {
+        val open = last != null && last.endedAt == null && now - lastActivity(last) <= SESSION_IDLE.toMillis()
+        var session = if (open) last!! else {
             if (last != null && last.endedAt == null) dao.update(last.copy(endedAt = lastActivity(last))) // closed for inactivity
             // The session starts when you started thinking the first answer (at most the idle time).
-            val thinking = minOf(responseMs, SESSION_IDLE.toMillis())
+            val thinking = minOf(activeMs ?: responseMs, SESSION_IDLE.toMillis())
             StudySessionsEntity(nextId("study_sessions"), now - thinking, null, 0, mode).also { dao.insert(it) }
         }
-        session = session.copy(durationSeconds = maxOf(session.durationSeconds, Math.floorDiv(now - session.startedAt, 1000L)))
+        session = if (activeMs != null && open) {
+            // R1-13: an open session's span would count the waits; it grows only by the card's active time.
+            session.copy(durationSeconds = session.durationSeconds + (minOf(activeMs, now - lastActivity(session)) + 500) / 1000)
+        } else session.copy(durationSeconds = maxOf(session.durationSeconds, Math.floorDiv(now - session.startedAt, 1000L)))
         dao.update(session)
         if (topicId != null && !db.hotDao().sessionHasTopic(session.id, topicId)) {
             db.studySessionTopicsDao().insert(StudySessionTopicsEntity(session.id, topicId))

@@ -102,6 +102,8 @@ class TeacherViewModel @Inject constructor(
     private var nextId = 0L
     private var ticker: Job? = null
 
+    init { viewModelScope.launch { runCatchingCancellable { teacher.warmUp() } } } // point 6: the first question is not cold
+
     fun setMode(mode: TeacherMode) = _state.update { it.copy(mode = mode) }
 
     fun clear() = _state.update { it.copy(exchanges = emptyList()) }

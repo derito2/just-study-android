@@ -42,6 +42,20 @@ class TeacherService @Inject constructor(db: JustStudyDatabase, private val gate
     private val lock = Mutex()
     private var seen = -1L
 
+    /**
+     * Round 1, point 6: the first Korean question built the notes' index and the verb forms of every sentence inside
+     * it (~1.8 s on the OPPO). Teacher's screen calls this when it opens, so the first question finds them ready.
+     */
+    suspend fun warmUp() = lock.withLock {
+        withContext(Dispatchers.Default) {
+            val version = search.version()
+            if (version != seen) { teacher.invalidate(); seen = version }
+            val start = System.nanoTime()
+            teacher.warm()
+            Log.i("JustStudy", "teacher_warm ms=${(System.nanoTime() - start) / 1_000_000}")
+        }
+    }
+
     suspend fun ask(question: String): TeacherAnswer {
         val asked = question.take(QUESTION_MAX)
         val rules = lock.withLock {
@@ -63,7 +77,7 @@ class TeacherService @Inject constructor(db: JustStudyDatabase, private val gate
     private suspend fun modelAnswer(question: String, rules: TeacherAnswer, gate: NanoGate): TeacherAnswer? {
         val sources = rules.sources.take(TEACHER_AI_SOURCES)
         if (sources.isEmpty()) {
-            val text = gate.ask(AiRequest(AiUse.Teacher, TEACHER_AI_NO_SOURCES_VERSION, teacherNoSourcesPrompt(question), question, 200, cache = true)) { validNoSources(it) }
+            val text = gate.ask(AiRequest(AiUse.Teacher, TEACHER_AI_NO_SOURCES_VERSION, teacherNoSourcesPrompt(question), question, 200, cache = true)) { validNoSources(it, question) }
                 ?: return null
             return TeacherAnswer("answered", text, emptyList(), TEACHER_AI_NO_SOURCES_VERSION, AI_MODEL)
         }

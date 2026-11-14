@@ -11,6 +11,8 @@ import com.dero.juststudykorean.data.notes.NotesSource
 import com.dero.juststudykorean.data.progress.ProgressRepository
 import com.dero.juststudykorean.data.time.AppClock
 import com.dero.juststudykorean.korean.GENERAL_TOPIC
+import com.dero.juststudykorean.korean.extractPairs
+import com.dero.juststudykorean.korean.illustratesGrammar
 import com.dero.juststudykorean.korean.norm
 import com.dero.juststudykorean.korean.referencePoints
 import com.dero.juststudykorean.pdf.ParsedDocument
@@ -39,6 +41,8 @@ private fun strings(list: List<String>) = JsonArray(list.map(::JsonPrimitive))
 
 /** sha256 of the chunk's text, as Chunk.text_hash: the same chunk in an earlier document is not indexed again. */
 internal fun textHash(text: String) = MessageDigest.getInstance("SHA-256").digest(text.toByteArray()).joinToString("") { "%02x".format(it) }
+
+private const val GRAMMAR_CARD = 2L // FlashcardRepository.GRAMMAR_DIFFICULTY
 
 private val PAIR_LINE = Regex("^[^=\\n]*[가-힣][^=\\n]* = [^=\\n]+$")
 
@@ -94,6 +98,30 @@ class DocumentIndexer @Inject constructor(
                     warnings = BackupFormat.pyJson(strings(parsed.warnings)),
                 ),
             )
+        }
+    }
+
+    /**
+     * QA round 1 (R1-15, R1-16): when a document is processed again, its cards follow the reader. A card whose example
+     * is now a note of its word takes the word's example; a grammar sentence that was a card goes (its reviews stay:
+     * your history). Coach decks and examples from other documents are not touched.
+     */
+    suspend fun refreshCards(documentId: Long) = db.withWriteTransaction {
+        val doc = db.documentsDao().all().firstOrNull { it.id == documentId } ?: return@withWriteTransaction
+        val chunks = notes.chunks(doc).associateBy { it.chromaId }
+        val pairs = HashMap<String, List<com.dero.juststudykorean.korean.VocabPair>>()
+        for (card in db.flashcardsDao().all()) {
+            if (card.customDeckId != null || card.difficulty == GRAMMAR_CARD) continue
+            val chunk = chunks[card.sourceChunkId] ?: continue
+            val pair = pairs.getOrPut(chunk.chromaId) { extractPairs(chunk) }.firstOrNull { norm(it.korean) == norm(card.koreanWord) }
+            if (pair == null) {
+                if (illustratesGrammar(chunk, card.koreanWord)) db.flashcardsDao().delete(card)
+                continue
+            }
+            val example = card.exampleSentence ?: continue
+            if (pair.examples.none { it.first == example } && pair.notes.any { example in it }) {
+                db.flashcardsDao().update(card.copy(exampleSentence = pair.exampleKo, exampleTranslation = pair.exampleEn))
+            }
         }
     }
 

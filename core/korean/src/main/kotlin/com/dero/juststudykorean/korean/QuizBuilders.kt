@@ -300,6 +300,19 @@ fun grammarItems(kind: String, chunks: List<Chunk>): List<Triple<Chunk, GrammarP
     }
 }
 
+private val LEADING_DASHES = Regex("^[\\s\\-~–—]+")
+
+/**
+ * R1-09 (design/quiz.md A.4): grammar options written alike, so none stands out by its dash: one leading "-" on all
+ * of them if the answer's pattern has one, on none if it hasn't ("--지(요)" -> "-지(요)", "ㄹ수록" -> "-ㄹ수록").
+ */
+internal fun sameDash(answer: String, options: List<String>): Pair<String, List<String>> {
+    val dash = LEADING_DASHES.find(answer)?.value?.any { it != ' ' } == true
+    fun fix(o: String) = o.replaceFirst(LEADING_DASHES, "").let { if (dash) "-$it" else it }
+    val fixed = fix(answer)
+    return fixed to options.map(::fix).filter { it != fixed }.distinct()
+}
+
 /** A grammar question made only with your notes. [pool]: the points of the same document. */
 fun buildGrammar(kind: String, variant: String, point: GrammarPoint, chunk: Chunk, pool: List<GrammarPoint>, grounding: String, rng: PyRandom): Built {
     val same = pool.filter { it.kind == point.kind && norm(it.pattern) != norm(point.pattern) }
@@ -328,6 +341,7 @@ fun buildGrammar(kind: String, variant: String, point: GrammarPoint, chunk: Chun
         else -> throw IllegalArgumentException("Unknown grammar variant: $variant")
     }
     var distractors = pickDistractors(answer, poolOptions, rng)
+    if (variant == "pick_form") sameDash(answer, distractors).let { answer = it.first; distractors = it.second }
     if (distractors.size < N_DISTRACTORS) return Built.no("too_few_distractors")
     sameCase(answer, distractors).let { answer = it.first; distractors = it.second }
     if (leaksAnswer(prompt, answer)) return Built.no("answer_in_question")
@@ -344,8 +358,7 @@ fun buildGrammar(kind: String, variant: String, point: GrammarPoint, chunk: Chun
 
 /** A question with the options you wrote (Anki): the question and the options as they are. */
 private fun fromYourChoices(kind: String, point: GrammarPoint, chunk: Chunk, grounding: String, rng: PyRandom): Built {
-    val answer = point.choiceAnswer ?: ""
-    val distractors = point.choices.filter { norm(it) != norm(answer) }
+    val (answer, distractors) = sameDash(point.choiceAnswer ?: "", point.choices.filter { norm(it) != norm(point.choiceAnswer ?: "") })
     val meaning = point.meaning
     val prompt = if (questionWords.any { casefold(meaning).startsWith(it) }) meaning else "Which grammar pattern means \"$meaning\"?"
     if (distractors.isEmpty()) return Built.no("too_few_distractors")

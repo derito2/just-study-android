@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -52,7 +53,9 @@ sealed interface ExtractedState {
 }
 
 /** The repeated words and grammar of a document just processed, shown one at a time. */
-data class DuplicatesShown(val filename: String, val items: List<Duplicate>, val index: Int = 0)
+data class DuplicatesShown(val documentId: Long, val filename: String, val items: List<Duplicate>, val index: Int = 0)
+
+internal fun skipKey(documentId: Long, d: Duplicate) = "$documentId:${d.kind}:${com.dero.juststudykorean.korean.norm(d.text)}"
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
@@ -61,6 +64,7 @@ class LibraryViewModel @Inject constructor(
     private val queue: ProcessingQueue,
     private val files: DocumentFiles,
     private val messyNotes: MessyNotes? = null,
+    private val prefs: com.dero.juststudykorean.data.prefs.UserPrefs? = null,
 ) : ViewModel() {
     /** Use 6: the model's pairs of each document's messy notes, and whether they wait for the app (design/library.md E). */
     val messy: StateFlow<Map<Long, MessyNotesState>> = messyNotes?.state ?: MutableStateFlow(emptyMap())
@@ -191,14 +195,28 @@ class LibraryViewModel @Inject constructor(
             watching.update { it - id }
             if (d.document.status != "ready") continue
             viewModelScope.launch {
-                val items = runCatchingCancellable { repo.duplicates(id) }.getOrNull().orEmpty()
-                if (items.isNotEmpty() && _duplicates.value == null) _duplicates.value = DuplicatesShown(d.document.originalName, items)
+                val skipped = prefs?.skippedDuplicates?.first().orEmpty()
+                val items = runCatchingCancellable { repo.duplicates(id) }.getOrNull().orEmpty().filter { skipKey(id, it) !in skipped }
+                if (items.isNotEmpty() && _duplicates.value == null) _duplicates.value = DuplicatesShown(id, d.document.originalName, items)
             }
         }
     }
 
-    fun skipDuplicate() = _duplicates.update { s -> s?.takeIf { it.index + 1 < it.items.size }?.copy(index = s.index + 1) }
-    fun skipAllDuplicates() { _duplicates.value = null }
+    fun skipDuplicate() {
+        val s = _duplicates.value ?: return
+        remember(s, s.items.subList(s.index, s.index + 1))
+        _duplicates.value = s.takeIf { it.index + 1 < it.items.size }?.copy(index = s.index + 1)
+    }
+
+    fun skipAllDuplicates() {
+        _duplicates.value?.let { s -> remember(s, s.items.drop(s.index)) }
+        _duplicates.value = null
+    }
+
+    /** R1-14: what you skipped is not asked again when this document is reprocessed. */
+    private fun remember(s: DuplicatesShown, items: List<com.dero.juststudykorean.data.documents.Duplicate>) {
+        prefs?.let { p -> viewModelScope.launch { p.addSkippedDuplicates(items.map { skipKey(s.documentId, it) }) } }
+    }
 }
 
 /** All vocabulary: the words of your ready documents, filtered while you type. */

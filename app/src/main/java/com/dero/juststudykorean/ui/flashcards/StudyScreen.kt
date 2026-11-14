@@ -149,6 +149,8 @@ fun StudyContent(
                                     modifier = m,
                                     typingField = if (typing) ({
                                         JsTextField(ui.typed, onType, placeholder = if (enToKo) "Type it in Korean" else "Type the meaning", center = true, onDone = { onFlip(meaning) })
+                                    }) else if (typeAnswer) ({ // R1-25: typing is on, but this is a grammar card
+                                        Text("Typing works on word cards.", fontSize = 12.sp, color = JustStudyTheme.colors.muted)
                                     }) else null,
                                 )
                             },

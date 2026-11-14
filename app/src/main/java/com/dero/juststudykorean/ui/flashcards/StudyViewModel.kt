@@ -9,6 +9,7 @@ import com.dero.juststudykorean.korean.compareAnswer
 import com.dero.juststudykorean.ui.components.runCatchingCancellable
 import com.dero.juststudykorean.data.flashcards.CardSource
 import com.dero.juststudykorean.data.flashcards.FlashcardRepository
+import com.dero.juststudykorean.data.flashcards.activeCardMs
 import com.dero.juststudykorean.data.flashcards.StudyCard
 import com.dero.juststudykorean.data.prefs.CardDirection
 import com.dero.juststudykorean.data.prefs.UserPrefs
@@ -73,6 +74,7 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
     private var opened = false
     private var rating = false
     private var shownAt = 0L
+    private var flippedAt: Long? = null // R1-13: flipping is activity too
 
     /** Loads the deck's cards that are due (all of them, like the web). Once per screen. */
     fun open(deck: Long?) {
@@ -91,6 +93,7 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
                 details = repo.details(entities), sources = repo.sources(entities),
             )
             shownAt = System.nanoTime()
+            flippedAt = null
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -104,6 +107,7 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
      */
     fun flip(meaning: Pair<String, String>? = null) {
         val card = _state.value.card ?: return
+        if (!_state.value.flipped) flippedAt = System.nanoTime()
         _state.value = _state.value.copy(flipped = true)
         val typed = _state.value.typed
         if (meaning == null || ai?.ready() != true || compareAnswer(typed, meaning.second, korean = false).verdict !in setOf(Verdict.Wrong, Verdict.Almost)) return
@@ -127,11 +131,14 @@ class StudyViewModel @Inject constructor(private val repo: FlashcardRepository, 
         rating = true
         viewModelScope.launch {
             try {
-                repo.review(card.card.id, value, (System.nanoTime() - shownAt) / 1_000_000, scheduling.value)
+                val now = System.nanoTime()
+                val active = activeCardMs(shownAt / 1_000_000, flippedAt?.let { it / 1_000_000 }, now / 1_000_000)
+                repo.review(card.card.id, value, (now - shownAt) / 1_000_000, scheduling.value, activeMs = active)
                 val rest = s.queue.drop(1)
                 if (rest.isNotEmpty()) {
                     _state.value = _state.value.copy(queue = rest, flipped = false, typed = "", reviewed = s.reviewed + 1, aiAccepted = null)
                     shownAt = System.nanoTime()
+                    flippedAt = null
                 } else {
                     _state.value = _state.value.copy(reviewed = s.reviewed + 1)
                     load()

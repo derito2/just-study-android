@@ -36,6 +36,7 @@ private val WORD_QUESTIONS = listOf(
     py("\\btranslate\\s+(.+?)(?:\\s+(?:in)?to\\s+(?:korean|english))?$END", ignoreCase = true),
     py("^\\s*(.+?)\\s+in\\s+korean$END", ignoreCase = true),
     py("^\\s*([가-힣]+?)(?:은|는|이|가)?\\s*(?:무슨\\s*뜻|뜻이\\s*뭐|뭐예요|뭐야)"),
+    py("^\\s*([가-힣]+?)(?:을|를|은|는|이|가)?\\s*어떻게\\s*말(?:해|하)"), // R1-01: "학교를 어떻게 말해요?"
     py("^\\s*((?:-|~|\\(으\\))[^?]*?[가-힣)])(?:은|는|이|가)?\\s*(?:무슨\\s*뜻|뜻이\\s*뭐|뭐예요|뭐야)"),
     py("\\bhow\\s+(?:do|can|should)\\s+(?:i|you|we)\\s+use\\s+((?:-|~|\\(으\\)).+?)$END", ignoreCase = true),
 )

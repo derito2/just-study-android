@@ -103,13 +103,12 @@ private fun Written(ai: GrammarCardAi) {
     ) {
         AiMark()
         w.simpler?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = ink) }
-        w.practice?.let { (ko, en) ->
+        w.practice?.let { ko ->
             Text(
                 "PRACTICE", style = MaterialTheme.typography.labelMedium, color = c.brandText,
                 modifier = Modifier.background(c.tint, CircleShape).padding(horizontal = Tokens.Space2, vertical = 2.dp), // badge-tint, as NEW on a card
             )
-            Text(ko, style = JustStudyTheme.korean.koBody, color = ink)
-            Text(en, style = MaterialTheme.typography.bodyMedium, color = c.muted)
+            Text(ko, style = JustStudyTheme.korean.koBody, color = ink) // R1-18: no translation
         }
     }
 }

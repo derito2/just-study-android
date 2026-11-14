@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dero.juststudykorean.data.quiz.ResultRow
+import com.dero.juststudykorean.ui.components.AiMark
 import com.dero.juststudykorean.ui.components.LoadingState
 import com.dero.juststudykorean.ui.components.Lucide
 import com.dero.juststudykorean.ui.components.LucideIcon
@@ -67,6 +68,11 @@ fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () ->
                     else -> "That was weak. Go again."
                 }
                 Text("$line Your answers were saved and count towards your progress.", style = MaterialTheme.typography.bodyMedium, color = c.muted)
+                val byAi = rows.count { it.question.id < 0 } // R1-07 (design/quiz.md A.4): the model's questions live in memory only
+                if (byAi > 0) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space2), verticalAlignment = Alignment.CenterVertically) {
+                    AiMark(short = true)
+                    Text("$byAi of these ${if (byAi == 1) "was" else "were"} written by AI and ${if (byAi == 1) "isn't" else "aren't"} saved in your history.", fontSize = 12.sp, color = c.muted)
+                }
                 if (aiFailed > 0) Text("$aiFailed AI ${if (aiFailed == 1) "question" else "questions"} couldn't be written this time.", fontSize = 12.sp, color = c.muted) // A.3
                 Column(Modifier.fillMaxWidth().border(Tokens.Border, c.line, MaterialTheme.shapes.medium)) {
                     rows.forEachIndexed { i, r ->

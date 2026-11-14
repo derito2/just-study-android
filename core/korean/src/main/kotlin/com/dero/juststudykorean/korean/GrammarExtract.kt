@@ -89,6 +89,8 @@ private fun pattern(chunk: Chunk, lines: List<String>): GrammarPoint? {
                     examples.isNotEmpty() && part == "translation" -> examples.last()[1] += " $line"
                     HANGUL.containsMatchIn(line) && !G_LATIN.containsMatchIn(line) && (examples.isEmpty() || examples.last()[0].pyLen < WRAPPED_LINE) ->
                         examples += arrayOf(line, "") // a Korean-only line of its own: another example
+                    // R1-21: English never goes on the Korean side; a wrapped translation goes on with the translation.
+                    examples.isNotEmpty() && !HANGUL.containsMatchIn(line) -> examples.last()[1] = "${examples.last()[1]} $line".pyStrip()
                     examples.isNotEmpty() -> examples.last()[0] += " $line"
                 }
             }
@@ -144,8 +146,12 @@ private fun oneLiners(lines: List<String>): List<GrammarPoint> = parseLines(line
     GrammarPoint("pattern", it.korean, it.english.pyTake(MAX_MEANING_CHARS), examples = it.examples.toList(), explanation = it.notes.joinToString(" ").ifEmpty { null })
 }
 
+private val grammarCache = java.util.Collections.synchronizedMap(java.util.WeakHashMap<Chunk, List<GrammarPoint>>()) // as extractPairs'
+
 /** Grammar points of a chunk. */
-fun extractGrammar(chunk: Chunk): List<GrammarPoint> {
+fun extractGrammar(chunk: Chunk): List<GrammarPoint> = grammarCache.getOrPut(chunk) { readGrammar(chunk) }
+
+private fun readGrammar(chunk: Chunk): List<GrammarPoint> {
     var lines = body(chunk)
     if (isGrammarEntry(chunk.section, lines)) return listOfNotNull(pattern(chunk, lines))
     if (isParticleTable(lines)) return particles(lines)

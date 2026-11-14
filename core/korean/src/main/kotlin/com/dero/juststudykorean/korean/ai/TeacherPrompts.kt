@@ -1,13 +1,14 @@
 package com.dero.juststudykorean.korean.ai
 
 import com.dero.juststudykorean.korean.teacher.Source
+import com.dero.juststudykorean.korean.teacher.askedPhrase
 import com.dero.juststudykorean.korean.teacher.formatSources
 
 // Phase 6, task 3 (use 4): Teacher when the rules have no answer. With fragments of your notes (NotesSearch), an
 // English explanation with citations; without any, the model answers on its own (AiMark, no sources).
 
 const val TEACHER_AI_VERSION = "teacher.nano.v1"
-const val TEACHER_AI_NO_SOURCES_VERSION = "teacher.nano.free.v1"
+const val TEACHER_AI_NO_SOURCES_VERSION = "teacher.nano.free.v2"
 
 /** At most 4 fragments per question (R-013, point 7). */
 const val TEACHER_AI_SOURCES = 4
@@ -21,8 +22,14 @@ fun teacherPrompt(question: String, sources: List<Source>) =
         "Question: $question\n\nSOURCES:\n${formatSources(sources)}"
 
 fun teacherNoSourcesPrompt(question: String) =
-    "Answer this question from a beginner learning Korean in at most 4 short sentences. Write no Korean at all: " +
-        "explain in English only.\n\nQuestion: $question"
+    if (askedPhrase(question) != null) {
+        // R1-17: "How do I say submarine?" needs the Korean, in Hangul (romanization alone is rejected).
+        "A beginner learning Korean asks how to say something. Give the usual Korean word or phrase written in Hangul, " +
+            "then explain it in English in at most 3 short sentences. Never write the Korean only in romanization.\n\nQuestion: $question"
+    } else {
+        "Answer this question from a beginner learning Korean in at most 4 short sentences. Write no Korean at all: " +
+            "explain in English only.\n\nQuestion: $question"
+    }
 
 /** A checked answer with fragments: English, at least one citation, all of them to [sources], Korean only from the cited ones. */
 data class CitedAnswer(val text: String, val cited: Set<Int>)
@@ -37,8 +44,12 @@ fun validTeacher(output: String, sources: List<Source>): CitedAnswer? {
     return if (koreanOnlyFrom(text, citedText)) CitedAnswer(text, cited) else null
 }
 
-/** Without fragments there is nothing to check Korean against: the answer may have none (and no citations). */
-fun validNoSources(output: String): String? {
+/**
+ * Without fragments there is nothing to check Korean against: no citations, and Korean only when [question] asks how
+ * to say something (then it MUST have Hangul, R1-17); else none.
+ */
+fun validNoSources(output: String, question: String): String? {
     val text = output.trim()
-    return text.takeIf { isEnglish(it, minWords = 4) && !hasHangul(it) && citations(it).isEmpty() && "NOT_FOUND" !in it }
+    if (!isEnglish(text, minWords = 4) || citations(text).isNotEmpty() || "NOT_FOUND" in text) return null
+    return text.takeIf { hasHangul(it) == (askedPhrase(question) != null) }
 }

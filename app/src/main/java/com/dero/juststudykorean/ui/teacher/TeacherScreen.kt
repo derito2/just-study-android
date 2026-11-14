@@ -199,7 +199,7 @@ private fun Card(content: @Composable () -> Unit) {
 @Composable
 internal fun AnswerCard(question: String, answer: TeacherAnswer, openAll: Boolean = false) = Card {
     val colors = JustStudyTheme.colors
-    if (answer.model == AI_MODEL) AiMark() // design/teacher.md: the model's answer (use 4)
+    if (answer.model == AI_MODEL) AiMark(fromNotes = answer.sources.isNotEmpty()) // use 4; R1-11: with sources it cites your notes
     Text(question, style = JustStudyTheme.korean.bodyBold, color = colors.muted)
     when (answer.status) {
         "not_found" -> Refusal("Your notes don't cover this", "Your teacher read the closest passages and the answer isn't there. Add it to your notes.")
@@ -268,7 +268,7 @@ internal fun CoachCard(
         modifier = Modifier.background(colors.warnFill, RoundedCornerShape(Tokens.RadiusSm)).padding(horizontal = 8.dp, vertical = 2.dp),
     )
     Text(e.question, style = JustStudyTheme.korean.bodyBold, color = colors.muted)
-    if (answer.ai) AiMark() // use 5: the model wrote the text from the rules' facts
+    if (answer.ai) AiMark(fromNotes = true) // use 5: the model wrote the text from the rules' facts (R1-11)
     Text(answer.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     answer.quiz?.let { quiz ->
         Proposal("QUIZ", quiz.words) {
