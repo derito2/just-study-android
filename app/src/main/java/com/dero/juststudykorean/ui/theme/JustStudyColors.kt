@@ -81,6 +81,14 @@ data class JustStudyColors(
     val scrim: Color,
     val tooltip: Color,
     val onTooltipAction: Color,
+    val night: Color,
+    val nightDeep: Color,
+    val nightShade: Color,
+    val skyMid: Color,
+    val skyLight: Color,
+    val lantern: Color,
+    val lanternRed: Color,
+    val petal: Color,
 )
 
 val LightJustStudyColors = JustStudyColors(
@@ -157,6 +165,14 @@ val LightJustStudyColors = JustStudyColors(
     scrim = Tokens.ScrimLight,
     tooltip = Tokens.Tooltip,
     onTooltipAction = Tokens.OnTooltipAction,
+    night = Tokens.Night,
+    nightDeep = Tokens.NightDeep,
+    nightShade = Tokens.NightShade,
+    skyMid = Tokens.SkyMid,
+    skyLight = Tokens.SkyLight,
+    lantern = Tokens.Lantern,
+    lanternRed = Tokens.LanternRed,
+    petal = Tokens.Petal,
 )
 
 val DarkJustStudyColors = JustStudyColors(
@@ -233,6 +249,14 @@ val DarkJustStudyColors = JustStudyColors(
     scrim = Tokens.ScrimDark,
     tooltip = Tokens.Tooltip,
     onTooltipAction = Tokens.OnTooltipAction,
+    night = Tokens.Night,
+    nightDeep = Tokens.NightDeep,
+    nightShade = Tokens.NightShade,
+    skyMid = Tokens.SkyMid,
+    skyLight = Tokens.SkyLight,
+    lantern = Tokens.Lantern,
+    lanternRed = Tokens.LanternRed,
+    petal = Tokens.Petal,
 )
 
 val LocalJustStudyColors = staticCompositionLocalOf { LightJustStudyColors }

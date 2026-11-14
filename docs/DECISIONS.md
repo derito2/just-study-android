@@ -2,6 +2,22 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-14 — Fase 8 (Games): decisiones D8-1…D8-9
+**Decisión del dueño:** todas como las propone `docs/FASE_8_PLAN.md` (sección 0):
+- **D8-1:** Games entra por una fila **Games** en MoreSheet, la primera (la barra inferior ya tiene 5 destinos).
+- **D8-2:** Hangman con **tres faroles**, sin horca.
+- **D8-3:** las cifras de Games van en **tablas solo del teléfono** (`game_sessions`, `game_rounds`, `game_item_progress`), fuera del respaldo, con clave por texto coreano. Se pierden al desinstalar.
+- **D8-4:** jugar **cuenta como estudiar** (racha, calendario y *Study time*). Se hace en el PR C, después de R1-06.
+- **D8-5:** sin sonidos de efecto; el único audio es la voz coreana.
+- **D8-6:** Sound Detective usa la **lista fija de 21 grupos** de pares mínimos cuando las notas no dan, marcada *Extra · not from your notes*.
+- **D8-7:** Grammar Fixer solo con **partículas equivocadas por el 받침**.
+- **D8-8:** se permite la **voz del sistema sin red** en los dos juegos de escucha: una entrada `<queries>` (visibilidad del motor TTS), ningún permiso.
+- **D8-9:** Games **no usa Gemini Nano**.
+**Por qué:** ver la tabla de la sección 0 del plan.
+
+## 2026-11-14 — Ronda 1: se quedan las 17 tarjetas; licencias como están
+**Decisión del dueño:** opción (a). Las 4 tarjetas que el arreglo del lector cambió además de las 13 del informe (좋아지다 y tres de Anki_sentences) se quedan cambiadas: son el mismo error (una nota o comparación como ejemplo) y ningún significado cambia. La pantalla de licencias se queda como está: el aviso y el enlace de MuPDF, sin ninguna promesa sobre el código de la app.
+
 ## 2026-11-13 — Ronda 1: el lector y Teacher se apartan de la web
 **Decisión del dueño:** en estos puntos la app puede dar algo distinto que la web (`backend/app`), y las doradas que cambien se regeneran:
 - **R1-15:** debajo de una palabra, una línea `X -> Y`, `X → Y`, `X - Y`, `X = Y` o `== X` cuya parte coreana no usa la palabra (ni conjugada) es una **nota** de la entrada (sinónimo, comparación), no su ejemplo. La que sí la usa sigue siendo ejemplo (`이 중에서 하나를 고르세요 → Choose one`). También vale para `Example:` con flecha.
