@@ -81,4 +81,20 @@ class GamesScreenshotTest {
         val sequence = listOf(GameFixtures.school, GameFixtures.water, GameFixtures.friend)
         Games(SessionState.Playing(REF, RoundSpec.WordRecall(1, sequence, sequence.reversed())))
     }
+
+    // Task 7: the Hangul games (own keyboard, no system keyboard).
+    @Test fun hangman() = snap("games_hangman") {
+        val word = GameFixtures.library
+        Games(SessionState.Playing(REF, RoundSpec.Hangman(1, word, false, word.blocks, listOf("도", "고", "서", "사", "관", "소", "노", "보", "간", "선"))))
+    }
+    @Test fun hangmanJamo() = snap("games_hangman_jamo") {
+        val word = GameFixtures.water
+        Games(SessionState.Playing(REF, RoundSpec.Hangman(2, word, true, listOf("ㅁ", "ㅜ", "ㄹ"), emptyList())))
+    }
+    @Test fun hangulBuilder() = snap("games_hangul_builder") {
+        Games(SessionState.Playing(REF, RoundSpec.HangulBuilder(1, GameFixtures.school, 1, listOf('ㄱ', 'ㅛ'), listOf('ㅛ', 'ㅋ', 'ㄱ', 'ㅠ', 'ㄲ', 'ㅕ'))))
+    }
+    @Test fun hangulTyping() = snap("games_hangul_typing") {
+        Games(SessionState.Playing(REF, RoundSpec.HangulTyping(1, GameFixtures.water, RoundSpec.TypingMode.COPY)))
+    }
 }

@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import com.dero.juststudykorean.korean.games.GameType
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.games.RoundSpec
+import com.dero.juststudykorean.ui.games.minigames.HangmanGame
+import com.dero.juststudykorean.ui.games.minigames.HangulBuilderGame
+import com.dero.juststudykorean.ui.games.minigames.HangulTypingGame
 import com.dero.juststudykorean.ui.games.minigames.MemoryFlipGame
 import com.dero.juststudykorean.ui.games.minigames.SentenceBuilderGame
 import com.dero.juststudykorean.ui.games.minigames.WordMatchGame
@@ -12,7 +15,10 @@ import com.dero.juststudykorean.ui.games.minigames.WordScrambleGame
 import com.dero.juststudykorean.ui.games.stage.StageScope
 
 /** The games this PR shows (FASE_8_PLAN, PR B). Listening games come in PR C: the engine never plans them here. */
-val PLAYABLE: Set<GameType> = setOf(GameType.WordMatch, GameType.MemoryFlip, GameType.WordScramble, GameType.SentenceBuilder, GameType.WordRecall)
+val PLAYABLE: Set<GameType> = setOf(
+    GameType.WordMatch, GameType.MemoryFlip, GameType.WordScramble, GameType.SentenceBuilder, GameType.WordRecall,
+    GameType.Hangman, GameType.HangulBuilder, GameType.HangulTyping,
+)
 
 /**
  * One round of a minigame (FASE_8_PLAN 2): XGame(spec, paused, onResult, stage). A game doesn't know which comes next
@@ -26,12 +32,19 @@ fun GameRound(spec: RoundSpec, paused: Boolean, stage: StageScope, timer: Boolea
         is RoundSpec.WordScramble -> WordScrambleGame(spec, paused, onResult, stage)
         is RoundSpec.SentenceBuilder -> SentenceBuilderGame(spec, paused, onResult, stage)
         is RoundSpec.WordRecall -> WordRecallGame(spec, paused, onResult, stage)
+        is RoundSpec.Hangman -> HangmanGame(spec, paused, onResult, stage)
+        is RoundSpec.HangulBuilder -> HangulBuilderGame(spec, paused, onResult, stage)
+        is RoundSpec.HangulTyping -> HangulTypingGame(spec, paused, timer, onResult, stage)
         else -> Unit // not in this build (PLAYABLE)
     }
 }
 
 /** The instruction of the round (some games change it by level or phase). */
-fun instructionOf(spec: RoundSpec, text: GameText): Pair<String, String> = text.instruction to text.instructionKo
+fun instructionOf(spec: RoundSpec, text: GameText): Pair<String, String> = when {
+    spec is RoundSpec.HangulTyping && spec.mode == RoundSpec.TypingMode.FROM_MEANING -> "Type it in Korean." to "한국어로 쓰세요."
+    spec is RoundSpec.HangulTyping && spec.mode == RoundSpec.TypingMode.FROM_MEMORY -> "Type what you saw." to "본 것을 쓰세요."
+    else -> text.instruction to text.instructionKo
+}
 
 /** The hint pill: the meaning of your notes, where the game shows one. */
 fun hintOf(spec: RoundSpec): String? = when (spec) {
