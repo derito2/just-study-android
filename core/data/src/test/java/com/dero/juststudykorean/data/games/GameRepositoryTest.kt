@@ -62,6 +62,7 @@ class GameRepositoryTest {
         assertEquals(1L, p.wrong)
         assertEquals(1L, p.streak)
         assertEquals(clock.now().toEpochMilli(), p.lastWrongAt)
+        assertEquals(listOf(Outcome.WON, Outcome.LOST, Outcome.WON), repo.history(id).map { it.outcome })
     }
 
     @Test

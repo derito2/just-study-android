@@ -9,7 +9,10 @@ import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.data.time.AppClock
 import com.dero.juststudykorean.korean.games.GameType
 import com.dero.juststudykorean.korean.games.Outcome
+import com.dero.juststudykorean.korean.games.ItemStats
+import com.dero.juststudykorean.korean.games.PlayedRound
 import com.dero.juststudykorean.korean.games.RoundResult
+import com.dero.juststudykorean.korean.games.progressAfter
 import org.json.JSONArray
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,6 +32,8 @@ data class GameStats(
     val lastPlayedAt: Long?,
     val perGame: List<GameTotals>,
 )
+
+private fun GameItemProgressEntity.stats() = ItemStats(seen, correct, wrong, streak, lastSeenAt, lastWrongAt)
 
 /** Saves Games' sessions, rounds and the progress of each item (phone-only tables, D8-3). Never touches the 18 tables. */
 @Singleton
@@ -69,18 +74,9 @@ class GameRepository @Inject constructor(private val db: JustStudyDatabase, priv
             )
             if (result.outcome == Outcome.NEUTRAL) return@withWriteTransaction
             for (key in result.itemKeys.distinct()) {
-                val wrong = key in result.failedKeys || result.outcome == Outcome.LOST
-                val old = db.gameItemProgressDao().get(key) ?: GameItemProgressEntity(key, 0, 0, 0, 0, at, null)
-                db.gameItemProgressDao().upsert(
-                    old.copy(
-                        seen = old.seen + 1,
-                        correct = old.correct + if (wrong) 0 else 1,
-                        wrong = old.wrong + if (wrong) 1 else 0,
-                        streak = if (wrong) 0 else old.streak + 1,
-                        lastSeenAt = at,
-                        lastWrongAt = if (wrong) at else old.lastWrongAt,
-                    ),
-                )
+                val old = db.gameItemProgressDao().get(key)?.stats()
+                val p = progressAfter(old, wrong = key in result.failedKeys || result.outcome == Outcome.LOST, at = at)
+                db.gameItemProgressDao().upsert(GameItemProgressEntity(key, p.seen, p.correct, p.wrong, p.streak, p.lastSeenAt, p.lastWrongAt))
             }
         }
     }
@@ -94,7 +90,20 @@ class GameRepository @Inject constructor(private val db: JustStudyDatabase, priv
         db.gameRoundsDao().lastOutcomes(game.name, limit).map { Outcome.valueOf(it.uppercase()) }
 
     /** Every item's progress, by key (5.4, ItemPicker). */
-    suspend fun progress(): Map<String, GameItemProgressEntity> = db.gameItemProgressDao().all().associateBy { it.itemKey }
+    suspend fun progress(): Map<String, ItemStats> = db.gameItemProgressDao().all().associate { it.itemKey to it.stats() }
+
+    /** Each game's last [limit] results, newest first (5.3). */
+    suspend fun lastOutcomes(limit: Int = 6): Map<GameType, List<Outcome>> = GameType.entries.associateWith { lastOutcomes(it, limit) }
+
+    /** The rounds a session played, in order (to rebuild its history after the process was killed, 5.5). */
+    suspend fun history(sessionId: Long): List<PlayedRound> = db.gameRoundsDao().ofSession(sessionId).map { r ->
+        val keys = JSONArray(r.itemKeys).let { a -> List(a.length()) { a.getString(it) } }
+        PlayedRound(GameType.valueOf(r.game), Outcome.valueOf(r.outcome.uppercase()), keys)
+    }
+
+    /** When the session last did something: its last round, or its start. */
+    suspend fun lastActivity(sessionId: Long): Long? =
+        db.gameRoundsDao().ofSession(sessionId).maxOfOrNull { it.createdAt } ?: session(sessionId)?.startedAt
 
     suspend fun stats(): GameStats {
         val graded = db.gameRoundsDao().graded()
