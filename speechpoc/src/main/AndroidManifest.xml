@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Owner's OK (2026-11-14, option 1): genai-speech-recognition alpha2 declares these; stripped so the PoC proves A offline. -->
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+
+    <!-- PoC 4 only (owner's OK, 2026-11-14): the microphone for this test app; never in the owner's app. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Engine B: see the speech recognition services (package visibility, not a permission). -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:label="JS Speech PoC"
+        android:theme="@android:style/Theme.Material.NoActionBar">
+        <activity
+            android:name=".PocActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
