@@ -146,11 +146,15 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
         }
     }
 
+    /** D8-4: Games counts as studying: each session with at least one round, (start, seconds). The goldens have none. */
+    private suspend fun games(): List<Pair<Long, Long>> = db.gameSessionsDao().all().filter { it.rounds > 0 }.map { it.startedAt to it.durationSeconds }
+
     suspend fun summary(): ProgressSummary = withContext(Dispatchers.IO) {
         val now = clock.now().toEpochMilli()
         val today = day(now)
         val rows = attempts()
         val sessions = db.studySessionsDao().all()
+        val games = games()
         val correct = rows.count { it.correct }
         val todayRows = rows.filter { day(it.createdAt) == today }
         val todaySessions = sessions.filter { day(it.startedAt) == today }
@@ -161,14 +165,14 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
             correct = correct,
             accuracy = accuracy(correct, rows.size),
             sessions = sessions.size,
-            totalStudySeconds = sessions.sumOf { it.durationSeconds },
+            totalStudySeconds = sessions.sumOf { it.durationSeconds } + games.sumOf { it.second },
             // R1-06: a day with card reviews or a session counts as studied too.
             streakDays = streak(rows.map { day(it.createdAt) }.toSet() + sessions.map { day(it.startedAt) } +
-                db.flashcardReviewsDao().all().map { day(it.reviewedAt) }, today),
+                db.flashcardReviewsDao().all().map { day(it.reviewedAt) } + games.map { day(it.first) }, today),
             lastStudiedAt = last?.let(::local),
             today = Today(
                 today, todayRows.size, todayCorrect, accuracy(todayCorrect, todayRows.size),
-                todaySessions.sumOf { it.durationSeconds }, todaySessions.size,
+                todaySessions.sumOf { it.durationSeconds } + games.filter { day(it.first) == today }.sumOf { it.second }, todaySessions.size,
                 // Reviewing cards is studying too.
                 db.flashcardReviewsDao().all().count { day(it.reviewedAt) == today },
             ),
@@ -196,7 +200,7 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
     }
 
     fun calendar(year: Int, month: Int): Flow<CalendarMonth> =
-        db.invalidationTracker.createFlow("question_attempts", "study_sessions", "questions", "topics", "flashcard_reviews").map { calendarNow(year, month) }
+        db.invalidationTracker.createFlow("question_attempts", "study_sessions", "questions", "topics", "flashcard_reviews", "game_sessions").map { calendarNow(year, month) }
 
     suspend fun calendarNow(year: Int, month: Int): CalendarMonth = withContext(Dispatchers.IO) {
         val first = LocalDate.of(year, month, 1)
@@ -213,6 +217,7 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
         }
         val seconds = HashMap<LocalDate, Long>()
         for (s in db.studySessionsDao().all().filter { it.startedAt in start until end }) seconds.merge(day(s.startedAt), s.durationSeconds, Long::plus)
+        for ((at, secs) in games().filter { it.first in start until end }) seconds.merge(day(at), secs, Long::plus)
         val reviewed = db.flashcardReviewsDao().all().filter { it.reviewedAt in start until end }.map { day(it.reviewedAt) }.toSet()
         val days = generateSequence(first) { it.plusDays(1) }.takeWhile { it < next }.map { d ->
             val info = perDay[d] ?: Info()
@@ -274,6 +279,7 @@ class ProgressRepository @Inject constructor(private val db: JustStudyDatabase, 
         fun bucket(millis: Long): P? = day(millis).takeIf { it >= first }?.let { points[periodStart(it, unit)] }
         for (a in attempts().filter { it.createdAt >= since }) bucket(a.createdAt)?.let { it.answers++; if (a.correct) it.correct++ }
         for (s in db.studySessionsDao().all().filter { it.startedAt >= since }) bucket(s.startedAt)?.let { it.seconds += s.durationSeconds }
+        for ((at, secs) in games().filter { it.first >= since }) bucket(at)?.let { it.seconds += secs }
         val ends = starts.map { startOf(next(it, unit)) }.toMutableList()
         ends[ends.lastIndex] = now
         val states = cardStates(ends)

@@ -59,7 +59,7 @@ private const val VOICE_CHECK_MS = 4_000L // the TTS engine binds in well under 
 @HiltViewModel
 class GamesViewModel @Inject constructor(
     private val content: GameContentProvider,
-    repository: GameRepository,
+    private val repository: GameRepository,
     private val clock: AppClock,
     private val prefs: UserPrefs,
     private val saved: SavedStateHandle,
@@ -115,7 +115,17 @@ class GamesViewModel @Inject constructor(
 
     fun feedbackDone() = viewModelScope.launch { engine.feedbackDone(); remember() }
 
-    fun pause() { engine.pause(); if (pausedAt == null && state.value is SessionState.Paused) pausedAt = clock.now().toEpochMilli() }
+    fun pause() {
+        engine.pause()
+        val paused = state.value as? SessionState.Paused ?: return
+        if (pausedAt == null) pausedAt = clock.now().toEpochMilli()
+        // The pause's figures are the saved session's (task 10): what the summary will say.
+        viewModelScope.launch {
+            runCatchingCancellable { repository.session(paused.ref.sessionId) }.getOrNull()?.let { row ->
+                _counts.update { it.copy(rounds = row.rounds.toInt(), won = row.won.toInt(), bestStreak = row.bestStreak.toInt(), seconds = row.durationSeconds) }
+            }
+        }
+    }
 
     /** After more than 30 min paused, the session closes itself and the summary shows (games.md 9). */
     fun resume() {

@@ -106,6 +106,8 @@ class GamesBehaviourTest {
         compose.mainClock.advanceTimeBy(1200)
         playing()
         vm.pause()
+        until { vm.counts.value.rounds == 1 } // task 10: the pause's figures are the saved session's
+        assertEquals(runBlocking { repository.session(1)!!.durationSeconds }, vm.counts.value.seconds.toLong())
         compose.onNodeWithText("End session", ignoreCase = true).performScrollTo().performClick()
         until { vm.state.value is SessionState.Ended }
         compose.onNodeWithText("Nice session").assertExists()
