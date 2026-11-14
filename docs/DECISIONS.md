@@ -2,6 +2,30 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-14 — Fase 8, PR C: voz, cifras y entrega (0.10.0)
+**Decisiones:**
+- **Voz:** `TtsKoreanVoice` usa solo una voz `ko` sin red e instalada; nunca síntesis por red. Si otra app o una llamada toma el audio, la sesión se pausa. Con el volumen de medios a 0, la ronda espera con *Turn the volume up to play.*; la app no cambia el volumen. Una pausa con audio a medias repite la ronda desde el principio al reanudar. El manifiesto solo gana `<queries>` del servicio TTS: no es un permiso.
+- **Cifras (tarea 10):** la pausa muestra las de la sesión guardada (`GameRepository`), igual que el resumen. **D8-4:** cada sesión de Games con al menos una ronda suma al tiempo de estudio, al calendario, a la gráfica y a la racha. Las doradas no tienen filas de Games y no cambian.
+- **Quitar animaciones:** se prueba por Robolectric (escala de animación a 0), sin tocar el ajuste del teléfono. Las piezas de audio también lo respetan.
+- **El dueño autorizó** que la voz sonara en las pruebas del OPPO, y activó y quitó él mismo el modo avión.
+
+**Medido en el OPPO** (apps QA y benchmark con el respaldo del dueño, desinstaladas al terminar; logs solo con cuentas):
+- **Voz:** motor `com.google.android.tts`, 9 voces coreanas, 5 sin red; se elige `ko-kr-x-ism-local`. Habla en 1,1 s, también en modo avión sin ninguna red activa.
+- **Banco del dueño:** 426 palabras, 142 frases, 21 puntos de gramática. Con voz están **disponibles los 13 juegos**. Elementos válidos por juego:
+
+  | Juego | Válidos | Juego | Válidos |
+  |---|---|---|---|
+  | Hangman | 401 | Word Sort | 426 |
+  | Word Match | 384 | Grammar Fixer | 26 |
+  | Sentence Builder | 99 | Word Recall | 343 |
+  | Memory Flip | 384 | Hangul Typing | 426 |
+  | Word Scramble | 400 | Word Path | 188 |
+  | Listen & Guess | 384 | Sound Detective | 426 |
+  | Hangul Builder | 396 | | |
+
+- **Sesión de 60 rondas** en modo avión, con el motor real y la voz: salieron los 13 juegos y se ganaron 59 rondas (5 min). En la única fallida, una de Word Path, la prueba no llegó a terminar la ronda. Se repitieron 10 rondas de Word Path en nivel 3: 10/10. Con logs solo numéricos no se sabe la causa.
+- **Macrobenchmark de Games** (abrir, pausar, reanudar y terminar): 1 449 fotogramas por iteración. CPU por fotograma: P50 4,7 ms, P90 6,4 ms, P95 6,9 ms, P99 9,6 ms. Retraso: P99 16 ms; hasta P95 queda dentro del plazo de fotograma.
+
 ## 2026-11-14 — Fase 8, PR B: respuestas al informe del PR A
 **Decisión del dueño:**
 - **Hangul Builder:** la bandeja se rellena con otros jamo del mismo tipo (consonante o vocal), cada uno comprobado para que no forme otra respuesta válida. La bandeja sigue siendo de 6 piezas (nivel 3: 8).

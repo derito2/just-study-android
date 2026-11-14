@@ -11,6 +11,7 @@ import com.dero.juststudykorean.data.games.SessionSummary
 import com.dero.juststudykorean.korean.games.Outcome
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.games.RoundSpec
+import com.dero.juststudykorean.korean.games.SoundWord
 import com.dero.juststudykorean.ui.games.GameFixtures.WORDS
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
@@ -109,5 +110,22 @@ class GamesScreenshotTest {
     @Test fun grammarFixer() = snap("games_grammar_fixer") {
         val item = GameFixtures.sentence("저는 학교를 가요", "I go to school")
         Games(SessionState.Playing(REF, RoundSpec.GrammarFixer(1, item, listOf("저는", "학교을", "가요"), ".", 1, "학교", "를", listOf("은", "를"), "After a vowel: 를. After a consonant: 을.")))
+    }
+
+    // Task 9: the listening games (no voice in captures: nothing sounds) and the pause without a voice.
+    @Test fun listenGuess() = snap("games_listen_guess") {
+        Games(SessionState.Playing(REF, RoundSpec.ListenGuess(1, WORDS.take(6), WORDS.take(3), showKorean = false)))
+    }
+    @Test fun soundSame() = snap("games_sound_same") {
+        Games(SessionState.Playing(REF, RoundSpec.SoundDetective.SameOrDifferent(1, SoundWord("불", "Fire", null, true), SoundWord("풀", "Grass", null, true), "the first sound", 0.85f, 700)))
+    }
+    @Test fun soundTwice() = snap("games_sound_twice") {
+        Games(SessionState.Playing(REF, RoundSpec.SoundDetective.CameTwice(1, listOf(GameFixtures.water, GameFixtures.apple, GameFixtures.cat), listOf(0, 2, 1, 2), 2, 0.85f, 700)))
+    }
+    @Test fun soundOrder() = snap("games_sound_order") {
+        Games(SessionState.Playing(REF, RoundSpec.SoundDetective.WhatOrder(1, listOf(GameFixtures.cat, GameFixtures.water, GameFixtures.apple), listOf(GameFixtures.apple, GameFixtures.cat, GameFixtures.water), 0.85f, 700)))
+    }
+    @Test fun pauseWithoutVoice() = snap("games_pause_no_voice") {
+        GamesContent(SessionState.Paused(REF, match), COUNTS, true, {}, {}, {}, {}, {}, {}, {}, {}, {}, openingAtStart = false, pauseSheetInline = true, voiceMissing = true)
     }
 }

@@ -39,6 +39,7 @@ class GameSessionEngineTest {
     private class FakeKoreanVoice(ready: Boolean) : KoreanVoice {
         override val state = MutableStateFlow(if (ready) VoiceState.Ready else VoiceState.Missing)
         var stopped = 0
+        override var onInterrupted: (() -> Unit)? = null
         override suspend fun speak(text: String, rate: Float) = Unit
         override fun stop() { stopped++ }
         override fun release() = Unit

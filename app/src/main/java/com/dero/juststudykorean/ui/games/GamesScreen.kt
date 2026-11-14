@@ -91,6 +91,7 @@ import com.dero.juststudykorean.ui.components.StickerButton
 import com.dero.juststudykorean.ui.components.StickerColor
 import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.ThemeSwitch
+import com.dero.juststudykorean.ui.games.pieces.LocalKoreanVoice
 import com.dero.juststudykorean.ui.games.pieces.GameName
 import com.dero.juststudykorean.ui.games.pieces.Instruction
 import com.dero.juststudykorean.ui.games.pieces.OriginMark
@@ -125,6 +126,7 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
     val counts by vm.counts.collectAsStateWithLifecycle()
     val typingTimer by vm.typingTimer.collectAsStateWithLifecycle()
     val bank by vm.bank.collectAsStateWithLifecycle()
+    val voiceMissing by vm.voiceMissing.collectAsStateWithLifecycle()
     LaunchedEffect(vm) { vm.start() }
     // 9: it pauses by itself when the screen loses the focus (a call, another app, the screen off).
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -134,11 +136,11 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
         onDispose { lifecycle.removeObserver(observer) }
     }
     BackHandler { if (state is SessionState.Ended || state is SessionState.Empty || state is SessionState.Failed) onBack() else vm.pause() }
-    CompositionLocalProvider(LocalGameBank provides bank) {
+    CompositionLocalProvider(LocalGameBank provides bank, LocalKoreanVoice provides vm.voice) {
         GamesContent(
             state, counts, typingTimer,
             onResult = vm::submit, onFeedbackDone = { vm.feedbackDone() }, onPause = vm::pause, onResume = vm::resume,
-            onEnd = { vm.end() }, onPlayAgain = vm::playAgain, onDone = onBack, onLibrary = onLibrary, onTypingTimer = { vm.setTypingTimer(it) },
+            onEnd = { vm.end() }, onPlayAgain = vm::playAgain, onDone = onBack, onLibrary = onLibrary, onTypingTimer = { vm.setTypingTimer(it) }, voiceMissing = voiceMissing,
         )
     }
 }
@@ -161,6 +163,7 @@ fun GamesContent(
     onTypingTimer: (Boolean) -> Unit,
     openingAtStart: Boolean = true,
     pauseSheetInline: Boolean = false,
+    voiceMissing: Boolean = false,
 ) {
     val still = LocalFrozenMotion.current || reduceMotion()
     val stage = remember { StageScope() }
@@ -216,11 +219,11 @@ fun GamesContent(
             if (state is SessionState.Paused) {
                 Box(Modifier.fillMaxSize().background(JustStudyTheme.colors.scrim).clickable(remember { MutableInteractionSource() }, null) { })
                 if (pauseSheetInline) {
-                    PauseSheetContent(counts, typingTimer, onTypingTimer, onResume, onEnd, Modifier.align(Alignment.BottomCenter).background(MaterialTheme.colorScheme.surface, RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)))
+                    PauseSheetContent(counts, typingTimer, onTypingTimer, onResume, onEnd, voiceMissing, Modifier.align(Alignment.BottomCenter).background(MaterialTheme.colorScheme.surface, RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)))
                 } else {
                     val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     ModalBottomSheet(onDismissRequest = onResume, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface) {
-                        PauseSheetContent(counts, typingTimer, onTypingTimer, onResume, onEnd)
+                        PauseSheetContent(counts, typingTimer, onTypingTimer, onResume, onEnd, voiceMissing)
                     }
                 }
             }
@@ -290,7 +293,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionS
                     GameRound(round, paused || answered, stage, typingTimer && !talkBackOn()) { r -> onResult(r.copy(responseMs = clock())) }
                 }
             }
-            OriginMark(originOf(round), Modifier.padding(top = 8.dp))
+            OriginMark(originOf(round, LocalGameBank.current), Modifier.padding(top = 8.dp))
         }
     }
 }
@@ -355,8 +358,9 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
 
 /** 9: the pause sheet's content: four figures, the typing timer, Resume and End session. */
 @Composable
-fun PauseSheetContent(counts: SessionCounts, typingTimer: Boolean, onTypingTimer: (Boolean) -> Unit, onResume: () -> Unit, onEnd: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+fun PauseSheetContent(counts: SessionCounts, typingTimer: Boolean, onTypingTimer: (Boolean) -> Unit, onResume: () -> Unit, onEnd: () -> Unit, voiceMissing: Boolean = false, modifier: Modifier = Modifier) {
+    // Scrolls when it doesn't fit (a small screen, 130 % text, the no-voice notice).
+    Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(verticalAlignment = Alignment.Bottom) {
             Text("Paused", Modifier.alignByBaseline(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
             KoSide("일시정지", MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onSurface)
@@ -368,6 +372,14 @@ fun PauseSheetContent(counts: SessionCounts, typingTimer: Boolean, onTypingTimer
                 Text("타자 시간 제한", style = JustStudyTheme.korean.koBelow, color = JustStudyTheme.colors.muted)
             }
             ThemeSwitch(typingTimer, onTypingTimer)
+        }
+        // games.md 9: no button; the app never opens system settings.
+        if (voiceMissing) Row(
+            Modifier.fillMaxWidth().background(JustStudyTheme.colors.canvas, RoundedCornerShape(12.dp)).padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
+        ) {
+            LucideIcon(Lucide.Volume2, contentDescription = null, size = 20.dp, tint = JustStudyTheme.colors.muted)
+            Text("Listening games are off: no offline Korean voice on this phone. Install one in Android's text-to-speech settings.", fontSize = 12.sp, color = JustStudyTheme.colors.muted)
         }
         StickerButton("Resume", onResume, Modifier.fillMaxWidth(), ko = "계속하기", color = StickerColor.Go)
         StickerButton("End session", onEnd, Modifier.fillMaxWidth().padding(top = 0.dp), ko = "끝내기", color = StickerColor.Gray)

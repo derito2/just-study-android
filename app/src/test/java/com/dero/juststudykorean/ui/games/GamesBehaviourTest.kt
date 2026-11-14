@@ -8,6 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -19,6 +20,7 @@ import com.dero.juststudykorean.data.games.SessionState
 import com.dero.juststudykorean.korean.games.Outcome
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.ui.testing.GoldenApp
+import com.dero.juststudykorean.ui.testing.FakeKoreanVoices
 import com.dero.juststudykorean.ui.testing.idleUntil
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
@@ -55,7 +57,7 @@ class GamesBehaviourTest {
 
     private val app = GoldenApp()
     private val repository = GameRepository(app.db, app.clock)
-    private val vm = GamesViewModel(GameContentProvider(app.db, app.notes, DocumentFiles(app.context)), repository, app.clock, app.prefs, SavedStateHandle())
+    private val vm = GamesViewModel(GameContentProvider(app.db, app.notes, DocumentFiles(app.context)), repository, app.clock, app.prefs, SavedStateHandle(), FakeKoreanVoices(app.context))
 
     @After
     fun close() = app.close()
@@ -104,7 +106,9 @@ class GamesBehaviourTest {
         compose.mainClock.advanceTimeBy(1200)
         playing()
         vm.pause()
-        compose.onNodeWithText("End session", ignoreCase = true).performClick()
+        until { vm.counts.value.rounds == 1 } // task 10: the pause's figures are the saved session's
+        assertEquals(runBlocking { repository.session(1)!!.durationSeconds }, vm.counts.value.seconds.toLong())
+        compose.onNodeWithText("End session", ignoreCase = true).performScrollTo().performClick()
         until { vm.state.value is SessionState.Ended }
         compose.onNodeWithText("Nice session").assertExists()
         val ended = vm.state.value as SessionState.Ended
