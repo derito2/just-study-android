@@ -11,7 +11,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Point 9 of the plan: cold start under 1 s; frames in Flashcards, Quiz and Teacher. Before and after the profile. */
+/** Point 9 of the plan: cold start under 1 s; frames in Flashcards, Quiz, Teacher and Games (phase 8). Before and after the profile. */
 @RunWith(AndroidJUnit4::class)
 class StartupBenchmark {
     @get:Rule val rule = MacrobenchmarkRule()
@@ -33,4 +33,6 @@ class StartupBenchmark {
     @Test fun quizFrames() = frames(CompilationMode.Partial(BaselineProfileMode.Require)) { quiz() }
 
     @Test fun teacherFrames() = frames(CompilationMode.Partial(BaselineProfileMode.Require)) { teacher() }
+
+    @Test fun gamesFrames() = frames(CompilationMode.Partial(BaselineProfileMode.Require)) { games() }
 }

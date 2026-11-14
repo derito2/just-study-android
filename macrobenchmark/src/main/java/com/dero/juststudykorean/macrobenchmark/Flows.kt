@@ -55,3 +55,18 @@ fun MacrobenchmarkScope.teacher() {
         device.wait(Until.hasObject(any("Send").enabled(true)), 10_000)
     }
 }
+
+/** Games (phase 8, task 11): More → Games (the opening), pause, resume, pause and end: the screen's transitions. */
+fun MacrobenchmarkScope.games() {
+    device.wait(Until.findObject(By.desc("More")), 5_000)?.click() ?: return
+    if (!tap("Games")) return
+    device.wait(Until.hasObject(By.desc("Pause game")), 10_000)
+    Thread.sleep(2_500) // the opening and the first round's entrance
+    device.findObject(By.desc("Pause game"))?.click()
+    if (!tap("Resume", 3_000)) return
+    Thread.sleep(1_000)
+    device.findObject(By.desc("Pause game"))?.click()
+    if (!tap("End session", 3_000)) return
+    device.wait(Until.hasObject(any("Nice session")), 5_000)
+    device.pressBack()
+}

@@ -49,6 +49,7 @@ import com.dero.juststudykorean.ui.components.Lucide
 import com.dero.juststudykorean.ui.components.LucideIcon
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
+import com.dero.juststudykorean.ui.theme.reduceMotion
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 
@@ -120,7 +121,7 @@ private fun InfiniteTransition.wave(period: Int, offset: Int) = animateFloat(
 @Composable
 fun ReplayButton(speaking: Boolean, left: Int, total: Int, onClick: () -> Unit, enabled: Boolean = true) {
     val c = JustStudyTheme.colors
-    val frozen = LocalFrozenMotion.current
+    val frozen = LocalFrozenMotion.current || reduceMotion()
     val can = enabled && left > 0 && !speaking
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Box(Modifier.size(56.dp), contentAlignment = Alignment.Center) {
@@ -143,7 +144,7 @@ fun ReplayButton(speaking: Boolean, left: Int, total: Int, onClick: () -> Unit, 
 @Composable
 private fun ReplayFace(can: Boolean, speaking: Boolean, onClick: () -> Unit, left: Int, modifier: Modifier) {
     val c = JustStudyTheme.colors
-    val frozen = LocalFrozenMotion.current
+    val frozen = LocalFrozenMotion.current || reduceMotion()
     val fill = when { speaking && frozen -> c.brand; can || speaking -> c.action; else -> c.disabledFill }
     Box(
         modifier.size(56.dp).background(fill, CircleShape)
@@ -156,7 +157,7 @@ private fun ReplayFace(can: Boolean, speaking: Boolean, onClick: () -> Unit, lef
 /** VoiceBars: 5 bars of 4 dp that move while it sounds (not the real wave: a "sounding" sign). */
 @Composable
 fun VoiceBars(active: Boolean, color: Color = JustStudyTheme.colors.brand, modifier: Modifier = Modifier) {
-    val frozen = LocalFrozenMotion.current
+    val frozen = LocalFrozenMotion.current || reduceMotion()
     val heights: List<State<Float>> = if (active && !frozen) {
         val t = rememberInfiniteTransition(label = "bars")
         listOf(310, 370, 430, 290, 350).map { t.animateFloat(6f, 28f, infiniteRepeatable(tween(it, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "bar") }
