@@ -39,6 +39,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -123,6 +124,7 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
     val state by vm.state.collectAsStateWithLifecycle()
     val counts by vm.counts.collectAsStateWithLifecycle()
     val typingTimer by vm.typingTimer.collectAsStateWithLifecycle()
+    val bank by vm.bank.collectAsStateWithLifecycle()
     LaunchedEffect(vm) { vm.start() }
     // 9: it pauses by itself when the screen loses the focus (a call, another app, the screen off).
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -132,11 +134,13 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
         onDispose { lifecycle.removeObserver(observer) }
     }
     BackHandler { if (state is SessionState.Ended || state is SessionState.Empty || state is SessionState.Failed) onBack() else vm.pause() }
-    GamesContent(
-        state, counts, typingTimer,
-        onResult = vm::submit, onFeedbackDone = { vm.feedbackDone() }, onPause = vm::pause, onResume = vm::resume,
-        onEnd = { vm.end() }, onPlayAgain = vm::playAgain, onDone = onBack, onLibrary = onLibrary, onTypingTimer = { vm.setTypingTimer(it) },
-    )
+    CompositionLocalProvider(LocalGameBank provides bank) {
+        GamesContent(
+            state, counts, typingTimer,
+            onResult = vm::submit, onFeedbackDone = { vm.feedbackDone() }, onPause = vm::pause, onResume = vm::resume,
+            onEnd = { vm.end() }, onPlayAgain = vm::playAgain, onDone = onBack, onLibrary = onLibrary, onTypingTimer = { vm.setTypingTimer(it) },
+        )
+    }
 }
 
 /** The screen without its ViewModel (screenshot and behaviour tests). [openingAtStart]: false skips the opening. */

@@ -15,6 +15,7 @@ import com.dero.juststudykorean.korean.games.GameItem
 import com.dero.juststudykorean.korean.games.Outcome
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.ui.components.runCatchingCancellable
+import com.dero.juststudykorean.korean.games.GameBank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -61,6 +62,8 @@ class GamesViewModel @Inject constructor(
     private val _counts = MutableStateFlow(SessionCounts())
     val counts: StateFlow<SessionCounts> = _counts.asStateFlow()
     val typingTimer: StateFlow<Boolean> = prefs.typingTimer.stateIn(viewModelScope, SharingStarted.Eagerly, true)
+    private val _bank = MutableStateFlow(GameBank(emptyList(), emptyList()))
+    val bank: StateFlow<GameBank> = _bank.asStateFlow()
     private var pausedAt: Long? = null
     private var started = false
 
@@ -70,6 +73,7 @@ class GamesViewModel @Inject constructor(
         viewModelScope.launch {
             val ref = saved.get<String>(SESSION_KEY)?.split(":")?.let { (id, seed, n) -> SessionRef(id.toLong(), seed.toLong(), n.toInt()) }
             runCatchingCancellable { engine.start(ref) }
+            runCatchingCancellable { content.bank() }.onSuccess { _bank.value = it } // cached by the provider
             remember()
         }
     }

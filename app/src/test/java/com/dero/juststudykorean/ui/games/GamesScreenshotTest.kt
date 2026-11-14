@@ -97,4 +97,17 @@ class GamesScreenshotTest {
     @Test fun hangulTyping() = snap("games_hangul_typing") {
         Games(SessionState.Playing(REF, RoundSpec.HangulTyping(1, GameFixtures.water, RoundSpec.TypingMode.COPY)))
     }
+
+    // Task 8: the board games (drag or taps).
+    @Test fun wordSort() = snap("games_word_sort") {
+        val tiles = listOf(GameFixtures.apple to 0, GameFixtures.cat to 1, GameFixtures.milk to 0, GameFixtures.word("개", "Dog") to 1, GameFixtures.word("빵", "Bread") to 0, GameFixtures.word("새", "Bird") to 1)
+        Games(SessionState.Playing(REF, RoundSpec.WordSort(1, listOf("food", "animals"), tiles, showMeaning = true)))
+    }
+    @Test fun wordPath() = snap("games_word_path") {
+        Games(SessionState.Playing(REF, RoundSpec.WordPath(2, GameFixtures.library, 4, listOf("도", "서", "가", "나", "다", "고", "관", "라", "마", "바", "사", "아", "자", "차", "카", "타"), listOf(0, 1, 6))))
+    }
+    @Test fun grammarFixer() = snap("games_grammar_fixer") {
+        val item = GameFixtures.sentence("저는 학교를 가요", "I go to school")
+        Games(SessionState.Playing(REF, RoundSpec.GrammarFixer(1, item, listOf("저는", "학교을", "가요"), ".", 1, "학교", "를", listOf("은", "를"), "After a vowel: 를. After a consonant: 을.")))
+    }
 }

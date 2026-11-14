@@ -1,24 +1,33 @@
 package com.dero.juststudykorean.ui.games
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
+import com.dero.juststudykorean.korean.games.GameBank
 import com.dero.juststudykorean.korean.games.GameType
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.games.RoundSpec
+import com.dero.juststudykorean.ui.games.minigames.GrammarFixerGame
 import com.dero.juststudykorean.ui.games.minigames.HangmanGame
 import com.dero.juststudykorean.ui.games.minigames.HangulBuilderGame
 import com.dero.juststudykorean.ui.games.minigames.HangulTypingGame
 import com.dero.juststudykorean.ui.games.minigames.MemoryFlipGame
 import com.dero.juststudykorean.ui.games.minigames.SentenceBuilderGame
 import com.dero.juststudykorean.ui.games.minigames.WordMatchGame
+import com.dero.juststudykorean.ui.games.minigames.WordPathGame
 import com.dero.juststudykorean.ui.games.minigames.WordRecallGame
 import com.dero.juststudykorean.ui.games.minigames.WordScrambleGame
+import com.dero.juststudykorean.ui.games.minigames.WordSortGame
 import com.dero.juststudykorean.ui.games.stage.StageScope
 
 /** The games this PR shows (FASE_8_PLAN, PR B). Listening games come in PR C: the engine never plans them here. */
 val PLAYABLE: Set<GameType> = setOf(
     GameType.WordMatch, GameType.MemoryFlip, GameType.WordScramble, GameType.SentenceBuilder, GameType.WordRecall,
     GameType.Hangman, GameType.HangulBuilder, GameType.HangulTyping,
+    GameType.WordSort, GameType.WordPath, GameType.GrammarFixer,
 )
+
+/** The bank of your notes, for Word Path's "another word of your notes" (empty in tests and before it loads). */
+val LocalGameBank = staticCompositionLocalOf { GameBank(emptyList(), emptyList()) }
 
 /**
  * One round of a minigame (FASE_8_PLAN 2): XGame(spec, paused, onResult, stage). A game doesn't know which comes next
@@ -35,6 +44,9 @@ fun GameRound(spec: RoundSpec, paused: Boolean, stage: StageScope, timer: Boolea
         is RoundSpec.Hangman -> HangmanGame(spec, paused, onResult, stage)
         is RoundSpec.HangulBuilder -> HangulBuilderGame(spec, paused, onResult, stage)
         is RoundSpec.HangulTyping -> HangulTypingGame(spec, paused, timer, onResult, stage)
+        is RoundSpec.WordSort -> WordSortGame(spec, paused, onResult, stage)
+        is RoundSpec.WordPath -> WordPathGame(spec, paused, onResult, stage)
+        is RoundSpec.GrammarFixer -> GrammarFixerGame(spec, paused, onResult, stage)
         else -> Unit // not in this build (PLAYABLE)
     }
 }
