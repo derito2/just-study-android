@@ -25,7 +25,6 @@ FORBIDDEN = {
     "android.permission.WRITE_EXTERNAL_STORAGE",
     "android.permission.MANAGE_EXTERNAL_STORAGE",
     "android.permission.CAMERA",
-    "android.permission.RECORD_AUDIO",
     "android.permission.QUERY_ALL_PACKAGES",
     "android.permission.READ_CONTACTS",
     "android.permission.WRITE_CONTACTS",
@@ -41,6 +40,8 @@ ALLOWED_PERMISSIONS = {
     "android.permission.USE_BIOMETRIC",
     # Phase 6 (owner's OK, 2026-11-12): ML Kit genai-prompt binds to AICore, the system app that runs Gemini Nano.
     "com.google.android.apps.aicore.service.BIND_SERVICE",
+    # Phase 9, D9-1 (owner's OK, 2026-11-14): only for the spoken practice in Quiz, asked when the mic is tapped.
+    "android.permission.RECORD_AUDIO",
 }
 OWN_PREFIX = "com.dero.juststudykorean."  # the app's own signature permissions (e.g. DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION)
 

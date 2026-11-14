@@ -2,6 +2,13 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-14 — Fase 9: práctica hablada sin calificar (D9-1, D9-2, D9-3, D9-6)
+**Decisiones del dueño** (tras la PoC 4, `docs/poc/4-speech.md`: ningún motor llega al 85 %):
+- **D9-1:** **sí a `RECORD_AUDIO`** (2026-11-14), solo para la práctica hablada del Quiz y pedido al tocar el micrófono. Nunca se guarda audio ni la transcripción, tampoco en logs. `check_manifest.py` lo pasa de `FORBIDDEN` a `ALLOWED_PERMISSIONS`; `CLAUDE.md` (*Seguridad*) se actualiza igual. El manifiesto gana además `<queries>` de `android.speech.RecognitionService`, que es visibilidad de paquetes y no un permiso.
+- **D9-2:** una pregunta hablada se guarda como una **`write_ko`** normal: «hablada» es solo la forma de responderla. No cambia ninguna tabla ni ninguna dorada.
+- **D9-3:** **motor B**, el `SpeechRecognizer` de Android en el dispositivo, sin dependencias. **El motor C no se hace.**
+- **D9-6:** **sin calificar, con intentos ilimitados.** La app enseña lo que entendió el teléfono junto a la respuesta de tus notas. Solo celebra cuando coincide; nunca dice que está mal. Nada va a `question_attempts`.
+
 ## 2026-11-14 — Fase 8, PR C: voz, cifras y entrega (0.10.0)
 **Decisiones:**
 - **Voz:** `TtsKoreanVoice` usa solo una voz `ko` sin red e instalada; nunca síntesis por red. Si otra app o una llamada toma el audio, la sesión se pausa. Con el volumen de medios a 0, la ronda espera con *Turn the volume up to play.*; la app no cambia el volumen. Una pausa con audio a medias repite la ronda desde el principio al reanudar. El manifiesto solo gana `<queries>` del servicio TTS: no es un permiso.

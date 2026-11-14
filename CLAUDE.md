@@ -32,8 +32,8 @@ App Android nativa (Kotlin + Jetpack Compose, Material 3) para el OPPO Find X8 P
 - `adb devices` · `adb install -r app/build/outputs/apk/debug/app-debug.apk` · `adb logcat`
 
 ## Seguridad (plan, punto 8)
-- **Permisos permitidos:** `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_DATA_SYNC`, `USE_BIOMETRIC` (opcional).
-- **Prohibidos:** `INTERNET`, `READ_EXTERNAL_STORAGE`, `MANAGE_EXTERNAL_STORAGE`, `READ_MEDIA_*`, `CAMERA`, `RECORD_AUDIO`, ubicación, contactos, `QUERY_ALL_PACKAGES`. PDFs por SAF.
+- **Permisos permitidos:** `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_DATA_SYNC`, `USE_BIOMETRIC` (opcional), `RECORD_AUDIO` (D9-1, 2026-11-14: solo para la práctica hablada del Quiz, pedido al tocar el micrófono; nunca se guarda audio ni transcripción).
+- **Prohibidos:** `INTERNET`, `READ_EXTERNAL_STORAGE`, `MANAGE_EXTERNAL_STORAGE`, `READ_MEDIA_*`, `CAMERA`, ubicación, contactos, `QUERY_ALL_PACKAGES`. PDFs por SAF.
 - Revisar cada versión el manifiesto unido (`app/build/intermediates/merged_manifest`); si una librería mete `INTERNET`, quitarlo con `tools:node="remove"` y comprobar sin red.
 - `android:allowBackup="false"` y reglas de extracción vacías. Solo la actividad principal `exported`; sin `FileProvider` salvo para compartir un respaldo elegido.
 - Release: `debuggable=false`, R8 activo, clave de firma fuera del repo. Datos, PDFs y modelos en almacenamiento privado.
