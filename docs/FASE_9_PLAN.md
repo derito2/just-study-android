@@ -8,6 +8,8 @@
 >
 > **Independiente de la fase 8.** Solo comparten `Hangul.jamoDistance` (fase 8, tarea 1); si la fase 9 va antes, esa función se hace aquí.
 
+> **Cambio tras la prueba de concepto (2026-11-14, `docs/poc/4-speech.md`):** ningún motor llega al 85 % (B: 70 % exacto y 77 % con umbral de CER; A: 57 %). Decisión del dueño: **práctica hablada sin calificar** con el motor **B** (`SpeechRecognizer` de Android, sin dependencias). El motor C no se hace. Esta versión sustituye a las secciones 0 (D9-3 y D9-6), 4, 5 y 7 originales. El diseño es `design/quiz-speaking.md`, reescrito.
+
 **Origen:** `JustStudyKorean_Games_y_Quiz_Oral_Especificacion.md` (el encargo del dueño, partes II y III).
 
 ## 0 · Decisiones del dueño
@@ -16,10 +18,10 @@
 |---|---|---|---|
 | D9-1 | **Permiso `RECORD_AUDIO`.** Hoy está **prohibido** (`CLAUDE.md`, *Seguridad*; `tools/ci/check_manifest.py`, lista `FORBIDDEN`) | Permitirlo solo para este tipo de pregunta, pedido al tocar el micrófono | Sin él no hay voz. Es una decisión de privacidad del dueño: hace falta su sí explícito, anotado en DECISIONS. |
 | D9-2 | ¿Cómo se guarda una pregunta hablada? | Como una pregunta **`write_ko`** normal; «hablada» es solo la forma de responderla en ese quiz | El tipo `write_ko` ya existe en la web y en el respaldo. Un tipo nuevo en la tabla `questions` llegaría a la web por el respaldo sin que ella lo conozca. Así no cambia ni una tabla ni una dorada. |
-| D9-3 | Motor de reconocimiento | El que gane la prueba de concepto. Orden de prueba: **B** (plataforma, sin dependencia) → **A** (ML Kit, alpha) → **C** (modelo propio) solo si los otros fallan | Ver la sección 1. |
+| D9-3 | Motor de reconocimiento | **Decidido: B** (2026-11-14). Antes: el que ganara la prueba de concepto. Orden de prueba: **B** (plataforma, sin dependencia) → **A** (ML Kit, alpha) → **C** (modelo propio) solo si los otros fallan | Ver la sección 1. |
 | D9-4 | Si el motor elegido es ML Kit: dependencia `com.google.mlkit:genai-speech-recognition` (alpha) | Solo si B no sirve y A sí | Alpha: puede cambiar sin aviso. |
 | D9-5 | Si el motor elegido es un modelo propio (opción C): librería nativa nueva en la APK y un archivo de modelo de decenas o cientos de MB que **el dueño carga a mano** (la app no tiene `INTERNET`) | Solo si A y B fallan, y tras ver tamaños y medidas | Es el coste mayor: NDK, tamaño, y un paso manual de carga del modelo. |
-| D9-6 | Intentos: 3 por pregunta; lo incierto y los fallos técnicos no gastan intento | Sí | Encargo, punto 16. |
+| D9-6 | Intentos | **Ilimitados y sin calificar** (2026-11-14): la pregunta hablada es práctica | Encargo, punto 16. |
 
 ## 1 · Motores: qué se sabe y qué hay que medir
 
@@ -89,7 +91,7 @@ Son unas 85 locuciones por motor (15–20 min).
 
 ```
 :core:korean (puro)
-  korean/speech/SpokenAnswer.kt      normalizar y evaluar: (esperada, candidatos, confianzas?) → SpokenVerdict
+  korean/speech/SpokenCompare.kt     normalizar y comparar: (esperada, candidatos) → SpokenComparison (sin veredicto)
 
 :core:data
   data/speech/KoreanSpeech.kt        contrato + tipos
@@ -129,39 +131,42 @@ interface KoreanSpeech {
 - `FakeKoreanSpeech` para las pruebas (guiones de eventos).
 - **Con la puerta del modelo:** mientras hay una escucha abierta, `QuestionViewModel` no llama al juez ni a la explicación; al resolverse la pregunta, siguen como siempre.
 
-## 4 · Evaluación (`SpokenAnswer.kt`)
+## 4 · Comparación (`SpokenCompare.kt`), sin veredicto
 
-**Normalizar** (las dos partes): `nfc` → quitar espacios → quitar `. , ! ? ~ … " '` → nada más. **No** se quitan partículas ni terminaciones, **no** se pasa a raíz, **no** hay «parecido suficiente» que apruebe.
+**Normalizar** las dos partes con NFC, sin espacios y sin `. , ! ? ~ … " '`.
 
-**Respuestas válidas:** la de la pregunta y sus alternativas (`KOREAN_ALTERNATIVES`, « / »), igual que `isCorrect("write_ko", …)`.
+`compare(expected, candidates) → SpokenComparison(heard, matches: Boolean, diff: List<SyllableSpan>)`:
+- `heard`: el **primer** candidato, tal cual (sin normalizar, para mostrarlo).
+- `matches`: el primer candidato normalizado es igual a la respuesta o a una de sus alternativas (`KOREAN_ALTERNATIVES`, « / »). Es la única señal positiva y no tiene falsos aciertos en la PoC.
+- `diff`: alineación de Levenshtein por sílaba entre `heard` y la respuesta más cercana, para subrayar lo que no coincide (diseño, B).
+- **Nada devuelve "incorrecto"**: no hay `Mismatch`, ni `Uncertain`, ni umbral de CER, ni intentos.
 
-**Veredicto**, con los candidatos del motor en orden:
-
-| Caso | Veredicto |
-|---|---|
-| el **primer** candidato, normalizado, es una respuesta válida | **Correct** |
-| el 2.º o 3.º candidato lo es | **Uncertain** |
-| el primero tiene caracteres que no son hangul (cifras, latín) | **Uncertain** |
-| `jamoDistance(primero, válida) ≤ max(1, bloques / 4)` | **Uncertain** (casi) |
-| el motor da confianza y la del primero está por debajo del umbral que fije la PoC | **Uncertain** |
-| cualquier otro | **Mismatch** |
-| sin candidatos o vacío | (no llega aquí: es `NotUnderstood`) |
-
-- *Uncertain* y los fallos técnicos **no gastan intento**. *Mismatch* gasta uno de 3; al tercero, incorrecta.
-- Tras 4 *Uncertain* seguidos en la misma pregunta, la línea de estado añade *You can type it instead.* (no se fuerza nada).
-- **Qué se guarda:** una sola llamada a `QuizRepository.answer` al resolver la pregunta, con la última transcripción como respuesta (o lo escrito, si usó *Type it instead*; o `—` si usó *Show answer* sin haber hablado). La corrección la decide `isCorrect` como siempre: una transcripción válida es correcta por las mismas reglas que una respuesta escrita.
-
-**Pruebas (`SpokenAnswerTest`):** igual con y sin espacios; con signos; alternativas « / »; NFD; casi (un jamo); cifras; latín; segundo candidato; confianza baja; partícula distinta (`학교에` frente a `학교를` → Mismatch, nunca Correct).
+**Pruebas (`SpokenCompareTest`):**
+- igual con y sin espacios, y con signos;
+- alternativas « / »;
+- NFD;
+- partícula distinta (`학교에` frente a `학교를` → `matches = false` con una sílaba subrayada);
+- cifras y latín (`matches = false`, sin fallo);
+- candidatos vacíos → no se llama (es *No speech*).
 
 ## 5 · Integración con el Quiz
 
-- **Formulario:** tipo de formulario `speak_ko` (*Say it in Korean* · 한국어로 말하기 · *Answer out loud*) en `QUIZ_TYPES`, guardado en `UserPrefs` como los demás, **sin marcar por defecto**. Deshabilitado si `availability()` no es `Ready` ni `NeedsDownload` (diseño, A).
-- **Al generar:** `speak_ko` **no** se manda al generador. Si está marcado, la petición lleva `write_ko` (se añade si no estaba). De las preguntas `write_ko` que salgan cuya respuesta sea solo hangul y tenga al menos 2 bloques: si el usuario marcó solo `speak_ko`, **todas** se responden hablando; si marcó los dos, **alternas** (la primera hablada). Los ids hablados se guardan en el `SavedStateHandle` (`LongArray`).
-- **`QuizGenerator`, `QuizBuilders` y las tablas no cambian.** Ninguna dorada cambia.
-- **Variante *Lee en voz alta*:** si la respuesta tiene 2 palabras o más, la Card muestra la frase coreana y su traducción (diseño, B). Si no, el significado en inglés.
-- **Tras matar el proceso:** los ids hablados se recuperan del `SavedStateHandle`; si no están, la pregunta se abre escrita.
-- **Preguntas del modelo:** nunca son habladas.
-- **Tiempo de respuesta:** desde que se muestra la pregunta hasta que se resuelve.
+- **Formulario:**
+  - tipo `speak_ko` (*Say it in Korean* · 한국어로 말하기 · *Practice out loud · not scored*) en `QUIZ_TYPES`, guardado en `UserPrefs` y sin marcar por defecto;
+  - deshabilitado si `availability()` no es `Ready` ni `NeedsDownload`.
+- **Al generar:**
+  - `speak_ko` **no** va al generador. Si está marcado, la petición lleva `write_ko`;
+  - de las `write_ko` cuya respuesta sea solo hangul y tenga al menos 2 bloques: si solo está marcado `speak_ko`, todas son habladas; si están marcados los dos, alternan (la primera, hablada);
+  - los ids hablados van al `SavedStateHandle`.
+- **No se guarda nada de las habladas:**
+  - sin `QuizRepository.answer`, así que no entran en `question_attempts`, ni en las debilidades, ni en el tiempo de respuesta;
+  - la pregunta sí existe en `questions`, porque la crea el generador como siempre;
+  - la puntuación y *Quiz history* solo cuentan las normales;
+  - un quiz solo hablado no se lista en *Quiz history* (diseño, F).
+- **Sin cambios en `QuizGenerator`, `QuizBuilders` ni las tablas.** Ninguna dorada cambia.
+- **Tras matar el proceso:** las habladas se saltan al volver.
+- **Preguntas del modelo:** nunca son habladas. El juez y la explicación no se usan en las habladas.
+- **Listen:** usa `KoreanVoice` de la fase 8 si está *Ready*.
 
 ## 6 · Permiso, privacidad y ciclo de vida
 
@@ -174,17 +179,32 @@ interface KoreanSpeech {
 
 ## 7 · Tareas
 
-1. **PoC** (sección 2). 📱 **Parar al terminar.**
-2. **Decisiones:** D9-1…D9-6 en DECISIONS; manifiesto, `check_manifest.py`, `CLAUDE.md`.
-3. **Evaluación:** `SpokenAnswer.kt` con sus pruebas.
-4. **Motor:** `KoreanSpeech` + la implementación elegida + `FakeKoreanSpeech`. Prueba instrumentada de disponibilidad (se salta si no hay motor).
-5. **ViewModel:** estados de `design/quiz-speaking.md` C como máquina de estados probada con el motor falso: los 13 estados, las reglas de intento, *Type it instead*, *Show answer*, cada causa de cierre del micrófono, y que el juez y la explicación esperan.
-6. **Pantalla:** casilla del formulario, `SpeakingBlock`, animaciones (D), resultados con el icono `mic` (F), accesibilidad (G), capturas (H). Voz *Listen* de la respuesta solo si `KoreanVoice` (fase 8) existe y está *Ready*; si la fase 8 no está, sin botón.
-7. **OPPO:** 📱 en la app QA, con el dueño hablando: un quiz de 10 con *Say it in Korean*, en modo avión; denegar el permiso y ver el estado; ir a inicio mientras escucha (el punto verde del sistema se apaga); matar el proceso a mitad. Informe con ✅/⚠️/❌. `versionName` 0.11.0; instalar en la app del dueño solo con su OK.
+1. ~~PoC~~ **Hecha** (`docs/poc/4-speech.md`).
+2. **Decisiones:**
+   - D9-1 (sí a `RECORD_AUDIO`, con la fecha), D9-2, D9-3 = B y D9-6 = sin calificar, en DECISIONS;
+   - manifiesto (`RECORD_AUDIO` + `<queries>` de `RecognitionService`), `check_manifest.py` y `CLAUDE.md` (*Seguridad*).
+3. **Comparación:** `SpokenCompare.kt` con sus pruebas (sección 4).
+4. **Motor:**
+   - `KoreanSpeech` + `PlatformKoreanSpeech` (B) + `FakeKoreanSpeech`;
+   - prueba instrumentada de disponibilidad, que se salta si no hay motor.
+5. **ViewModel:** los estados de `design/quiz-speaking.md` C como máquina de estados, probada con el motor falso. Pruebas:
+   - *Try again* ilimitado y *Show answer*;
+   - cada causa de cierre del micrófono;
+   - que ninguna pregunta hablada llama a `answer`;
+   - que la puntuación excluye las habladas.
+6. **Pantalla:**
+   - casilla del formulario y `SpeakingBlock` con el recuadro de comparación y los subrayados;
+   - animaciones (D), resultados (F), accesibilidad (G) y capturas (H);
+   - *Listen* con `KoreanVoice`.
+7. **OPPO:** 📱 en la app QA, con el dueño hablando:
+   - un quiz de 10 con *Say it in Korean*, en modo avión (lo activa el dueño);
+   - denegar el permiso y ver el estado;
+   - ir a inicio mientras escucha (el punto verde se apaga);
+   - matar el proceso a mitad.
+   Informe con ✅/⚠️/❌. `versionName` 0.11.0; instalar en la app del dueño solo con su OK, con `install -r`.
 
 ## 8 · Condiciones de parada
 
-- ningún motor pasa el criterio de la PoC;
 - el motor solo funciona con red, o el manifiesto unido gana `INTERNET` u otro permiso;
 - una dorada cambia o cambia una tabla del respaldo;
 - hace falta guardar audio;
