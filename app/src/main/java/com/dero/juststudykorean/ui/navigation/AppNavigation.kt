@@ -23,6 +23,8 @@ sealed interface Screen {
     data class Results(val key: String) : Screen
     /** Library's All vocabulary (the search sits above the keyboard, so no bottom bar). */
     data object Vocabulary : Screen
+    /** Games (design/games.md, D8-1): full screen over the tab it was opened from. */
+    data object Games : Screen
 
     companion object {
         fun encode(s: Screen): String = when (s) {
@@ -30,6 +32,7 @@ sealed interface Screen {
             is Question -> "question|${s.runId ?: ""}"
             is Results -> "results|${s.key}"
             Vocabulary -> "vocabulary|"
+            Games -> "games|"
         }
         fun decode(text: String): Screen {
             val p = text.split("|", limit = 3)
@@ -37,6 +40,7 @@ sealed interface Screen {
                 "study" -> Study(p[1].toLongOrNull(), p.getOrElse(2) { "" })
                 "question" -> Question(p[1].toLongOrNull())
                 "vocabulary" -> Vocabulary
+                "games" -> Games
                 else -> Results(p.drop(1).joinToString("|"))
             }
         }

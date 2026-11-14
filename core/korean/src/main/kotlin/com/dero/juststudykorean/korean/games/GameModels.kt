@@ -74,7 +74,15 @@ class GameBank(val words: List<GameItem>, val sentences: List<GameItem>, val poi
 enum class Outcome { WON, LOST, NEUTRAL, SKIPPED }
 
 /** What a played round gave: [itemKeys] the targets; [failedKeys] the ones you got wrong. */
-data class RoundResult(val outcome: Outcome, val mistakes: Int, val responseMs: Long, val itemKeys: List<String>, val failedKeys: List<String> = emptyList())
+data class RoundResult(
+    val outcome: Outcome,
+    val mistakes: Int,
+    val responseMs: Long,
+    val itemKeys: List<String>,
+    val failedKeys: List<String> = emptyList(),
+    /** Lost because the moon's clock ran out (the ribbon says "Time's up", games.md 7.2). */
+    val timedOut: Boolean = false,
+)
 
 /** Chooses [n] of [candidates] (ItemPicker weighs them by your results; the default: a uniform draw without repeats). */
 fun interface Chooser {
