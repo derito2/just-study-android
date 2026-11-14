@@ -57,11 +57,28 @@ Fallos típicos (palabras sueltas, voz baja, rápido): 친구→중국, 마시�
 
 **Criterio 1 (funciona en modo avión): cumplido por los dos.** Fallan el 2 (acierto).
 
+## Paso 4 · Umbral de CER (recalculado del CSV, sin teléfono)
+
+Se acepta la respuesta si el CER es menor o igual que el umbral, en vez de exigir coincidencia exacta. Solo cuentan las locuciones de la sesión principal en condición normal: 30 normales y 5 trampas. La normalización y el CER son los del paso 2: sílabas de Hangul, sin espacios ni signos, y distancia de edición por sílaba entre las sílabas esperadas. Una repetición rehecha con *Back* cuenta una vez. Script: `tools/poc/speech_cer.py` (solo imprime cuentas). Con umbral 0 da lo mismo que el paso 2 (B 21/30, A 17/30).
+
+| Umbral | **B** normal (30) | B palabras (20) | B frases (10) | B falsos (5) | A normal (30) | A palabras (20) | A frases (10) | A falsos (5) |
+|---|---|---|---|---|---|---|---|---|
+| exacto | 70 % (21) | 15 | 6 | 0 | 57 % (17) | 9 | 8 | 0 |
+| ≤ 0,10 | 70 % (21) | 15 | 6 | 0 | 57 % (17) | 9 | 8 | 0 |
+| ≤ 0,15 | 77 % (23) | 15 | 8 | 0 | 57 % (17) | 9 | 8 | 0 |
+| ≤ 0,20 | 77 % (23) | 15 | 8 | 0 | 57 % (17) | 9 | 8 | 0 |
+| ≤ 0,25 | 77 % (23) | 15 | 8 | 0 | 60 % (18) | 9 | 9 | 0 |
+| ≤ 0,30 | **77 % (23)** | 15 | 8 | **0** | 60 % (18) | 9 | 9 | 0 |
+
+- Las trampas quedan lejos: su CER más bajo es 0,50 en los dos motores. **El umbral más alto probado sin falsos aciertos es 0,30.**
+- **B con 0,30 llega al 77 %: no alcanza el 85 %.** Solo mejora en frases (6 → 8 de 10). En palabras sueltas no sube nada, porque un fallo en una palabra de 2–3 sílabas ya es un CER de 0,33 a 1. Un umbral que aceptara esos fallos aceptaría también palabras distintas (친구→중국, 크다→끄다).
+- **Conclusión:** el umbral de CER no basta para integrar B. Lo que queda es el motor C, que necesita el permiso expreso del dueño.
+
 ## Recomendación
 
 1. **No integrar ninguno de los dos tal cual.** Con estos números, un quiz que acepte la respuesta hablada si coincide exactamente rechazaría 3 de cada 10 (B) o 4 de cada 10 (A) respuestas bien dichas.
 2. Si el dueño quiere seguir con voz, las opciones son, en orden de coste:
-   - **B con un umbral de CER** (no exacto), p. ej. aceptar CER ≤ 0,2 en frases y usar la lista de candidatos; solo con palabras/frases ya vistas. Es 0 dependencias y 0 permisos nuevos. **No medido** cuánto sube el acierto: hay que recalcular sobre el CSV y decidir si un umbral así sigue dando 0/5 falsos aciertos.
+   - **B con un umbral de CER** (no exacto), p. ej. aceptar CER ≤ 0,2 en frases y usar la lista de candidatos; solo con palabras/frases ya vistas. Es 0 dependencias y 0 permisos nuevos. **Medido en el paso 4:** con CER ≤ 0,30 sigue en 0/5 falsos aciertos, pero solo llega al 77 % (las palabras no mejoran).
    - **Motor C** (whisper.cpp / sherpa-onnx): es lo único de este plan que puede subir el acierto de forma real y es 100 % local, pero añade librería nativa y un modelo de decenas a cientos de MB. **Pide permiso expreso del dueño** para medirlo.
    - A no aporta más que B en palabras (45 % vs 75 %) y arrastra la dependencia alpha con el `remove` de `INTERNET`: **descartarlo**.
 3. B es mejor base que A: mejor en palabras, sin dependencia, sin permisos que quitar.
