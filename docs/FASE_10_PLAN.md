@@ -48,10 +48,11 @@ Anotar D10-1…D10-4 en `docs/DECISIONS.md` en el PR 0.
 
 ## 2 · PR 0 — Documentos (`docs/fase-10`)
 
-1. Commit de: `design/polish.md`, `design/games-characters.md`, `design/splash.md`, `design/quiz.md`, `design/tokens.json`, `docs/FASE_10_PLAN.md`, `tools/design/splash_vector.py` y `app/src/main/assets/splash/flash*.svg` (los que existan).
-2. `.gitignore`: comprobar que están `app/src/main/assets/splash/photo_*.svg` y `tools/design/splash_vector_private.py`. **Antes del commit:** `git status` no debe listar ningún `photo_*.svg`.
-3. `docs/DECISIONS.md`: D10-1…D10-4.
-4. Traer `docs/AUDIT_2.md` de la rama `audit/2` a este PR (o mergear su PR antes, si el dueño lo prefiere).
+1. Commit de: `design/polish.md`, `design/games-characters.md`, `design/splash.md`, `design/quiz.md`, `docs/FASE_10_PLAN.md`, `tools/design/splash_vector.py` y `app/src/main/assets/splash/flash*.svg` (los que existan).
+2. **`design/tokens.json` v2 NO va en este PR:** entra con A1 (`gen_tokens.py` + `Tokens.kt` regenerado), porque `TokensTest` compara ambos y dejaría `main` en rojo (decisión del dueño, 2026-11-15).
+3. `.gitignore`: comprobar que están `app/src/main/assets/splash/photo_*.svg` y `tools/design/splash_vector_private.py`. **Antes del commit:** `git status` no debe listar ningún `photo_*.svg`.
+4. `docs/DECISIONS.md`: D10-1…D10-4.
+5. Traer `docs/AUDIT_2.md` de la rama `audit/2` a este PR (o mergear su PR antes, si el dueño lo prefiere).
 
 ## 3 · PR A — Estabilidad y oscuro legible (`fase-10/oscuro`)
 
