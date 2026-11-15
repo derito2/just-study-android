@@ -51,8 +51,8 @@ sealed class RoundSpec {
         override val targets get() = listOf(item.key)
     }
 
-    /** 4.8. [bins]: their labels; [tiles]: (item, its bin), shuffled; [showMeaning]: level 1. */
-    data class WordSort(override val level: Int, val bins: List<String>, val tiles: List<Pair<GameItem, Int>>, val showMeaning: Boolean) : RoundSpec() {
+    /** 4.8. [bins]: their labels; [tiles]: (item, its bin), shuffled. Never shows the English under a tile: it would give the bin away. */
+    data class WordSort(override val level: Int, val bins: List<String>, val tiles: List<Pair<GameItem, Int>>) : RoundSpec() {
         override val game get() = GameType.WordSort
         override val targets get() = tiles.map { it.first.key }
     }
