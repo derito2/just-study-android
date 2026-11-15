@@ -2,6 +2,16 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-15 — Fase 10: pulido, oscuro legible, Games con personajes y pantallas de carga vectoriales (D10-1…D10-4)
+**Origen:** `docs/AUDIT_2.md` y la ronda 2 de QA. Plan en `docs/FASE_10_PLAN.md`; diseño en `design/polish.md`, `design/quiz.md` (E), `design/games-characters.md`, `design/splash.md` y `design/tokens.json` v2.
+**Decisiones del dueño (2026-11-15):**
+- **D10-1:** rellenos y bordes de acierto, fallo y aviso con **valores propios en oscuro**, válidos en todo lo que usa el token. Sustituye, **solo para esos tokens**, a «los colores son los de la web» (2026-11-12, *Contraste*). El fondo y los azules no cambian. Por qué: en oscuro el valor de «Your answer» salía a 1,01–1,06:1 sobre el relleno pálido (H-01).
+- **D10-2:** Games con reparto **Beom (tigre blanco), Deung (farolito) y Dal (luna)**, solo con los colores del grupo `games` de `tokens.json`.
+- **D10-4:** pantallas de carga como **SVG en `assets/splash/`** dibujados con `Canvas`; las 11 escenas hechas de tus fotos quedan **fuera de git** (`.gitignore`: `photo_*.svg`, `splash_vector_private.py`). Sin dependencias. Cierra H-02 y el anexo C de la auditoría.
+**Propuesta pendiente de su sí:**
+- **D10-3:** la voz coreana del teléfono dice la palabra al final de cada ronda de Games, con un ajuste para apagarla (D8-5 sigue: sin efectos de sonido; sin permisos nuevos). Se confirma al aprobar el PR F3.
+- **D10-5:** `kotlinx-coroutines-test` solo en `testImplementation` (`AUDIT_2.md` §8.1). Sin el sí, el PR B se hace sin B1–B2.
+
 ## 2026-11-14 — Fase 9: práctica hablada sin calificar (D9-1, D9-2, D9-3, D9-6)
 **Decisiones del dueño** (tras la PoC 4, `docs/poc/4-speech.md`: ningún motor llega al 85 %):
 - **D9-1:** **sí a `RECORD_AUDIO`** (2026-11-14), solo para la práctica hablada del Quiz y pedido al tocar el micrófono. Nunca se guarda audio ni la transcripción, tampoco en logs. `check_manifest.py` lo pasa de `FORBIDDEN` a `ALLOWED_PERMISSIONS`; `CLAUDE.md` (*Seguridad*) se actualiza igual. El manifiesto gana además `<queries>` de `android.speech.RecognitionService`, que es visibilidad de paquetes y no un permiso.
