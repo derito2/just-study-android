@@ -79,6 +79,12 @@ class GamesViewModel @Inject constructor(
     private var pausedAt: Long? = null
     private var started = false
 
+    /** Try again after "Games couldn't start this time." (the engine reports the failure as SessionState.Failed). */
+    fun retry() {
+        started = false
+        start()
+    }
+
     fun start() {
         if (started) return
         started = true

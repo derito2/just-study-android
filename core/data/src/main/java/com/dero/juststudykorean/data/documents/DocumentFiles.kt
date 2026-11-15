@@ -27,9 +27,17 @@ class DocumentFiles @Inject constructor(@param:ApplicationContext private val co
     fun receive(input: InputStream): Pair<File, String> {
         val tmp = File(dir, "pdfs/.incoming-${System.nanoTime()}").apply { parentFile!!.mkdirs() }
         val digest = MessageDigest.getInstance("SHA-256")
-        DigestInputStream(input, digest).use { i -> tmp.outputStream().use { i.copyTo(it, 1 shl 20) } }
+        try {
+            DigestInputStream(input, digest).use { i -> tmp.outputStream().use { i.copyTo(it, 1 shl 20) } }
+        } catch (e: Throwable) {
+            tmp.delete() // a full disk or a broken stream leaves no half copy
+            throw e
+        }
         return tmp to BackupFormat.sha256Hex(digest)
     }
+
+    /** H-09: room for [bytes] twice over (the copy and what processing writes next) in the app's private storage. */
+    fun hasSpaceFor(bytes: Long): Boolean = context.filesDir.usableSpace >= bytes * 2
 
     /** Keeps a received PDF under its stored name. */
     fun keepPdf(tmp: File, storedName: String, sha256: String) {

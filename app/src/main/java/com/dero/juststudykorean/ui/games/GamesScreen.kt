@@ -141,7 +141,7 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
         GamesContent(
             state, counts, typingTimer,
             onResult = vm::submit, onFeedbackDone = { vm.feedbackDone() }, onPause = vm::pause, onResume = vm::resume,
-            onEnd = { vm.end() }, onPlayAgain = vm::playAgain, onDone = onBack, onLibrary = onLibrary, onTypingTimer = { vm.setTypingTimer(it) }, voiceMissing = voiceMissing,
+            onEnd = { vm.end() }, onPlayAgain = vm::playAgain, onDone = onBack, onLibrary = onLibrary, onTypingTimer = { vm.setTypingTimer(it) }, voiceMissing = voiceMissing, onRetry = vm::retry,
         )
     }
 }
@@ -165,6 +165,7 @@ fun GamesContent(
     openingAtStart: Boolean = true,
     pauseSheetInline: Boolean = false,
     voiceMissing: Boolean = false,
+    onRetry: () -> Unit = {},
 ) {
     val still = LocalFrozenMotion.current || reduceMotion()
     val stage = remember { StageScope() }
@@ -212,7 +213,7 @@ fun GamesContent(
                     .board()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottom),
             ) {
-                Board(state, round, stage, typingTimer, onResult, onLibrary, onDone)
+                Board(state, round, stage, typingTimer, onResult, onLibrary, onDone, onRetry)
             }
             if (state is SessionState.Feedback) {
                 FeedbackRibbon(state.round, state.result, counts, onFeedbackDone, Modifier.align(Alignment.BottomCenter).padding(start = 16.dp, end = 16.dp, bottom = 16.dp + bottom))
@@ -272,13 +273,13 @@ private fun Pill(icon: Lucide, text: String, description: String, tint: Color) {
 
 /** The board's content by state (11), and the round with its instruction, hint and origin (6). */
 @Composable
-private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionState, round: RoundSpec?, stage: StageScope, typingTimer: Boolean, onResult: (RoundResult) -> Unit, onLibrary: () -> Unit, onBack: () -> Unit) {
+private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionState, round: RoundSpec?, stage: StageScope, typingTimer: Boolean, onResult: (RoundResult) -> Unit, onLibrary: () -> Unit, onBack: () -> Unit, onRetry: () -> Unit) {
     when {
         state is SessionState.Empty -> EmptyState(
             Lucide.Gamepad2, "No notes to play with yet", "아직 노트가 없어요", "Add a PDF in Library and your words become games.",
             action = "Go to Library", onAction = onLibrary,
         )
-        state is SessionState.Failed -> ErrorState("Games couldn't start this time.", onBack, retryLabel = "Back")
+        state is SessionState.Failed -> ErrorState("Games couldn't start this time.", onRetry)
         round == null -> LoadingState()
         else -> {
             val paused = state is SessionState.Paused

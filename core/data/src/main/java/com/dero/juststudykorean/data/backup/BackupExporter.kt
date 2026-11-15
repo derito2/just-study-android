@@ -2,6 +2,8 @@ package com.dero.juststudykorean.data.backup
 
 import android.content.Context
 import android.net.Uri
+import android.provider.DocumentsContract
+import androidx.room3.deferredTransaction
 import androidx.room3.useReaderConnection
 import com.dero.juststudykorean.data.db.JustStudyDatabase
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,6 +28,9 @@ class BackupExporter @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val db: JustStudyDatabase,
 ) {
+    /** Deletes the file the user chose when the export fails (tests replace it). */
+    internal var discard: (Uri) -> Unit = { runCatching { DocumentsContract.deleteDocument(context.contentResolver, it) } }
+
     suspend fun export(uri: Uri): ExportResult = withContext(Dispatchers.IO) {
         try {
             val out = context.contentResolver.openOutputStream(uri, "wt") ?: throw IOException("cannot open")
@@ -33,6 +38,8 @@ class BackupExporter @Inject constructor(
             var total = 0
             ZipOutputStream(out.buffered()).use { zos ->
                 db.useReaderConnection { c ->
+                  // One snapshot for the 18 tables: a PDF finishing in the background can't leave them from different moments.
+                  c.deferredTransaction {
                     for ((table, spec) in SCHEMA) {
                         val cols = spec.columns
                         val sorted = cols.withIndex().sortedBy { it.value.name } // Python sort_keys
@@ -62,6 +69,7 @@ class BackupExporter @Inject constructor(
                         total += rows
                         tables.put(table, JSONObject().put("rows", rows).put("sha256", BackupFormat.sha256Hex(digest)).put("columns", JSONArray(cols.map { it.name })))
                     }
+                  }
                 }
                 // extracted/ and pdfs/ from the last import, byte for byte, with their sha256 from that manifest.
                 val dir = File(context.filesDir, BackupFormat.FILES_DIR)
@@ -87,7 +95,8 @@ class BackupExporter @Inject constructor(
             }
             ExportResult.Ok(tables = SCHEMA.size, rows = total)
         } catch (e: Exception) {
-            ExportResult.Failed(e.javaClass.simpleName) // no file content in messages or logs
+            discard(uri) // a half-written zip in the owner's folder looks like a backup and is not one
+            ExportResult.Failed(if (e.isNoSpace()) NO_SPACE else e.javaClass.simpleName) // no file content in messages or logs
         }
     }
 

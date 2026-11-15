@@ -3,6 +3,7 @@ package com.dero.juststudykorean.data.processing
 import android.util.Log
 import com.dero.juststudykorean.ai.GateGuard
 import androidx.room3.withWriteTransaction
+import com.dero.juststudykorean.data.backup.isNoSpace
 import com.dero.juststudykorean.data.db.DocumentsEntity
 import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.data.db.ProcessingJobsEntity
@@ -28,6 +29,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.util.UUID
 import javax.inject.Inject
@@ -50,6 +52,7 @@ sealed interface UploadResult {
 private const val MAX_UPLOAD_BYTES = 25L * 1024 * 1024 // the web's max_upload_mb
 private val CONTROL = Regex("[\\x00-\\x1f\\x7f]")
 const val ALREADY_IN_LIBRARY = "This PDF is already in your Library."
+const val NOT_ENOUGH_SPACE = "Not enough space on the phone. Free up some space and try again."
 
 /** safe_display_name: a name to show, never used for a path. */
 internal fun safeDisplayName(filename: String?): String =
@@ -71,7 +74,13 @@ class ProcessingQueue @Inject constructor(
     suspend fun upload(input: InputStream, filename: String?): UploadResult = withContext(Dispatchers.IO) {
         val name = safeDisplayName(filename)
         if (!name.lowercase().endsWith(".pdf")) return@withContext UploadResult.Rejected("Only .pdf files are accepted.")
-        val (tmp, sha) = files.receive(input)
+        val hint = runCatching { input.available() }.getOrDefault(0).toLong() // 0 when the stream can't tell
+        if (hint > 0 && !files.hasSpaceFor(hint)) return@withContext UploadResult.Rejected(NOT_ENOUGH_SPACE)
+        val (tmp, sha) = try {
+            files.receive(input)
+        } catch (e: IOException) {
+            if (e.isNoSpace()) return@withContext UploadResult.Rejected(NOT_ENOUGH_SPACE) else throw e
+        }
         try {
             if (tmp.length() == 0L) return@withContext UploadResult.Rejected("The file is empty.")
             if (tmp.length() > MAX_UPLOAD_BYTES) return@withContext UploadResult.Rejected("File is larger than 25 MB.")
