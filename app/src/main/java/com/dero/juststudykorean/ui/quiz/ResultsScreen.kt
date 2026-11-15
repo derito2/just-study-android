@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.data.quiz.SpokenItem
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.unit.sp
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -44,18 +46,19 @@ fun ResultsScreen(key: String, onClose: () -> Unit, onNewQuiz: () -> Unit, vm: R
     LaunchedEffect(key) { vm.open(key) }
     val rows by vm.rows.collectAsStateWithLifecycle()
     val aiFailed by vm.aiFailed.collectAsStateWithLifecycle()
+    val spoken by vm.spoken.collectAsStateWithLifecycle()
     BackHandler(onBack = onClose)
-    ResultsContent(rows, onClose, onNewQuiz, aiFailed)
+    ResultsContent(rows, onClose, onNewQuiz, aiFailed, spoken)
 }
 
 /** Results (design/quiz.md D): the score, the sentence for it and each answer. */
 @Composable
-fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () -> Unit, aiFailed: Int = 0) {
+fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () -> Unit, aiFailed: Int = 0, spoken: List<SpokenItem> = emptyList()) {
     val c = JustStudyTheme.colors
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding()) {
         SmallBar(Lucide.X, "Close results", "Results", null, onClose)
         Box(Modifier.weight(1f).padding(horizontal = Tokens.Space4)) {
-            if (rows == null) LoadingState("Loading…") else Column(
+            if (rows == null) LoadingState("Loading…") else if (rows.isEmpty() && spoken.isNotEmpty()) PracticeOnly(spoken) else Column(
                 Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
                     .border(Tokens.Border, c.line, MaterialTheme.shapes.large).background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large).padding(Tokens.Space5),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
@@ -68,6 +71,7 @@ fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () ->
                     else -> "That was weak. Go again."
                 }
                 Text("$line Your answers were saved and count towards your progress.", style = MaterialTheme.typography.bodyMedium, color = c.muted)
+                if (spoken.isNotEmpty()) SpokenLine(spoken.size) // design F: the score counts the normal ones only
                 val byAi = rows.count { it.question.id < 0 } // R1-07 (design/quiz.md A.4): the model's questions live in memory only
                 if (byAi > 0) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space2), verticalAlignment = Alignment.CenterVertically) {
                     AiMark(short = true)
@@ -92,10 +96,62 @@ fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () ->
                             }
                         }
                     }
+                    spoken.forEach { item -> // F: PRACTICE, no check nor x
+                        HorizontalDivider(thickness = Tokens.Border, color = c.line)
+                        SpokenRow(item, Modifier.padding(Tokens.Space4))
+                    }
                 }
             }
         }
         Box(Modifier.fillMaxWidth().padding(Tokens.Space4)) { StickerButton("New quiz", onNewQuiz, Modifier.fillMaxWidth(), ko = "새 퀴즈") }
+    }
+}
+
+@Composable
+private fun SpokenLine(k: Int) = Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
+    LucideIcon(Lucide.Mic, contentDescription = null, size = 14.dp, tint = JustStudyTheme.colors.muted)
+    Text("$k spoken practice, not scored.", fontSize = 12.sp, color = JustStudyTheme.colors.muted)
+}
+
+/** A spoken question in the results: PRACTICE, Your notes and We heard (the last time). */
+@Composable
+private fun SpokenRow(item: SpokenItem, modifier: Modifier = Modifier) {
+    val c = JustStudyTheme.colors
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+            Text("PRACTICE", style = MaterialTheme.typography.labelMedium, color = c.brandText, modifier = Modifier.background(c.tint, CircleShape).padding(horizontal = Tokens.Space2, vertical = 2.dp))
+            Text(meaningOf(item.question), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium), color = MaterialTheme.colorScheme.onSurface)
+        }
+        Text(buildAnnotatedString {
+            withStyle(SpanStyle(color = c.muted)) { append("Your notes: ") }
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)) { append(item.question.correctAnswer) }
+        }, style = MaterialTheme.typography.bodyMedium)
+        item.heard?.let { heard ->
+            Text(buildAnnotatedString {
+                withStyle(SpanStyle(color = c.muted)) { append("We heard: ") }
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)) { append(heard) }
+            }, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+/** design F: a quiz of spoken practice only has no score and doesn't go to Quiz history. */
+@Composable
+private fun PracticeOnly(spoken: List<SpokenItem>) {
+    val c = JustStudyTheme.colors
+    Column(
+        Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+            .border(Tokens.Border, c.line, MaterialTheme.shapes.large).background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large).padding(Tokens.Space5),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
+    ) {
+        Text("Spoken practice · ${spoken.size} questions", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
+        Text("Practice only: nothing was scored or saved.", style = MaterialTheme.typography.bodyMedium, color = c.muted)
+        Column(Modifier.fillMaxWidth().border(Tokens.Border, c.line, MaterialTheme.shapes.medium)) {
+            spoken.forEachIndexed { i, item ->
+                if (i > 0) HorizontalDivider(thickness = Tokens.Border, color = c.line)
+                SpokenRow(item, Modifier.padding(Tokens.Space4))
+            }
+        }
     }
 }
 

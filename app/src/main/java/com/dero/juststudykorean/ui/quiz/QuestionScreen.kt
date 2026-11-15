@@ -1,5 +1,16 @@
 package com.dero.juststudykorean.ui.quiz
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.dero.juststudykorean.ui.games.talkBackOn
 import com.dero.juststudykorean.ui.components.AiMark
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -61,8 +72,42 @@ import com.dero.juststudykorean.ui.theme.Tokens
 fun QuestionScreen(runId: Long?, onLeave: () -> Unit, onResults: (Long) -> Unit, vm: QuestionViewModel = hiltViewModel()) {
     LaunchedEffect(runId) { vm.open(runId) }
     val ui by vm.state.collectAsStateWithLifecycle()
+    val speaking by vm.speaking.collectAsStateWithLifecycle()
+    val voiceReady by vm.voiceReady.collectAsStateWithLifecycle()
     LaunchedEffect(ui.finished) { if (ui.finished) ui.run?.let { onResults(it.id) } }
-    QuestionContent(ui, onLeave = onLeave, onType = vm::type, onAnswer = vm::answer, onNext = vm::next)
+    // Phase 9: the microphone permission, asked only when the microphone is tapped (FASE_9_PLAN 6).
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    var granted by remember { mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) }
+    val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+        granted = ok
+        if (ok) vm.tapMic()
+        // Refused twice (Android then stops asking) or "don't ask again": Permission denied; the app never opens settings.
+        else if (activity?.shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO) != true) vm.micDenied()
+    }
+    vm.talkBack = talkBackOn()
+    // The microphone closes when the app goes to the background or the screen turns off.
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, e -> if (e == Lifecycle.Event.ON_STOP) vm.closeMic() }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer); vm.closeMic() }
+    }
+    QuestionContent(
+        ui, onLeave = onLeave, onType = vm::type, onAnswer = vm::answer, onNext = vm::next,
+        speaking = speaking, voiceReady = voiceReady, permissionNeeded = !granted, onLeaveOpen = vm::closeMic,
+        speakActions = SpeakActions(
+            onMic = { if (granted) vm.tapMic() else ask.launch(Manifest.permission.RECORD_AUDIO) },
+            onCancel = { vm.cancelMic() }, onTryAgain = { vm.tryAgain() }, onShowAnswer = { vm.showAnswer() },
+            onListen = vm::listenNotes, onRetry = { vm.retrySpeech() },
+        ),
+    )
+}
+
+private tailrec fun android.content.Context.findActivity(): android.app.Activity? = when (this) {
+    is android.app.Activity -> this
+    is android.content.ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
 
 /** A smaller top bar: an icon button, the title and, on the right, a note. */
@@ -78,9 +123,14 @@ internal fun SmallBar(icon: Lucide, iconLabel: String, title: String, note: Stri
 
 /** The question (design/quiz.md B and C). [leaveAtStart]: for screenshot tests. */
 @Composable
-fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Unit, onAnswer: (String) -> Unit, onNext: () -> Unit, leaveAtStart: Boolean = false) {
+fun QuestionContent(
+    ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Unit, onAnswer: (String) -> Unit, onNext: () -> Unit, leaveAtStart: Boolean = false,
+    speaking: SpeakingUi = SpeakingUi(), speakActions: SpeakActions = SpeakActions(), voiceReady: Boolean = false, permissionNeeded: Boolean = false,
+    onLeaveOpen: () -> Unit = {},
+) {
     val c = JustStudyTheme.colors
     var leaving by remember { mutableStateOf(leaveAtStart) }
+    LaunchedEffect(leaving) { if (leaving) onLeaveOpen() } // Leave quiz closes the microphone
     val run = ui.run
     BackHandler(enabled = run != null) { leaving = true }
     val total = (run?.questions?.size ?: 0) + ui.pendingAi // A.3: counts the ones the model is still writing
@@ -95,7 +145,8 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
             else -> {
                 val q = ui.question!!
                 val answered = ui.answers[q.id]
-                val done = ui.answers.size
+                val spokenBefore = run.questions.take(ui.index).count { it.id in ui.spoken } // practiced and passed
+                val done = ui.answers.size + spokenBefore
                 LinearProgressIndicator(
                     { done.toFloat() / total }, Modifier.fillMaxWidth().padding(horizontal = Tokens.Space4).height(6.dp),
                     color = c.brand, trackColor = c.canvas, gapSize = 0.dp, drawStopIndicator = {}, strokeCap = androidx.compose.ui.graphics.StrokeCap.Round,
@@ -116,7 +167,8 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                         verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
                     ) {
                         val type = QUIZ_TYPES[q.type]
-                        Row(verticalAlignment = Alignment.Bottom) {
+                        if (ui.isSpoken) SpokenQuestion(q, ui.documents[q.id], speaking, speakActions, voiceReady, permissionNeeded)
+                        else Row(verticalAlignment = Alignment.Bottom) {
                             Row(Modifier.weight(1f), verticalAlignment = Alignment.Bottom) {
                                 Text(type?.first ?: q.type, Modifier.alignByBaseline(), style = MaterialTheme.typography.bodySmall, color = c.muted)
                                 if (type != null) KoSide(type.second, 12.sp, Modifier.alignByBaseline(), color = c.muted)
@@ -125,9 +177,10 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                             ui.documents[q.id]?.let { Text(it.substringBeforeLast("."), style = MaterialTheme.typography.bodySmall, color = c.muted, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                         }
                         val korean = Regex("[가-힣]").containsMatchIn(q.prompt)
-                        Text(q.prompt, style = if (korean) JustStudyTheme.korean.koPrompt else TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                        type?.let { Text("${it.third}.", style = MaterialTheme.typography.bodySmall, color = c.muted) }
-                        if (mode == "choice") {
+                        if (!ui.isSpoken) Text(q.prompt, style = if (korean) JustStudyTheme.korean.koPrompt else TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+                        if (!ui.isSpoken) type?.let { Text("${it.third}.", style = MaterialTheme.typography.bodySmall, color = c.muted) }
+                        if (ui.isSpoken) Unit
+                        else if (mode == "choice") {
                             val options = q.options()
                             options.forEachIndexed { i, o ->
                                 val state = when {
@@ -159,6 +212,10 @@ fun QuestionContent(ui: QuestionUi, onLeave: () -> Unit, onType: (String) -> Uni
                 ui.error?.let { Text(it, Modifier.padding(horizontal = Tokens.Space4), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
                 Box(Modifier.fillMaxWidth().padding(Tokens.Space4)) {
                     when {
+                        ui.isSpoken -> StickerButton( // D9-6: from the first try, Show answer, or when the microphone can't be used
+                            if (ui.index + 1 < total) "Next question" else "See results", onNext, Modifier.fillMaxWidth(),
+                            ko = if (ui.index + 1 < total) "다음 문제" else "결과 보기", enabled = speaking.canGoOn,
+                        )
                         answered != null -> if (ui.index + 1 < total) {
                             StickerButton("Next question", onNext, Modifier.fillMaxWidth(), ko = "다음 문제")
                         } else {
