@@ -47,6 +47,9 @@ data class QuizRun(val id: Long, val questions: List<QuestionsEntity>)
 /** One answered question of a quiz: what you answered (the last time) and whether it was right. */
 data class ResultRow(val question: QuestionsEntity, val given: String, val correct: Boolean)
 
+/** A question practiced out loud (phase 9): not scored; [heard] is what the phone understood the last time. */
+data class SpokenItem(val question: QuestionsEntity, val heard: String?)
+
 /** [aiAccepted]: the rules said wrong and the meaning judge (the model) said it means the same (design/quiz.md A.2). */
 data class Grade(val correct: Boolean, val correctAnswer: String, val explanation: String?, val aiAccepted: Boolean = false)
 
@@ -199,6 +202,15 @@ class QuizRepository @Inject constructor(
 
     /** The model's questions after the rules' ones, in the order they arrived (design/quiz.md A.3). */
     private fun <T> mixed(rules: List<T>, ai: List<T>): List<T> = rules + ai
+
+    private val spokenRuns = java.util.concurrent.ConcurrentHashMap<Long, List<SpokenItem>>()
+
+    /**
+     * Phase 9 (D9-6): a quiz's spoken practice, for its results only. In memory, never in the database, the backup nor
+     * the logs; gone when the app closes. [SpokenItem.heard]: the last thing heard (null: only *Show answer*).
+     */
+    fun spoken(runId: Long): List<SpokenItem> = spokenRuns[runId].orEmpty()
+    fun setSpoken(runId: Long, items: List<SpokenItem>) { if (items.isEmpty()) spokenRuns.remove(runId) else spokenRuns[runId] = items }
 
     private val aiFailed = java.util.concurrent.ConcurrentHashMap<Long, Int>()
 

@@ -14,10 +14,17 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
+    <!-- Phase 9, D9-1 (owner's OK, 2026-11-14): spoken practice in Quiz only, asked when the mic is tapped. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <!-- Games' listening games (phase 8, 4.11): see the text-to-speech engines. Package visibility, not a permission. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+        <!-- Phase 9: see the on-device speech recognizer (engine B). -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
         </intent>
     </queries>
 

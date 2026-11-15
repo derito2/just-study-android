@@ -66,13 +66,14 @@ fun QuizHomeScreen(onMore: () -> Unit, onGenerate: () -> Unit, onOpenRun: (Long)
     val mistakes by vm.mistakes.collectAsStateWithLifecycle()
     val history by vm.history.collectAsStateWithLifecycle()
     val ai by vm.ai.collectAsStateWithLifecycle()
+    val speech by vm.speech.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(vm) {
         vm.messages.collect { e -> when (e) { is QuizEvent.Open -> onOpenRun(e.runId); is QuizEvent.Message -> snackbar.showSnackbar(e.text) } }
     }
     QuizHomeContent(
         form ?: return, documents, mistakes, history, snackbar, onMore = onMore, onForm = { vm.setForm(it) }, onGenerate = onGenerate,
-        onPracticeSaved = { vm.practiceSaved() }, onFix = { vm.fixWeaknesses() }, onDetails = onDetails, ai = ai,
+        onPracticeSaved = { vm.practiceSaved() }, onFix = { vm.fixWeaknesses() }, onDetails = onDetails, ai = ai, speech = speech,
     )
 }
 
@@ -93,6 +94,7 @@ fun QuizHomeContent(
     onDetails: (String) -> Unit,
     photo: Boolean = true,
     ai: Boolean = false, // Gemini Nano Available (design/quiz.md A.2)
+    speech: Boolean = true, // phase 9: Korean on-device speech is there (design/quiz-speaking.md A)
 ) {
     val c = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -122,9 +124,10 @@ fun QuizHomeContent(
                         // design/quiz.md A.1/A.2: without Nano, the types only it writes are shown but cannot be used.
                         Grid(QUIZ_TYPES.entries.toList()) { (id, t) ->
                             if (id in MODEL_TYPES && !ai) CheckItem(t.first, t.second, NEEDS_AI, checked = false, unavailable = true, modifier = Modifier.alpha(0.5f)) {}
+                            else if (id == SPEAK && !speech) CheckItem(t.first, t.second, NEEDS_SPEECH, checked = false, unavailable = true, modifier = Modifier.alpha(0.5f)) {}
                             else CheckItem(t.first, t.second, t.third, id in form.types) { onForm(form.copy(types = if (id in form.types) form.types - id else form.types + id)) }
                         }
-                        if (form.usableTypes(ai).isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
+                        if (form.usableTypes(ai, speech).isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
                     }
                     val levelsCount = form.levelsCount(ai)
                     Column(Modifier.alpha(if (levelsCount) 1f else 0.5f)) {
@@ -138,7 +141,7 @@ fun QuizHomeContent(
                         }
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-                        val ok = form.usableTypes(ai).isNotEmpty() && !(levelsCount && form.levels.isEmpty())
+                        val ok = form.usableTypes(ai, speech).isNotEmpty() && !(levelsCount && form.levels.isEmpty())
                         StickerButton("Generate quiz", onGenerate, Modifier.fillMaxWidth(), ko = "퀴즈 만들기", color = StickerColor.Go, enabled = ok)
                         StickerButton("Practice saved questions", onPracticeSaved, Modifier.fillMaxWidth(), ko = "저장된 문제 연습")
                     }
@@ -183,13 +186,14 @@ private fun <T> Grid(items: List<T>, item: @Composable (T) -> Unit) {
 
 /** A checkbox row: the 18 dp box, the name (`body-bold`), its Korean (11 sp) and the hint (12 sp, `muted`). The whole row toggles. */
 private const val NEEDS_AI = "Needs on-device AI"
+private const val NEEDS_SPEECH = "Needs offline Korean speech"
 
 /** [unavailable]: it does not answer to touch, and TalkBack says why. */
 @Composable
 private fun CheckItem(name: String, ko: String, hint: String?, checked: Boolean, modifier: Modifier = Modifier, unavailable: Boolean = false, onToggle: () -> Unit) {
     val c = JustStudyTheme.colors
     val touch = if (unavailable) {
-        Modifier.clearAndSetSemantics { contentDescription = "$name, needs on-device AI, unavailable"; role = Role.Checkbox; disabled() }
+        Modifier.clearAndSetSemantics { contentDescription = "$name, ${hint?.lowercase() ?: "needs on-device AI"}, unavailable"; role = Role.Checkbox; disabled() }
     } else Modifier.toggleable(checked, role = Role.Checkbox) { onToggle() }
     Row(
         modifier.fillMaxWidth().heightIn(min = 48.dp).then(touch).padding(vertical = Tokens.Space1),

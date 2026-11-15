@@ -1,110 +1,127 @@
-# Ficha: responder hablando en el Quiz (Fase 9)
+# Ficha: practicar hablando en el Quiz (Fase 9)
 
-Base: `design/quiz.md` (secciones A y C) y `design/shell.md`. Arquitectura, prueba de concepto y tareas: `docs/FASE_9_PLAN.md`.
+Base: `design/quiz.md` (secciones A y C) y `design/shell.md`. Arquitectura y tareas: `docs/FASE_9_PLAN.md`.
 
-**No es una pantalla nueva.** Es un tipo de pregunta más del Quiz: misma Card, misma barra, mismo pie, mismos resultados.
+**Cambio tras la prueba de concepto (2026-11-14, `docs/poc/4-speech.md`):** el reconocedor del OPPO acierta un 70–77 %, así que **no califica**. Este tipo de pregunta es **práctica**:
+- dices la respuesta;
+- la app enseña lo que entendió el teléfono junto a la respuesta de tus notas;
+- no cuenta como acierto ni fallo y no se guarda en el historial.
 
-**Lo que evalúa, dicho con honestidad:** el teléfono convierte tu voz en texto coreano y la app compara ese texto con la respuesta de tus notas. Comprueba **qué palabras reconoció**, no **cómo las pronunciaste**. Ningún texto de la app dice «pronunciation», ni hay porcentajes ni estrellas de pronunciación.
+**No es una pantalla nueva:** es un tipo de pregunta del Quiz, con la misma Card, la misma barra y el mismo pie.
 
-**Depende de la prueba de concepto** (`docs/FASE_9_PLAN.md`, tarea 1): si en el OPPO no hay un reconocedor coreano que funcione sin red, este tipo queda deshabilitado (estado *Unavailable*) y no se construye nada más.
+**Lo que hace, dicho con honestidad:** el teléfono convierte tu voz en texto coreano. Ese texto puede fallar aunque lo hayas dicho bien. La app nunca dice que pronunciaste mal, y ningún texto habla de "pronunciation", porcentajes ni estrellas.
 
 ## A · En el formulario (New quiz → Question types)
 
 Novena casilla, al final de la rejilla (queda sola en la quinta fila, a la izquierda):
 
-- **Say it in Korean** · 한국어로 말하기 · pista *Answer out loud*
+- **Say it in Korean** · 한국어로 말하기 · pista *Practice out loud · not scored*
 - Sin marcar por defecto.
-- **Si el reconocedor no está disponible:** como las casillas de A.1 de `quiz.md` (fila al 50 %, sin marcar, sin responder al toque), con la pista sustituida por **Needs offline Korean speech** (12 sp, `muted`). TalkBack: "Say it in Korean, needs offline Korean speech, unavailable".
-- **Si el micrófono está denegado para siempre:** la casilla sigue activa; el aviso sale en la pregunta (estado *Permission denied*).
+- **Si el reconocedor no está disponible:**
+  - como las casillas de A.1 de `quiz.md`: fila al 50 %, sin marcar y sin responder al toque;
+  - la pista se sustituye por **Needs offline Korean speech** (12 sp, `muted`);
+  - TalkBack: "Say it in Korean, needs offline Korean speech, unavailable".
+- **Si solo está marcada esta casilla**, el quiz es solo de práctica: los resultados no tienen puntuación (F).
 
 ## B · La pregunta
 
-Misma Card de `quiz.md` C. Cambia solo el bloque de respuesta.
+Misma Card de `quiz.md` C; cambia solo el bloque de respuesta.
 
-- **Fila superior:** *Say it in Korean* · 한국어로 말하기, y el documento a la derecha.
-- **La pregunta** (dos variantes, las elige el generador):
-  - **Di la palabra:** el significado en inglés (20 sp, 700). Pista: *Answer out loud, in Korean.*
+- **Fila superior:** *Say it in Korean* · 한국어로 말하기 con la etiqueta **PRACTICE** (`badge-tint`, MAYÚSCULAS, como la frase de práctica de Grammar), y el documento a la derecha.
+- **La pregunta** (dos variantes):
+  - **Di la palabra:** el significado en inglés (20 sp, 700). Pista: *Say it out loud, in Korean.*
   - **Lee en voz alta** (solo frases de 2 palabras o más): la frase coreana (`ko-prompt`) y debajo su traducción (`body`, `muted`). Pista: *Read it out loud.*
 - **Nunca se pide hablar inglés ni español.**
 - **Bloque de voz**, centrado, con 16 dp de aire arriba y abajo:
-  - **MicButton:** círculo de **72 dp**, fondo `action`, canto inferior de 4 dp `action-edge` (el lenguaje de StickerButton), icono `mic` blanco de 28 dp. Zona táctil: el círculo entero.
-  - **Línea de estado** debajo (14 sp, 700; ver tabla).
-  - **Transcripción** debajo (cuando la hay): etiqueta *We heard:* (12 sp, `muted`) y el texto (`ko-prompt`).
-  - **Nota fija** al pie del bloque (12 sp, `muted`): *Checks the words your phone recognized, not your pronunciation.*
-- **Enlace de salida**, bajo la nota: **Type it instead** (texto `brand-text`, 14 sp, 700, zona táctil de 48 dp). Convierte **esta** pregunta en *Write in Korean* (campo de texto y **Check**), sin penalización. Siempre visible mientras la pregunta no esté resuelta.
-- **Pie:** vacío hasta que la pregunta se resuelve; entonces **Next question** / **See results**, como siempre.
+  - **MicButton:** círculo de **72 dp**, fondo `action`, canto inferior de 4 dp `action-edge` e icono `mic` blanco de 28 dp. Zona táctil: el círculo entero.
+  - **Línea de estado** debajo (14 sp, 700; ver C).
+  - **Nota fija** al pie del bloque (12 sp, `muted`): *Practice only. Your phone's speech recognition can mishear you, so this isn't scored.*
+- **Comparación**, después del primer intento (recuadro `canvas`, radio 12, relleno de 12 × 16 dp):
+  - **We heard** (12 sp, `muted`) y la transcripción (`ko-prompt`);
+  - **Your notes** (12 sp, `muted`) y la respuesta (`ko-prompt`);
+  - **Diferencias:** en las dos líneas, las sílabas que no coinciden van subrayadas con 2 dp `warn` (alineación por sílaba). Sin rojo y sin `x`: no es un error.
+  - **Si coincide exactamente** (normalizado: sin espacios ni signos), arriba del recuadro sale **Matches your notes** con `check` (14 sp, 700, `correct`). Es lo único que se celebra; si no coincide, no se dice nada negativo;
+  - **Listen** · 듣기 (Gray, Small, `volume-2`) lee la respuesta de tus notas con la voz coreana sin red de la fase 8. Si no hay voz, el botón no existe.
+- **Debajo del recuadro**, dos acciones de texto (14 sp, 700, zona táctil de 48 dp):
+  - **Try again** (`brand-text`): vuelve a *Ready* sin borrar el recuadro;
+  - **Show answer** (`muted`), solo antes del primer intento: muestra *Your notes* sin hablar.
+- **Pie:** **Next question** / **See results**, activo desde el primer intento o desde *Show answer*. Intentos ilimitados.
 
 ## C · Estados
 
 | Estado | MicButton | Línea de estado | Qué puede hacer el usuario |
 |---|---|---|---|
 | **Ready** | `action`, quieto | **Tap and speak** · 누르고 말하세요 (`ink`) | tocar el micrófono |
-| **Listening** | `danger` con icono `mic` blanco; halo y onda (D) | **Listening…** · 듣고 있어요 (`danger`) | tocar otra vez = terminar ya; **Cancel** (texto `muted`, a la derecha del botón) |
-| **Processing** | `action` al 60 %, anillo girando (D) | **Checking…** · 확인 중 (`muted`) | nada (como mucho 4 s; después, *Didn't catch that*) |
-| **Correct** | `go` con `check` | (no se ve; lo sustituye el recuadro de resultado) | *Next question* |
-| **Try again** (no coincidió, quedan intentos) | `action`, quieto | **Not a match. Try again** · 다시 말해 보세요 (`ink`) + *{k} tries left* (12 sp, `muted`) | tocar el micrófono, o **Show answer** |
-| **Incorrect** | `disabled-fill` con `mic` `disabled-ink` | (lo sustituye el recuadro) | *Next question* |
-| **Uncertain** (se oyó algo que no es coreano claro, o casi coincide) | `action`, quieto | **Not sure we heard you right** · 잘 못 들었어요 (`warn`) | tocar el micrófono; no gasta intento |
-| **No speech** | `action`, quieto | **Didn't catch that. Tap and try again** · 못 들었어요 (`ink`) | tocar el micrófono; no gasta intento |
+| **Listening** | `danger` con `mic` blanco; halo y onda (D) | **Listening…** · 듣고 있어요 (`danger`) | tocar otra vez = terminar ya; **Cancel** (texto `muted`, a la derecha del botón) |
+| **Processing** | `action` al 60 %, anillo girando (D) | **Checking…** · 확인 중 (`muted`) | nada (como mucho 4 s; después, *No speech*) |
+| **Compared** | `action`, quieto | **Compare below** (`ink`), o nada si coincide (sale *Matches your notes*) | *Try again*, *Next question* |
+| **No speech** | `action`, quieto | **Didn't catch that. Tap and try again** · 못 들었어요 (`ink`) | tocar el micrófono |
 | **Cancelled** | vuelve a *Ready* | **Tap and speak** | — |
-| **Model not downloaded** | `disabled-fill` | **Korean speech isn't downloaded on this phone** (`muted`) + *Download it in Android's speech settings, then come back.* (12 sp) | *Type it instead* |
-| **Unavailable / error** | `disabled-fill` | **Speech isn't working right now** (`muted`) | **Try again** (Gray, Small) y *Type it instead* |
-| **Permission needed** (primera vez) | `action` | antes de abrir el diálogo del sistema, una línea: *The microphone is used only while you answer. Nothing is recorded or sent.* (12 sp, `muted`) | tocar el micrófono abre el diálogo de Android |
-| **Permission denied** | `disabled-fill` con `mic` tachado | **Microphone is off for this app** (`muted`) + *Turn it on in Android settings to answer by voice.* (12 sp) | *Type it instead* |
-
-**Reglas de intento (para no castigar un fallo del reconocedor):**
-
-- **Coincide** → *Correct*, al instante.
-- **No coincide** → *Try again*; la transcripción se muestra (*We heard: …*). Hay **3 intentos**. Al tercero que no coincide → *Incorrect*.
-- **Show answer** (texto `muted`, junto a *Type it instead*, solo desde el primer intento fallido) → *Incorrect* voluntario.
-- **Uncertain, No speech, Cancelled, errores, permisos y modelo ausente nunca gastan intento ni cuentan como fallo.**
-- Lo que se guarda de la pregunta es **un** resultado final (correcta o incorrecta) y, como respuesta, la última transcripción. Si se respondió con *Type it instead*, lo escrito.
-
-**Recuadro de resultado** (el mismo de las respuestas escritas, `quiz.md` C):
-- *Correct!* con `check`, y *We heard:* + la transcripción;
-- *Not quite* con `x`, *We heard:* + la última transcripción (o *—* si fue *Show answer*) y *Correct answer:* + la respuesta.
-- Debajo de *Correct answer*, si el teléfono tiene voz coreana sin red: botón pequeño `volume-2` (Gray, Small, **Listen** · 듣기) que la lee una vez. Si no hay voz, el botón no existe.
+| **Model not downloaded** | `disabled-fill` | **Korean speech isn't downloaded on this phone** (`muted`) + *Download it in Android's speech settings, then come back.* (12 sp) | *Next question* |
+| **Unavailable / error** | `disabled-fill` | **Speech isn't working right now** (`muted`) | **Try again** (Gray, Small) y *Next question* |
+| **Permission needed** (primera vez) | `action` | Antes del diálogo del sistema: *The microphone is used only while you answer. Nothing is recorded or sent.* (12 sp, `muted`) | tocar el micrófono abre el diálogo de Android |
+| **Permission denied** | `disabled-fill` con `mic` tachado | **Microphone is off for this app** (`muted`) + *Turn it on in Android settings to practice out loud.* (12 sp) | *Next question* |
 
 ## D · Animaciones
 
-Todas en fase de dibujo. Con *Quitar animaciones*: solo cambian colores, iconos y textos.
+Todas en fase de dibujo. Con *Quitar animaciones*, solo cambian colores, iconos y textos.
 
-- **Ready → Listening** (180 ms): el botón pasa de `action` a `danger` (fundido de color), hace un `pop` (escala 1 → 1.08 → 1, 240 ms, curva `Spring`).
+- **Ready → Listening** (180 ms): el botón pasa de `action` a `danger` con un fundido de color y hace un `pop` (escala 1 → 1.08 → 1, 240 ms, `Spring`).
 - **Listening:**
-  - **Halo:** dos anillos de 2 dp `danger` salen del borde del botón: radio 36 → 64 dp, opacidad 0.5 → 0, 1200 ms cada uno, desfasados 600 ms, en bucle mientras se escucha.
-  - **Onda de nivel (LevelWave):** a los dos lados del botón, 4 barras por lado (ancho 4 dp, separación 4 dp, radio 2, `danger`). Su alto sigue el **nivel real del micrófono** que da el reconocedor: de 6 dp (silencio) a 36 dp, con suavizado (cada barra persigue su objetivo con un muelle de rigidez 300) y un retardo de 40 ms por barra hacia fuera, para que la onda «viaje» desde el botón. Si el reconocedor elegido no da nivel, las barras usan el patrón fijo de `VoiceBars` (`games-minigames.md`, *Audio*).
-  - **Transcripción parcial:** si el reconocedor da resultados parciales, se ven bajo la línea de estado en `ko-prompt` y `muted`, actualizándose (fundido cruzado de 90 ms).
-- **Listening → Processing** (150 ms): los anillos en curso terminan; las barras bajan a 6 dp; el botón pasa a `action` al 60 % y alrededor gira un arco de 270°, 3 dp, `brand`, radio 40 dp, una vuelta cada 900 ms (lineal).
-- **→ Correct:** el arco se cierra a 360° en `correct-deco` (150 ms); el botón pasa a `go` y el icono `mic` se funde a `check` (150 ms) con `pop` (1 → 1.12 → 1, 240 ms); la transcripción pasa de `muted` a `ink`. Luego entra el recuadro de resultado (opacidad 0 → 1, y: 8 dp → 0, 240 ms ease-out).
-- **→ Try again:** el botón hace `shake` (±6 dp, 320 ms); la transcripción aparece en `wrong`; a los 400 ms el botón vuelve a `action`. El contador *{k} tries left* cambia con un fundido cruzado.
-- **→ Uncertain / No speech:** sin `shake` (no es un error): la línea de estado cambia con fundido cruzado de 150 ms y el botón hace un latido suave (1 → 1.04 → 1, 400 ms) para invitar a repetir.
-- **→ Incorrect:** el botón se apaga (a `disabled-fill`, 240 ms) y entra el recuadro de resultado.
+  - **Halo:** dos anillos de 2 dp `danger`, de radio 36 → 64 dp y opacidad 0.5 → 0, en 1200 ms cada uno, desfasados 600 ms y en bucle.
+  - **LevelWave:**
+    - 4 barras a cada lado del botón (4 dp de ancho, 4 dp de separación, radio 2, `danger`), de 6 dp a 36 dp de alto;
+    - el alto sigue el nivel real del micrófono (`onRmsChanged`), con un muelle de rigidez 300 y 40 ms de retardo por barra hacia fuera;
+    - sin nivel: el patrón de `VoiceBars`.
+  - **Parciales:** si llegan, se ven bajo la línea de estado en `ko-prompt` `muted`, con un fundido cruzado de 90 ms.
+- **Listening → Processing** (150 ms): las barras bajan a 6 dp y el botón queda al 60 %, con un arco de 270° (3 dp, `brand`, radio 40 dp) que da una vuelta cada 900 ms.
+- **→ Compared:**
+  - el arco desaparece (150 ms);
+  - el recuadro entra con opacidad 0 → 1 y desplazamiento de 8 dp → 0 (240 ms, ease-out);
+  - los subrayados se dibujan de izquierda a derecha en 240 ms;
+  - si coincide: *Matches your notes* con `pop` (1 → 1.12 → 1, 240 ms).
+  - **Sin `shake` nunca:** no hay fallos.
+- **→ No speech:** latido suave del botón (1 → 1.04 → 1, 400 ms).
 - **Cancel:** todo vuelve a *Ready* en 150 ms.
 
 ## E · Comportamiento
 
-- **El micrófono solo está abierto en *Listening*.** Se cierra al: terminar de hablar (silencio), tocar el botón, *Cancel*, pasar de pregunta, salir del quiz, abrir el diálogo *Leave quiz*, ir a segundo plano, apagar la pantalla o perder el foco de audio.
-- **Tope de escucha:** 8 s para palabras, 12 s para frases. Al llegar, pasa a *Processing* con lo que haya.
-- **Permiso:** se pide solo al tocar el micrófono por primera vez, nunca al abrir la app ni el Quiz.
-- **No se guarda audio**, ni temporal: el reconocedor recibe el micrófono directamente y la app solo recibe texto.
-- **Indicador del sistema:** Android muestra su punto verde de micrófono mientras se escucha; la app no lo tapa.
-- **Sin vibración.**
-- **Mientras se escucha no se llama al modelo** (ni juez ni explicación del error): esperan a que la pregunta se resuelva.
-- **Si matan el proceso a mitad:** al volver, la pregunta se abre como *Write in Korean* (escrita). No se pierde nada guardado.
+- **El micrófono solo está abierto en *Listening*.** Se cierra cuando:
+  - terminas de hablar (silencio) o tocas el botón;
+  - pulsas *Cancel*;
+  - pasas de pregunta, sales del quiz o abres *Leave quiz*;
+  - la app va a segundo plano o se apaga la pantalla;
+  - se pierde el foco de audio.
+- **Tope de escucha:** 8 s para palabras y 12 s para frases.
+- **Permiso:** se pide solo al tocar el micrófono por primera vez.
+- **No se guarda audio, ni temporal.** No se guarda la transcripción ni un resultado: la pregunta hablada no escribe en `question_attempts`.
+- Android muestra su punto verde de micrófono; la app no lo tapa.
+- **Sin vibración.** **Sin modelo:** el juez y la explicación del error no se usan en estas preguntas.
+- **Si matan el proceso a mitad:** al volver, esa pregunta se salta (es práctica). No se pierde nada guardado.
 
 ## F · En resultados e historial
 
-- En la lista de resultados la pregunta aparece como las demás. *Your answer:* muestra la transcripción con un icono `mic` de 14 dp `muted` delante (TalkBack: "spoken answer").
-- En *Quiz history* no cambia nada.
+- **La puntuación del quiz** solo cuenta las preguntas normales.
+- **Debajo de la puntuación:** *{k} spoken practice, not scored.* (12 sp, `muted`, con un `mic` de 14 dp).
+- **Quiz solo de práctica:** en lugar de la puntuación, *Spoken practice · {k} questions* y la lista de preguntas con *Your notes* y *We heard* (la última). No aparece en *Quiz history*.
+- **En la lista de resultados**, las preguntas habladas llevan PRACTICE y no tienen `check` ni `x`.
 
 ## G · Accesibilidad
 
-- MicButton: `Role.Button`, "Answer by voice" / "Stop listening".
-- La línea de estado es `liveRegion = Polite`. La transcripción se anuncia al llegar.
-- **Con TalkBack activo**, al entrar en *Listening* se espera 600 ms antes de abrir el micrófono, para que la voz de TalkBack no entre en la grabación.
-- *Type it instead* garantiza que nadie se queda bloqueado en una pregunta de voz.
-- Letra al 130 %: el bloque de voz no cambia de tamaño; los textos bajan de línea.
+- MicButton: `Role.Button`, "Practice out loud" / "Stop listening".
+- La línea de estado es `liveRegion = Polite`. Al llegar la comparación se anuncia: "We heard … Your notes …" y, si coincide, "matches your notes".
+- **Con TalkBack activo**, se esperan 600 ms antes de abrir el micrófono.
+- Siempre se puede seguir con *Next question*: nadie se queda bloqueado.
+- Con la letra al 130 %, el bloque no cambia de tamaño; los textos bajan de línea.
 
 ## H · Capturas de prueba (Roborazzi)
 
-En claro y oscuro, con `LocalFrozenMotion`: *Ready*, *Listening* (halo quieto en su primer fotograma, barras a media altura), *Try again* con transcripción, *Correct*, *Incorrect*, *Permission denied*, y la casilla del formulario activa y deshabilitada.
+En claro y oscuro, con `LocalFrozenMotion`:
+- *Ready*;
+- *Listening* (halo en su primer fotograma, barras a media altura);
+- *Compared* con diferencias;
+- *Compared* con *Matches your notes*;
+- *Permission denied*;
+- los resultados con *{k} spoken practice*;
+- el quiz solo de práctica;
+- la casilla del formulario activa y deshabilitada.

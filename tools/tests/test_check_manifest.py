@@ -74,3 +74,10 @@ def test_only_the_allowed_permissions(tmp_path):
     assert check_manifest.problems(ok, release=True) == []
     wake = write(tmp_path, _with("android.permission.WAKE_LOCK"))
     assert check_manifest.problems(wake, release=True) == ["permission not allowed: android.permission.WAKE_LOCK"]
+
+
+def test_record_audio_is_allowed_since_phase_9(tmp_path):
+    # D9-1 (2026-11-14): the spoken practice in Quiz; CAMERA and the rest stay forbidden.
+    assert check_manifest.problems(write(tmp_path, _with("android.permission.RECORD_AUDIO")), release=True) == []
+    camera = write(tmp_path, _with("android.permission.CAMERA"))
+    assert check_manifest.problems(camera, release=True) == ["forbidden permission: android.permission.CAMERA"]
