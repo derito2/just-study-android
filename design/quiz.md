@@ -127,3 +127,60 @@ Tras **Generate quiz**, la pantalla de la pregunta muestra el estado de carga de
 ## Datos
 
 Las preguntas por reglas, `is_correct` y `widen_answer` son los de la web (pruebas doradas en `golden/text.json`). Las preguntas que escribe el modelo (Fill in the blank, Multiple choice y Short answer con dificultad) se dejan para la fase 6. Hasta entonces, si solo se eligen esos tipos, se generan por reglas cuando la web también lo hace, o sale el mensaje de *No questions could be created*. Cada respuesta se guarda al instante: una pregunta acertada descansa 7 días antes de volver.
+
+## E · Acierto, fallo y comparación en oscuro (Fase 10, H-01)
+
+**Decisión del dueño (2026-11-15):** los rellenos y bordes de acierto, fallo y aviso tienen **valores propios en oscuro**. Sustituye, solo para estos tokens, a «los colores son los de la web» (DECISIONS 2026-11-12). El claro no cambia. `background`, `surface`, `canvas`, `action` y `brand` no cambian. Los valores nuevos valen **en todo lo que usa el token** (Quiz, calendario, cinta y fichas de Games, píldora *Ready*, avisos de error, `TypedResult` de Flashcards).
+
+**Problema medido** (`quiz_opcion_acierto_oscuro`, `quiz_escrita_fallo_explicacion_oscuro`): relleno contra el fondo 15.0:1 (verde) y 14.3:1 (rojo); el valor de la respuesta, 1.01–1.06:1.
+
+### Tokens (en `tokens.json`, versión 2)
+
+| Token | Claro (igual) | **Oscuro (nuevo)** | Cómo sale |
+|---|---|---|---|
+| `correct-fill` | `#EAFFDB` | **`#273C32`** | `background` + 16 % de `correct-deco` |
+| `wrong-fill` | `#FFF0F0` | **`#48233B`** | `background` + 24 % de `danger` |
+| `warn-fill` | `#FFF7E0` | **`#373336`** | `background` + 12 % de `fix` |
+| `wrong-border` | `#E5383B` | **`#FF7B7E`** | el mismo rojo, aclarado hasta AA sobre su relleno |
+| `correct-deco` (borde de acierto) | `#58CC02` | `#58CC02` | sin cambio |
+| `fill-ink` | `#252B2F` | `#F8FAFC` | = `ink` oscuro |
+| `fill-muted` | `#666E7E` | `#94A3B8` | = `muted` oscuro |
+| `fill-warn` | `#8A5A00` | `#FBBF24` | = `warn` oscuro |
+| `correct-ink` (nuevo nombre) | `#2F7A00` (= `correct`) | `#58CC02` (= `correct-deco`) | tinta de acierto |
+| `wrong-ink` (nuevo nombre) | `#C62828` (= `wrong`) | `#FF7B7E` (= `wrong-border` oscuro) | tinta de fallo |
+
+Solo hay **cuatro valores que no existían**: los tres rellenos y el borde rojo. Lo demás reutiliza valores del sistema.
+
+### Contraste medido en oscuro (WCAG 2.1, luminancia relativa; fondo `#1E203B`)
+
+| Par | Relación | Mínimo | |
+|---|---|---|---|
+| `correct-fill` vs `background` | **1.34:1** (antes 15.0) | — (deja de deslumbrar) | ✓ |
+| `wrong-fill` vs `background` | **1.19:1** (antes 14.3) | — | ✓ |
+| `warn-fill` vs `background` | **1.27:1** | — | ✓ |
+| `fill-ink` sobre `correct-fill` / `wrong-fill` / `warn-fill` | **11.3 / 12.7 / 11.9:1** (antes 1.01 / 1.06) | 4.5 | ✓ AA (AAA) |
+| `fill-muted` sobre `correct-fill` / `wrong-fill` / `warn-fill` | **4.6 / 5.2 / 4.9:1** | 4.5 | ✓ AA |
+| `correct-ink` sobre `correct-fill` | **5.7:1** | 4.5 | ✓ AA |
+| `wrong-ink` sobre `wrong-fill` | **5.3:1** | 4.5 | ✓ AA |
+| `fill-warn` sobre `warn-fill` | **7.5:1** | 4.5 | ✓ AA |
+| borde `correct-deco` vs `background` | **7.6:1** | 3.0 (no texto) | ✓ |
+| borde `wrong-border` vs `background` | **6.3:1** | 3.0 | ✓ |
+| `correct-ink` / `wrong-ink` sobre `background` (cifra *Correct*, *Your answer:* de resultados) | **7.6 / 6.3:1** (antes 3.0 / 2.8) | 4.5 | ✓ AA |
+
+Como el relleno ya casi no se separa del fondo (a propósito), **el recuadro se reconoce por su borde de 2 dp y su icono**, nunca solo por el relleno.
+
+### Dónde va cada color
+
+- **Opción correcta** (`QuizOption`): fondo `correct-fill`, **borde 2 dp `correct-deco`**, número en `fill-muted`, texto en `fill-ink`, `check` y *correct* en `correct-ink`.
+- **Opción elegida y fallada:** fondo `wrong-fill`, **borde 2 dp `wrong-border`**, número `fill-muted`, texto `fill-ink`, `x` y *your answer* en `wrong-ink`.
+- **Opción sin elegir:** `softBox()` (`polish.md`, P-03): en oscuro, borde 2 dp `line`.
+- **Respuesta escrita** (`ResultBanner`): fondo y borde como arriba; título con icono en `correct-ink` / `wrong-ink`; *Your answer:* y *Correct answer:* en `fill-muted`; **sus valores en `fill-ink`, 700**. El campo fallado: borde `wrong-border`.
+- **Explicación del fallo** y **comparación de *Say it in Korean***: `softBox()`; el subrayado de sílabas sigue en `warn`.
+- **`TypedResult`** (Flashcards): fondo del tramo `wrong-fill`, tinta `wrong-ink`.
+- En claro los bordes de 2 dp también se dibujan (`correct-deco`, `wrong-border`): mismo componente en los dos temas.
+
+### Pruebas que lo protegen
+
+- `ContrastTest` (JVM, sobre `Tokens`): cada par de la tabla, en claro y en oscuro, ≥ 4.5:1 para texto y ≥ 3:1 para bordes.
+- Prueba que falla si un archivo de `ui/` usa `onSurface`, `ink` o `muted` dentro de un `background(…Fill)` (búsqueda por texto en las fuentes, como `NoMlKitInScreensTest`).
+- Roborazzi en oscuro: `QuizOption` (4 estados), `ResultBanner` (4 tonos), calendario con las tres celdas, cinta de Games ganada y perdida.
