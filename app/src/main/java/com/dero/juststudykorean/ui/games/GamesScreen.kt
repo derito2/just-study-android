@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -288,11 +289,20 @@ private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionS
             val (instruction, ko) = instructionOf(round, text)
             Instruction(instruction, ko, hintOf(round))
             Spacer(Modifier.height(12.dp))
-            Box(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())) {
-                // A new round starts from scratch; its state lives as long as the round.
-                androidx.compose.runtime.key(round) {
-                    val clock = rememberRoundClock(paused || answered)
-                    GameRound(round, paused || answered, stage, typingTimer && !talkBackOn()) { r -> onResult(r.copy(responseMs = clock())) }
+            // The game sits in the middle of the space under its instruction (H: most games left the lower half empty); one taller
+            // than that fills it and scrolls, as before.
+            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().testTag("game-area")) {
+                val area = maxHeight
+                Box(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                    Box(Modifier.fillMaxWidth().heightIn(min = area), contentAlignment = Alignment.Center) {
+                        Box(Modifier.fillMaxWidth().testTag("game-content")) {
+                            // A new round starts from scratch; its state lives as long as the round.
+                            androidx.compose.runtime.key(round) {
+                                val clock = rememberRoundClock(paused || answered)
+                                GameRound(round, paused || answered, stage, typingTimer && !talkBackOn()) { r -> onResult(r.copy(responseMs = clock())) }
+                            }
+                        }
+                    }
                 }
             }
             OriginMark(originOf(round, LocalGameBank.current), Modifier.padding(top = 8.dp))
