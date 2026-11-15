@@ -16,6 +16,8 @@ import com.dero.juststudykorean.korean.ai.AI_MODEL
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -64,7 +66,7 @@ class TeacherAiTest {
         if (model == null) return TeacherService(db)
         AppForeground.visible = true
         val state = NanoState(model).also { it.refresh() }
-        runBlocking { repeat(50) { if (state.status.value != NanoStatus.Available) delay(20) } }
+        runTest { state.status.first { it == NanoStatus.Available } }
         return TeacherService(db, NanoGate(model, state) { false })
     }
 

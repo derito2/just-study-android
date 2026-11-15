@@ -20,6 +20,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -67,7 +69,7 @@ class QuizAiStreamTest {
     private fun gate(model: Fake): NanoGate {
         AppForeground.visible = true
         val state = NanoState(model).also { it.refresh() }
-        runBlocking { repeat(50) { if (state.status.value != NanoStatus.Available) delay(20) } }
+        runTest { state.status.first { it == NanoStatus.Available } }
         return NanoGate(model, state) { false }
     }
 

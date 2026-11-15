@@ -14,6 +14,8 @@ import com.dero.juststudykorean.data.quiz.QuizRequest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -55,7 +57,7 @@ class QuizAiTest : GoldenDb() {
     private fun setUp(model: Fake): Pair<QuizAi, QuizRepository> {
         AppForeground.visible = true
         val state = NanoState(model).also { it.refresh() }
-        runBlocking { repeat(50) { if (state.status.value != NanoStatus.Available) delay(20) } }
+        runTest { state.status.first { it == NanoStatus.Available } }
         val notes = NotesSource(context)
         return QuizAi(NanoGate(model, state) { false }, db, notes) to QuizRepository(db, clock, ProgressRepository(db, clock), notes)
     }
