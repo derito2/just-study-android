@@ -127,7 +127,7 @@ fun QuizHomeContent(
                             else if (id == SPEAK && !speech) CheckItem(t.first, t.second, NEEDS_SPEECH, checked = false, unavailable = true, modifier = Modifier.alpha(0.5f)) {}
                             else CheckItem(t.first, t.second, t.third, id in form.types) { onForm(form.copy(types = if (id in form.types) form.types - id else form.types + id)) }
                         }
-                        if (form.usableTypes(ai, speech).isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
+                        if (form.usableTypes(ai, speech).isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrongInk)
                     }
                     val levelsCount = form.levelsCount(ai)
                     Column(Modifier.alpha(if (levelsCount) 1f else 0.5f)) {
@@ -135,7 +135,7 @@ fun QuizHomeContent(
                         Text(if (ai) "Only questions written by the model change with it." else NEEDS_AI, style = MaterialTheme.typography.bodySmall, color = c.muted)
                         if (ai) {
                             Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels) { onForm(form.copy(levels = if (n in form.levels) form.levels - n else form.levels + n)) } }
-                            if (levelsCount && form.levels.isEmpty()) Text("Choose at least one difficulty.", style = MaterialTheme.typography.bodyMedium, color = c.wrong)
+                            if (levelsCount && form.levels.isEmpty()) Text("Choose at least one difficulty.", style = MaterialTheme.typography.bodyMedium, color = c.wrongInk)
                         } else {
                             Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels, unavailable = true) {} } // shows what is saved
                         }

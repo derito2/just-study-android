@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dero.juststudykorean.ui.games.talkBackOn
+import com.dero.juststudykorean.ui.components.softBox
 import com.dero.juststudykorean.ui.components.AiMark
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -157,7 +158,7 @@ fun QuestionContent(
                 }
                 Row(Modifier.fillMaxWidth().padding(Tokens.Space4)) {
                     Count("Done", "완료", "$done/$total", MaterialTheme.colorScheme.onSurface, Modifier.weight(1f))
-                    Count("Correct", "정답", "${ui.correct}", c.correct, Modifier.weight(1f))
+                    Count("Correct", "정답", "${ui.correct}", c.correctInk, Modifier.weight(1f))
                     Count("Left", "남음", "${total - done}", MaterialTheme.colorScheme.onSurface, Modifier.weight(1f))
                 }
                 val mode = answerMode(q.type)
@@ -202,7 +203,7 @@ fun QuestionContent(
                             )
                             if (answered != null) AnswerFeedback(answered.grade.correct, answered.given, answered.grade.correctAnswer, korean = mode == "korean")
                             if (answered?.grade?.aiAccepted == true) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-                                Text("accepted: same meaning", fontSize = 12.sp, color = c.correct)
+                                Text("accepted: same meaning", fontSize = 12.sp, color = c.correctInk)
                                 AiMark(short = true)
                             }
                         }
@@ -252,7 +253,7 @@ private fun Count(label: String, ko: String, value: String, color: androidx.comp
 private fun MistakeExplanation(text: String, ai: Boolean) {
     val c = JustStudyTheme.colors
     Column(
-        Modifier.fillMaxWidth().background(c.canvas, MaterialTheme.shapes.medium).padding(Tokens.Space3),
+        Modifier.fillMaxWidth().softBox().padding(Tokens.Space3),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space2),
     ) {
         if (ai) AiMark()

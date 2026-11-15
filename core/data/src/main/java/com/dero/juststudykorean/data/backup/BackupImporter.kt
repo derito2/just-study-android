@@ -2,6 +2,7 @@ package com.dero.juststudykorean.data.backup
 
 import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.room3.withWriteTransaction
 import androidx.sqlite.SQLiteStatement
 import com.dero.juststudykorean.data.db.JustStudyDatabase
@@ -40,7 +41,17 @@ class BackupImporter @Inject constructor(
     /** [files]: zip entry → sha256 for extracted/ and pdfs/; [index]: the manifest's two maps, as they came. */
     private class Manifest(val rows: Map<String, Int>, val files: Map<String, String>, val index: JSONObject)
 
+    /** The chosen file's size in bytes, 0 if the provider doesn't say (tests replace it). */
+    internal var sizeOf: (Uri) -> Long = { u ->
+        runCatching {
+            context.contentResolver.query(u, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { c -> if (c.moveToFirst() && !c.isNull(0)) c.getLong(0) else 0L }
+        }.getOrNull() ?: 0L
+    }
+
     suspend fun import(uri: Uri): ImportResult = withContext(Dispatchers.IO) {
+        // H-09: extracting to the staging folder needs about the backup's size again; say so before touching anything.
+        val size = sizeOf(uri)
+        if (size > 0 && context.filesDir.usableSpace < size * 2) return@withContext ImportResult.Failed(BackupError.NoSpace)
         val manifest = try {
             verify(uri)
         } catch (e: Bad) {
@@ -86,7 +97,7 @@ class BackupImporter @Inject constructor(
         } catch (e: Bad) {
             ImportResult.Failed(e.error)
         } catch (e: Exception) {
-            ImportResult.Failed(BackupError.Corrupt) // a bad row or value: the transaction was rolled back
+            ImportResult.Failed(if (e.isNoSpace()) BackupError.NoSpace else BackupError.Corrupt) // else a bad row or value: rolled back
         } finally {
             staging.deleteRecursively()
         }

@@ -37,7 +37,7 @@ fun MergeDialog(names: List<String>, onCombine: (String) -> Unit, onDismiss: () 
             Text("Name of the new deck", style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
             Spacer(Modifier.height(Tokens.Space2))
             JsTextField(name, { if (it.length <= 120) name = it }, Modifier.fillMaxWidth(), onDone = { if (name.isNotBlank()) onCombine(name) })
-            if (name.isBlank()) Text("Give the new deck a name.", Modifier.padding(top = Tokens.Space1), fontSize = 12.sp, color = JustStudyTheme.colors.wrong)
+            if (name.isBlank()) Text("Give the new deck a name.", Modifier.padding(top = Tokens.Space1), fontSize = 12.sp, color = JustStudyTheme.colors.wrongInk)
         }
     }
 }

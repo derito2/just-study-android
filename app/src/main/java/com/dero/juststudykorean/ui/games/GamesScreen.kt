@@ -82,6 +82,7 @@ import com.dero.juststudykorean.korean.games.Outcome
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.games.RoundSpec
 import com.dero.juststudykorean.ui.components.EmptyState
+import com.dero.juststudykorean.ui.components.softBox
 import com.dero.juststudykorean.ui.components.ErrorState
 import com.dero.juststudykorean.ui.components.KoSide
 import com.dero.juststudykorean.ui.components.LoadingState
@@ -140,7 +141,7 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
         GamesContent(
             state, counts, typingTimer,
             onResult = vm::submit, onFeedbackDone = { vm.feedbackDone() }, onPause = vm::pause, onResume = vm::resume,
-            onEnd = { vm.end() }, onPlayAgain = vm::playAgain, onDone = onBack, onLibrary = onLibrary, onTypingTimer = { vm.setTypingTimer(it) }, voiceMissing = voiceMissing,
+            onEnd = { vm.end() }, onPlayAgain = vm::playAgain, onDone = onBack, onLibrary = onLibrary, onTypingTimer = { vm.setTypingTimer(it) }, voiceMissing = voiceMissing, onRetry = vm::retry,
         )
     }
 }
@@ -164,6 +165,7 @@ fun GamesContent(
     openingAtStart: Boolean = true,
     pauseSheetInline: Boolean = false,
     voiceMissing: Boolean = false,
+    onRetry: () -> Unit = {},
 ) {
     val still = LocalFrozenMotion.current || reduceMotion()
     val stage = remember { StageScope() }
@@ -211,7 +213,7 @@ fun GamesContent(
                     .board()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottom),
             ) {
-                Board(state, round, stage, typingTimer, onResult, onLibrary, onDone)
+                Board(state, round, stage, typingTimer, onResult, onLibrary, onDone, onRetry)
             }
             if (state is SessionState.Feedback) {
                 FeedbackRibbon(state.round, state.result, counts, onFeedbackDone, Modifier.align(Alignment.BottomCenter).padding(start = 16.dp, end = 16.dp, bottom = 16.dp + bottom))
@@ -271,13 +273,13 @@ private fun Pill(icon: Lucide, text: String, description: String, tint: Color) {
 
 /** The board's content by state (11), and the round with its instruction, hint and origin (6). */
 @Composable
-private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionState, round: RoundSpec?, stage: StageScope, typingTimer: Boolean, onResult: (RoundResult) -> Unit, onLibrary: () -> Unit, onBack: () -> Unit) {
+private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionState, round: RoundSpec?, stage: StageScope, typingTimer: Boolean, onResult: (RoundResult) -> Unit, onLibrary: () -> Unit, onBack: () -> Unit, onRetry: () -> Unit) {
     when {
         state is SessionState.Empty -> EmptyState(
             Lucide.Gamepad2, "No notes to play with yet", "아직 노트가 없어요", "Add a PDF in Library and your words become games.",
             action = "Go to Library", onAction = onLibrary,
         )
-        state is SessionState.Failed -> ErrorState("Games couldn't start this time.", onBack, retryLabel = "Back")
+        state is SessionState.Failed -> ErrorState("Games couldn't start this time.", onRetry)
         round == null -> LoadingState()
         else -> {
             val paused = state is SessionState.Paused
@@ -323,7 +325,7 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
         result.outcome == Outcome.NEUTRAL -> Triple(c.tint, c.tintBorder, Lucide.Lightbulb)
         else -> Triple(c.wrongFill, c.wrongBorder, Lucide.X)
     }
-    val ink = when { result.outcome == Outcome.WON -> c.correct; result.outcome == Outcome.NEUTRAL -> c.brandText; else -> c.wrong }
+    val ink = when { result.outcome == Outcome.WON -> c.correctInk; result.outcome == Outcome.NEUTRAL -> c.brandText; else -> c.wrongInk }
     val (title, ko) = when {
         result.timedOut -> "Time's up" to "시간 종료"
         result.outcome == Outcome.WON -> when (counts.streak) { 3 -> "Three in a row!"; 5 -> "On fire!"; 10 -> "Unstoppable!"; else -> "Correct!" } to "정답!"
@@ -349,7 +351,7 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
             }
             if (answer != null) Row(verticalAlignment = Alignment.Bottom) {
                 Text("Answer: ", fontSize = 14.sp, color = c.fillMuted)
-                Text(answer, style = JustStudyTheme.korean.koBody, color = MaterialTheme.colorScheme.onSurface)
+                Text(answer, style = JustStudyTheme.korean.koBody, color = if (result.outcome == Outcome.NEUTRAL) MaterialTheme.colorScheme.onSurface else c.fillInk)
             }
         }
         if (talkBack) StickerButton("Next", onDone, color = StickerColor.Action, size = StickerSize.Small)
@@ -375,7 +377,7 @@ fun PauseSheetContent(counts: SessionCounts, typingTimer: Boolean, onTypingTimer
         }
         // games.md 9: no button; the app never opens system settings.
         if (voiceMissing) Row(
-            Modifier.fillMaxWidth().background(JustStudyTheme.colors.canvas, RoundedCornerShape(12.dp)).padding(12.dp),
+            Modifier.fillMaxWidth().softBox().padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
         ) {
             LucideIcon(Lucide.Volume2, contentDescription = null, size = 20.dp, tint = JustStudyTheme.colors.muted)
@@ -398,7 +400,7 @@ private fun Figures(rounds: Long, won: Long, best: Long, seconds: Long) {
             Column(Modifier.weight(1f).semantics(mergeDescendants = true) { }, horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(label, style = MaterialTheme.typography.labelSmall, color = c.muted, textAlign = TextAlign.Center)
                 Text(ko, style = JustStudyTheme.korean.koBelow, color = c.muted)
-                Text(value, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = if (i == 1) c.correct else MaterialTheme.colorScheme.onSurface)
+                Text(value, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = if (i == 1) c.correctInk else MaterialTheme.colorScheme.onSurface)
             }
         }
     }

@@ -82,12 +82,12 @@ fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () ->
                     rows.forEachIndexed { i, r ->
                         if (i > 0) HorizontalDivider(thickness = Tokens.Border, color = c.line)
                         Row(Modifier.fillMaxWidth().padding(Tokens.Space4), horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
-                            LucideIcon(if (r.correct) Lucide.Check else Lucide.X, contentDescription = if (r.correct) "Right" else "Wrong", size = 20.dp, tint = if (r.correct) c.correct else c.wrong, modifier = Modifier.padding(top = 2.dp))
+                            LucideIcon(if (r.correct) Lucide.Check else Lucide.X, contentDescription = if (r.correct) "Right" else "Wrong", size = 20.dp, tint = if (r.correct) c.correctInk else c.wrongInk, modifier = Modifier.padding(top = 2.dp))
                             Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
                                 Text("${i + 1}. ${r.question.prompt}", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium), color = MaterialTheme.colorScheme.onSurface)
                                 Text(buildAnnotatedString {
                                     withStyle(SpanStyle(color = c.muted)) { append("Your answer: ") }
-                                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = if (r.correct) c.correct else c.wrong)) { append(r.given) }
+                                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = if (r.correct) c.correctInk else c.wrongInk)) { append(r.given) }
                                 }, style = MaterialTheme.typography.bodyMedium)
                                 if (!r.correct) Text(buildAnnotatedString {
                                     withStyle(SpanStyle(color = c.muted)) { append("Correct answer: ") }

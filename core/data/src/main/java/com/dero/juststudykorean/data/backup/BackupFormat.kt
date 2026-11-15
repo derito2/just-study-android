@@ -93,7 +93,13 @@ object BackupFormat {
     }
 }
 
-enum class BackupError { NotABackup, WrongVersion, ChecksumMismatch, Corrupt }
+enum class BackupError { NotABackup, WrongVersion, ChecksumMismatch, Corrupt, NoSpace }
+
+/** [ExportResult.Failed.message] when the phone ran out of space (the screens say it in words). */
+const val NO_SPACE = "NoSpace"
+
+/** Linux reports a full disk as ENOSPC / "No space left on device", also inside the exception that wraps it. */
+fun Throwable.isNoSpace(): Boolean = generateSequence(this) { it.cause }.any { "ENOSPC" in it.message.orEmpty() || "No space left" in it.message.orEmpty() }
 
 sealed interface ImportResult {
     data class Ok(val tables: Int, val rows: Int) : ImportResult

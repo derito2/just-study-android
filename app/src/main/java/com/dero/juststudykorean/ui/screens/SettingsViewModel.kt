@@ -8,6 +8,7 @@ import com.dero.juststudykorean.data.backup.BackupExporter
 import com.dero.juststudykorean.data.documents.DocumentIndexer
 import com.dero.juststudykorean.data.backup.BackupImporter
 import com.dero.juststudykorean.data.backup.ExportResult
+import com.dero.juststudykorean.data.backup.NO_SPACE
 import com.dero.juststudykorean.data.backup.ImportResult
 import com.dero.juststudykorean.data.prefs.ThemeMode
 import com.dero.juststudykorean.data.prefs.UserPrefs
@@ -63,9 +64,9 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun export(uri: Uri) = run {
-        when (exporter.export(uri)) {
+        when (val result = exporter.export(uri)) {
             is ExportResult.Ok -> snackbar.send("Backup saved.")
-            is ExportResult.Failed -> _error.value = "Couldn't save the backup."
+            is ExportResult.Failed -> _error.value = if (result.message == NO_SPACE) "Not enough space on the phone. Free up some space and try again." else "Couldn't save the backup."
         }
     }
 
@@ -83,5 +84,6 @@ class SettingsViewModel @Inject constructor(
         BackupError.WrongVersion -> "This backup is from another version of the app."
         BackupError.ChecksumMismatch -> "The backup is damaged: a table doesn't match its checksum."
         BackupError.Corrupt -> "The backup is damaged or incomplete."
+        BackupError.NoSpace -> "Not enough space on the phone. Free up some space and try again."
     }
 }

@@ -87,7 +87,7 @@ fun StatTile(
         Spacer(Modifier.height(Tokens.Space1))
         Text(value, Modifier.scale(scale.value), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center)
         if (trend != null) {
-            val tint = when (trend.direction) { TrendDirection.Up -> colors.correct; TrendDirection.Down -> colors.wrong; TrendDirection.Same -> colors.muted }
+            val tint = when (trend.direction) { TrendDirection.Up -> colors.correctInk; TrendDirection.Down -> colors.wrongInk; TrendDirection.Same -> colors.muted }
             val icon = when (trend.direction) { TrendDirection.Up -> Lucide.TrendingUp; TrendDirection.Down -> Lucide.TrendingDown; TrendDirection.Same -> Lucide.Minus }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
                 LucideIcon(icon, contentDescription = null, size = 16.dp, tint = tint)

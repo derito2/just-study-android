@@ -92,7 +92,7 @@ fun SentenceBuilderGame(spec: RoundSpec.SentenceBuilder, paused: Boolean, onResu
                     Tile(word, { back(i) }, state = state, shake = if (state == TileState.Wrong) shake else 0)
                 }
             }
-            if (spec.sign.isNotEmpty()) Text(spec.sign, style = JustStudyTheme.korean.koTitle, color = if (outcome == Outcome.WON) c.correct else MaterialTheme.colorScheme.onSurface)
+            if (spec.sign.isNotEmpty()) Text(spec.sign, style = JustStudyTheme.korean.koTitle, color = if (outcome == Outcome.WON) c.correctInk else MaterialTheme.colorScheme.onSurface)
         }
         FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             spec.tiles.forEachIndexed { t, word -> Tile(word, { place(t) }, state = if (t in line) TileState.Used else TileState.Normal) }

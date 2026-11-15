@@ -409,7 +409,7 @@ private fun OptionsSheet(current: Scheduling, onSave: (List<String>) -> String?,
                 StickerButton("Defaults", { val d = Scheduling(); values = listOf(d.againMinutes, d.hardHours, d.goodHours, d.easyHours).map { it.toString() } }, ko = "기본값", color = StickerColor.Gray, size = StickerSize.Small)
             }
             status?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = JustStudyTheme.colors.muted) }
-            error?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = JustStudyTheme.colors.wrong) }
+            error?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = JustStudyTheme.colors.wrongInk) }
         }
     }
 }

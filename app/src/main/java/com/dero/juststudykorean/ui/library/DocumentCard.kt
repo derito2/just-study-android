@@ -115,7 +115,7 @@ internal fun DocumentCard(
                 if (messy?.waiting == true) Text("Waiting for you to open the app to read messy notes.", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
             }
             DocState.Failed, DocState.NotSupported -> doc.errorMessage?.let {
-                Text(it, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp), color = c.wrong)
+                Text(it, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp), color = c.wrongInk)
             }
         }
         if (item.warnings.isNotEmpty()) {
@@ -142,8 +142,8 @@ private fun StatePill(state: DocState) {
     val (bg, fg) = when (state) {
         DocState.Queued -> c.canvas to c.muted
         DocState.Processing -> c.tint to c.brandText
-        DocState.Ready -> c.correctFill to c.correct
-        DocState.Failed -> c.wrongFill to c.wrong
+        DocState.Ready -> c.correctFill to c.correctInk
+        DocState.Failed -> c.wrongFill to c.wrongInk
         DocState.NotSupported -> c.warnFill to c.fillWarn
     }
     Pill(state.label, bg, fg)

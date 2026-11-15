@@ -126,4 +126,23 @@ class GamesBehaviourTest {
         compose.onNodeWithText("Next", ignoreCase = true).performClick()
         until { (vm.state.value as? SessionState.Playing)?.ref?.roundIndex == first.ref.roundIndex + 1 }
     }
+
+    /** H-09 / P-05: a session that can't start says so with Try again, instead of a loading screen that never ends. */
+    @Test
+    fun aSessionThatCannotStartShowsTryAgain() {
+        val broken = GoldenApp()
+        broken.db.close() // every query now throws
+        val failing = GamesViewModel(GameContentProvider(broken.db, broken.notes, DocumentFiles(broken.context)), GameRepository(broken.db, broken.clock), broken.clock, broken.prefs, SavedStateHandle(), FakeKoreanVoices(broken.context))
+        compose.setContent {
+            CompositionLocalProvider(LocalFrozenMotion provides true, LocalTalkBack provides false) {
+                JustStudyTheme(darkTheme = false) { GamesScreen(onBack = {}, onLibrary = {}, vm = failing) }
+            }
+        }
+        until { failing.state.value is SessionState.Failed }
+        compose.onNodeWithText("Games couldn't start this time.").assertExists()
+        compose.onNodeWithText("Try again", ignoreCase = true).assertExists()
+        compose.onNodeWithText("Try again", ignoreCase = true).performClick()
+        until { failing.state.value is SessionState.Failed } // still broken, but it tried again and did not hang
+        compose.onNodeWithText("Try again", ignoreCase = true).assertExists()
+    }
 }
