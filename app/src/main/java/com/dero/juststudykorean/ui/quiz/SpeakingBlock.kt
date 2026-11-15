@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -89,15 +90,22 @@ fun SpokenQuestion(q: QuestionsEntity, document: String?, speaking: SpeakingUi, 
     val c = JustStudyTheme.colors
     val ink = MaterialTheme.colorScheme.onSurface
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Row(Modifier.weight(1f), verticalAlignment = Alignment.Bottom) {
+        // The title and the chip take what they need; the document's name gets the rest and shortens (on the phone, with a bigger
+        // font, "PRACTICE" used to break in two next to a name like "Anki_vocabulary_1").
+        Row(verticalAlignment = Alignment.Bottom) {
             Text("Say it in Korean", Modifier.alignByBaseline(), style = MaterialTheme.typography.bodySmall, color = c.muted)
             KoSide("한국어로 말하기", 12.sp, Modifier.alignByBaseline(), color = c.muted)
             Text(
                 "PRACTICE", Modifier.padding(start = Tokens.Space2).background(c.tint, CircleShape).padding(horizontal = Tokens.Space2, vertical = 2.dp),
-                style = MaterialTheme.typography.labelMedium, color = c.brandText,
+                style = MaterialTheme.typography.labelMedium, color = c.brandText, maxLines = 1, softWrap = false,
             )
         }
-        document?.let { Text(it.substringBeforeLast("."), style = MaterialTheme.typography.bodySmall, color = c.muted, maxLines = 1) }
+        document?.let {
+            Text(
+                it.substringBeforeLast("."), Modifier.weight(1f).padding(start = Tokens.Space2), style = MaterialTheme.typography.bodySmall, color = c.muted,
+                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, textAlign = androidx.compose.ui.text.style.TextAlign.End,
+            )
+        } ?: Spacer(Modifier.weight(1f))
     }
     val answer = q.correctAnswer.split(KOREAN_ALTERNATIVES).first().trim()
     if (readAloud(q)) {
