@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -38,7 +40,7 @@ class BoardGamesTest {
     @get:Rule(order = 1) val compose = createComposeRule()
 
     private var result: RoundResult? = null
-    private val sort = RoundSpec.WordSort(1, listOf("food", "animals"), listOf(apple to 0, cat to 1, milk to 0), showMeaning = true)
+    private val sort = RoundSpec.WordSort(1, listOf("food", "animals"), listOf(apple to 0, cat to 1, milk to 0))
     private val grid = listOf("도", "서", "관", "가", "나", "다", "라", "마", "바")
     private val path = RoundSpec.WordPath(1, library, 3, grid, listOf(0, 1, 2))
 
@@ -49,6 +51,13 @@ class BoardGamesTest {
     private fun finished(): RoundResult { compose.waitForIdle(); compose.mainClock.advanceTimeBy(2500); compose.waitUntil(5_000) { result != null }; return result!! }
 
     private fun bin(name: String) = compose.onNodeWithContentDescription("$name,", substring = true)
+
+    /** The English under a Korean word gave the bin away: no tile shows its meaning until it is placed and the round is over. */
+    @Test
+    fun wordSortNeverShowsTheMeaningUnderATile() {
+        show { WordSortGame(sort, false, it, StageScope()) }
+        for (item in listOf(apple, cat, milk)) compose.onAllNodesWithText(item.meaning).assertCountEquals(0)
+    }
 
     @Test
     fun wordSortByTaps() {

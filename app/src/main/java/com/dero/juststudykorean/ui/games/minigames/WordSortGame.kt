@@ -151,7 +151,6 @@ fun WordSortGame(spec: RoundSpec.WordSort, paused: Boolean, onResult: (RoundResu
                 ) {
                     val state = when { t == wrong -> TileState.Wrong; t == selected -> TileState.Selected; else -> TileState.Normal }
                     Tile(item.korean, { if (!paused) selected = if (selected == t) null else t }, state = state, shake = if (t == wrong) shake else 0, textStyle = JustStudyTheme.korean.koTitle, maxLines = 1, description = item.korean)
-                    if (spec.showMeaning) Text(item.meaning, fontSize = 11.sp, color = c.muted, maxLines = 1)
                 }
             }
         }

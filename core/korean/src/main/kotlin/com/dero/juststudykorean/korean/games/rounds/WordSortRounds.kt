@@ -50,5 +50,5 @@ val WordSortRounds = RoundFactory { ctx ->
     val (labels, pools) = options.random(ctx.random)
     val tiles = pools.flatMapIndexed { bin, pool -> ctx.pick(pool, perBin[bin]).map { it to bin } }
     if (tiles.size != total) return@RoundFactory null
-    RoundSpec.WordSort(ctx.level, labels, tiles.shuffled(ctx.random), showMeaning = ctx.level == 1)
+    RoundSpec.WordSort(ctx.level, labels, tiles.shuffled(ctx.random))
 }

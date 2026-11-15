@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
@@ -107,8 +108,14 @@ fun StudyContent(
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = Tokens.Space3).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
             directions.forEach { (d, label) -> FilterPill(label, d == direction, { onDirection(d) }) }
         }
+        // P-27: typing only works on word cards. With none in the deck the switch is locked (unless it is already on, so it can be
+        // turned off), and the reason goes under its label, not inside the card.
+        val canType = ui.queue.any { typingFor(true, it, ui.details) }
+        val switchOn = !ui.loading && ui.queue.isNotEmpty()
+        val locked = switchOn && !canType && !typeAnswer
         Row(
-            Modifier.fillMaxWidth().height(48.dp).toggleable(typeAnswer, role = Role.Switch, onValueChange = onTypeAnswer).padding(horizontal = Tokens.Space3),
+            Modifier.fillMaxWidth().height(48.dp).alpha(if (locked) 0.5f else 1f)
+                .toggleable(typeAnswer, enabled = !locked, role = Role.Switch, onValueChange = onTypeAnswer).padding(horizontal = Tokens.Space3),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(Modifier.weight(1f), verticalAlignment = Alignment.Bottom) {
@@ -118,6 +125,9 @@ fun StudyContent(
             ThemeSwitch(checked = typeAnswer, onCheckedChange = null)
         }
         val card = ui.card
+        if (switchOn && (!canType || (typeAnswer && card != null && !typingFor(true, card, ui.details)))) {
+            Text("Typing works on word cards.", Modifier.padding(start = Tokens.Space3, end = Tokens.Space3, bottom = Tokens.Space2), fontSize = 12.sp, color = colors.muted)
+        }
         Box(Modifier.weight(1f).fillMaxWidth().padding(horizontal = Tokens.Space3)) {
             when {
                 ui.loading -> LoadingState("Loading cards…")
@@ -149,9 +159,7 @@ fun StudyContent(
                                     modifier = m,
                                     typingField = if (typing) ({
                                         JsTextField(ui.typed, onType, placeholder = if (enToKo) "Type it in Korean" else "Type the meaning", center = true, onDone = { onFlip(meaning) })
-                                    }) else if (typeAnswer) ({ // R1-25: typing is on, but this is a grammar card
-                                        Text("Typing works on word cards.", fontSize = 12.sp, color = JustStudyTheme.colors.muted)
-                                    }) else null,
+                                    }) else null, // typing is on but this is a grammar card: the notice is under the switch (P-27)
                                 )
                             },
                             back = { m ->

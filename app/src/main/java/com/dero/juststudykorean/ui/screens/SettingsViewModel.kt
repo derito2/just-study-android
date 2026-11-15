@@ -53,7 +53,16 @@ class SettingsViewModel @Inject constructor(
 
     fun setTheme(mode: ThemeMode) = viewModelScope.launch { prefs.setThemeMode(mode) }
 
+    private val _importing = MutableStateFlow(false)
+    /** An import is running (P-51: a dialog with a progress bar, never a dimmed screen with nothing on it). */
+    val importing = _importing.asStateFlow()
+
     fun import(uri: Uri) = run {
+        _importing.value = true
+        try { importNow(uri) } finally { _importing.value = false }
+    }
+
+    private suspend fun importNow(uri: Uri) {
         when (val result = importer.import(uri)) {
             is ImportResult.Ok -> {
                 indexer.rebuildIndex() // the notes index is not in the backup: rebuilt from its extracted/

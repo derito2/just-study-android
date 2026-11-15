@@ -6,6 +6,10 @@ import com.dero.juststudykorean.ai.NanoStatus
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import com.dero.juststudykorean.ui.components.JsDialog
+import androidx.compose.foundation.border
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,6 +67,7 @@ private val BACKUP_TYPES = arrayOf("application/zip", "application/x-zip-compres
 fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel = hiltViewModel()) {
     val theme by vm.themeMode.collectAsStateWithLifecycle()
     val busy by vm.busy.collectAsStateWithLifecycle()
+    val importing by vm.importing.collectAsStateWithLifecycle()
     val error by vm.error.collectAsStateWithLifecycle()
     val nano by vm.nano.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
@@ -111,14 +116,34 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
 
     if (licenses) LicensesScreen { licenses = false }
 
-    pending?.let { uri ->
-        AlertDialog(
-            onDismissRequest = { pending = null },
-            text = { Text("This replaces everything in the app with the backup. Continue?", style = MaterialTheme.typography.bodyMedium) },
-            confirmButton = { StickerButton("Import", { pending = null; vm.import(android.net.Uri.parse(uri)) }, color = StickerColor.Danger) },
-            dismissButton = { StickerButton("Cancel", { pending = null }, color = StickerColor.Gray) },
-            containerColor = MaterialTheme.colorScheme.surface,
-        )
+    ImportDialogs(
+        confirming = pending != null, importing = importing,
+        onCancel = { pending = null },
+        onReplace = { pending?.let { uri -> pending = null; vm.import(android.net.Uri.parse(uri)) } },
+    )
+}
+
+/** P-50: Replace everything? with its two buttons. P-51: while it runs, a dialog that can't be dismissed, with a progress bar. */
+@Composable
+internal fun ImportDialogs(confirming: Boolean, importing: Boolean, onCancel: () -> Unit, onReplace: () -> Unit) {
+    if (confirming) JsDialog(
+        "Replace everything?", null,
+        "Everything in the app now is deleted and replaced with the backup. This can't be undone.",
+        onCancel,
+        confirm = { m -> StickerButton("Replace", onReplace, m, color = StickerColor.Danger) },
+        dismiss = { m -> StickerButton("Cancel", onCancel, m, color = StickerColor.Gray) },
+    )
+    if (importing) Dialog(onDismissRequest = {}, properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)) {
+        Column(
+            Modifier.fillMaxWidth()
+                .border(Tokens.Border, JustStudyTheme.colors.line, MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
+                .padding(Tokens.Space6),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space4),
+        ) {
+            Text("Importing your backup…", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+            LinearProgressIndicator(Modifier.fillMaxWidth(), color = JustStudyTheme.colors.brand, trackColor = JustStudyTheme.colors.tint, gapSize = 0.dp)
+        }
     }
 }
 

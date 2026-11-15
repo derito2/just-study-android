@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -162,7 +163,15 @@ fun QuestionContent(
                     Count("Left", "남음", "${total - done}", MaterialTheme.colorScheme.onSurface, Modifier.weight(1f))
                 }
                 val mode = answerMode(q.type)
-                Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = Tokens.Space4)) {
+                val scroll = rememberScrollState()
+                // P-32: Show answer (or a comparison) puts the answer and Listen in view; nobody should have to know the card scrolls.
+                LaunchedEffect(speaking.shownAnswer, speaking.comparison) {
+                    if (ui.isSpoken && (speaking.shownAnswer || speaking.comparison != null)) {
+                        withFrameNanos { } // the new block is measured on this frame: only then does the scroll know its end
+                        scroll.animateScrollTo(scroll.maxValue)
+                    }
+                }
+                Column(Modifier.weight(1f).verticalScroll(scroll).padding(horizontal = Tokens.Space4)) {
                     Column(
                         Modifier.fillMaxWidth().border(Tokens.Border, c.line, MaterialTheme.shapes.large).background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large).padding(Tokens.Space5),
                         verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
