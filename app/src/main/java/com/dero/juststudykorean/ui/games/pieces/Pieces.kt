@@ -111,12 +111,13 @@ fun Tile(
     ) {
         Text(
             text, style = textStyle ?: if (korean) JustStudyTheme.korean.koTitle else JustStudyTheme.korean.bodyBold,
-            color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center, maxLines = maxLines, overflow = TextOverflow.Ellipsis,
+            color = if (state == TileState.Correct || state == TileState.Wrong) c.fillInk else MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center, maxLines = maxLines, overflow = TextOverflow.Ellipsis,
         )
         if (state == TileState.Correct || state == TileState.Wrong) {
             LucideIcon(
                 if (state == TileState.Correct) Lucide.Check else Lucide.X, contentDescription = null, size = 14.dp,
-                tint = if (state == TileState.Correct) c.correct else c.wrong, modifier = Modifier.align(Alignment.TopEnd).offset(x = 10.dp, y = (-6).dp),
+                tint = if (state == TileState.Correct) c.correctInk else c.wrongInk, modifier = Modifier.align(Alignment.TopEnd).offset(x = 10.dp, y = (-6).dp),
             )
         }
     }

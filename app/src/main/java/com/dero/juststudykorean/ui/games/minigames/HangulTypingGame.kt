@@ -111,11 +111,11 @@ fun HangulTypingGame(spec: RoundSpec.HangulTyping, paused: Boolean, timer: Boole
                     Modifier.widthIn(min = 44.dp).height(48.dp).drawBehind { drawLine(line, Offset(0f, size.height - 1.5.dp.toPx()), Offset(size.width, size.height - 1.5.dp.toPx()), 3.dp.toPx()) },
                     contentAlignment = Alignment.Center,
                 ) {
-                    if (ch != null) Text(ch.toString(), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = if (i >= expected) c.wrong else MaterialTheme.colorScheme.onSurface)
+                    if (ch != null) Text(ch.toString(), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = if (i >= expected) c.wrongInk else MaterialTheme.colorScheme.onSurface)
                 }
             }
         }
-        if (outcome == Outcome.LOST) Text(spec.item.korean, style = JustStudyTheme.korean.koPrompt, color = c.correct)
+        if (outcome == Outcome.LOST) Text(spec.item.korean, style = JustStudyTheme.korean.koPrompt, color = c.correctInk)
         HangulKeyboard(
             onJamo = { j -> key { ime.input(j) } }, onSpace = { key { ime.space() } }, onDelete = { key { ime.delete() } },
             onCheck = { if (!paused) check() }, checkEnabled = text.isNotBlank() && outcome == null, enabled = !paused && outcome == null,

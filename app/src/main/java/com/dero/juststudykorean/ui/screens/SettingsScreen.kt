@@ -159,7 +159,7 @@ internal fun OnDeviceAiRow(status: NanoStatus, onDownload: () -> Unit) {
             Box(Modifier.weight(1f)) { SettingsRow(Lucide.Sparkles, "On-device AI", "Gemini Nano runs on your phone. No internet.", animateKey = null) }
             Box(Modifier.padding(end = Tokens.Space6)) {
                 when (status) {
-                    NanoStatus.Available -> Pill("Ready", colors.correctFill, colors.correct)
+                    NanoStatus.Available -> Pill("Ready", colors.correctFill, colors.correctInk)
                     NanoStatus.Downloadable -> StickerButton("Download", onDownload, color = StickerColor.Action, size = StickerSize.Small)
                     is NanoStatus.Downloading -> Text(status.percent?.let { "$it %" } ?: "Downloading…", style = MaterialTheme.typography.bodySmall, color = colors.muted)
                     NanoStatus.Unavailable -> Pill("Not available", colors.canvas, colors.muted)

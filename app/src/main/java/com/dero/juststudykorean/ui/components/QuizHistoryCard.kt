@@ -42,7 +42,7 @@ fun QuizHistoryCard(lines: List<HistoryLine>, onDetails: (String) -> Unit, modif
             HorizontalDivider(Modifier.padding(top = if (i == 0) Tokens.Space2 else 0.dp), thickness = Tokens.Border, color = c.line)
             Row(Modifier.fillMaxWidth().padding(vertical = Tokens.Space2), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
                 val ratio = if (l.total == 0) 0.0 else l.correct.toDouble() / l.total
-                val ring = when { ratio >= 0.8 -> c.correctStrong; ratio >= 0.5 -> c.fix; else -> c.wrong }
+                val ring = when { ratio >= 0.8 -> c.correctStrong; ratio >= 0.5 -> c.fix; else -> c.wrongInk }
                 Box(Modifier.size(44.dp).border(3.dp, ring, CircleShape).clearAndSetSemantics { contentDescription = "${l.correct} of ${l.total} correct" }, contentAlignment = Alignment.Center) {
                     Text("${l.correct}/${l.total}", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.ExtraBold), color = MaterialTheme.colorScheme.onSurface)
                 }

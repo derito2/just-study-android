@@ -77,14 +77,14 @@ fun JsDialog(
 @Composable
 fun AnswerFeedback(correct: Boolean, given: String, answer: String, korean: Boolean, modifier: Modifier = Modifier) {
     val c = JustStudyTheme.colors
-    val ink = if (correct) c.correct else c.wrong
-    Column(modifier.fillMaxWidth().background(if (correct) c.correctFill else c.wrongFill, MaterialTheme.shapes.medium).padding(Tokens.Space5), verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+    val ink = if (correct) c.correctInk else c.wrongInk
+    Column(modifier.fillMaxWidth().background(if (correct) c.correctFill else c.wrongFill, MaterialTheme.shapes.medium).border(2.dp, if (correct) c.correctDeco else c.wrongBorder, MaterialTheme.shapes.medium).padding(Tokens.Space5), verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
             LucideIcon(if (correct) Lucide.Check else Lucide.X, contentDescription = null, size = 20.dp, tint = ink)
             Text(if (correct) "Correct!" else "Not quite", style = MaterialTheme.typography.titleMedium, color = ink)
         }
         val value = if (korean) JustStudyTheme.korean.koBody else MaterialTheme.typography.bodyMedium
-        Row { Text("Your answer:  ", style = MaterialTheme.typography.bodyMedium, color = c.fillMuted); Text(given, style = value, color = MaterialTheme.colorScheme.onSurface) }
-        if (!correct) Row { Text("Correct answer:  ", style = MaterialTheme.typography.bodyMedium, color = c.fillMuted); Text(answer, style = value.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface) }
+        Row { Text("Your answer:  ", style = MaterialTheme.typography.bodyMedium, color = c.fillMuted); Text(given, style = value.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), color = c.fillInk) }
+        if (!correct) Row { Text("Correct answer:  ", style = MaterialTheme.typography.bodyMedium, color = c.fillMuted); Text(answer, style = value.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), color = c.fillInk) }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -45,25 +46,28 @@ fun QuizOption(number: Int, text: String, state: OptionState, onClick: () -> Uni
     }
     val density = LocalDensity.current.density
     val (bg, ink) = when (state) {
-        OptionState.Correct -> c.correctFill to c.correct
-        OptionState.Chosen -> c.wrongFill to c.wrong
+        OptionState.Correct -> c.correctFill to c.fillInk
+        OptionState.Chosen -> c.wrongFill to c.fillInk
         else -> c.canvas to MaterialTheme.colorScheme.onSurface
     }
+    val frame = when (state) { OptionState.Correct -> c.correctDeco; OptionState.Chosen -> c.wrongBorder; else -> null }
+    val numberInk = if (frame != null) c.fillMuted else c.muted
     Row(
         modifier.fillMaxWidth()
             .graphicsLayer { scaleX = scale.value; scaleY = scale.value; translationX = shake.value * density }
             .heightIn(min = 48.dp)
             .background(bg, MaterialTheme.shapes.medium)
+            .then(if (frame != null) Modifier.border(2.dp, frame, MaterialTheme.shapes.medium) else Modifier)
             .clickable(enabled = state == OptionState.Open, role = Role.Button, onClick = onClick)
             .padding(horizontal = Tokens.Space4, vertical = Tokens.Space3),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Tokens.Space3),
     ) {
-        Text("$number", style = MaterialTheme.typography.bodySmall, color = c.muted)
+        Text("$number", style = MaterialTheme.typography.bodySmall, color = numberInk)
         Text(text, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = ink)
         when (state) {
-            OptionState.Correct -> { LucideIcon(Lucide.Check, contentDescription = null, size = 18.dp, tint = c.correct); Text("correct", style = MaterialTheme.typography.bodySmall, color = c.correct) }
-            OptionState.Chosen -> { LucideIcon(Lucide.X, contentDescription = null, size = 18.dp, tint = c.wrong); Text("your answer", style = MaterialTheme.typography.bodySmall, color = c.wrong) }
+            OptionState.Correct -> { LucideIcon(Lucide.Check, contentDescription = null, size = 18.dp, tint = c.correctInk); Text("correct", style = MaterialTheme.typography.bodySmall, color = c.correctInk) }
+            OptionState.Chosen -> { LucideIcon(Lucide.X, contentDescription = null, size = 18.dp, tint = c.wrongInk); Text("your answer", style = MaterialTheme.typography.bodySmall, color = c.wrongInk) }
             else -> Unit
         }
     }

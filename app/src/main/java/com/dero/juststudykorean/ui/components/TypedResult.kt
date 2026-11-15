@@ -41,10 +41,10 @@ fun typedSummary(typed: String, c: Comparison): String? {
 fun TypedResult(typed: String, c: Comparison, modifier: Modifier = Modifier, aiAccepted: Boolean = false) {
     val colors = JustStudyTheme.colors
     val (text, color, icon) = when (c.verdict) {
-        Verdict.Exact -> Triple("Exactly right", colors.correct, Lucide.Check)
-        Verdict.Meaning -> Triple("Right meaning, different words", colors.correct, Lucide.Check)
+        Verdict.Exact -> Triple("Exactly right", colors.correctInk, Lucide.Check)
+        Verdict.Meaning -> Triple("Right meaning, different words", colors.correctInk, Lucide.Check)
         Verdict.Almost -> Triple("Almost", colors.fillWarn, null)
-        Verdict.Wrong -> Triple("Not quite", colors.wrong, Lucide.X)
+        Verdict.Wrong -> Triple("Not quite", colors.wrongInk, Lucide.X)
         Verdict.Empty -> Triple("You didn't type an answer", colors.muted, null)
     }
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
@@ -57,9 +57,9 @@ fun TypedResult(typed: String, c: Comparison, modifier: Modifier = Modifier, aiA
                 withStyle(SpanStyle(fontSize = 14.sp, fontWeight = FontWeight.Normal, color = colors.muted)) { append("Your answer: ") }
                 c.letters.forEach { l ->
                     val style = when (l.mark) {
-                        Mark.Ok -> SpanStyle(color = colors.correct)
-                        Mark.Wrong -> SpanStyle(color = colors.wrong, background = colors.wrongFill, textDecoration = TextDecoration.Underline)
-                        Mark.Extra -> SpanStyle(color = colors.wrong, background = colors.wrongFill, textDecoration = TextDecoration.LineThrough)
+                        Mark.Ok -> SpanStyle(color = colors.correctInk)
+                        Mark.Wrong -> SpanStyle(color = colors.wrongInk, background = colors.wrongFill, textDecoration = TextDecoration.Underline)
+                        Mark.Extra -> SpanStyle(color = colors.wrongInk, background = colors.wrongFill, textDecoration = TextDecoration.LineThrough)
                         Mark.Missing -> SpanStyle(color = colors.muted, textDecoration = TextDecoration.Underline)
                     }
                     withStyle(style) { append(if (l.char == " ") " " else l.char) }
@@ -72,7 +72,7 @@ fun TypedResult(typed: String, c: Comparison, modifier: Modifier = Modifier, aiA
         typedSummary(typed, c)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = colors.muted, textAlign = TextAlign.Center) }
         // Use 3 (design/quiz.md A.2): the meaning judge approved what the rules didn't.
         if (aiAccepted) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-            Text("accepted: same meaning", fontSize = 12.sp, color = colors.correct)
+            Text("accepted: same meaning", fontSize = 12.sp, color = colors.correctInk)
             AiMark(short = true)
         }
     }

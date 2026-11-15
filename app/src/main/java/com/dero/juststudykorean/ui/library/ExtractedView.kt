@@ -38,7 +38,7 @@ internal fun ExtractedView(state: ExtractedState?, modifier: Modifier = Modifier
         val e = (state as? ExtractedState.Loaded)?.extracted
         when {
             state == null || state is ExtractedState.Loading -> { Text("Loading what the app read…", style = small, color = c.muted); return@Column }
-            state is ExtractedState.Failed || e == null -> { Text("Could not read what the app extracted.", style = small, color = c.wrong); return@Column }
+            state is ExtractedState.Failed || e == null -> { Text("Could not read what the app extracted.", style = small, color = c.wrongInk); return@Column }
         }
         e!!
         var tab by rememberSaveable { mutableIntStateOf(0) }

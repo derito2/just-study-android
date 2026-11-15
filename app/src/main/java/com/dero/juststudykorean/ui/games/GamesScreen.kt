@@ -323,7 +323,7 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
         result.outcome == Outcome.NEUTRAL -> Triple(c.tint, c.tintBorder, Lucide.Lightbulb)
         else -> Triple(c.wrongFill, c.wrongBorder, Lucide.X)
     }
-    val ink = when { result.outcome == Outcome.WON -> c.correct; result.outcome == Outcome.NEUTRAL -> c.brandText; else -> c.wrong }
+    val ink = when { result.outcome == Outcome.WON -> c.correctInk; result.outcome == Outcome.NEUTRAL -> c.brandText; else -> c.wrongInk }
     val (title, ko) = when {
         result.timedOut -> "Time's up" to "시간 종료"
         result.outcome == Outcome.WON -> when (counts.streak) { 3 -> "Three in a row!"; 5 -> "On fire!"; 10 -> "Unstoppable!"; else -> "Correct!" } to "정답!"
@@ -349,7 +349,7 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
             }
             if (answer != null) Row(verticalAlignment = Alignment.Bottom) {
                 Text("Answer: ", fontSize = 14.sp, color = c.fillMuted)
-                Text(answer, style = JustStudyTheme.korean.koBody, color = MaterialTheme.colorScheme.onSurface)
+                Text(answer, style = JustStudyTheme.korean.koBody, color = if (result.outcome == Outcome.NEUTRAL) MaterialTheme.colorScheme.onSurface else c.fillInk)
             }
         }
         if (talkBack) StickerButton("Next", onDone, color = StickerColor.Action, size = StickerSize.Small)
@@ -398,7 +398,7 @@ private fun Figures(rounds: Long, won: Long, best: Long, seconds: Long) {
             Column(Modifier.weight(1f).semantics(mergeDescendants = true) { }, horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(label, style = MaterialTheme.typography.labelSmall, color = c.muted, textAlign = TextAlign.Center)
                 Text(ko, style = JustStudyTheme.korean.koBelow, color = c.muted)
-                Text(value, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = if (i == 1) c.correct else MaterialTheme.colorScheme.onSurface)
+                Text(value, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = if (i == 1) c.correctInk else MaterialTheme.colorScheme.onSurface)
             }
         }
     }

@@ -150,7 +150,7 @@ private fun DeckCardBody(
             Box(Modifier.width(2.dp).fillMaxHeight().background(colors.line))
             Count(deck.learning, "Study", colors.fix, Modifier.weight(1f))
             Box(Modifier.width(2.dp).fillMaxHeight().background(colors.line))
-            Count(deck.due, "Due", colors.wrong, Modifier.weight(1f))
+            Count(deck.due, "Due", colors.wrongInk, Modifier.weight(1f))
         }
         val word = deck.lastCard?.koreanWord
         if (word != null) {

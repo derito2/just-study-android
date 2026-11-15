@@ -96,11 +96,11 @@ fun ErrorState(message: String, onRetry: () -> Unit, modifier: Modifier = Modifi
     Row(
         modifier.fillMaxWidth().background(colors.wrongFill, MaterialTheme.shapes.medium).padding(Tokens.Space4),
     ) {
-        LucideIcon(Lucide.BadgeAlert, contentDescription = null, size = 20.dp, tint = colors.wrong, animateKey = shown)
+        LucideIcon(Lucide.BadgeAlert, contentDescription = null, size = 20.dp, tint = colors.wrongInk, animateKey = shown)
         Spacer(Modifier.width(Tokens.Space3))
         Column {
-            if (title != null) Text(title, style = JustStudyTheme.korean.bodyBold, color = colors.wrong)
-            Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.wrong)
+            if (title != null) Text(title, style = JustStudyTheme.korean.bodyBold, color = colors.wrongInk)
+            Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.fillInk)
             Spacer(Modifier.height(Tokens.Space2))
             StickerButton(retryLabel, onRetry, color = StickerColor.Gray, size = StickerSize.Small)
         }

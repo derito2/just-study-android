@@ -147,7 +147,7 @@ private fun MemoryCard(index: Int, text: String, meaning: Boolean, faceUp: Boole
             contentAlignment = Alignment.Center,
         ) {
             Text(if (meaning) "EN" else "한", Modifier.align(Alignment.TopStart), fontSize = 10.sp, color = if (meaning) c.muted else c.brandText)
-            if (matched) LucideIcon(Lucide.Check, contentDescription = null, size = 14.dp, tint = c.correct, modifier = Modifier.align(Alignment.TopEnd))
+            if (matched) LucideIcon(Lucide.Check, contentDescription = null, size = 14.dp, tint = c.correctInk, modifier = Modifier.align(Alignment.TopEnd))
             Text(
                 text, style = if (meaning) JustStudyTheme.korean.bodyBold.copy(fontSize = 13.sp) else JustStudyTheme.korean.koTitle,
                 color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center, maxLines = 3, overflow = TextOverflow.Ellipsis,

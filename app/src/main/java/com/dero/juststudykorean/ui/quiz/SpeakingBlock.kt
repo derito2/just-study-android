@@ -241,8 +241,8 @@ private fun Comparison(comparison: SpokenComparison?, onlyNotes: String?, voiceR
     LaunchedEffect(comparison) { if (!still) enter.animateTo(1f, tween(240, easing = FastOutSlowInEasing)) }
     Column(Modifier.fillMaxWidth().graphicsLayer { alpha = enter.value; translationY = (1 - enter.value) * 8.dp.toPx() }, verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
         if (comparison?.matches == true) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
-            LucideIcon(Lucide.Check, contentDescription = null, size = 18.dp, tint = c.correct)
-            Text("Matches your notes", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = c.correct)
+            LucideIcon(Lucide.Check, contentDescription = null, size = 18.dp, tint = c.correctInk)
+            Text("Matches your notes", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = c.correctInk)
         }
         Column(
             Modifier.fillMaxWidth().background(c.canvas, RoundedCornerShape(12.dp)).padding(horizontal = 16.dp, vertical = 12.dp),
