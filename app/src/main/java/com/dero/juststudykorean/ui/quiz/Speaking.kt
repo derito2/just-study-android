@@ -102,6 +102,7 @@ class SpeakingMachine(
     private fun listen() {
         job?.cancel()
         _state.update { it.copy(phase = SpeakPhase.Listening, level = 0f, partial = null) }
+        val started = System.currentTimeMillis()
         job = scope.launch {
             if (talkBack()) delay(TALKBACK_MS) // G: TalkBack finishes speaking first
             var ended = false
@@ -115,6 +116,7 @@ class SpeakingMachine(
                         ended = true
                         val c = compareSpoken(expected, e.candidates)
                         onHeard(c.heard)
+                        log("speech result matches=${c.matches} attempt=${_state.value.attempts + 1} ms=${System.currentTimeMillis() - started}")
                         _state.update { it.copy(phase = SpeakPhase.Compared, comparison = c, attempts = it.attempts + 1, level = 0f, partial = null) }
                     }
                     is SpeechEvent.Failed -> {
@@ -124,10 +126,11 @@ class SpeakingMachine(
                             else -> SpeakPhase.NoSpeech
                         }
                         _state.update { it.copy(phase = phase, level = 0f, partial = null) }
+                        log("speech failed reason=${e.reason} ms=${System.currentTimeMillis() - started}")
                     }
                 }
             }
-            if (!ended) toReady() // cut without a result (the audio focus was lost): Cancelled → Ready
+            if (!ended) { toReady(); log("speech cut ms=${System.currentTimeMillis() - started}") } // the audio focus was lost: Cancelled → Ready
         }
     }
 
@@ -160,6 +163,9 @@ class SpeakingMachine(
 
     /** Unavailable → Try again: the engine is asked again. */
     fun retry(availability: SpeechAvailability) = _state.update { it.copy(phase = phaseFor(availability, false)) }
+
+    /** FASE_9_PLAN 6: only the result, the try, times and the error code; never what was heard. */
+    private fun log(line: String) { runCatching { android.util.Log.i("JustStudy", line) } }
 
     companion object {
         const val WORD_MS = 8_000L

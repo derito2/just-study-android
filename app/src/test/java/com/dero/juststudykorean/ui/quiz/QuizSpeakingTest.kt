@@ -45,6 +45,7 @@ class QuizSpeakingTest {
         val s = vm.state.value
         assertTrue("the golden notes give sayable questions", s.spoken.isNotEmpty())
         assertTrue(s.run!!.questions.filter { it.id in s.spoken }.all(::speakable))
+        assertEquals("only Say it in Korean: every question is spoken", s.run!!.questions.map { it.id }.toSet(), s.spoken)
         var spokenSeen = 0
         while (!vm.state.value.finished) {
             val now = vm.state.value
@@ -81,5 +82,10 @@ class QuizSpeakingTest {
         val reopened = QuestionViewModel(app.quiz, app.prefs, null, saved, speech).also { it.open(null); idleUntil { !it.state.value.loading } }
         val q = reopened.state.value.question
         assertTrue(reopened.state.value.finished || q!!.id !in spoken)
+        if (reopened.state.value.finished) { // only spoken ones: the results show the practice, not "0 / 0 correct"
+            val practice = app.quiz.spoken(reopened.state.value.run!!.id)
+            assertEquals(spoken, practice.map { it.question.id }.toSet())
+            assertTrue(practice.all { it.heard == null })
+        }
     }
 }

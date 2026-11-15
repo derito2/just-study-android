@@ -7,6 +7,13 @@ Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y
 - **D9-1:** **sí a `RECORD_AUDIO`** (2026-11-14), solo para la práctica hablada del Quiz y pedido al tocar el micrófono. Nunca se guarda audio ni la transcripción, tampoco en logs. `check_manifest.py` lo pasa de `FORBIDDEN` a `ALLOWED_PERMISSIONS`; `CLAUDE.md` (*Seguridad*) se actualiza igual. El manifiesto gana además `<queries>` de `android.speech.RecognitionService`, que es visibilidad de paquetes y no un permiso.
 - **D9-2:** una pregunta hablada se guarda como una **`write_ko`** normal: «hablada» es solo la forma de responderla. No cambia ninguna tabla ni ninguna dorada.
 - **D9-3:** **motor B**, el `SpeechRecognizer` de Android en el dispositivo, sin dependencias. **El motor C no se hace.**
+- **Tarea 7, en el OPPO** (app QA con el respaldo del dueño, desinstalada al terminar; la app del dueño no se tocó; logs solo con cuentas):
+  - **Quiz de 10 solo con *Say it in Korean***, en modo avión y sin ninguna red activa. Habló el dueño, que aceptó él mismo el permiso. Según él, salió *Matches your notes* en 8–10 de las 10. El registro del OPPO rota muy rápido y se perdieron las cuentas de esa prueba.
+  - **Inicio mientras escucha:** el micrófono se cierra al momento (`dumpsys audio`: la escucha termina al pulsar Inicio, y después no hay ninguna activa). **Proceso muerto a mitad** (`run-as kill`) y vuelta: las habladas se saltan y sale *Spoken practice · 3 questions*.
+  - **Permiso denegado dos veces:** sale *Microphone is off for this app* y se puede seguir con *Next question*.
+- **Correcciones del OPPO:**
+  1. Con solo *Say it in Korean*, el quiz se queda solo con las `write_ko` que se pueden decir; antes, una que no se podía decir salía escrita y puntuada.
+  2. Al volver tras matar el proceso con solo habladas, los resultados muestran la práctica y no "0 / 0 correct".
 - **D9-6:** **sin calificar, con intentos ilimitados.** La app enseña lo que entendió el teléfono junto a la respuesta de tus notas. Solo celebra cuando coincide; nunca dice que está mal. Nada va a `question_attempts`.
 
 ## 2026-11-14 — Fase 8, PR C: voz, cifras y entrega (0.10.0)

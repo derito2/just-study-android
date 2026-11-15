@@ -218,10 +218,18 @@ class QuestionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 availability = speech?.let { runCatchingCancellable { it.availability() }.getOrNull() } ?: SpeechAvailability.Unsupported
-                val run = if (runId != null) quiz.run(runId) else generate()?.also { saved[RUN_ID] = it.id }
+                val f = prefs.quizForm.first()
+                val speakOn = SPEAK in f.types && availability.offered()
+                var run = if (runId != null) quiz.run(runId) else generate()
+                // design A: only Say it in Korean is practice only; a Write in Korean question that can't be said
+                // (one block, or not only Hangul) would be typed and scored, so that quiz keeps the sayable ones only.
+                if (runId == null && run != null && speakOn && "write_ko" !in f.types) {
+                    val sayable = run.questions.filter(::speakable)
+                    if (sayable.size != run.questions.size) run = if (sayable.isEmpty()) null else quiz.createRun(sayable.map { it.id })
+                }
+                if (runId == null) run?.let { saved[RUN_ID] = it.id }
                 val spoken = if (runId == null) run?.let { r ->
-                    val f = prefs.quizForm.first()
-                    spokenIds(r.questions, SPEAK in f.types && availability.offered(), "write_ko" in f.types).also { saved[SPOKEN] = it.toLongArray() }
+                    spokenIds(r.questions, speakOn, "write_ko" in f.types).also { saved[SPOKEN] = it.toLongArray() }
                 }.orEmpty() else saved.get<LongArray>(SPOKEN)?.toSet().orEmpty()
                 val pending = if (runId == null) planned else 0
                 if (run == null || (run.questions.isEmpty() && pending == 0)) { _state.value = QuestionUi(loading = false, failed = true); return@launch }
@@ -241,6 +249,9 @@ class QuestionViewModel @Inject constructor(
                     index = if (next < 0) run.questions.lastIndex else next, finished = next < 0, pendingAi = pending, spoken = spoken,
                 )
                 shownAt = System.nanoTime()
+                // Reopened with only spoken questions left: they were skipped, so the results still show them (the
+                // practice list, without what was heard: that was in memory, gone with the process).
+                if (next < 0) keepSpoken()
                 startSpeaking()
             } catch (e: CancellationException) {
                 throw e
