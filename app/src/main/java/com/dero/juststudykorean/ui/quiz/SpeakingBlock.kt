@@ -113,7 +113,7 @@ fun SpokenQuestion(q: QuestionsEntity, document: String?, speaking: SpeakingUi, 
     if (shown != null || speaking.shownAnswer) Comparison(shown, if (shown == null) q.correctAnswer else null, voiceReady, actions.onListen)
     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space4)) {
         if (speaking.phase == SpeakPhase.Compared) TextAction("Try again", c.brandText, actions.onTryAgain)
-        if (speaking.attempts == 0 && !speaking.shownAnswer && speaking.phase in setOf(SpeakPhase.Ready, SpeakPhase.NoSpeech)) TextAction("Show answer", c.muted, actions.onShowAnswer)
+        if (speaking.attempts == 0 && !speaking.shownAnswer && speaking.phase in setOf(SpeakPhase.Ready, SpeakPhase.NoSpeech)) StickerButton("Show answer", actions.onShowAnswer, ko = "답 보기", color = StickerColor.Gray, size = StickerSize.Small)
     }
 }
 
