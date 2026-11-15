@@ -19,7 +19,11 @@ class FakeKoreanSpeech(var available: SpeechAvailability = SpeechAvailability.Re
 
     fun script(vararg events: SpeechEvent) = queue.addLast(events.toList())
 
+    var finished = 0; private set
+
     override suspend fun availability() = available
+
+    override fun finish() { finished++ }
 
     override fun listen(maxMs: Long): Flow<SpeechEvent> = flow {
         listens++

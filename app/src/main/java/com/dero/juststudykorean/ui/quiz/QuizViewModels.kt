@@ -38,6 +38,12 @@ import com.dero.juststudykorean.ai.NanoStatus
 import javax.inject.Inject
 import com.dero.juststudykorean.ui.components.runCatchingCancellable
 import kotlinx.coroutines.CancellationException
+import com.dero.juststudykorean.data.audio.KoreanVoice
+import com.dero.juststudykorean.data.audio.KoreanVoices
+import com.dero.juststudykorean.data.audio.VoiceState
+import com.dero.juststudykorean.data.quiz.SpokenItem
+import com.dero.juststudykorean.data.speech.KoreanSpeech
+import com.dero.juststudykorean.data.speech.SpeechAvailability
 
 /** Each question type: name, Korean and hint (the web's TYPE_LABELS), in the form's order. */
 val QUIZ_TYPES = linkedMapOf(
@@ -49,6 +55,7 @@ val QUIZ_TYPES = linkedMapOf(
     "multiple_choice" to Triple("Multiple choice", "객관식", "Pick one answer"),
     "grammar_selection" to Triple("Grammar selection", "문법 고르기", "Pick the correct form"),
     "short_answer" to Triple("Short answer", "단답형", "Type a short answer"),
+    SPEAK to Triple("Say it in Korean", "한국어로 말하기", "Practice out loud · not scored"), // phase 9: last, alone in its row
 )
 
 /**
@@ -58,7 +65,11 @@ val QUIZ_TYPES = linkedMapOf(
 val MODEL_TYPES = setOf("short_answer")
 
 /** The types of [this] form a quiz can be built from now ([ai]: Gemini Nano is Available). */
-fun QuizForm.usableTypes(ai: Boolean = false): List<String> = QUIZ_TYPES.keys.filter { it in types && (ai || it !in MODEL_TYPES) }
+fun QuizForm.usableTypes(ai: Boolean = false, speech: Boolean = true): List<String> =
+    QUIZ_TYPES.keys.filter { it in types && (ai || it !in MODEL_TYPES) && (speech || it != SPEAK) }
+
+/** Say it in Korean can be offered: the recognizer is there, or only its Korean is missing (FASE_9_PLAN 5). */
+fun SpeechAvailability?.offered() = this is SpeechAvailability.Ready || this is SpeechAvailability.NeedsDownload
 
 /** Difficulty only counts with a type the model writes (multiple choice or short answer) and Nano Available. */
 fun QuizForm.levelsCount(ai: Boolean) = ai && types.any { it == "multiple_choice" || it == "short_answer" }
@@ -93,7 +104,10 @@ sealed interface QuizEvent {
 
 /** Quiz home (design/quiz.md A): the form (kept in DataStore), your weaknesses and the history. */
 @HiltViewModel
-class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, private val prefs: UserPrefs, private val clock: AppClock, nano: NanoState? = null) : ViewModel() {
+class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, private val prefs: UserPrefs, private val clock: AppClock, nano: NanoState? = null, private val speechEngine: KoreanSpeech? = null) : ViewModel() {
+    /** Phase 9: Say it in Korean can be checked (design/quiz-speaking.md A). */
+    private val _speech = MutableStateFlow(false)
+    val speech: StateFlow<Boolean> = _speech.asStateFlow()
     /** Gemini Nano is Available: Short answer and Difficulty can be used (design/quiz.md A.2). */
     val ai: StateFlow<Boolean> = (nano?.status ?: MutableStateFlow(NanoStatus.Unavailable)).map { it == NanoStatus.Available }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val form: StateFlow<QuizForm?> = prefs.quizForm.stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -116,6 +130,7 @@ class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, pr
 
     init {
         viewModelScope.launch {
+            _speech.value = runCatchingCancellable { speechEngine?.availability() }.getOrNull().offered()
             _documents.value = runCatchingCancellable { quiz.readyDocuments() }.getOrDefault(emptyList())
             runCatchingCancellable { quiz.warmUp(_documents.value) }
         }
@@ -152,8 +167,11 @@ data class QuestionUi(
     val error: String? = null,
     /** A.3: questions asked of the model that haven't arrived yet (the counter already counts them). */
     val pendingAi: Int = 0,
+    /** Phase 9: the questions answered out loud (practice, not scored). */
+    val spoken: Set<Long> = emptySet(),
 ) {
     val question: QuestionsEntity? get() = run?.questions?.getOrNull(index)
+    val isSpoken: Boolean get() = question?.id?.let { it in spoken } == true
     val correct: Int get() = answers.values.count { it.grade.correct }
 }
 
@@ -164,9 +182,25 @@ class QuestionViewModel @Inject constructor(
     private val prefs: UserPrefs,
     private val ai: QuizAi? = null,
     private val saved: SavedStateHandle = SavedStateHandle(),
+    private val speech: KoreanSpeech? = null,
+    private val voices: KoreanVoices? = null,
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuestionUi())
     val state = _state.asStateFlow()
+
+    // Phase 9: the spoken practice. What was heard stays in memory for the results; never saved nor logged.
+    private var availability: SpeechAvailability = SpeechAvailability.Unsupported
+    private val heard = HashMap<Long, String>()
+    private val machine = speech?.let { SpeakingMachine(it, viewModelScope, talkBack = { talkBack }) { text -> _state.value.question?.let { q -> heard[q.id] = text } } }
+    val speaking: StateFlow<SpeakingUi> = machine?.state ?: MutableStateFlow(SpeakingUi(phase = SpeakPhase.Unavailable))
+    /** TalkBack is on (G: 600 ms before the microphone opens). */
+    var talkBack = false
+    /** The microphone permission was refused for good: spoken questions show Permission denied. */
+    private var micDenied = false
+    private var voice: KoreanVoice? = null
+    private val _voiceReady = MutableStateFlow(false)
+    /** Listen (design B): the offline Korean voice of phase 8 is ready. */
+    val voiceReady: StateFlow<Boolean> = _voiceReady.asStateFlow()
     private var opened = false
     private var busy = false
     private var shownAt = 0L
@@ -183,7 +217,12 @@ class QuestionViewModel @Inject constructor(
         val runId = route ?: saved.get<Long>(RUN_ID)
         viewModelScope.launch {
             try {
+                availability = speech?.let { runCatchingCancellable { it.availability() }.getOrNull() } ?: SpeechAvailability.Unsupported
                 val run = if (runId != null) quiz.run(runId) else generate()?.also { saved[RUN_ID] = it.id }
+                val spoken = if (runId == null) run?.let { r ->
+                    val f = prefs.quizForm.first()
+                    spokenIds(r.questions, SPEAK in f.types && availability.offered(), "write_ko" in f.types).also { saved[SPOKEN] = it.toLongArray() }
+                }.orEmpty() else saved.get<LongArray>(SPOKEN)?.toSet().orEmpty()
                 val pending = if (runId == null) planned else 0
                 if (run == null || (run.questions.isEmpty() && pending == 0)) { _state.value = QuestionUi(loading = false, failed = true); return@launch }
                 if (run.questions.isEmpty()) { // A.3: all from the model: state B until the first one
@@ -195,12 +234,14 @@ class QuestionViewModel @Inject constructor(
                 val answers = if (runId == null) emptyMap() else quiz.results("run-${run.id}").associate { r ->
                     r.question.id to Answered(r.given, Grade(r.correct, r.question.correctAnswer, r.question.explanation))
                 }
-                val next = run.questions.indexOfFirst { it.id !in answers }
+                // Reopened after the process was killed: spoken questions are skipped (practice, nothing to keep).
+                val next = run.questions.indexOfFirst { it.id !in answers && (runId == null || it.id !in spoken) }
                 _state.value = QuestionUi(
                     loading = false, run = run, documents = quiz.documentNames(run.questions), answers = answers,
-                    index = if (next < 0) run.questions.lastIndex else next, finished = next < 0, pendingAi = pending,
+                    index = if (next < 0) run.questions.lastIndex else next, finished = next < 0, pendingAi = pending, spoken = spoken,
                 )
                 shownAt = System.nanoTime()
+                startSpeaking()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -209,7 +250,49 @@ class QuestionViewModel @Inject constructor(
         }
     }
 
-    private companion object { const val RUN_ID = "runId" }
+    private companion object { const val RUN_ID = "runId"; const val SPOKEN = "spokenIds" }
+
+    /** A spoken question comes: the microphone is ready (or says why not). */
+    private fun startSpeaking() {
+        val s = _state.value
+        val q = s.question ?: return
+        if (!s.isSpoken || s.finished) { machine?.close(); return }
+        machine?.start(q.correctAnswer, readAloud(q), availability, micDenied)
+        if (voice == null && voices != null) voice = voices.create().also { v ->
+            viewModelScope.launch { v.state.collect { _voiceReady.value = it == VoiceState.Ready } }
+        }
+    }
+
+    fun tapMic() = machine?.tap()
+    fun cancelMic() = machine?.close()
+    /** Leave quiz opens, the app goes to the background, the screen turns off: the microphone closes. */
+    fun closeMic() = machine?.close()
+    fun tryAgain() = machine?.tryAgain()
+    fun showAnswer() = machine?.showAnswer()
+    fun micDenied() { micDenied = true; machine?.permissionDenied() }
+    fun retrySpeech() = viewModelScope.launch {
+        availability = speech?.let { runCatchingCancellable { it.availability() }.getOrNull() } ?: SpeechAvailability.Unsupported
+        machine?.retry(availability)
+    }
+
+    /** Listen: your notes' answer in the offline Korean voice (phase 8). */
+    fun listenNotes() {
+        val q = _state.value.question ?: return
+        val v = voice ?: return
+        viewModelScope.launch { runCatchingCancellable { v.speak(q.correctAnswer.split(com.dero.juststudykorean.korean.KOREAN_ALTERNATIVES).first().trim()) } }
+    }
+
+    /** The results' spoken practice (in memory only): every spoken question of the quiz and the last thing heard. */
+    private fun keepSpoken() {
+        val s = _state.value
+        val run = s.run ?: return
+        quiz.setSpoken(run.id, run.questions.filter { it.id in s.spoken }.map { SpokenItem(it, heard[it.id]) })
+    }
+
+    override fun onCleared() {
+        machine?.close()
+        voice?.release()
+    }
 
     /** A.3: how many questions the model was asked for when this quiz was created. */
     private var planned = 0
@@ -240,7 +323,7 @@ class QuestionViewModel @Inject constructor(
     private suspend fun generate(): QuizRun? {
         val f = prefs.quizForm.first()
         val nano = ai?.ready() == true
-        val types = f.usableTypes(nano)
+        val types = requestTypes(f.usableTypes(nano, availability.offered())) // Say it in Korean asks for Write in Korean
         if (types.isEmpty()) return null // only model types saved: the form does not let you get here
         val start = System.nanoTime()
         val request = QuizRequest(documentIds = f.documentIds.toList(), count = f.count, types = types)
@@ -259,7 +342,7 @@ class QuestionViewModel @Inject constructor(
     fun answer(given: String) {
         val s = _state.value
         val q = s.question ?: return
-        if (busy || q.id in s.answers || given.isBlank()) return
+        if (busy || q.id in s.answers || given.isBlank() || s.isSpoken) return // spoken: never saved, never scored
         busy = true
         viewModelScope.launch {
             try {
@@ -291,10 +374,12 @@ class QuestionViewModel @Inject constructor(
     fun next() {
         val s = _state.value
         val total = s.run?.questions?.size ?: return
+        machine?.close() // the microphone never stays open past its question
         // A.3: at the end with a model question still coming: wait for it ("Writing the next question…").
         if (s.index + 1 >= total && s.pendingAi > 0) _state.value = s.copy(index = s.index + 1, typed = "")
-        else if (s.index + 1 >= total) _state.value = s.copy(finished = true)
+        else if (s.index + 1 >= total) { keepSpoken(); _state.value = s.copy(finished = true) }
         else { _state.value = s.copy(index = s.index + 1, typed = ""); shownAt = System.nanoTime() }
+        startSpeaking()
     }
 }
 
@@ -303,6 +388,9 @@ class QuestionViewModel @Inject constructor(
 class ResultsViewModel @Inject constructor(private val quiz: QuizRepository) : ViewModel() {
     private val _rows = MutableStateFlow<List<ResultRow>?>(null)
     val rows = _rows.asStateFlow()
+    /** Phase 9, design F: this quiz's spoken practice (in memory; empty for history cards and after a restart). */
+    private val _spoken = MutableStateFlow<List<SpokenItem>>(emptyList())
+    val spoken = _spoken.asStateFlow()
     private val _aiFailed = MutableStateFlow(0)
     /** A.3: "{k} AI questions couldn't be written this time." */
     val aiFailed = _aiFailed.asStateFlow()
@@ -312,6 +400,7 @@ class ResultsViewModel @Inject constructor(private val quiz: QuizRepository) : V
         if (opened) return
         opened = true
         viewModelScope.launch {
+            _spoken.value = key.removePrefix("run-").toLongOrNull()?.takeIf { key.startsWith("run-") }?.let(quiz::spoken).orEmpty()
             _rows.value = runCatchingCancellable { quiz.results(key) }.getOrDefault(emptyList())
             _aiFailed.value = key.removePrefix("run-").toLongOrNull()?.takeIf { key.startsWith("run-") }?.let(quiz::aiFailed) ?: 0
         }

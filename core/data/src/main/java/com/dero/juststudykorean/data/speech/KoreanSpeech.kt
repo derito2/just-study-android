@@ -18,6 +18,8 @@ sealed interface SpeechEvent {
     /** 0..1, when the engine gives it. */
     data class Level(val value: Float) : SpeechEvent
     data class Partial(val text: String) : SpeechEvent
+    /** The speaker stopped (or [KoreanSpeech.finish]): the engine is recognizing (design C, Processing). */
+    data object EndOfSpeech : SpeechEvent
     data class Final(val candidates: List<String>, val confidences: List<Float>?) : SpeechEvent
     data class Failed(val reason: SpeechFailure) : SpeechEvent
 }
@@ -29,4 +31,6 @@ interface KoreanSpeech {
      * microphone. Completing without either means it was cut (the audio focus was lost). Nothing is ever stored.
      */
     fun listen(maxMs: Long): Flow<SpeechEvent>
+    /** Stops listening now and recognizes what was heard so far (tapping the microphone again, design C). */
+    fun finish()
 }

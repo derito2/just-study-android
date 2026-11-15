@@ -44,6 +44,8 @@ internal fun failureOf(error: Int): SpeechFailure = when (error) {
 @Singleton
 class PlatformKoreanSpeech @Inject constructor(@param:ApplicationContext private val context: Context) : KoreanSpeech {
     private val audio = context.getSystemService(AudioManager::class.java)
+    /** The recognizer listening now (one at a time; main thread only). */
+    private var current: SpeechRecognizer? = null
 
     private fun intent() = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         .putExtra(RecognizerIntent.EXTRA_LANGUAGE, KOREAN.toLanguageTag())
@@ -52,7 +54,10 @@ class PlatformKoreanSpeech @Inject constructor(@param:ApplicationContext private
         .putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
         .putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
 
+    @android.annotation.SuppressLint("NewApi") // guarded by the SDK check below
     override suspend fun availability(): SpeechAvailability = withContext(Dispatchers.Main) {
+        // Before Android 13 the installed languages can't be asked: the practice isn't offered rather than guessed.
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) return@withContext SpeechAvailability.Unsupported
         if (!SpeechRecognizer.isOnDeviceRecognitionAvailable(context)) return@withContext SpeechAvailability.Unsupported
         val recognizer = SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
         try {
@@ -88,7 +93,7 @@ class PlatformKoreanSpeech @Inject constructor(@param:ApplicationContext private
             override fun onBeginningOfSpeech() = Unit
             override fun onRmsChanged(rmsdB: Float) { trySend(SpeechEvent.Level(level(rmsdB))) }
             override fun onBufferReceived(buffer: ByteArray?) = Unit // never kept
-            override fun onEndOfSpeech() = Unit
+            override fun onEndOfSpeech() { trySend(SpeechEvent.EndOfSpeech) }
             override fun onError(error: Int) { trySend(SpeechEvent.Failed(failureOf(error))); channel.close() }
             override fun onResults(results: Bundle) {
                 val heard = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).orEmpty().filter { it.isNotBlank() }
@@ -101,14 +106,20 @@ class PlatformKoreanSpeech @Inject constructor(@param:ApplicationContext private
             override fun onEvent(eventType: Int, params: Bundle?) = Unit
         })
         audio.requestAudioFocus(focus)
+        current = recognizer
         recognizer.startListening(intent())
         val stop = Runnable { recognizer.stopListening() } // the cap: what was heard so far is recognized
         val handler = android.os.Handler(context.mainLooper).apply { postDelayed(stop, maxMs) }
         awaitClose {
+            if (current === recognizer) current = null
             handler.removeCallbacks(stop)
             recognizer.cancel()
             recognizer.destroy()
             audio.abandonAudioFocusRequest(focus)
         }
     }.flowOn(Dispatchers.Main)
+
+    override fun finish() {
+        android.os.Handler(context.mainLooper).post { current?.stopListening() }
+    }
 }
