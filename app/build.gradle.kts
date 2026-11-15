@@ -18,8 +18,8 @@ android {
         applicationId = "com.dero.juststudykorean"
         minSdk = 31
         targetSdk = 37
-        versionCode = 4
-        versionName = "0.11.0"
+        versionCode = 5
+        versionName = "0.11.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Only the OPPO (arm64): the other ABIs of MuPDF and SQLite were 32 MB of the APK.
