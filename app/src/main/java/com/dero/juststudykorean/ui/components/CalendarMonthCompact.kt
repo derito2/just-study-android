@@ -42,9 +42,9 @@ internal val koWeekdays = listOf("월", "화", "수", "목", "금", "토", "일"
 private val cellShape = RoundedCornerShape(Tokens.RadiusSm)
 
 internal fun JustStudyColors.cell(status: String): Pair<Color, Color> = when (status) {
-    "green" -> correctFill to correct
+    "green" -> correctFill to correctInk
     "yellow" -> warnFill to fillWarn
-    "red" -> wrongFill to wrong
+    "red" -> wrongFill to wrongInk
     else -> canvas to muted
 }
 

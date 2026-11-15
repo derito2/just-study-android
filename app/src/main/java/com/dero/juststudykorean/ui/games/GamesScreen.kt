@@ -82,6 +82,7 @@ import com.dero.juststudykorean.korean.games.Outcome
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.games.RoundSpec
 import com.dero.juststudykorean.ui.components.EmptyState
+import com.dero.juststudykorean.ui.components.softBox
 import com.dero.juststudykorean.ui.components.ErrorState
 import com.dero.juststudykorean.ui.components.KoSide
 import com.dero.juststudykorean.ui.components.LoadingState
@@ -375,7 +376,7 @@ fun PauseSheetContent(counts: SessionCounts, typingTimer: Boolean, onTypingTimer
         }
         // games.md 9: no button; the app never opens system settings.
         if (voiceMissing) Row(
-            Modifier.fillMaxWidth().background(JustStudyTheme.colors.canvas, RoundedCornerShape(12.dp)).padding(12.dp),
+            Modifier.fillMaxWidth().softBox().padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
         ) {
             LucideIcon(Lucide.Volume2, contentDescription = null, size = 20.dp, tint = JustStudyTheme.colors.muted)

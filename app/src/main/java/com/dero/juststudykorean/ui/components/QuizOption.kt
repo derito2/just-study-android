@@ -56,7 +56,7 @@ fun QuizOption(number: Int, text: String, state: OptionState, onClick: () -> Uni
         modifier.fillMaxWidth()
             .graphicsLayer { scaleX = scale.value; scaleY = scale.value; translationX = shake.value * density }
             .heightIn(min = 48.dp)
-            .background(bg, MaterialTheme.shapes.medium)
+            .then(if (state == OptionState.Open || state == OptionState.Other) Modifier.softBox() else Modifier.background(bg, MaterialTheme.shapes.medium))
             .then(if (frame != null) Modifier.border(2.dp, frame, MaterialTheme.shapes.medium) else Modifier)
             .clickable(enabled = state == OptionState.Open, role = Role.Button, onClick = onClick)
             .padding(horizontal = Tokens.Space4, vertical = Tokens.Space3),

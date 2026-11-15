@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dero.juststudykorean.ui.games.talkBackOn
+import com.dero.juststudykorean.ui.components.softBox
 import com.dero.juststudykorean.ui.components.AiMark
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -252,7 +253,7 @@ private fun Count(label: String, ko: String, value: String, color: androidx.comp
 private fun MistakeExplanation(text: String, ai: Boolean) {
     val c = JustStudyTheme.colors
     Column(
-        Modifier.fillMaxWidth().background(c.canvas, MaterialTheme.shapes.medium).padding(Tokens.Space3),
+        Modifier.fillMaxWidth().softBox().padding(Tokens.Space3),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space2),
     ) {
         if (ai) AiMark()

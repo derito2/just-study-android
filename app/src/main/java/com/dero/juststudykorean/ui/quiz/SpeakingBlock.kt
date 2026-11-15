@@ -59,6 +59,7 @@ import com.dero.juststudykorean.data.db.QuestionsEntity
 import com.dero.juststudykorean.korean.KOREAN_ALTERNATIVES
 import com.dero.juststudykorean.korean.speech.SpokenComparison
 import com.dero.juststudykorean.ui.components.KoSide
+import com.dero.juststudykorean.ui.components.softBox
 import com.dero.juststudykorean.ui.components.Lucide
 import com.dero.juststudykorean.ui.components.LucideIcon
 import com.dero.juststudykorean.ui.components.StickerButton
@@ -245,7 +246,7 @@ private fun Comparison(comparison: SpokenComparison?, onlyNotes: String?, voiceR
             Text("Matches your notes", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = c.correctInk)
         }
         Column(
-            Modifier.fillMaxWidth().background(c.canvas, RoundedCornerShape(12.dp)).padding(horizontal = 16.dp, vertical = 12.dp),
+            Modifier.fillMaxWidth().softBox().padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space1),
         ) {
             if (comparison != null) {
