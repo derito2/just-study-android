@@ -62,9 +62,10 @@ class ContrastTest {
 
     /**
      * Found by this test (FASE_10_PLAN §10: a colour is never adjusted to make it pass): in light, `correct-deco` #58CC02 on white is
-     * 2.09:1 and the pale fill is 1.06:1, so the correct option is told apart by its icon and text more than by its frame. Owner's call.
+     * 2.09:1 and the pale fill is 1.06:1, so the correct option is told apart by its icon and text more than by its frame.
+     * The owner decided (2026-11-15) to leave that colour as it is: the test stays here, ignored, as the record of the number.
      */
-    @Ignore("owner decision pending: light correctDeco 2.09:1 on the background")
+    @Ignore("owner decided to keep light correct-deco (2.09:1 on the background)")
     @Test
     fun lightBordersAgainstTheBackground() = check(
         3.0,

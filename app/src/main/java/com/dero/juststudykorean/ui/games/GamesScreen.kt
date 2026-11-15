@@ -429,11 +429,15 @@ fun SessionSummaryCard(summary: SessionSummary, counts: SessionCounts, onPlayAga
             Text(title, Modifier.alignByBaseline(), fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onSurface)
             KoSide(ko, 24.sp, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onSurface)
         }
-        Figures(summary.rounds, summary.won, summary.bestStreak, summary.durationSeconds)
-        HorizontalDivider(thickness = Tokens.Border, color = c.line)
-        Text("WORDS TO REVIEW · 복습할 단어", style = MaterialTheme.typography.labelSmall, color = c.muted)
-        val review = counts.failed.takeLast(5)
-        if (review.isEmpty()) Text("Nothing to review. Clean session.", style = MaterialTheme.typography.bodyMedium, color = c.muted)
+        val empty = summary.rounds == 0L
+        if (empty) Text("No rounds this time.", fontSize = 14.sp, color = c.muted) // no figures, no "clean session": nothing was played
+        else {
+            Figures(summary.rounds, summary.won, summary.bestStreak, summary.durationSeconds)
+            HorizontalDivider(thickness = Tokens.Border, color = c.line)
+            Text("WORDS TO REVIEW · 복습할 단어", style = MaterialTheme.typography.labelSmall, color = c.muted)
+        }
+        val review = if (empty) emptyList() else counts.failed.takeLast(5)
+        if (!empty && review.isEmpty()) Text("Nothing to review. Clean session.", style = MaterialTheme.typography.bodyMedium, color = c.muted)
         review.forEach { item: GameItem ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(item.korean, style = JustStudyTheme.korean.koBody.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
@@ -441,7 +445,7 @@ fun SessionSummaryCard(summary: SessionSummary, counts: SessionCounts, onPlayAga
                 Text(item.meaning, style = MaterialTheme.typography.bodyMedium, color = c.muted, maxLines = 1)
             }
         }
-        StickerButton("Play again", onPlayAgain, Modifier.fillMaxWidth(), ko = "다시 하기", color = StickerColor.Go)
+        StickerButton(if (empty) "Play" else "Play again", onPlayAgain, Modifier.fillMaxWidth(), ko = if (empty) "시작" else "다시 하기", color = StickerColor.Go)
         StickerButton("Done", onDone, Modifier.fillMaxWidth(), ko = "완료", color = StickerColor.Action)
     }
 }
