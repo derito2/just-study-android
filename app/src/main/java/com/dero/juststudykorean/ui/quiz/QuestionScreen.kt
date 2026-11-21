@@ -66,6 +66,7 @@ import com.dero.juststudykorean.ui.components.LucideIcon
 import com.dero.juststudykorean.ui.components.OptionState
 import com.dero.juststudykorean.ui.components.QuizOption
 import com.dero.juststudykorean.ui.components.StickerButton
+import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.StickerColor
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
@@ -227,11 +228,11 @@ fun QuestionContent(
                             ko = if (ui.index + 1 < total) "다음 문제" else "결과 보기", enabled = speaking.canGoOn,
                         )
                         answered != null -> if (ui.index + 1 < total) {
-                            StickerButton("Next question", onNext, Modifier.fillMaxWidth(), ko = "다음 문제")
+                            StickerButton("Next question", onNext, Modifier.fillMaxWidth(), ko = "다음 문제", size = StickerSize.Large)
                         } else {
-                            StickerButton("See results", onNext, Modifier.fillMaxWidth(), ko = "결과 보기")
+                            StickerButton("See results", onNext, Modifier.fillMaxWidth(), ko = "결과 보기", size = StickerSize.Large)
                         }
-                        mode != "choice" -> StickerButton("Check", { onAnswer(ui.typed) }, Modifier.fillMaxWidth(), ko = "확인", enabled = ui.typed.isNotBlank())
+                        mode != "choice" -> StickerButton("Check", { onAnswer(ui.typed) }, Modifier.fillMaxWidth(), ko = "확인", enabled = ui.typed.isNotBlank(), size = StickerSize.Large)
                     }
                 }
             }

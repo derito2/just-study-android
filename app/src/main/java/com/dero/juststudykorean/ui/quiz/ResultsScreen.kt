@@ -38,6 +38,7 @@ import com.dero.juststudykorean.ui.components.LoadingState
 import com.dero.juststudykorean.ui.components.Lucide
 import com.dero.juststudykorean.ui.components.LucideIcon
 import com.dero.juststudykorean.ui.components.StickerButton
+import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
@@ -103,7 +104,7 @@ fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () ->
                 }
             }
         }
-        Box(Modifier.fillMaxWidth().padding(Tokens.Space4)) { StickerButton("New quiz", onNewQuiz, Modifier.fillMaxWidth(), ko = "새 퀴즈") }
+        Box(Modifier.fillMaxWidth().padding(Tokens.Space4)) { StickerButton("New quiz", onNewQuiz, Modifier.fillMaxWidth(), ko = "새 퀴즈", size = StickerSize.Large) }
     }
 }
 

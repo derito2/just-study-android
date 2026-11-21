@@ -63,7 +63,7 @@ class ShellScreenshotTest {
                 StickerButton("Clear answers", {}, color = StickerColor.Gray, size = StickerSize.Small)
                 StickerButton("Continue", {}, ko = "계속")
             }
-            StickerButton("Generate quiz", {}, Modifier.width(379.dp), ko = "퀴즈 만들기", color = StickerColor.Go)
+            StickerButton("Generate quiz", {}, Modifier.width(379.dp), ko = "퀴즈 만들기", color = StickerColor.Go, size = StickerSize.Large)
         }
     }
 

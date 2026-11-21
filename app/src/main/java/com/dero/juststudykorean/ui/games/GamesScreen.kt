@@ -393,8 +393,8 @@ fun PauseSheetContent(counts: SessionCounts, typingTimer: Boolean, onTypingTimer
             LucideIcon(Lucide.Volume2, contentDescription = null, size = 20.dp, tint = JustStudyTheme.colors.muted)
             Text("Listening games are off: no offline Korean voice on this phone. Install one in Android's text-to-speech settings.", fontSize = 12.sp, color = JustStudyTheme.colors.muted)
         }
-        StickerButton("Resume", onResume, Modifier.fillMaxWidth(), ko = "계속하기", color = StickerColor.Go)
-        StickerButton("End session", onEnd, Modifier.fillMaxWidth().padding(top = 0.dp), ko = "끝내기", color = StickerColor.Gray)
+        StickerButton("Resume", onResume, Modifier.fillMaxWidth(), ko = "계속하기", color = StickerColor.Go, size = StickerSize.Large)
+        StickerButton("End session", onEnd, Modifier.fillMaxWidth().padding(top = 0.dp), ko = "끝내기", color = StickerColor.Gray, size = StickerSize.Large)
     }
 }
 
@@ -445,8 +445,8 @@ fun SessionSummaryCard(summary: SessionSummary, counts: SessionCounts, onPlayAga
                 Text(item.meaning, style = MaterialTheme.typography.bodyMedium, color = c.muted, maxLines = 1)
             }
         }
-        StickerButton(if (empty) "Play" else "Play again", onPlayAgain, Modifier.fillMaxWidth(), ko = if (empty) "시작" else "다시 하기", color = StickerColor.Go)
-        StickerButton("Done", onDone, Modifier.fillMaxWidth(), ko = "완료", color = StickerColor.Action)
+        StickerButton(if (empty) "Play" else "Play again", onPlayAgain, Modifier.fillMaxWidth(), ko = if (empty) "시작" else "다시 하기", color = StickerColor.Go, size = StickerSize.Large)
+        StickerButton("Done", onDone, Modifier.fillMaxWidth(), ko = "완료", color = StickerColor.Action, size = StickerSize.Large)
     }
 }
 

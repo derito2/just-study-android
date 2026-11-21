@@ -54,6 +54,7 @@ import com.dero.juststudykorean.ui.components.MistakeLine
 import com.dero.juststudykorean.ui.components.QuizHistoryCard
 import com.dero.juststudykorean.ui.components.Stepper
 import com.dero.juststudykorean.ui.components.StickerButton
+import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.StickerColor
 import com.dero.juststudykorean.ui.components.WeaknessPanel
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
@@ -142,8 +143,8 @@ fun QuizHomeContent(
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
                         val ok = form.usableTypes(ai, speech).isNotEmpty() && !(levelsCount && form.levels.isEmpty())
-                        StickerButton("Generate quiz", onGenerate, Modifier.fillMaxWidth(), ko = "퀴즈 만들기", color = StickerColor.Go, enabled = ok)
-                        StickerButton("Practice saved questions", onPracticeSaved, Modifier.fillMaxWidth(), ko = "저장된 문제 연습")
+                        StickerButton("Generate quiz", onGenerate, Modifier.fillMaxWidth(), ko = "퀴즈 만들기", color = StickerColor.Go, enabled = ok, size = StickerSize.Large)
+                        StickerButton("Practice saved questions", onPracticeSaved, Modifier.fillMaxWidth(), ko = "저장된 문제 연습", size = StickerSize.Large)
                     }
                 }
                 WeaknessPanel(mistakes, onFix, photo = photo)
