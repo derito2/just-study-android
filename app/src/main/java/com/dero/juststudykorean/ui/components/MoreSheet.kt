@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +51,7 @@ fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDes
         val view = LocalView.current
         SideEffect { generateSequence(view.parent) { it.parent }.filterIsInstance<DialogWindowProvider>().firstOrNull()?.window?.isNavigationBarContrastEnforced = false }
         Column(Modifier.border(Tokens.Border, JustStudyTheme.colors.line, shape).navigationBarsPadding()) {
-            BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally), width = 32.dp, height = 4.dp)
+            SheetHeader()
             MoreSheetContent(darkMode, onDarkMode, onOpen, onGames)
         }
     }

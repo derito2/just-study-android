@@ -13,6 +13,15 @@ object Motion {
     val Spring = CubicBezierEasing(0.34f, 1.56f, 0.64f, 1f)
     val EaseInOut = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
 
+    /** M-2 (design/polish.md P-06): the figure that counts goes 1 → 1.18 → 1 as t goes 0 → 1. */
+    fun pulse(t: Float): Float = 1f + 0.18f * (1f - kotlin.math.abs(2f * t.coerceIn(0f, 1f) - 1f))
+
+    /** M-7: a banner comes in from 8 dp below, as t goes 0 → 1 (`Spring` overshoots 1, so the offset can go slightly above 0). */
+    fun bannerOffsetDp(t: Float): Float = 8f * (1f - t)
+
+    /** M-7: and fades in; the overshoot of `Spring` does not make it brighter than 1. */
+    fun bannerAlpha(t: Float): Float = t.coerceIn(0f, 1f)
+
     // Games (design/games.md 6.2); the times above do not change.
     /** A piece that travels to a slot, a bin or back. */
     val Fly = androidx.compose.animation.core.spring<Float>(dampingRatio = 0.72f, stiffness = 520f)

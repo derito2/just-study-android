@@ -174,7 +174,7 @@ fun Hint(meaning: String, modifier: Modifier = Modifier) {
 /** Where the round's content comes from: the document without its extension (or "Extra · not from your notes"). */
 @Composable
 fun OriginMark(document: String?, modifier: Modifier = Modifier) {
-    if (document != null) FileName(document, modifier, style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp), color = JustStudyTheme.colors.muted, maxLines = 1)
+    if (document != null) FileName(document, modifier, style = androidx.compose.material3.LocalTextStyle.current.copy(fontSize = 12.sp), color = JustStudyTheme.colors.muted, maxLines = 1)
     else Text("Extra · not from your notes", modifier, fontSize = 12.sp, color = JustStudyTheme.colors.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
 }
 

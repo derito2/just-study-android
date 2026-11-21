@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -35,14 +34,14 @@ import com.dero.juststudykorean.ui.theme.Tokens
 /** A bottom sheet like MoreSheet: `surface`, radius 16 on top, `line` border and a 32 × 4 dp handle. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JsSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+fun JsSheet(onDismiss: () -> Unit, title: String? = null, ko: String? = null, content: @Composable ColumnScope.() -> Unit) {
     val shape = RoundedCornerShape(topStart = Tokens.RadiusLg, topEnd = Tokens.RadiusLg)
     ModalBottomSheet(
         onDismissRequest = onDismiss, shape = shape, containerColor = MaterialTheme.colorScheme.surface,
         scrimColor = MaterialTheme.colorScheme.scrim, dragHandle = null, contentWindowInsets = { WindowInsets(0) },
     ) {
         Column(Modifier.border(Tokens.Border, JustStudyTheme.colors.line, shape).navigationBarsPadding().padding(bottom = Tokens.Space4)) {
-            BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally), width = 32.dp, height = 4.dp)
+            SheetHeader(title, ko)
             Column(Modifier.verticalScroll(rememberScrollState())) { content() }
         }
     }
@@ -71,8 +70,7 @@ fun DocumentsField(selected: Set<Long>, documents: List<DocumentsEntity>, onClic
 /** One checkbox per processed document, plus All documents (an empty selection means all). */
 @Composable
 fun DocumentsSheet(documents: List<DocumentsEntity>, selected: Set<Long>, onChange: (Set<Long>) -> Unit, onDismiss: () -> Unit) {
-    JsSheet(onDismiss) {
-        Text("Documents", Modifier.padding(horizontal = Tokens.Space6, vertical = Tokens.Space2), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+    JsSheet(onDismiss, "Documents", "문서") {
         CheckRow("All documents", selected.isEmpty()) { onChange(emptySet()) }
         documents.forEach { d -> CheckRow(d.originalName, d.id in selected) { onChange(if (d.id in selected) selected - d.id else selected + d.id) } }
     }

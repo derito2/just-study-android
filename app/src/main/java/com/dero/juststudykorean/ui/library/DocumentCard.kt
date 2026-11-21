@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.library
 
+import com.dero.juststudykorean.ui.components.PillTone
+import com.dero.juststudykorean.ui.components.Pill
 import com.dero.juststudykorean.data.ai.MessyNotesState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -121,7 +123,7 @@ internal fun DocumentCard(
         }
         if (item.warnings.isNotEmpty()) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space2), verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-                item.warnings.forEach { Pill(it, c.warnFill, c.fillWarn) }
+                item.warnings.forEach { Pill(it, PillTone.Warn) }
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
@@ -139,21 +141,12 @@ internal fun DocumentCard(
 
 @Composable
 private fun StatePill(state: DocState) {
-    val c = JustStudyTheme.colors
-    val (bg, fg) = when (state) {
-        DocState.Queued -> c.canvas to c.muted
-        DocState.Processing -> c.tint to c.brandText
-        DocState.Ready -> c.correctFill to c.correctInk
-        DocState.Failed -> c.wrongFill to c.wrongInk
-        DocState.NotSupported -> c.warnFill to c.fillWarn
+    val tone = when (state) {
+        DocState.Queued -> PillTone.Neutral
+        DocState.Processing -> PillTone.Info
+        DocState.Ready -> PillTone.Correct
+        DocState.Failed -> PillTone.Wrong
+        DocState.NotSupported -> PillTone.Warn
     }
-    Pill(state.label, bg, fg)
-}
-
-@Composable
-internal fun Pill(text: String, bg: Color, fg: Color) {
-    Text(
-        text, Modifier.background(bg, RoundedCornerShape(50)).padding(horizontal = 10.dp, vertical = 4.dp),
-        style = MaterialTheme.typography.labelMedium.copy(fontSize = 12.sp), color = fg,
-    )
+    Pill(state.label, tone)
 }

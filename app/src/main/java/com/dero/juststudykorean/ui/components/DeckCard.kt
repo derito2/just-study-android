@@ -122,11 +122,7 @@ private fun DeckCardBody(
                 }
                 Spacer(Modifier.width(Tokens.Space1))
             }
-            Text(
-                "${deck.total} cards",
-                Modifier.background(colors.canvas, CircleShape).padding(horizontal = Tokens.Space2, vertical = 2.dp),
-                style = JustStudyTheme.korean.chip, color = colors.muted, maxLines = 1,
-            )
+            Pill("${deck.total} cards")
         }
         if (editing) {
             var name by remember(deck.name) { mutableStateOf(deck.name) }

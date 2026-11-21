@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.games.pieces
 
+import com.dero.juststudykorean.ui.components.PillTone
+import com.dero.juststudykorean.ui.components.Pill
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.LinearEasing
@@ -109,7 +111,7 @@ fun Restartable(paused: Boolean, content: @Composable (Speaker) -> Unit) {
 fun VolumeUpPill(speaker: Speaker) {
     if (!speaker.waitingForVolume) return
     val c = JustStudyTheme.colors
-    Text("Turn the volume up to play.", fontSize = 12.sp, color = c.fillWarn, modifier = Modifier.background(c.warnFill, RoundedCornerShape(50)).padding(horizontal = 12.dp, vertical = 6.dp))
+    Pill("Turn the volume up to play.", PillTone.Warn)
 }
 
 @Composable

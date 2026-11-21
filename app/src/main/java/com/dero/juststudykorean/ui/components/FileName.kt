@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.components
 
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 fun FileName(
     name: String,
     modifier: Modifier = Modifier,
-    style: TextStyle = MaterialTheme.typography.bodyMedium,
+    style: TextStyle = LocalTextStyle.current,
     color: Color = MaterialTheme.colorScheme.onSurface,
     maxLines: Int = 2,
     textAlign: TextAlign? = null,

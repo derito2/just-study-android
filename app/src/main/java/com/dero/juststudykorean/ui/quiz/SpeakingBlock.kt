@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.PillTone
+import com.dero.juststudykorean.ui.components.Pill
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -96,10 +98,7 @@ fun SpokenQuestion(q: QuestionsEntity, document: String?, speaking: SpeakingUi, 
         Row(verticalAlignment = Alignment.Bottom) {
             Text("Say it in Korean", Modifier.alignByBaseline(), style = MaterialTheme.typography.bodySmall, color = c.muted)
             KoSide("한국어로 말하기", 12.sp, Modifier.alignByBaseline(), color = c.muted)
-            Text(
-                "PRACTICE", Modifier.padding(start = Tokens.Space2).background(c.tint, CircleShape).padding(horizontal = Tokens.Space2, vertical = 2.dp),
-                style = MaterialTheme.typography.labelMedium, color = c.brandText, maxLines = 1, softWrap = false,
-            )
+            Pill("PRACTICE", PillTone.Info, Modifier.padding(start = Tokens.Space2))
         }
         document?.let {
             FileName(

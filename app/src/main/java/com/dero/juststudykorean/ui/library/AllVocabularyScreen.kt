@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.library
 
+import com.dero.juststudykorean.ui.components.SearchField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -73,12 +74,9 @@ fun AllVocabularyContent(state: VocabularyState, query: String, onBack: () -> Un
                 }
             }
         }
-        JsTextField(
+        SearchField(
             query, onQuery, Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).navigationBarsPadding().imePadding()
                 .padding(horizontal = Tokens.Space4, vertical = Tokens.Space2),
-            placeholder = "Search in Korean or English",
-            leading = { LucideIcon(Lucide.Search, contentDescription = null, size = 20.dp, tint = c.muted) },
-            trailing = if (query.isNotEmpty()) ({ IconButton({ onQuery("") }) { LucideIcon(Lucide.X, contentDescription = "Clear search", size = 20.dp, tint = c.muted) } }) else null,
         )
     }
 }
