@@ -58,7 +58,13 @@ Translation: I was hungry, so I ate.
 - **Un punto de gramática se lee entero** aunque sea muy largo (no se parte en trozos).
 - **Sus ejemplos nunca son tarjetas de vocabulario.** Tampoco las frases numeradas que ilustran una explicación (`1. 친구가 웃는 걸 봤어요 = …` dentro de un texto en inglés).
 - **Una frase coreana larga** (90 caracteres o más) se lee entera. Si una línea **llena el ancho de la página y no termina** (sin `.`, `?`, `!`), se entiende que el PDF la partió y la siguiente la continúa. Una línea en inglés debajo de un ejemplo traducido continúa **la traducción**, nunca la frase coreana.
-- **Tabla de partículas:** filas `이/가 | Subject | 고양이가 집 뒤에 숨었어요. — The cat hid behind the house.` (partícula, función, ejemplo con `—`).
+- **Partículas:** cada partícula en tres líneas: la partícula sola, la función y el ejemplo con ` — ` y su traducción. Vale una tabla de Word solo si el PDF la saca con los espacios (H-16).
+
+  ```
+  이/가
+  Subject
+  고양이가 집 뒤에 숨었어요. — The cat hid behind the house.
+  ```
 
 ## 4 · Consejos
 
@@ -66,4 +72,4 @@ Translation: I was hungry, so I ate.
 - El coreano va **antes** del separador y el inglés **después**.
 - No hace falta nada más: sin límite de ejemplos, de notas ni de líneas de explicación.
 - Empieza cada punto de gramática en la misma página que sus ejemplos (hoy el lector no une un punto partido entre dos páginas).
-- Para la tabla de partículas, escribe filas de texto con |, no una tabla de Word (en la tabla se pierden los espacios del coreano).
+- Para las partículas, escribe cada fila en tres líneas (partícula, función, ejemplo — traducción), no una tabla de Word ni filas con |.
