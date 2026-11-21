@@ -3,6 +3,7 @@ package com.dero.juststudykorean.ui.components
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -77,7 +78,11 @@ internal fun CalendarLegend(long: Boolean, modifier: Modifier = Modifier) {
                 row.forEach { (status, label) ->
                     val (fill, ink) = c.cell(status)
                     Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(12.dp).background(fill, RoundedCornerShape(3.dp)), contentAlignment = Alignment.Center) {
+                        // "not studied" is the colour of the card in dark: a thin border keeps its swatch visible.
+                        Box(
+                            Modifier.size(12.dp).background(fill, RoundedCornerShape(3.dp)).then(if (status == "none") Modifier.border(1.dp, c.line, RoundedCornerShape(3.dp)) else Modifier),
+                            contentAlignment = Alignment.Center,
+                        ) {
                             if (symbol(status).isNotEmpty()) Text(symbol(status), style = TextStyle(fontSize = 9.sp), color = ink)
                         }
                         Spacer(Modifier.width(6.dp))
