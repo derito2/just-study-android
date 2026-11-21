@@ -38,6 +38,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -80,6 +82,11 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
     var exportTaps by remember { mutableIntStateOf(0) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> pending = uri?.toString() }
     val save = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri -> uri?.let(vm::export) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val saveTemplateAs = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(DOCX_MIME)) { uri ->
+        uri?.let { scope.launch { snackbar.showSnackbar(if (saveTemplate(context, it)) TEMPLATE_SAVED else TEMPLATE_FAILED) } }
+    }
 
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -101,13 +108,13 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
                     exportTaps++
                     save.launch("juststudy-backup-${LocalDate.now()}.jsbackup.zip")
                 }
+                SettingsRow(Lucide.FileText, "Notes template", "A .docx to write notes the app can read.", animateKey = null) { saveTemplateAs.launch(NOTES_TEMPLATE_FILE) }
                 OnDeviceAiRow(nano, vm::downloadNano)
                 Column(Modifier.padding(horizontal = Tokens.Space4), verticalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
                     if (busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = JustStudyTheme.colors.brand, trackColor = JustStudyTheme.colors.tint, gapSize = 0.dp)
                     error?.let { ErrorState(it, onRetry = { pick.launch(BACKUP_TYPES) }, title = "Couldn't finish") }
                 }
                 SettingsRow(Lucide.FileText, "Licenses", "Poppins (OFL), Lucide (MIT), MuPDF (AGPL).", animateKey = null) { licenses = true } // R1-04
-                val context = LocalContext.current
                 val version = remember { context.packageManager.getPackageInfo(context.packageName, 0).versionName }
                 Text("Version $version", Modifier.padding(Tokens.Space4), style = MaterialTheme.typography.bodySmall, color = JustStudyTheme.colors.muted)
             }
