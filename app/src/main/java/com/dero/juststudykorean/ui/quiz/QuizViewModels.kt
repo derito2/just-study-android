@@ -138,6 +138,10 @@ class QuizHomeViewModel @Inject constructor(private val quiz: QuizRepository, pr
 
     fun setForm(f: QuizForm) = viewModelScope.launch { prefs.setQuizForm(f) }
 
+    /** null while it loads, so the sections open once with their remembered state. */
+    val formCollapsed: StateFlow<Boolean?> = prefs.quizFormCollapsed.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    fun rememberCollapsed() = viewModelScope.launch { prefs.setQuizFormCollapsed(true) }
+
     fun practiceSaved() = viewModelScope.launch {
         val run = runCatchingCancellable { quiz.practiceSaved() }.getOrNull()
         events.send(if (run != null) QuizEvent.Open(run.id) else QuizEvent.Message("You have no saved questions right now."))

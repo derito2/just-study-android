@@ -30,6 +30,9 @@ data class QuizForm(
 class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     val themeMode: Flow<ThemeMode> = store.data.map { it[THEME].toEnum(ThemeMode.System) }
     val cardDirection: Flow<CardDirection> = store.data.map { it[CARD_DIRECTION].toEnum(CardDirection.KoToEn) }
+    /** P-30: after a quiz is generated the form's Question types and Difficulty sections start closed. */
+    val quizFormCollapsed: Flow<Boolean> = store.data.map { it[QUIZ_FORM_COLLAPSED] ?: false }
+    suspend fun setQuizFormCollapsed(v: Boolean) { store.edit { it[QUIZ_FORM_COLLAPSED] = v } }
     val typeAnswer: Flow<Boolean> = store.data.map { it[TYPE_ANSWER] ?: false }
     /** Dashboard: the chart's period, and the streak seen on the last visit (for the bump when it grows). */
     val chartUnit: Flow<TimelineUnit> = store.data.map { it[CHART_UNIT].toEnum(TimelineUnit.Day) }
@@ -80,6 +83,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
         val CHART_UNIT = stringPreferencesKey("chart_unit")
         val LAST_STREAK = intPreferencesKey("last_streak")
+        val QUIZ_FORM_COLLAPSED = booleanPreferencesKey("quiz_form_collapsed")
         val QUIZ_COUNT = intPreferencesKey("quiz_count")
         val QUIZ_DOCS = stringPreferencesKey("quiz_documents")
         val QUIZ_TYPES = stringPreferencesKey("quiz_types")
