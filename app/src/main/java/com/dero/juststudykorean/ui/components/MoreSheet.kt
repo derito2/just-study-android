@@ -51,7 +51,7 @@ fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDes
         val view = LocalView.current
         SideEffect { generateSequence(view.parent) { it.parent }.filterIsInstance<DialogWindowProvider>().firstOrNull()?.window?.isNavigationBarContrastEnforced = false }
         Column(Modifier.border(Tokens.Border, JustStudyTheme.colors.line, shape).navigationBarsPadding()) {
-            SheetHeader(null, null)
+            SheetHeader("More", "더 보기")
             MoreSheetContent(darkMode, onDarkMode, onOpen, onGames)
         }
     }
@@ -60,7 +60,7 @@ fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDes
 /** The rows of MoreSheet, without the sheet (screenshot tests render this). */
 @Composable
 internal fun MoreSheetContent(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDestination) -> Unit, onGames: () -> Unit = {}) {
-    Column(Modifier.fillMaxWidth().padding(bottom = Tokens.Space2)) {
+    Column(Modifier.fillMaxWidth().padding(vertical = Tokens.Space2)) {
         MoreRow(Lucide.Gamepad2, "Games", "게임", onGames) // D8-1: the first row
         MoreRow(Lucide.Languages, "Grammar", "문법") { onOpen(MoreDestination.Grammar) }
         MoreRow(Lucide.CalendarDays, "Calendar", "달력") { onOpen(MoreDestination.Calendar) }

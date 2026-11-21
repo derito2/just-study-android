@@ -16,22 +16,17 @@ private val looks = listOf(
     Triple(Rating.Good, "알맞음", StickerColor.Fix), Triple(Rating.Easy, "쉬움", StickerColor.Go),
 )
 
-/** Again · Hard · Good · Easy in a 2 × 2 grid (8 × 12 dp apart), each with the interval it would give ([next]). */
+/** P-28: Again · Hard · Good · Easy in one row (8 dp apart), each with the interval it would give ([next]). */
 @Composable
 fun RatingButtons(next: Map<Rating, String>, onRate: (Rating) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
-    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-        looks.chunked(2).forEach { row ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
-                row.forEach { (rating, ko, color) ->
-                    val interval = next[rating].orEmpty()
-                    StickerButton(
-                        rating.name, { onRate(rating) },
-                        Modifier.weight(1f).semantics { contentDescription = "${rating.name}, next review in $interval" },
-                        ko = ko, color = color, enabled = enabled, detail = interval,
-                    )
-                }
-            }
+    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+        looks.forEach { (rating, ko, color) ->
+            val interval = next[rating].orEmpty()
+            StickerButton(
+                rating.name, { onRate(rating) },
+                Modifier.weight(1f).semantics { contentDescription = "${rating.name}, next review in $interval" },
+                ko = ko, color = color, enabled = enabled, detail = interval,
+            )
         }
     }
 }
-

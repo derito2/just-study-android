@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.heightIn
@@ -30,7 +31,9 @@ fun FilterPill(text: String, selected: Boolean, onClick: () -> Unit, modifier: M
     ) {
         Text(
             text,
-            Modifier.background(if (selected) colors.action else colors.pill, CircleShape).heightIn(min = 32.dp)
+            Modifier.background(if (selected) colors.action else colors.pill, CircleShape)
+                .then(if (selected) Modifier else Modifier.border(2.dp, colors.line, CircleShape)) // P-41: the token `pill` has its 2 dp inner border
+                .heightIn(min = 32.dp)
                 .padding(horizontal = Tokens.Space3, vertical = 6.dp),
             style = JustStudyTheme.korean.bodyBold,
             color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface,

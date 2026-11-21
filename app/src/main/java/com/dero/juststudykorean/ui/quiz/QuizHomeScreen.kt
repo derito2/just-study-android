@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.FoldSection
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -112,34 +115,31 @@ fun QuizHomeContent(
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space4),
                 ) {
                     Title("New quiz", "새 퀴즈", MaterialTheme.typography.titleMedium.fontSize)
-                    Column {
-                        Label("Questions", "문제 수")
-                        Stepper(form.count, { onForm(form.copy(count = it)) }, 1..10, "Questions")
-                    }
-                    Column {
-                        Label("Documents", "문서")
-                        DocumentsField(form.documentIds, documents, { documentsOpen = true })
-                    }
-                    Column {
-                        Label("Question types", "문제 유형")
+                    val qCol: @Composable (Modifier) -> Unit = { m -> Column(m) { Label("Questions", "문제 수"); Stepper(form.count, { onForm(form.copy(count = it)) }, 1..10, "Questions") } }
+                    val dCol: @Composable (Modifier) -> Unit = { m -> Column(m) { Label("Documents", "문서"); DocumentsField(form.documentIds, documents, { documentsOpen = true }) } }
+                    // P-30: side by side when the width allows (stepper left, field right); stacked with large text.
+                    if (LocalDensity.current.fontScale <= 1.15f) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) { qCol(Modifier); dCol(Modifier.weight(1f)) }
+                    else { qCol(Modifier); dCol(Modifier) }
+                    val usable = form.usableTypes(ai, speech)
+                    var typesOpen by rememberSaveable { mutableStateOf(true) }
+                    LaunchedEffect(usable.isEmpty()) { if (usable.isEmpty()) typesOpen = true } // the error opens the section by itself
+                    FoldSection("Question types", "문제 유형", "${usable.size} of ${QUIZ_TYPES.size} selected", typesOpen, { typesOpen = !typesOpen }) {
                         // design/quiz.md A.1/A.2: without Nano, the types only it writes are shown but cannot be used.
                         Grid(QUIZ_TYPES.entries.toList()) { (id, t) ->
                             if (id in MODEL_TYPES && !ai) CheckItem(t.first, t.second, NEEDS_AI, checked = false, unavailable = true, modifier = Modifier.alpha(0.5f)) {}
                             else if (id == SPEAK && !speech) CheckItem(t.first, t.second, NEEDS_SPEECH, checked = false, unavailable = true, modifier = Modifier.alpha(0.5f)) {}
                             else CheckItem(t.first, t.second, t.third, id in form.types) { onForm(form.copy(types = if (id in form.types) form.types - id else form.types + id)) }
                         }
-                        if (form.usableTypes(ai, speech).isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrongInk)
                     }
+                    if (usable.isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrongInk)
                     val levelsCount = form.levelsCount(ai)
-                    Column(Modifier.alpha(if (levelsCount) 1f else 0.5f)) {
-                        Label("Difficulty", "난이도")
-                        Text(if (ai) "Only questions written by the model change with it." else NEEDS_AI, style = MaterialTheme.typography.bodySmall, color = c.muted)
-                        if (ai) {
+                    if (levelsCount) { // P-30: only when it applies (Nano and a model question type checked)
+                        var levelsOpen by rememberSaveable { mutableStateOf(true) }
+                        FoldSection("Difficulty", "난이도", "Difficulty · ${form.levels.sorted().joinToString(", ").ifEmpty { "none" }}".removePrefix("Difficulty · "), levelsOpen, { levelsOpen = !levelsOpen }) {
+                            Text("Only questions written by the model change with it.", style = MaterialTheme.typography.bodySmall, color = c.muted)
                             Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels) { onForm(form.copy(levels = if (n in form.levels) form.levels - n else form.levels + n)) } }
-                            if (levelsCount && form.levels.isEmpty()) Text("Choose at least one difficulty.", style = MaterialTheme.typography.bodyMedium, color = c.wrongInk)
-                        } else {
-                            Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels, unavailable = true) {} } // shows what is saved
                         }
+                        if (form.levels.isEmpty()) Text("Choose at least one difficulty.", style = MaterialTheme.typography.bodyMedium, color = c.wrongInk)
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
                         val ok = form.usableTypes(ai, speech).isNotEmpty() && !(levelsCount && form.levels.isEmpty())

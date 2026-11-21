@@ -197,17 +197,15 @@ fun DecksContent(
                                     Text("Continue flashcards", Modifier.alignByBaseline(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
                                     KoSide("단어 카드 계속하기", MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onBackground)
                                 }
-                                IconButton(onClick = { editing = !editing; dragId = null }) {
-                                    LucideIcon(
-                                        if (editing) Lucide.Check else Lucide.SquarePen,
-                                        contentDescription = if (editing) "Done editing decks" else "Edit decks", tint = colors.control,
-                                    )
+                                if (editing) StickerButton("Done", { editing = false; dragId = null }, ko = "완료", size = StickerSize.Small)
+                                else IconButton(onClick = { editing = true; dragId = null }) {
+                                    LucideIcon(Lucide.SquarePen, contentDescription = "Edit decks", tint = colors.control)
                                 }
                             }
                         }
                         if (editing) full("hint") {
                             Text(
-                                "Tap a deck's name to rename it. Hold and drag a deck to move it, or drop it on another deck to combine them into one. Your cards and their progress don't change.",
+                                "Tap a name to rename. Hold and drag to move or combine decks.",
                                 style = MaterialTheme.typography.bodyMedium, color = colors.muted,
                             )
                         }

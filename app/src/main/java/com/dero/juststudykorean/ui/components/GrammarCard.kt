@@ -44,7 +44,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 fun GrammarCard(point: GrammarPointUi, open: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, dark: Boolean = isSystemInDarkTheme(), ai: GrammarCardAi? = null) {
     val c = JustStudyTheme.colors
     val ink = MaterialTheme.colorScheme.onSurface
-    val turn by animateFloatAsState(if (open) -90f else 0f, tween(Motion.Base), label = "chevron")
+    val turn by animateFloatAsState(if (open) 90f else -90f, tween(Motion.Base), label = "chevron")
     Column(
         modifier.fillMaxWidth()
             .border(Tokens.Border, if (open) (if (dark) c.line else c.tintBorder) else c.line, MaterialTheme.shapes.large)
