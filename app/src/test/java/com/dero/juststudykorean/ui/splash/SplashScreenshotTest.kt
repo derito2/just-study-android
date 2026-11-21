@@ -4,6 +4,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
+import com.dero.juststudykorean.ui.flashcards.ChannelToleranceComparator
+import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import java.io.File
 import org.junit.Assert.assertEquals
@@ -41,10 +43,15 @@ class SplashScreenshotTest {
         }
     }
 
+    // Gradients are rounded 1–2 steps apart on Linux (CI) and macOS (measured: at most 2/255, never visible). Only these captures ignore that.
+    private val gradientRounding = RoborazziOptions(
+        compareOptions = RoborazziOptions.CompareOptions(imageComparator = ChannelToleranceComparator(maxSteps = 4), changeThreshold = 0.001f),
+    )
+
     private fun snap(name: String) {
         val scene = readScene(publicScenes.first().inputStream())
         assertEquals(true, scene != null)
-        captureRoboImage("src/test/screenshots/$name.png") {
+        captureRoboImage("src/test/screenshots/$name.png", roborazziOptions = gradientRounding) {
             CompositionLocalProvider(LocalFrozenMotion provides true) {
                 JustStudyTheme(darkTheme = false) { SplashContent(scene, still = true) { 0.6f } }
             }

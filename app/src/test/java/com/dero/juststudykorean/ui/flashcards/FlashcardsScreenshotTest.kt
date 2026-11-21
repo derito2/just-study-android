@@ -134,7 +134,7 @@ class FlashcardsScreenshotTest {
 }
 
 /** A pixel counts as changed only if one of its channels moved more than [maxSteps] of 255. */
-private class ChannelToleranceComparator(private val maxSteps: Int) : ImageComparator {
+internal class ChannelToleranceComparator(private val maxSteps: Int) : ImageComparator {
     private fun steps(a: Float, b: Float) = Math.round(abs(a - b) * 255f) // differ's channels are byte / 255f
 
     override fun compare(left: com.dropbox.differ.Image, right: com.dropbox.differ.Image, diff: Mask?): ImageComparator.ComparisonResult {
