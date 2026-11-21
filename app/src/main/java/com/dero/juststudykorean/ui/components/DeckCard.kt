@@ -143,7 +143,7 @@ private fun DeckCardBody(
                 keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { save() }),
             )
         } else {
-            Text(deck.name, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+            FileName(deck.name, style = JustStudyTheme.korean.bodyBold, textAlign = TextAlign.Center)
         }
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
             Count(deck.new, "New", colors.countNew, Modifier.weight(1f))

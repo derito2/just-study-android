@@ -63,7 +63,7 @@ fun DocumentsField(selected: Set<Long>, documents: List<DocumentsEntity>, onClic
             .padding(horizontal = Tokens.Space4, vertical = Tokens.Space3),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        FileName(text, Modifier.weight(1f))
         LucideIcon(Lucide.ChevronLeft, contentDescription = null, size = 20.dp, tint = JustStudyTheme.colors.muted, modifier = Modifier.rotate(-90f))
     }
 }
@@ -86,6 +86,6 @@ private fun CheckRow(text: String, checked: Boolean, onClick: () -> Unit) {
     ) {
         JsCheckbox(checked)
         Spacer(Modifier.width(Tokens.Space3))
-        Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+        FileName(text, Modifier.weight(1f))
     }
 }

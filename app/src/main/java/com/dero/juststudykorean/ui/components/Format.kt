@@ -20,6 +20,22 @@ fun percent(value: Double?): String = if (value == null) "—" else "${Math.roun
 /** The topic name without its numbering ("3. -아서/어서" → "-아서/어서"). */
 fun shownTopic(name: String): String = name.replace(Regex("^\\s*\\d{1,3}[.)]\\s+"), "").ifEmpty { name }
 
+/**
+ * design/polish.md P-04: the name of a file as the screens show it. Never the `.pdf`; if it is longer than [maxChars]
+ * (characters, not UTF-16 units), its head, an ellipsis and the last 6 characters, which are what tells two files apart.
+ */
+fun displayName(file: String, maxChars: Int): String {
+    val stem = if (file.length > 4 && file.endsWith(".pdf", ignoreCase = true)) file.dropLast(4) else file
+    val count = stem.codePointCount(0, stem.length)
+    val max = maxChars.coerceAtLeast(DISPLAY_TAIL + 2)
+    if (count <= max) return stem
+    val head = stem.substring(0, stem.offsetByCodePoints(0, max - DISPLAY_TAIL - 1))
+    val tail = stem.substring(stem.offsetByCodePoints(0, count - DISPLAY_TAIL))
+    return "$head…$tail"
+}
+
+private const val DISPLAY_TAIL = 6
+
 fun plural(n: Int, singular: String, pluralForm: String = "${singular}s") = "$n ${if (n == 1) singular else pluralForm}"
 
 /** Label of a chart period: "Nov 8" (day, week), "Nov" or "Jan 27" (month), "2026" (year). */

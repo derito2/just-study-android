@@ -66,6 +66,7 @@ import com.dero.juststudykorean.ui.components.LucideIcon
 import com.dero.juststudykorean.ui.components.StickerButton
 import com.dero.juststudykorean.ui.components.StickerColor
 import com.dero.juststudykorean.ui.components.StickerSize
+import com.dero.juststudykorean.ui.components.FileName
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import com.dero.juststudykorean.ui.theme.Tokens
@@ -101,9 +102,9 @@ fun SpokenQuestion(q: QuestionsEntity, document: String?, speaking: SpeakingUi, 
             )
         }
         document?.let {
-            Text(
-                it.substringBeforeLast("."), Modifier.weight(1f).padding(start = Tokens.Space2), style = MaterialTheme.typography.bodySmall, color = c.muted,
-                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, textAlign = androidx.compose.ui.text.style.TextAlign.End,
+            FileName(
+                it, Modifier.weight(1f).padding(start = Tokens.Space2), style = MaterialTheme.typography.bodySmall, color = c.muted,
+                maxLines = 1, textAlign = androidx.compose.ui.text.style.TextAlign.End,
             )
         } ?: Spacer(Modifier.weight(1f))
     }

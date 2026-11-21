@@ -68,6 +68,7 @@ import com.dero.juststudykorean.ui.components.QuizOption
 import com.dero.juststudykorean.ui.components.StickerButton
 import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.StickerColor
+import com.dero.juststudykorean.ui.components.FileName
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
@@ -185,7 +186,7 @@ fun QuestionContent(
                                 if (type != null) KoSide(type.second, 12.sp, Modifier.alignByBaseline(), color = c.muted)
                             }
                             if (q.id < 0) AiMark(Modifier.padding(end = Tokens.Space2), short = true) // written by the model (kept in memory only)
-                            ui.documents[q.id]?.let { Text(it.substringBeforeLast("."), style = MaterialTheme.typography.bodySmall, color = c.muted, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                            ui.documents[q.id]?.let { FileName(it, style = MaterialTheme.typography.bodySmall, color = c.muted, maxLines = 1) }
                         }
                         val korean = Regex("[가-힣]").containsMatchIn(q.prompt)
                         if (!ui.isSpoken) Text(q.prompt, style = if (korean) JustStudyTheme.korean.koPrompt else TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)

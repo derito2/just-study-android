@@ -40,6 +40,7 @@ import com.dero.juststudykorean.ui.components.StickerButton
 import com.dero.juststudykorean.ui.components.StickerColor
 import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.plural
+import com.dero.juststudykorean.ui.components.FileName
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 import java.time.Instant
@@ -89,7 +90,7 @@ internal fun DocumentCard(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text(doc.originalName, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                FileName(doc.originalName, style = JustStudyTheme.korean.bodyBold)
                 Text("Uploaded ${uploadedFormat.format(Instant.ofEpochMilli(doc.createdAt).atZone(zone))}", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
             }
             Spacer(Modifier.width(Tokens.Space2))

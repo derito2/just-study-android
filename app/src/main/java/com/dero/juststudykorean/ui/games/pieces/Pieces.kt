@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import com.dero.juststudykorean.ui.components.KoSide
 import com.dero.juststudykorean.ui.components.Lucide
 import com.dero.juststudykorean.ui.components.LucideIcon
+import com.dero.juststudykorean.ui.components.FileName
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import com.dero.juststudykorean.ui.theme.Motion
@@ -173,8 +174,8 @@ fun Hint(meaning: String, modifier: Modifier = Modifier) {
 /** Where the round's content comes from: the document without its extension (or "Extra · not from your notes"). */
 @Composable
 fun OriginMark(document: String?, modifier: Modifier = Modifier) {
-    val text = document?.substringBeforeLast('.') ?: "Extra · not from your notes"
-    Text(text, modifier, fontSize = 12.sp, color = JustStudyTheme.colors.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    if (document != null) FileName(document, modifier, style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp), color = JustStudyTheme.colors.muted, maxLines = 1)
+    else Text("Extra · not from your notes", modifier, fontSize = 12.sp, color = JustStudyTheme.colors.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
 }
 
 /** The game's name on the scene's bar: white, with its Korean in sky-light. */
