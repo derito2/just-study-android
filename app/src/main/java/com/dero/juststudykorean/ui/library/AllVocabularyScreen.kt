@@ -55,6 +55,10 @@ fun AllVocabularyContent(state: VocabularyState, query: String, onBack: () -> Un
     val scroll = TopAppBarDefaults.pinnedScrollBehavior()
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).nestedScroll(scroll.nestedScrollConnection)) {
         JsTopBar("All vocabulary", "모든 단어", null, null, scroll, onMore = null, onBack = onBack)
+        SearchField(
+            query, onQuery, Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = Tokens.Space4, vertical = Tokens.Space2),
+        )
         Box(Modifier.weight(1f).fillMaxWidth()) {
             val words = state.words
             when {
@@ -74,10 +78,6 @@ fun AllVocabularyContent(state: VocabularyState, query: String, onBack: () -> Un
                 }
             }
         }
-        SearchField(
-            query, onQuery, Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).navigationBarsPadding().imePadding()
-                .padding(horizontal = Tokens.Space4, vertical = Tokens.Space2),
-        )
     }
 }
 
