@@ -23,7 +23,7 @@ fun FileName(
     textAlign: TextAlign? = null,
 ) {
     Text(
-        displayName(name, maxLines * CHARS_PER_LINE), modifier.semantics { contentDescription = name },
+        breakable(displayName(name, maxLines * CHARS_PER_LINE)), modifier.semantics { contentDescription = name },
         style = style, color = color, maxLines = maxLines, overflow = TextOverflow.Ellipsis, textAlign = textAlign,
     )
 }

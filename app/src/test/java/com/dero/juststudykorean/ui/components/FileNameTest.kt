@@ -24,6 +24,6 @@ class FileNameTest {
         val long = "Anki_vocabulary_with_a_very_long_name_2026.pdf"
         compose.setContent { JustStudyTheme(darkTheme = false) { FileName(long, maxLines = 1) } }
         compose.onNodeWithContentDescription(long).assertIsDisplayed()
-        compose.onNodeWithText(displayName(long, 22)).assertIsDisplayed()
+        compose.onNodeWithText(breakable(displayName(long, 22))).assertIsDisplayed()
     }
 }

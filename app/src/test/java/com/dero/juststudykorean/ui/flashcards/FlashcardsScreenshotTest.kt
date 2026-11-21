@@ -100,7 +100,7 @@ class FlashcardsScreenshotTest {
 
     @Composable
     private fun Study(ui: StudyUi, direction: CardDirection = CardDirection.KoToEn, typing: Boolean = false) =
-        StudyContent(ui, "Unit 3 · At school", direction, typing, Scheduling(), {}, {}, {}, {}, {}, {})
+        StudyContent(ui, "Unit 3 · At school.pdf", direction, typing, Scheduling(), {}, {}, {}, {}, {}, {})
 
     @Test
     fun decks() = snap("flashcards_decks") { Decks(ui) }

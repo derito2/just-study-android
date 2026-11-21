@@ -36,6 +36,9 @@ fun displayName(file: String, maxChars: Int): String {
 
 private const val DISPLAY_TAIL = 6
 
+/** A break opportunity after each underscore: a name without spaces wraps between its words, not in the middle of one. */
+fun breakable(name: String): String = name.replace("_", "_\u200B")
+
 fun plural(n: Int, singular: String, pluralForm: String = "${singular}s") = "$n ${if (n == 1) singular else pluralForm}"
 
 /** Label of a chart period: "Nov 8" (day, week), "Nov" or "Jan 27" (month), "2026" (year). */

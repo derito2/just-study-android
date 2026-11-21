@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.flashcards
 
+import com.dero.juststudykorean.ui.components.FileName
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -103,7 +104,7 @@ fun StudyContent(
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding().imePadding()) {
         Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(start = Tokens.Space1, end = Tokens.Space4), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { LucideIcon(Lucide.ChevronLeft, contentDescription = "Back to decks", tint = ink) }
-            Text(deckName, Modifier.weight(1f).semantics { heading() }, style = MaterialTheme.typography.titleMedium, color = ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            FileName(deckName, Modifier.weight(1f).semantics { heading() }, style = MaterialTheme.typography.titleMedium, color = ink, maxLines = 1)
             if (!ui.loading) Text("${ui.queue.size} left", style = MaterialTheme.typography.bodySmall, color = colors.muted)
         }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = Tokens.Space3).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
