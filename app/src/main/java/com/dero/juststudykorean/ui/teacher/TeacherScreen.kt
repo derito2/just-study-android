@@ -133,7 +133,7 @@ fun TeacherContent(
         Back(!keyboard) {
             SelectedGroup(
                 listOf("Ask my notes", "What should I study?"), ui.mode.ordinal, { onMode(TeacherMode.entries[it]) },
-                Modifier.padding(start = Tokens.Space4, end = Tokens.Space4, bottom = Tokens.Space2),
+                Modifier.padding(start = Tokens.Space4, end = Tokens.Space4, bottom = Tokens.Space2), checkChosen = true,
             )
         }
         LazyColumn(
