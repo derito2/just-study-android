@@ -51,6 +51,7 @@ Sin capturas propias. Usan los componentes del Design System: FilterPill, Gramma
 | Appearance | **Theme** (`moon`) | System follows your phone. | SelectedGroup Small *System · Light · Dark* |
 | Backup | **Import backup** (`download`) | Replace everything with a .jsbackup.zip. | Abre SAF → diálogo de confirmación (*Cancel* / *Import*) → ProgressBar → Snackbar |
 | Backup | **Export backup** (`download`, girado 180°) | Save everything to a .jsbackup.zip. | Abre SAF (CreateDocument) → Snackbar *Backup saved.* |
+| Notes (fase 10) | **Notes template** (`file-text`) | How to write notes the app reads in full. | Abre SAF (CreateDocument) → Snackbar *Template saved.* (detalle abajo) |
 | AI (fase 6) | **On-device AI** (`sparkles`) | Gemini Nano runs on your phone. No internet. | Estado y acción, abajo |
 | About | **Licenses** (`file-text`) | Poppins (OFL), Lucide (MIT), MuPDF (AGPL). | Abre una pantalla con los textos de las licencias |
 
@@ -64,3 +65,15 @@ Sin capturas propias. Usan los componentes del Design System: FilterPill, Gramma
 | Unavailable | píldora *Not available* (`canvas` / `muted`) y la línea *The app works the same without it.* |
 
 Las funciones con modelo (plan 10.1) solo aparecen si el estado es *Available*.
+
+### Notes template (fase 10)
+
+- **Sitio:** grupo propio *Notes*, entre *Backup* y *AI*, con su divisor de 2 dp `line`. Fila igual que las demás (56 dp, icono `file-text` de 24 dp `control`, título `body-bold`, línea `muted` de 12 sp). Sin control a la derecha: toda la fila se toca.
+- **Al tocar:** `ActivityResultContracts.CreateDocument("application/vnd.openxmlformats-officedocument.wordprocessingml.document")` con el nombre propuesto `Korean_Notes_Template.docx`. El dueño elige la carpeta en el selector del sistema.
+- **Copia:** `assets/Korean_Notes_Template.docx` → el `Uri` elegido, byte a byte (`assets.open` → `contentResolver.openOutputStream(uri, "w")`), fuera del hilo principal. Sin FileProvider, sin permisos nuevos, sin red.
+- **Mensajes (Snackbar de la pantalla):**
+  - bien: *Template saved.*;
+  - error al escribir (sin espacio, carpeta que falla): *Could not save the template.* Si el destino quedó a medias, se borra (`DocumentsContract.deleteDocument`, sin error si no se puede).
+  - Cancelar el selector: nada.
+- Mientras copia, la fila no responde a un segundo toque (no hace falta indicador: tarda milisegundos).
+- **Entrada desde Library:** ver `design/library.md`, *Sin documentos*. Llega a Settings y la fila *Notes template* queda a la vista (Settings es corto; sin resaltado).
