@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.teacher
 
+import androidx.compose.material3.IconButton
 import com.dero.juststudykorean.ui.components.PillTone
 import com.dero.juststudykorean.ui.components.Pill
 import com.dero.juststudykorean.ui.components.AiMark
@@ -161,7 +162,7 @@ fun TeacherContent(
                 }
             }
         }
-        Composer(input, onInput, onSend, ui.busy, keyboard)
+        Composer(input, onInput, onSend, ui.busy, keyboard, started = ui.exchanges.isNotEmpty())
     }
 }
 
@@ -267,8 +268,6 @@ internal fun CoachCard(
     val colors = JustStudyTheme.colors
     Pill("COACH", PillTone.Warn)
     Text(e.question, style = JustStudyTheme.korean.bodyBold, color = colors.muted)
-    if (answer.ai) AiMark(fromNotes = true) // use 5: the model wrote the text from the rules' facts (R1-11)
-    Text(answer.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     answer.quiz?.let { quiz ->
         Proposal("QUIZ", quiz.words) {
             StickerButton("Start quiz", { onStartQuiz(e.id, quiz) }, ko = "퀴즈 시작", color = StickerColor.Go)
@@ -284,6 +283,9 @@ internal fun CoachCard(
             (e.deck as? DeckState.Failed)?.let { Text(it.message, style = MaterialTheme.typography.bodySmall, color = colors.danger) }
         }
     }
+    // P-37: the data first (what to fix, what is due, the quiz), then the model's sentence: the generic text no longer pushes them off screen.
+    if (answer.ai) AiMark(fromNotes = true) // use 5: the model wrote the text from the rules' facts (R1-11)
+    Text(answer.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     if (answer.steps.isNotEmpty()) HowIDecided(answer.steps, openAll)
 }
 
@@ -324,12 +326,15 @@ private fun HowIDecided(steps: List<Step>, openAll: Boolean) {
 
 /** The templates, the field (1 to 4 lines, 500 characters) and Send, above the keyboard. */
 @Composable
-private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, onSend: () -> Unit, busy: Boolean, keyboard: Boolean) {
+private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, onSend: () -> Unit, busy: Boolean, keyboard: Boolean, started: Boolean = false) {
     val colors = JustStudyTheme.colors
+    // P-35: after the first message the templates fold into a lightbulb beside the field (the answer gains ~70 dp).
+    var suggestions by rememberSaveable { mutableStateOf(false) }
+    val showTemplates = !started || suggestions
     val field = remember { FocusRequester() }
     val ime = LocalSoftwareKeyboardController.current
     Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
-        Back(!keyboard) {
+        Back(!keyboard && showTemplates) {
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = Tokens.Space4, vertical = Tokens.Space2), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
             TEMPLATES.forEach { (label, ko, text) ->
                 Column(
@@ -343,10 +348,13 @@ private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, o
         }
         }
         Box(Modifier.fillMaxWidth().height(Tokens.Border).background(colors.line))
-        Row(Modifier.fillMaxWidth().padding(Tokens.Space4), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+        Row(Modifier.fillMaxWidth().padding(Tokens.Space4), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+            if (started) IconButton({ suggestions = !suggestions }, Modifier.size(48.dp)) {
+                LucideIcon(Lucide.Lightbulb, contentDescription = if (suggestions) "Hide suggestions" else "Show suggestions", tint = colors.control)
+            }
             BasicTextField(
-                input, onInput, Modifier.weight(1f).focusRequester(field).background(colors.surface, MaterialTheme.shapes.medium).border(Tokens.Border, colors.line, MaterialTheme.shapes.medium)
-                    .padding(12.dp),
+                input, onInput, Modifier.weight(1f).heightIn(min = 52.dp).focusRequester(field).background(colors.surface, MaterialTheme.shapes.medium).border(Tokens.Border, colors.line, MaterialTheme.shapes.medium)
+                    .padding(12.dp), // P-36: one line is as tall as Send (52 dp); it grows to 4
                 textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface), minLines = 1, maxLines = 4,
                 cursorBrush = SolidColor(colors.brand),
                 decorationBox = { inner ->
