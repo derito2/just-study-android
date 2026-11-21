@@ -27,7 +27,7 @@ import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Motion
 import com.dero.juststudykorean.ui.theme.Tokens
 
-enum class TrendDirection { Up, Down, Same }
+enum class TrendDirection { Up, Down, Same, None, New }
 
 /** Change against last week: arrow and "+12%" (the web's wordsTrend / accuracyTrend). */
 data class Trend(val direction: TrendDirection, val label: String)
@@ -71,8 +71,10 @@ fun StatTile(
         }
     }
     val trendText = trend?.let {
-        val word = when (it.direction) { TrendDirection.Up -> "Up"; TrendDirection.Down -> "Down"; TrendDirection.Same -> "Same" }
-        "$word vs last week: ${it.label.ifEmpty { "new" }}"
+        when (it.direction) {
+            TrendDirection.None, TrendDirection.New -> it.label
+            else -> "${if (it.direction == TrendDirection.Up) "Up" else if (it.direction == TrendDirection.Down) "Down" else "Same"} vs last week: ${it.label}"
+        }
     }
     Column(
         modifier
@@ -87,11 +89,18 @@ fun StatTile(
         Spacer(Modifier.height(Tokens.Space1))
         Text(value, Modifier.scale(scale.value), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center)
         if (trend != null) {
-            val tint = when (trend.direction) { TrendDirection.Up -> colors.correctInk; TrendDirection.Down -> colors.wrongInk; TrendDirection.Same -> colors.muted }
-            val icon = when (trend.direction) { TrendDirection.Up -> Lucide.TrendingUp; TrendDirection.Down -> Lucide.TrendingDown; TrendDirection.Same -> Lucide.Minus }
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
-                LucideIcon(icon, contentDescription = null, size = 16.dp, tint = tint)
-                if (trend.label.isNotEmpty()) Text(trend.label, style = JustStudyTheme.korean.trend, color = tint)
+            when (trend.direction) {
+                // P-12: nothing this week, or the first week with something: words, no arrow and no alarm.
+                TrendDirection.None -> Text(trend.label, style = JustStudyTheme.korean.trend, color = colors.muted)
+                TrendDirection.New -> Text(trend.label, style = JustStudyTheme.korean.trend, color = colors.correctInk)
+                else -> {
+                    val tint = when (trend.direction) { TrendDirection.Up -> colors.correctInk; TrendDirection.Down -> colors.wrongInk; else -> colors.muted }
+                    val icon = when (trend.direction) { TrendDirection.Up -> Lucide.TrendingUp; TrendDirection.Down -> Lucide.TrendingDown; else -> Lucide.Minus }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
+                        LucideIcon(icon, contentDescription = null, size = 16.dp, tint = tint)
+                        if (trend.label.isNotEmpty()) Text(trend.label, style = JustStudyTheme.korean.trend, color = tint)
+                    }
+                }
             }
         }
         if (look != null && look.fires > 0) Text("🔥".repeat(look.fires), style = JustStudyTheme.korean.trend)
@@ -100,15 +109,17 @@ fun StatTile(
 
 /** The web's wordsTrend: words that moved to Learning this week against last week. */
 fun wordsTrend(thisWeek: Int, lastWeek: Int?): Trend {
-    if (lastWeek == null || thisWeek == lastWeek) return Trend(TrendDirection.Same, "0%")
-    if (lastWeek == 0) return Trend(TrendDirection.Up, "")
+    if (thisWeek == 0) return Trend(TrendDirection.None, "none yet this week")
+    if (lastWeek == null || lastWeek == 0) return Trend(TrendDirection.New, "new this week")
+    if (thisWeek == lastWeek) return Trend(TrendDirection.Same, "0%")
     val change = Math.round((thisWeek - lastWeek).toDouble() / lastWeek * 100).toInt()
     return Trend(if (change > 0) TrendDirection.Up else TrendDirection.Down, "${if (change > 0) "+" else ""}$change%")
 }
 
 /** The web's accuracyTrend: points of accuracy against last week. */
 fun accuracyTrend(thisWeek: Double?, lastWeek: Double?): Trend {
-    if (thisWeek == null || lastWeek == null) return Trend(TrendDirection.Same, "0%")
+    if (thisWeek == null) return Trend(TrendDirection.None, "none yet this week")
+    if (lastWeek == null) return Trend(TrendDirection.New, "new this week")
     val points = Math.round((thisWeek - lastWeek) * 100).toInt()
     if (points == 0) return Trend(TrendDirection.Same, "0%")
     return Trend(if (points > 0) TrendDirection.Up else TrendDirection.Down, "${if (points > 0) "+" else ""}$points%")

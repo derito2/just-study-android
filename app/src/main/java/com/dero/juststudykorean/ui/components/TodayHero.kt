@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.components
 
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.text.BasicText
@@ -54,6 +56,9 @@ fun TodayHero(
     modifier: Modifier = Modifier,
     photo: Boolean = true,
     notice: String? = null,
+    hasDocuments: Boolean = true,
+    onGoLibrary: () -> Unit = {},
+    onStartQuiz: () -> Unit = {},
 ) {
     val colors = JustStudyTheme.colors
     val shape = RoundedCornerShape(Tokens.RadiusMd)
@@ -68,7 +73,7 @@ fun TodayHero(
         } else {
             Box(Modifier.matchParentSize().background(Brush.linearGradient(0f to colors.heroIndigo, 0.3f to colors.heroViolet, 1f to colors.heroSky)))
         }
-        Column(Modifier.padding(horizontal = Tokens.Space5, vertical = Tokens.Space4)) {
+        Column(Modifier.padding(Tokens.Space5)) {
             Caps("Today's session", "오늘의 공부")
             when {
                 today == null -> Text("Loading…", style = MaterialTheme.typography.bodyMedium, color = Color.White)
@@ -82,7 +87,7 @@ fun TodayHero(
                 }
             }
             Spacer(Modifier.height(Tokens.Space3))
-            FixThisNext(recommended, onPractice, onAsk)
+            FixThisNext(recommended, onPractice, onAsk, hasDocuments, onGoLibrary, onStartQuiz)
             if (notice != null) Text(notice, Modifier.padding(top = Tokens.Space2), style = MaterialTheme.typography.bodySmall, color = colors.onHeroSoft)
         }
     }
@@ -108,19 +113,35 @@ private fun Stat(label: String, ko: String, value: String, modifier: Modifier) {
     }
 }
 
+/** P-11: the facts of a recommendation as chips, in this order and only if they exist: mastery, last review, cards due. */
+fun heroChips(reasons: List<String>): List<String> {
+    val mastery = reasons.firstNotNullOfOrNull { Regex("""^mastery (\d+) %""").find(it)?.let { m -> "mastery ${m.groupValues[1]} %" } }
+    val reviewed = reasons.firstNotNullOfOrNull { Regex("""^not reviewed in (\d+) days?""").find(it)?.let { m -> m.groupValues[1].let { n -> "$n ${if (n == "1") "day" else "days"} ago" } } }
+        ?: reasons.firstOrNull { it.startsWith("new topic") }?.let { "never reviewed" }
+    val due = reasons.firstNotNullOfOrNull { Regex("""^(\d+) flashcards? due""").find(it)?.let { m -> m.groupValues[1].let { n -> "$n ${if (n == "1") "card" else "cards"} due" } } }
+    return listOfNotNull(mastery, reviewed, due)
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun FixThisNext(recommended: List<Recommendation>?, onPractice: (String) -> Unit, onAsk: () -> Unit) {
+private fun FixThisNext(
+    recommended: List<Recommendation>?, onPractice: (String) -> Unit, onAsk: () -> Unit,
+    hasDocuments: Boolean, onGoLibrary: () -> Unit, onStartQuiz: () -> Unit,
+) {
     val colors = JustStudyTheme.colors
     Caps("Fix this next", "다음에 고칠 것")
-    val top = recommended?.firstOrNull()
     if (recommended == null) return
+    val top = recommended.firstOrNull()
     if (top == null) {
         Text("Answer some quiz questions first. I can't read your mind.", style = MaterialTheme.typography.bodyMedium, color = colors.onHeroSoft)
+        Spacer(Modifier.height(Tokens.Space3))
+        // P-10: the way out of the scolding: the Library if there is nothing to study from, a quiz if there is.
+        if (hasDocuments) StickerButton("Start a quiz", onStartQuiz, Modifier.fillMaxWidth(), ko = "퀴즈 시작", color = StickerColor.Go)
+        else StickerButton("Go to Library", onGoLibrary, Modifier.fillMaxWidth(), ko = "자료실로", color = StickerColor.Go)
         return
     }
-    FlowRow(verticalArrangement = Arrangement.Center, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2), itemVerticalAlignment = Alignment.CenterVertically) {
-        Text(shownTopic(top.name), style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp, fontWeight = FontWeight.ExtraBold), color = Color.White)
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
+        Text(shownTopic(top.name), Modifier.weight(1f), style = JustStudyTheme.korean.koTitle, color = Color.White)
         val (symbol, label) = when (top.priority) { "high" -> "!" to "High priority"; "medium" -> "~" to "Medium priority"; else -> "✓" to "Low priority" }
         val (fill, ink) = when (top.priority) {
             "high" -> colors.priorityHighOnPhoto to colors.wrong
@@ -134,22 +155,15 @@ private fun FixThisNext(recommended: List<Recommendation>?, onPractice: (String)
             style = MaterialTheme.typography.labelMedium, color = ink,
         )
     }
-    val also = recommended.drop(1).joinToString(", ") { shownTopic(it.name) }
-    Text(
-        buildAnnotatedString {
-            append(top.reasons.joinToString(" · "))
-            if (also.isNotEmpty()) {
-                pushStyle(SpanStyle(fontSize = 12.sp))
-                append(" · Also: $also")
-                pop()
-            }
-        },
-        style = MaterialTheme.typography.bodyMedium, color = colors.onHeroSoft,
-    )
-    Spacer(Modifier.height(Tokens.Space2))
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
-        StickerButton("Practice this", { onPractice(top.name) }, ko = "연습하기", color = StickerColor.Go, size = StickerSize.Mini)
-        Text("아니면", Modifier.clearAndSetSemantics { }, style = JustStudyTheme.korean.koBody.copy(fontSize = 13.sp, fontWeight = FontWeight.Bold), color = colors.onHeroSoft)
-        StickerButton("Ask what to do", onAsk, ko = "뭘 할지 묻기", color = StickerColor.Action, size = StickerSize.Mini)
+    FlowRow(Modifier.padding(top = Tokens.Space2), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        heroChips(top.reasons).forEach { chip ->
+            Text(chip, Modifier.background(colors.onPhotoItem, CircleShape).padding(horizontal = 10.dp, vertical = 4.dp), style = JustStudyTheme.korean.chip, color = Color.White)
+        }
     }
+    val also = recommended.drop(1).joinToString(", ") { shownTopic(it.name) }
+    if (also.isNotEmpty()) Text("Also: $also", Modifier.padding(top = Tokens.Space2), style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = colors.onHeroSoft, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    Spacer(Modifier.height(Tokens.Space3))
+    StickerButton("Practice this", { onPractice(top.name) }, Modifier.fillMaxWidth(), ko = "연습하기", color = StickerColor.Go)
+    Spacer(Modifier.height(Tokens.Space2))
+    StickerButton("Ask what to do", onAsk, Modifier.fillMaxWidth(), ko = "뭘 할지 묻기", color = StickerColor.Action)
 }

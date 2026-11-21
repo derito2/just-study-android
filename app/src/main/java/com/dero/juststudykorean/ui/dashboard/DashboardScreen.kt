@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.dashboard
 
+import com.dero.juststudykorean.ui.components.rememberKpiCount
+import com.dero.juststudykorean.ui.components.KpiCountUp
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import androidx.compose.material3.Text
 import com.dero.juststudykorean.ui.components.AiMark
@@ -40,10 +42,10 @@ import com.dero.juststudykorean.ui.components.wordsTrend
 import com.dero.juststudykorean.ui.theme.Tokens
 
 @Composable
-fun DashboardScreen(onMore: () -> Unit, onOpenQuiz: (Long) -> Unit, onAsk: () -> Unit, viewModel: DashboardViewModel = hiltViewModel()) {
+fun DashboardScreen(onMore: () -> Unit, onOpenQuiz: (Long) -> Unit, onAsk: () -> Unit, onGoLibrary: () -> Unit, onStartQuiz: () -> Unit, viewModel: DashboardViewModel = hiltViewModel()) {
     val ui by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel) { viewModel.openQuiz.collect(onOpenQuiz) }
-    DashboardContent(ui, onMore = onMore, onUnit = viewModel::setUnit, onPractice = { viewModel.practice(it) }, onAsk = onAsk, onRetry = viewModel::retry)
+    DashboardContent(ui, onMore = onMore, onUnit = viewModel::setUnit, onPractice = { viewModel.practice(it) }, onAsk = onAsk, onRetry = viewModel::retry, onGoLibrary = onGoLibrary, onStartQuiz = onStartQuiz)
 }
 
 /** Design/dashboard.md: top bar, four KPIs, Today's session on your photo, the month and Progress. */
@@ -57,6 +59,8 @@ fun DashboardContent(
     onAsk: () -> Unit,
     onRetry: () -> Unit,
     photo: Boolean = true,
+    onGoLibrary: () -> Unit = {},
+    onStartQuiz: () -> Unit = {},
 ) {
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).nestedScroll(scroll.nestedScrollConnection)) {
@@ -71,23 +75,28 @@ fun DashboardContent(
             if (ui.error) ErrorState("Couldn't load your progress.", onRetry)
             val s = ui.summary
             val w = ui.weekly
+            LaunchedEffect(s != null) { if (s != null) KpiCountUp.consume() } // M-5: only the first time after the app starts
+            val streakShown = rememberKpiCount(s?.streakDays?.toLong())
+            val timeShown = rememberKpiCount(s?.totalStudySeconds)
+            val wordsShown = rememberKpiCount(w?.wordsThisWeek?.toLong())
+            val accuracyShown = rememberKpiCount(w?.accuracyThisWeek?.let { Math.round(it * 100) })
             Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
                 val streak = s?.streakDays
                 StatTile(
-                    "Study streak", if (streak == null) "—" else "$streak ${if (streak == 1) "day" else "days"}",
+                    "Study streak", if (streak == null) "—" else "$streakShown ${if (streak == 1) "day" else "days"}",
                     Modifier.weight(1f).fillMaxHeight(),
                     look = streak?.let { streakLook(it) },
                     bump = streak != null && ui.previousStreak != null && streak > ui.previousStreak,
                 )
-                StatTile("Study time", s?.let { studyTime(it.totalStudySeconds) } ?: "—", Modifier.weight(1f).fillMaxHeight())
+                StatTile("Study time", timeShown?.let { studyTime(it) } ?: "—", Modifier.weight(1f).fillMaxHeight())
             }
             Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
                 StatTile(
-                    "Words learned this week", w?.let { "${it.wordsThisWeek} ${if (it.wordsThisWeek == 1) "word" else "words"}" } ?: "—",
+                    "Words learned this week", w?.let { "$wordsShown ${if (it.wordsThisWeek == 1) "word" else "words"}" } ?: "—",
                     Modifier.weight(1f).fillMaxHeight(), trend = w?.let { wordsTrend(it.wordsThisWeek, it.wordsLastWeek) },
                 )
                 StatTile(
-                    "Quiz accuracy this week", w?.let { percent(it.accuracyThisWeek) } ?: "—",
+                    "Quiz accuracy this week", w?.let { if (it.accuracyThisWeek == null) "—" else "$accuracyShown%" } ?: "—",
                     Modifier.weight(1f).fillMaxHeight(), trend = w?.let { accuracyTrend(it.accuracyThisWeek, it.accuracyLastWeek) },
                 )
             }
@@ -100,7 +109,7 @@ fun DashboardContent(
                     Text(week.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
                 }
             }
-            TodayHero(s?.today, ui.recommended, onPractice, onAsk, photo = photo, notice = ui.notice)
+            TodayHero(s?.today, ui.recommended, onPractice, onAsk, photo = photo, notice = ui.notice, hasDocuments = ui.hasDocuments, onGoLibrary = onGoLibrary, onStartQuiz = onStartQuiz)
             ui.calendar?.let { CalendarMonthCompact(it, ui.today) }
             ProgressChart(ui.timeline, ui.unit, onUnit)
         }

@@ -49,9 +49,11 @@ data class DashboardUi(
     val notice: String? = null,
     /** Phase 6, use 8: the week in one or two sentences, only with Gemini Nano Available. */
     val week: WeekSentence? = null,
+    /** Any processed document (P-10: the hero offers the Library when there is none). */
+    val hasDocuments: Boolean = true,
 )
 
-private data class Loaded(val summary: ProgressSummary, val weekly: Weekly, val calendar: CalendarMonth, val recommended: List<Recommendation>, val timeline: Timeline)
+private data class Loaded(val summary: ProgressSummary, val weekly: Weekly, val calendar: CalendarMonth, val recommended: List<Recommendation>, val timeline: Timeline, val hasDocuments: Boolean)
 
 /** Dashboard: the web's figures from Room, computed in :core:data off the main thread; refreshed when the data changes. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -83,7 +85,7 @@ class DashboardViewModel @Inject constructor(
             val summary = progress.summary()
             previousStreak.filterNotNull().first()
             prefs.setLastStreak(summary.streakDays)
-            Loaded(summary, progress.weekly(), month, progress.recommended(3), progress.timeline(unit)).also(::writeWeek)
+            Loaded(summary, progress.weekly(), month, progress.recommended(3), progress.timeline(unit), quiz.readyDocuments().isNotEmpty()).also(::writeWeek)
         }.catch { emit(null) }
     }
 
@@ -91,6 +93,7 @@ class DashboardViewModel @Inject constructor(
         DashboardUi(
             today = today, summary = data?.summary, weekly = data?.weekly, calendar = data?.calendar, recommended = data?.recommended,
             timeline = data?.timeline, unit = unit, previousStreak = previous, error = data == null, notice = notice, week = week,
+            hasDocuments = data?.hasDocuments ?: true,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DashboardUi(today))
 

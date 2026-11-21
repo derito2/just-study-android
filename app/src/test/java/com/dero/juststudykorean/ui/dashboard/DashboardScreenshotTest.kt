@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.dashboard
 
+import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -95,7 +96,7 @@ class DashboardScreenshotTest {
     private fun snap(name: String, ui: DashboardUi, dark: Boolean = false, fontScale: Float = 1f) =
         captureRoboImage("src/test/screenshots/$name.png") {
             val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale), LocalFrozenMotion provides true) {
                 JustStudyTheme(darkTheme = dark) {
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.weight(1f)) { DashboardContent(ui, onMore = {}, onUnit = {}, onPractice = {}, onAsk = {}, onRetry = {}) }
