@@ -65,3 +65,5 @@ Translation: I was hungry, so I ate.
 - Una entrada por número; no mezcles dos palabras en una línea.
 - El coreano va **antes** del separador y el inglés **después**.
 - No hace falta nada más: sin límite de ejemplos, de notas ni de líneas de explicación.
+- Empieza cada punto de gramática en la misma página que sus ejemplos (hoy el lector no une un punto partido entre dos páginas).
+- Para la tabla de partículas, escribe filas de texto con |, no una tabla de Word (en la tabla se pierden los espacios del coreano).

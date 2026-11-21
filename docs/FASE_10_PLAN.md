@@ -45,6 +45,8 @@ Anotar D10-1…D10-4 en `docs/DECISIONS.md` en el PR 0.
 | **H-07** memoria del lector con PDF de 300 páginas | Solo medir; ningún PDF del dueño se acerca. |
 | **H-12** `runBlocking` en la búsqueda de Teacher | Hoy no se llama desde el hilo principal. |
 | **H-13** Dependabot | Necesita el sí del dueño (pregunta 5); no es de esta fase. |
+| **H-15** un punto de gramática partido entre dos páginas; lo que queda en la segunda se lee como palabras | Visto con la plantilla de notas, PR fase-10/plantilla. |
+| **H-16** MuPDF quita los espacios del coreano en las celdas de una tabla | Visto con la plantilla de notas, PR fase-10/plantilla. |
 
 ## 2 · PR 0 — Documentos (`docs/fase-10`)
 
