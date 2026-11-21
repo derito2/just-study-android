@@ -1,5 +1,9 @@
 package com.dero.juststudykorean.ui.flashcards
 
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableFloatStateOf
 import com.dero.juststudykorean.ui.components.FileName
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
@@ -101,6 +105,19 @@ fun StudyContent(
 ) {
     val colors = JustStudyTheme.colors
     val ink = MaterialTheme.colorScheme.onSurface
+    // M-4: a rated card leaves 40 dp to the side (left with Again, right otherwise) and fades (150 ms) before the next one comes up.
+    val exit = remember { Animatable(0f) }
+    var exitSide by remember { mutableFloatStateOf(1f) }
+    val scope = rememberCoroutineScope()
+    val reduceMotion = reduceMotion()
+    LaunchedEffect(ui.card?.card?.id) { exit.snapTo(0f) }
+    val rate: (Rating) -> Unit = { rating ->
+        exitSide = if (rating == Rating.Again) -1f else 1f
+        scope.launch {
+            if (!reduceMotion) exit.animateTo(1f, tween(150, easing = Motion.EaseOut))
+            onRate(rating)
+        }
+    }
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding().imePadding()) {
         Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(start = Tokens.Space1, end = Tokens.Space4), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { LucideIcon(Lucide.ChevronLeft, contentDescription = "Back to decks", tint = ink) }
@@ -150,7 +167,7 @@ fun StudyContent(
                     val density = LocalDensity.current.density
                     val source = ui.sources[card.card.id]?.let { "Source: ${it.filename}, page ${it.page}" }
                     Column(
-                        Modifier.fillMaxSize().graphicsLayer { translationY = 8 * density * rise.value }.then(if (ui.flipped) Modifier.verticalScroll(rememberScrollState()) else Modifier),
+                        Modifier.fillMaxSize().graphicsLayer { translationY = 8 * density * rise.value; translationX = exitSide * 40 * density * exit.value; alpha = 1f - exit.value }.then(if (ui.flipped) Modifier.verticalScroll(rememberScrollState()) else Modifier),
                         verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
                     ) {
                         FlipCard(
@@ -192,7 +209,7 @@ fun StudyContent(
                     val meaning = if (typingFor(typeAnswer, card2, ui.details) && sideFor(direction, card2) != CardDirection.EnToKo) card2.card.front to card2.card.back else null
                     StickerButton("Show answer", { onFlip(meaning) }, Modifier.fillMaxWidth(), ko = "정답 보기", size = StickerSize.Large)
                 } else {
-                    RatingButtons(preview(card2, scheduling), onRate)
+                    RatingButtons(preview(card2, scheduling), rate, enabled = exit.value == 0f)
                 }
             }
         }

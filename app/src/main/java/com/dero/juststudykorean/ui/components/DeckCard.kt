@@ -111,19 +111,7 @@ private fun DeckCardBody(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Tokens.Space2),
     ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onDelete, Modifier.size(48.dp).padding(0.dp)) {
-                LucideIcon(Lucide.Trash2, contentDescription = "Delete ${deck.name}", size = 20.dp, tint = colors.danger)
-            }
-            Spacer(Modifier.weight(1f))
-            if (deck.custom) {
-                Box(Modifier.size(24.dp).background(colors.tint, CircleShape).semantics { contentDescription = "Made by Teacher" }, contentAlignment = Alignment.Center) {
-                    LucideIcon(Lucide.GraduationCap, contentDescription = null, size = 16.dp, tint = colors.brandText)
-                }
-                Spacer(Modifier.width(Tokens.Space1))
-            }
-            Pill("${deck.total} cards", PillTone.Neutral)
-        }
+        // P-25: the name leads (2 lines), then the size; the trash only shows while editing.
         if (editing) {
             var name by remember(deck.name) { mutableStateOf(deck.name) }
             var hadFocus by remember { mutableStateOf(false) }
@@ -134,12 +122,27 @@ private fun DeckCardBody(
                     .drawBehind { drawLine(colors.field, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
                     .onFocusChanged { if (it.isFocused) hadFocus = true else if (hadFocus) { hadFocus = false; save() } },
                 singleLine = true,
-                textStyle = JustStudyTheme.korean.bodyBold.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center),
+                textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center),
                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
                 keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { save() }),
             )
         } else {
-            FileName(deck.name, style = JustStudyTheme.korean.bodyBold, textAlign = TextAlign.Center)
+            FileName(deck.name, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+        }
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+            if (deck.custom) {
+                Box(Modifier.size(24.dp).background(colors.tint, CircleShape).semantics { contentDescription = "Made by Teacher" }, contentAlignment = Alignment.Center) {
+                    LucideIcon(Lucide.GraduationCap, contentDescription = null, size = 16.dp, tint = colors.brandText)
+                }
+                Spacer(Modifier.width(Tokens.Space1))
+            }
+            Pill("${deck.total} cards", PillTone.Neutral)
+            if (editing) {
+                Spacer(Modifier.width(Tokens.Space2))
+                IconButton(onClick = onDelete, Modifier.size(48.dp)) {
+                    LucideIcon(Lucide.Trash2, contentDescription = "Delete ${deck.name}", size = 20.dp, tint = colors.wrongInk)
+                }
+            }
         }
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
             Count(deck.new, "New", colors.countNew, Modifier.weight(1f))
@@ -154,11 +157,15 @@ private fun DeckCardBody(
         } else {
             Text("Not studied yet.", Modifier.padding(vertical = 5.dp), style = MaterialTheme.typography.bodyMedium, color = colors.muted)
         }
-        val ready = deck.availableNow > 0
-        StickerButton(
-            if (ready) "Continue" else "Nothing due", onContinue, Modifier.fillMaxWidth(),
-            ko = if (ready) "계속하기" else "복습 없음", size = StickerSize.Small, enabled = ready && !editing,
-        )
+        if (editing) {
+            Text("Drag to move · tap the name to rename", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = colors.muted)
+        } else {
+            val ready = deck.availableNow > 0
+            StickerButton(
+                if (ready) "Continue" else "Nothing due", onContinue, Modifier.fillMaxWidth(),
+                ko = if (ready) "계속하기" else "복습 없음", size = StickerSize.Small, enabled = ready,
+            )
+        }
     }
 }
 
@@ -166,6 +173,6 @@ private fun DeckCardBody(
 private fun Count(n: Int, label: String, color: Color, modifier: Modifier) {
     Column(modifier.clearAndSetSemantics { contentDescription = "$n $label" }, horizontalAlignment = Alignment.CenterHorizontally) {
         Text("$n", style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.ExtraBold), color = color)
-        Text(label.uppercase(), style = MaterialTheme.typography.labelMedium.copy(fontSize = 11.sp), color = JustStudyTheme.colors.muted, maxLines = 1)
+        Text(label.uppercase(), style = MaterialTheme.typography.labelMedium.copy(fontSize = 10.5.sp), color = JustStudyTheme.colors.muted, maxLines = 1)
     }
 }
