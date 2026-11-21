@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- H-02 (docs/AUDIT_2.md): the release shrinks resources and Splash.kt finds splash_photo_01..11 by name, so without this the
-     11 drawn scenes never reach the APK (10 of 10 cold starts showed only the 3 flash pictures). The pictures are on the owner's
-     Mac only (.gitignore): without them this pattern matches nothing and costs nothing. PR E removes this file with the WebP. -->
-<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@drawable/splash_photo_*" />
