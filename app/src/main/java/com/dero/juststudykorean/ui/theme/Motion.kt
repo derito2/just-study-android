@@ -12,6 +12,10 @@ object Motion {
     val EaseOut = CubicBezierEasing(0.2f, 0.8f, 0.2f, 1f)
     val Spring = CubicBezierEasing(0.34f, 1.56f, 0.64f, 1f)
     val EaseInOut = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+    /** design/games-characters.md 5: a fall (squash before a jump). */
+    val EaseIn = CubicBezierEasing(0.5f, 0f, 1f, 1f)
+    /** design/games-characters.md 5: lands and settles with two or three bounces. */
+    val Bounce = androidx.compose.animation.core.spring<Float>(dampingRatio = 0.45f, stiffness = 380f)
 
     /** M-2 (design/polish.md P-06): the figure that counts goes 1 → 1.18 → 1 as t goes 0 → 1. */
     fun pulse(t: Float): Float = 1f + 0.18f * (1f - kotlin.math.abs(2f * t.coerceIn(0f, 1f) - 1f))
