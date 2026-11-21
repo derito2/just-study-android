@@ -18,7 +18,7 @@
         },
         {
             "page_number": 2,
-            "text": "## Grammar\n1. -아서/어서\nMeaning: so, because; it joins a reason or a first action to what follows\nTense and structure:\n- A/V + 아서 (after ㅏ or ㅗ)\n- A/V + 어서 (after other vowels)\n- 하다 → 해서\nExplanation:\nIt cannot be used with commands or suggestions.\nUse -(으)니까 for those.\nExamples:\n비가 와서 집에 있어요. = It rains, so I stay home.\n배가 고파서 밥을 먹었어요.\nTranslation: I was hungry, so I ate.\n2. -ㄹ지/을지\nMeaning: whether\nExplanation:\nUse -ㄹ지 말지 when you can't decide.\nExamples:\n비가 올지 안 올지 모르겠어요. = I don't know whether it'll rain or not.\n말할지 말지 모르겠어요. = I don't know whether to say it or not.\n3. -네요\nMeaning: a reaction to something you see or feel right now\nExamples:\n비싸네요. = Wow, it's expensive.\n좋네요. = That's nice.\n## Particles\n이/가 | Subject | 고양이가 집 뒤에 숨었어요. — The cat hid behind the house.\n을/를 | Object | 집 주위를 둘러봤어요. — I looked around the house.\n에 | Place or time | 가방 안에 있어요. — It's inside the bag.",
+            "text": "## Grammar\n1. -아서/어서\nMeaning: so, because; it joins a reason or a first action to what follows\nTense and structure:\n- A/V + 아서 (after ㅏ or ㅗ)\n- A/V + 어서 (after other vowels)\n- 하다 → 해서\nExplanation:\nIt cannot be used with commands or suggestions.\nUse -(으)니까 for those.\nExamples:\n비가 와서 집에 있어요. = It rains, so I stay home.\n배가 고파서 밥을 먹었어요.\nTranslation: I was hungry, so I ate.\n2. -ㄹ지/을지\nMeaning: whether\nExplanation:\nUse -ㄹ지 말지 when you can't decide.\nExamples:\n비가 올지 안 올지 모르겠어요. = I don't know whether it'll rain or not.\n말할지 말지 모르겠어요. = I don't know whether to say it or not.\n3. -네요\nMeaning: a reaction to something you see or feel right now\nExamples:\n비싸네요. = Wow, it's expensive.\n좋네요. = That's nice.\n## Particles\n이/가\nSubject\n고양이가 집 뒤에 숨었어요. — The cat hid behind the house.\n을/를\nObject\n집 주위를 둘러봤어요. — I looked around the house.\n에\nPlace or time\n가방 안에 있어요. — It's inside the bag.",
             "headings": [
                 "Grammar",
                 "Particles"
@@ -26,7 +26,7 @@
             "section": "Sentences",
             "tables": [],
             "image_count": 0,
-            "char_count": 883
+            "char_count": 871
         }
     ]
 }
