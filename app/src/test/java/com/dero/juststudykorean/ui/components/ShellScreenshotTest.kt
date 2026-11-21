@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dero.juststudykorean.ai.NanoStatus
 import com.dero.juststudykorean.ui.navigation.TopLevel
+import com.dero.juststudykorean.ui.screens.NotesTemplateRow
 import com.dero.juststudykorean.ui.screens.OnDeviceAiRow
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
@@ -139,4 +140,8 @@ class ShellScreenshotTest {
             for (status in listOf(NanoStatus.Available, NanoStatus.Downloadable, NanoStatus.Downloading(42), NanoStatus.Unavailable)) OnDeviceAiRow(status) {}
         }
     }
+
+    /** Settings → Notes template row (Fase 10). */
+    @Test
+    fun notesTemplate() = snap("settings_notes") { NotesTemplateRow {} }
 }

@@ -75,4 +75,5 @@ Si las reglas no entienden un fragmento (`needs_llm_pairs`), el modelo propone p
 ## Estados de la pantalla
 
 - **Sin documentos:** la Card de subir y debajo *No documents yet. Upload a PDF and get to work.* (14 sp, `muted`).
+  - Debajo (fase 10), un enlace de texto: *How to write notes: Notes template* (14 sp, `body-bold`, color `action`, sin subrayado, zona táctil de 48 dp de alto). Abre Settings encima de Library, como desde More; la flecha atrás vuelve a Library. Solo en este estado.
 - **Error:** *Could not load documents.* (sin "Is the backend running?": aquí no hay backend), con *Try again*.
