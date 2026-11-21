@@ -25,7 +25,7 @@ enum class PillTone { Neutral, Info, Correct, Wrong, Warn }
  * the background colour, so a Neutral pill gets a 1 dp `line` border to stay a pill.
  */
 @Composable
-fun Pill(text: String, tone: PillTone = PillTone.Neutral, modifier: Modifier = Modifier, icon: Lucide? = null) {
+fun Pill(text: String, tone: PillTone, modifier: Modifier = Modifier, icon: Lucide? = null) {
     val c = JustStudyTheme.colors
     val (fill, ink) = when (tone) {
         PillTone.Neutral -> c.canvas to c.muted

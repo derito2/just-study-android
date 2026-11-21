@@ -51,7 +51,7 @@ fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDes
         val view = LocalView.current
         SideEffect { generateSequence(view.parent) { it.parent }.filterIsInstance<DialogWindowProvider>().firstOrNull()?.window?.isNavigationBarContrastEnforced = false }
         Column(Modifier.border(Tokens.Border, JustStudyTheme.colors.line, shape).navigationBarsPadding()) {
-            SheetHeader()
+            SheetHeader(null, null)
             MoreSheetContent(darkMode, onDarkMode, onOpen, onGames)
         }
     }

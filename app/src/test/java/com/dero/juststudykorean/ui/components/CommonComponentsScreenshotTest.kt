@@ -55,14 +55,14 @@ class CommonComponentsScreenshotTest {
     @Test
     fun pills() = snap("pill") {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Pill("Queued")
+            Pill("Queued", PillTone.Neutral)
             Pill("Processing", PillTone.Info)
             Pill("Ready", PillTone.Correct, icon = Lucide.Check)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Pill("Failed", PillTone.Wrong)
             Pill("Not supported", PillTone.Warn)
-            Pill("213 cards")
+            Pill("213 cards", PillTone.Neutral)
         }
     }
 }

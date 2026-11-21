@@ -20,7 +20,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 
 /** design/polish.md P-02: the top of a sheet: the handle (32 × 4 dp, 12 dp above and below) and, if it has one, the title with its Korean. */
 @Composable
-fun SheetHeader(title: String? = null, ko: String? = null, modifier: Modifier = Modifier) {
+fun SheetHeader(title: String?, ko: String?, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxWidth()) {
         Box(
             Modifier.align(Alignment.CenterHorizontally).padding(vertical = 12.dp).size(32.dp, 4.dp)

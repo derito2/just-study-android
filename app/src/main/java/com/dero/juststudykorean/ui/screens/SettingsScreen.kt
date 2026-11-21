@@ -188,7 +188,7 @@ internal fun OnDeviceAiRow(status: NanoStatus, onDownload: () -> Unit) {
                     NanoStatus.Available -> Pill("Ready", PillTone.Correct)
                     NanoStatus.Downloadable -> StickerButton("Download", onDownload, color = StickerColor.Action, size = StickerSize.Small)
                     is NanoStatus.Downloading -> Text(status.percent?.let { "$it %" } ?: "Downloading…", style = MaterialTheme.typography.bodySmall, color = colors.muted)
-                    NanoStatus.Unavailable -> Pill("Not available")
+                    NanoStatus.Unavailable -> Pill("Not available", PillTone.Neutral)
                 }
             }
         }

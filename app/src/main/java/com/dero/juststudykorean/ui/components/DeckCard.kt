@@ -122,7 +122,7 @@ private fun DeckCardBody(
                 }
                 Spacer(Modifier.width(Tokens.Space1))
             }
-            Pill("${deck.total} cards")
+            Pill("${deck.total} cards", PillTone.Neutral)
         }
         if (editing) {
             var name by remember(deck.name) { mutableStateOf(deck.name) }
