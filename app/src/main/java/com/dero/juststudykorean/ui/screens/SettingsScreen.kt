@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.screens
 
+import androidx.compose.ui.unit.sp
 import com.dero.juststudykorean.ui.components.PillTone
 import com.dero.juststudykorean.ui.components.Pill
 import com.dero.juststudykorean.ui.components.StickerSize
@@ -116,7 +117,7 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
                 }
                 SettingsRow(Lucide.FileText, "Licenses", "Poppins (OFL), Lucide (MIT), MuPDF (AGPL).", animateKey = null) { licenses = true } // R1-04
                 val version = remember { context.packageManager.getPackageInfo(context.packageName, 0).versionName }
-                Text("Version $version", Modifier.padding(Tokens.Space4), style = MaterialTheme.typography.bodySmall, color = JustStudyTheme.colors.muted)
+                Text("Version $version", Modifier.fillMaxWidth().padding(vertical = Tokens.Space6), style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = JustStudyTheme.colors.muted, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
             }
         }
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
