@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.flashcards
 
+import com.dero.juststudykorean.ui.components.displayName
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dero.juststudykorean.korean.Rating
 import com.dero.juststudykorean.ui.testing.GoldenApp
@@ -57,7 +58,7 @@ class FlashcardsBehaviourTest {
         vm.delete(deck)
         idleUntil { messages.isNotEmpty() }
         assertEquals(cardsBefore - deck.total, cards())
-        assertEquals("Deleted ${deck.total} cards from ${deck.name}.", messages[0].text)
+        assertEquals("Deleted ${deck.total} cards from ${displayName(deck.name, 40)}.", messages[0].text) // the snackbar shows the name without .pdf
         vm.undo(messages[0].undo!!)
         idleUntil { cards() == cardsBefore }
         assertEquals(reviewsBefore, reviews())
