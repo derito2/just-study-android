@@ -17,6 +17,8 @@ import com.dero.juststudykorean.korean.ai.needsLlmPairs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -60,7 +62,7 @@ class MessyNotesTest {
 
     private fun messy(model: Fake): MessyNotes {
         val state = NanoState(model).also { it.refresh() }
-        runBlocking { repeat(50) { if (state.status.value != NanoStatus.Available) delay(20) } }
+        runTest { state.status.first { it == NanoStatus.Available } }
         return MessyNotes(NanoGate(model, state) { false }, db, NotesSource(context), files, indexer)
     }
 

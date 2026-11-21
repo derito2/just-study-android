@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3) // a ViewModel per screen, cleared when it leaves the stack
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test) // runTest: waits for events, not for the clock (D10-5)
     // Roborazzi: roborazzi-compose registers its own activity in Robolectric, so no ui-test-manifest (it would add an exported activity).
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)

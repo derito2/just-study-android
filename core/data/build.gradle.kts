@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test) // runTest: waits for events, not for the clock (D10-5)
     // Repositories against the golden database: Robolectric + Room in memory on Android's SQLite driver.
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.junit)

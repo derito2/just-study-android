@@ -8,8 +8,9 @@ Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y
 - **D10-1:** rellenos y bordes de acierto, fallo y aviso con **valores propios en oscuro**, válidos en todo lo que usa el token. Sustituye, **solo para esos tokens**, a «los colores son los de la web» (2026-11-12, *Contraste*). El fondo y los azules no cambian. Por qué: en oscuro el valor de «Your answer» salía a 1,01–1,06:1 sobre el relleno pálido (H-01).
 - **D10-2:** Games con reparto **Beom (tigre blanco), Deung (farolito) y Dal (luna)**, solo con los colores del grupo `games` de `tokens.json`.
 - **D10-4:** pantallas de carga como **SVG en `assets/splash/`** dibujados con `Canvas`; las 11 escenas hechas de tus fotos quedan **fuera de git** (`.gitignore`: `photo_*.svg`, `splash_vector_private.py`). Sin dependencias. Cierra H-02 y el anexo C de la auditoría.
-**Propuesta pendiente de su sí:**
-- **D10-3:** la voz coreana del teléfono dice la palabra al final de cada ronda de Games, con un ajuste para apagarla (D8-5 sigue: sin efectos de sonido; sin permisos nuevos). Se confirma al aprobar el PR F3.
+**Confirmadas por el dueño el 2026-11-15 («confirmo todo»):** D10-3 y D10-5 (más abajo, como se propusieron). Además: el borde claro de `correct-deco` (2,09:1 sobre blanco) **se deja como está**; `ContrastTest` lo guarda ignorado con el número.
+**Propuestas (ya confirmadas):**
+- **D10-3:** la voz coreana del teléfono dice la palabra al final de cada ronda de Games, con un ajuste para apagarla (D8-5 sigue: sin efectos de sonido; sin permisos nuevos). Confirmada; se vuelve a mirar al aprobar el PR F3.
 - **D10-5:** `kotlinx-coroutines-test` solo en `testImplementation` (`AUDIT_2.md` §8.1). Sin el sí, el PR B se hace sin B1–B2.
 
 ## 2026-11-14 — Fase 9: práctica hablada sin calificar (D9-1, D9-2, D9-3, D9-6)
