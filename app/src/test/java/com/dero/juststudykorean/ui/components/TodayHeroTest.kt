@@ -30,6 +30,7 @@ class TodayHeroTest {
         assertEquals(listOf("never reviewed"), heroChips(listOf("new topic: not practised yet")))
         assertEquals(listOf("1 day ago"), heroChips(listOf("not reviewed in 1 days")))
         assertEquals(emptyList<String>(), heroChips(emptyList()))
+        assertEquals(listOf("something new"), heroChips(listOf("something new"))) // a reason the chips do not know is not lost
     }
 
     private fun hero(documents: Boolean, recommended: List<Recommendation>, library: () -> Unit = {}, quiz: () -> Unit = {}) = compose.setContent {

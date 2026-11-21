@@ -119,7 +119,7 @@ fun heroChips(reasons: List<String>): List<String> {
     val reviewed = reasons.firstNotNullOfOrNull { Regex("""^not reviewed in (\d+) days?""").find(it)?.let { m -> m.groupValues[1].let { n -> "$n ${if (n == "1") "day" else "days"} ago" } } }
         ?: reasons.firstOrNull { it.startsWith("new topic") }?.let { "never reviewed" }
     val due = reasons.firstNotNullOfOrNull { Regex("""^(\d+) flashcards? due""").find(it)?.let { m -> m.groupValues[1].let { n -> "$n ${if (n == "1") "card" else "cards"} due" } } }
-    return listOfNotNull(mastery, reviewed, due)
+    return listOfNotNull(mastery, reviewed, due).ifEmpty { reasons.take(1) }
 }
 
 @OptIn(ExperimentalLayoutApi::class)

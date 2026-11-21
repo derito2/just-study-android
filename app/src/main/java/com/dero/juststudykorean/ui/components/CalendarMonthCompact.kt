@@ -86,11 +86,11 @@ fun CalendarMonthCompact(month: CalendarMonth, today: LocalDate, modifier: Modif
                         val (fill, ink) = colors.cell(day.status)
                         Row(
                             Modifier.weight(1f).heightIn(min = 26.dp).background(fill, cellShape)
-                                .then(if (day.date == today) Modifier.border(2.dp, colors.brand, cellShape) else Modifier)
+                                .then(if (day.date == today) Modifier.todayRing(colors.brand) else Modifier)
                                 .semantics { contentDescription = dayDescription(day, month.month) },
                             horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("${day.date.dayOfMonth}", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium), color = ink)
+                            Text("${day.date.dayOfMonth}", style = TextStyle(fontSize = 12.sp, fontWeight = if (day.date == today) FontWeight.ExtraBold else FontWeight.Medium), color = ink)
                             if (day.studied) Text(symbol(day.status), Modifier.padding(start = 2.dp).alpha(0.75f), style = TextStyle(fontSize = 10.sp), color = ink)
                         }
                     }
@@ -98,13 +98,6 @@ fun CalendarMonthCompact(month: CalendarMonth, today: LocalDate, modifier: Modif
             }
         }
         Spacer(Modifier.height(Tokens.Space2))
-        FlowRow(Modifier.semantics { contentDescription = "Legend" }, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            listOf("green" to "80 %+", "yellow" to "50–79 %", "red" to "under 50 %", "none" to "not studied").forEach { (status, label) ->
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
-                    Box(Modifier.size(12.dp).background(colors.cell(status).first, RoundedCornerShape(4.dp)))
-                    Text(listOf(symbol(status), label).filter { it.isNotEmpty() }.joinToString(" "), style = TextStyle(fontSize = 11.sp), color = colors.muted)
-                }
-            }
-        }
+        CalendarLegend(long = false)
     }
 }

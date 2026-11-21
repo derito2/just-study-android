@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.components
 
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,6 +69,15 @@ internal fun niceMax(value: Int): Int {
     return (ceil(value / step) * step).toInt()
 }
 
+/** P-14: the left axis is the minutes line, the one that matters; the 500 new cards no longer set it. */
+internal fun minutesAxis(points: List<TimelinePoint>): Int = niceMax(max(1L, points.maxOf { it.minutes }).toInt())
+
+/** P-14: the bars (cards per period) are scaled to their own maximum and have no axis; the value is in the tooltip. */
+internal fun cardsScale(points: List<TimelinePoint>): Int = max(1, points.maxOf { maxOf(it.cardsNew, it.cardsLearning, it.cardsDue) })
+
+/** P-14: 6 dp, thinner when the periods are many (three bars share 70 % of a slot), never under 2 dp. */
+internal fun barWidthDp(slotDp: Float): Float = max(2f, min(6f, slotDp * 0.7f / 3))
+
 /** R1-27: what TalkBack reads: the period's totals, so the chart is not just a picture. */
 internal fun chartDescription(timeline: Timeline): String {
     val p = timeline.points
@@ -121,24 +132,29 @@ fun ProgressChart(timeline: Timeline?, unit: TimelineUnit, onUnit: (TimelineUnit
             Chart(timeline)
         }
         Spacer(Modifier.height(Tokens.Space3))
-        Legend()
+        Legend(unit)
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun Legend() {
+private fun Legend(unit: TimelineUnit) {
     val c = JustStudyTheme.colors
     FlowRow(Modifier.semantics { contentDescription = "Chart legend" }, horizontalArrangement = Arrangement.spacedBy(Tokens.Space4), verticalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
-        listOf(
-            Triple("Study time (min)", c.action, true), Triple("Quiz accuracy (%)", c.orange, true),
-            Triple("New flashcards", c.countNew, false), Triple("Learning", c.fix, false), Triple("Due", c.wrong, false),
-        ).forEach { (label, color, line) ->
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Box(if (line) Modifier.size(16.dp, 3.dp).background(color) else Modifier.size(12.dp).background(color, RoundedCornerShape(2.dp)))
-                Text(label, style = TextStyle(fontSize = 12.sp), color = c.muted)
-            }
+        listOf(Triple("Study time (min)", c.action, true), Triple("Quiz accuracy (%)", c.orange, true)).forEach { (label, color, line) ->
+            LegendItem(label, color, line)
         }
+        // P-14: the bars are a different thing (and have no axis): the legend says so.
+        Text("bars: cards per ${unit.name.lowercase()}", style = TextStyle(fontSize = 12.sp), color = c.muted)
+        listOf("New" to c.countNew, "Learning" to c.fix, "Due" to c.wrong).forEach { (label, color) -> LegendItem(label, color, line = false) }
+    }
+}
+
+@Composable
+private fun LegendItem(label: String, color: Color, line: Boolean) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Box(if (line) Modifier.size(16.dp, 3.dp).background(color) else Modifier.size(12.dp).background(color.copy(alpha = 0.35f), RoundedCornerShape(2.dp)))
+        Text(label, style = TextStyle(fontSize = 12.sp), color = JustStudyTheme.colors.muted)
     }
 }
 
@@ -169,12 +185,12 @@ private fun Chart(timeline: Timeline) {
             val h = max(size.height - top - padBottom.toPx(), 40.dp.toPx())
             val left = padLeft.toPx()
             val slot = w / points.size
-            val barW = max(2.dp.toPx(), min(14.dp.toPx(), slot * 0.7f / 3))
-            val leftMax = niceMax(max(1, points.maxOf { maxOf(it.cardsNew, it.cardsLearning, it.cardsDue) }))
-            val minutesMax = max(1L, points.maxOf { it.minutes }) * 1.15f
+            val barW = barWidthDp(slot / density).dp.toPx()
+            val leftMax = minutesAxis(points) // P-14: the left axis is the minutes line
+            val cardsMax = cardsScale(points) // the bars: their own scale, no axis
             fun x(i: Int) = left + slot * i + slot / 2
-            fun yLeft(v: Float) = top + h - v / leftMax * h
-            fun yMinutes(v: Float) = top + h - v / minutesMax * h
+            fun yCards(v: Float) = top + h - v / cardsMax * h
+            fun yMinutes(v: Float) = top + h - v / leftMax * h
             fun yRight(v: Float) = top + h - v * h
             for (t in listOf(0f, 0.5f, 1f)) {
                 val y = top + h - t * h
@@ -184,9 +200,10 @@ private fun Chart(timeline: Timeline) {
             }
             points.forEachIndexed { i, p ->
                 listOf(p.cardsNew to c.countNew, p.cardsLearning to c.fix, p.cardsDue to c.wrong).forEachIndexed { j, (v, color) ->
-                    if (v > 0) {
-                        val y = yLeft(v.toFloat())
-                        drawRoundRect(color, Offset(x(i) + (j - 1.5f) * barW, y), Size(barW - 1.dp.toPx(), top + h - y), CornerRadius(2.dp.toPx()))
+                    if (v > 0) { // behind the lines, at 35 %, rounded only on top
+                        val y = yCards(v.toFloat())
+                        val r = CornerRadius(3.dp.toPx())
+                        drawPath(Path().apply { addRoundRect(RoundRect(Rect(Offset(x(i) + (j - 1.5f) * barW, y), Size(barW - 1.dp.toPx(), top + h - y)), r, r, CornerRadius.Zero, CornerRadius.Zero)) }, color.copy(alpha = 0.35f))
                     }
                 }
                 if (i % every == 0) {
@@ -197,8 +214,8 @@ private fun Chart(timeline: Timeline) {
             polyline(points.map { it.minutes.toFloat() }, ::x, ::yMinutes, c.action)
             polyline(points.map { it.accuracy?.toFloat() }, ::x, ::yRight, c.orange)
             points.forEachIndexed { i, p ->
-                if (p.minutes > 0) drawCircle(c.action, 2.5.dp.toPx(), Offset(x(i), yMinutes(p.minutes.toFloat())))
-                p.accuracy?.let { drawCircle(c.orange, 3.dp.toPx(), Offset(x(i), yRight(it.toFloat()))) }
+                if (p.minutes > 0) drawCircle(c.action, 4.dp.toPx(), Offset(x(i), yMinutes(p.minutes.toFloat())))
+                p.accuracy?.let { drawCircle(c.orange, 4.dp.toPx(), Offset(x(i), yRight(it.toFloat()))) }
             }
             if (empty) {
                 val text = measurer.measure("No study yet in this period.", TextStyle(fontSize = 13.sp, color = c.muted))
