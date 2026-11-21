@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -63,7 +64,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 import java.time.ZoneId
 
 @Composable
-fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, vm: LibraryViewModel = hiltViewModel()) {
+fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, onTemplate: () -> Unit, vm: LibraryViewModel = hiltViewModel()) {
     val docs by vm.documents.collectAsStateWithLifecycle()
     val uploading by vm.uploading.collectAsStateWithLifecycle()
     val open by vm.open.collectAsStateWithLifecycle()
@@ -92,6 +93,7 @@ fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, vm: LibraryVi
 
     LibraryContent(
         docs, uploading, open, extracted, duplicates, snackbar, ZoneId.systemDefault(), onMore, onAllVocabulary,
+        onTemplate = onTemplate,
         onUpload = {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                 pick.launch(arrayOf("application/pdf"))
@@ -129,6 +131,7 @@ fun LibraryContent(
     deleteAtStart: LibraryDocument? = null,
     messy: Map<Long, MessyNotesState> = emptyMap(), // use 6 (phase 6)
     onAddPairs: (Long, List<com.dero.juststudykorean.korean.VocabPair>) -> Unit = { _, _ -> },
+    onTemplate: () -> Unit = {},
 ) {
     val c = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -150,7 +153,13 @@ fun LibraryContent(
                     state.error -> item(key = "error") { ErrorState("Could not load documents.", onRetry) }
                     docs == null -> item(key = "loading") { LoadingState("Loading…") }
                     docs.isEmpty() -> item(key = "empty") {
-                        Text("No documents yet. Upload a PDF and get to work.", style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp), color = c.muted)
+                        Column {
+                            Text("No documents yet. Upload a PDF and get to work.", style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp), color = c.muted)
+                            // Fase 10: the Notes template lives in Settings; back returns here.
+                            Box(Modifier.heightIn(min = 48.dp).clickable(role = Role.Button, onClick = onTemplate), contentAlignment = Alignment.CenterStart) {
+                                Text("How to write notes: Notes template", style = JustStudyTheme.korean.bodyBold.copy(fontSize = 14.sp), color = c.action)
+                            }
+                        }
                     }
                     else -> items(docs, key = { it.document.id }) { d ->
                         DocumentCard(

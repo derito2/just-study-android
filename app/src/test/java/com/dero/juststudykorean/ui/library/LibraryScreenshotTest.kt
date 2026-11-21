@@ -64,11 +64,11 @@ class LibraryScreenshotTest {
         fragments = listOf(Fragment(1, 1, "Vocabulary", "Vocabulary", "vocabulary", "Vocabulary\n1. 메뉴판 = Menu")),
     )
 
-    private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, content: @Composable () -> Unit) =
+    private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, dark: Boolean = false, content: @Composable () -> Unit) =
         captureRoboImage("src/test/screenshots/$name.png") {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
-                JustStudyTheme(darkTheme = false) {
+                JustStudyTheme(darkTheme = dark) {
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.weight(1f)) { content() }
                         if (bar) JsBottomBar(current = TopLevel.Library, onSelect = {})
@@ -91,6 +91,8 @@ class LibraryScreenshotTest {
     )
 
     @Test fun libraryEmpty() = snap("library_empty") { Library(emptyList()) }
+
+    @Test fun libraryEmptyDark() = snap("library_empty_dark", dark = true) { Library(emptyList()) }
 
     @Test fun libraryProcessing() = snap("library_processing") { Library(listOf(queued, processing, ready)) }
 

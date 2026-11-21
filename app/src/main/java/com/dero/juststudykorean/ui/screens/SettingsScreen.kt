@@ -108,7 +108,7 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
                     exportTaps++
                     save.launch("juststudy-backup-${LocalDate.now()}.jsbackup.zip")
                 }
-                SettingsRow(Lucide.FileText, "Notes template", "A .docx to write notes the app can read.", animateKey = null) { saveTemplateAs.launch(NOTES_TEMPLATE_FILE) }
+                NotesTemplateRow { saveTemplateAs.launch(NOTES_TEMPLATE_FILE) }
                 OnDeviceAiRow(nano, vm::downloadNano)
                 Column(Modifier.padding(horizontal = Tokens.Space4), verticalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
                     if (busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = JustStudyTheme.colors.brand, trackColor = JustStudyTheme.colors.tint, gapSize = 0.dp)
@@ -154,6 +154,11 @@ internal fun ImportDialogs(confirming: Boolean, importing: Boolean, onCancel: ()
         }
     }
 }
+
+/** Settings → Notes: saves the .docx template through SAF (the caller opens the file picker). */
+@Composable
+internal fun NotesTemplateRow(onClick: () -> Unit) =
+    SettingsRow(Lucide.FileText, "Notes template", "A .docx to write notes the app can read.", animateKey = null, onClick = onClick)
 
 /** A Settings row, like MoreSheet's: 56 dp, `control` icon, `body-bold` name and one `muted` line. */
 @Composable
