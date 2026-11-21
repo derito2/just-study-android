@@ -69,6 +69,7 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                         route.section == MoreDestination.Calendar -> CalendarScreen(onMore = more, onBack = back)
                         route == Route(TopLevel.Dashboard) -> DashboardScreen(
                             onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onAsk = { coachAsks++; nav.select(TopLevel.Teacher) },
+                            onGoLibrary = { nav.select(TopLevel.Library) }, onStartQuiz = { nav.select(TopLevel.Quiz) },
                         )
                         route == Route(TopLevel.Teacher) -> TeacherScreen(
                             coachAsks, onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) },

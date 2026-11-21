@@ -1,5 +1,14 @@
 package com.dero.juststudykorean.ui.calendar
 
+import com.dero.juststudykorean.ui.components.Lucide
+import com.dero.juststudykorean.ui.components.LucideIcon
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.IconButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -59,15 +68,27 @@ fun CalendarContent(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start = Tokens.Space4, end = Tokens.Space4, bottom = Tokens.Space6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                val prev = ui.month.minusMonths(1)
-                val next = ui.month.plusMonths(1)
-                StickerButton("← ${monthName(prev.monthValue)}", onPrevious, ko = "${prev.monthValue}월", size = StickerSize.Small)
-                StickerButton("${monthName(next.monthValue)} →", onNext, ko = "${next.monthValue}월", size = StickerSize.Small, enabled = ui.canGoNext)
+            val prev = ui.month.minusMonths(1)
+            val next = ui.month.plusMonths(1)
+            // P-45: one header, the month in the middle; the English month name is for TalkBack.
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onPrevious, Modifier.size(Tokens.TouchMin)) {
+                    LucideIcon(Lucide.ChevronLeft, contentDescription = "Previous month, ${monthName(prev.monthValue)}", tint = MaterialTheme.colorScheme.onSurface)
+                }
+                Text(
+                    "${ui.month.year}년 ${ui.month.monthValue}월", Modifier.weight(1f).semantics { heading() },
+                    style = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily.Default), color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center,
+                )
+                IconButton(onNext, Modifier.size(Tokens.TouchMin), enabled = ui.canGoNext) {
+                    LucideIcon(
+                        Lucide.ChevronLeft, contentDescription = "Next month, ${monthName(next.monthValue)}", Modifier.graphicsLayer { rotationZ = 180f },
+                        tint = if (ui.canGoNext) MaterialTheme.colorScheme.onSurface else c.muted.copy(alpha = 0.4f),
+                    )
+                }
             }
             when {
                 ui.data != null -> {
-                    CalendarMonthFull(ui.data, ui.today, ui.selected, onSelect)
+                    CalendarMonthFull(ui.data, ui.today, ui.selected, onSelect, footnote = "Days are counted in ${ui.data.zone.id}.")
                     ui.selected?.let { d ->
                         ui.data.days.firstOrNull { it.date == d }?.let { day ->
                             Text(
@@ -78,7 +99,6 @@ fun CalendarContent(
                             )
                         }
                     }
-                    Text("Days are counted in ${ui.data.zone.id}.", style = MaterialTheme.typography.bodySmall, color = c.muted)
                 }
                 ui.error -> ErrorState("Couldn't load the calendar.", onRetry)
                 else -> LoadingState("Loading…")

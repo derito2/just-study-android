@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.dashboard
 
+import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,7 +75,7 @@ class DashboardScreenshotTest {
         weekly = Weekly(37, 33, 0.84, 0.89, 50, 60),
         calendar = month(mapOf(1 to "green", 3 to "yellow", 4 to "green", 5 to "green", 6 to "red", 7 to "green", 8 to "green")),
         recommended = listOf(
-            Recommendation(1, "3. -아서/어서", "high", 0.9, 0.4, listOf("4/10 in your last 10", "3 mistakes to fix")),
+            Recommendation(1, "3. -아서/어서", "high", 0.9, 0.4, listOf("mastery 40 % (10 answers)", "not reviewed in 25 days", "3 flashcards due")),
             Recommendation(2, "particles", "medium", 0.5, 0.6, emptyList()),
             Recommendation(3, "-거든요", "low", 0.2, 0.9, emptyList()),
         ),
@@ -95,7 +96,7 @@ class DashboardScreenshotTest {
     private fun snap(name: String, ui: DashboardUi, dark: Boolean = false, fontScale: Float = 1f) =
         captureRoboImage("src/test/screenshots/$name.png") {
             val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale), LocalFrozenMotion provides true) {
                 JustStudyTheme(darkTheme = dark) {
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.weight(1f)) { DashboardContent(ui, onMore = {}, onUnit = {}, onPractice = {}, onAsk = {}, onRetry = {}) }
