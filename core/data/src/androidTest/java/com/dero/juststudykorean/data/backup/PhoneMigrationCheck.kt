@@ -9,6 +9,7 @@ import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.data.db.MIGRATION_1_2
 import com.dero.juststudykorean.data.db.MIGRATION_2_3
 import com.dero.juststudykorean.data.db.MIGRATION_3_4
+import com.dero.juststudykorean.data.db.MIGRATION_4_5
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -42,7 +43,7 @@ class PhoneMigrationCheck {
 
     private fun export(name: String): JSONObject = runBlocking {
         val db = Room.databaseBuilder(context, JustStudyDatabase::class.java, File(root, "$name/juststudy.db").path)
-            .setDriver(BundledSQLiteDriver()).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+            .setDriver(BundledSQLiteDriver()).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
         val zip = File(root, "$name.jsbackup.zip")
         try {
             assertEquals(BackupExporter(context, db).export(Uri.fromFile(zip)).javaClass, ExportResult.Ok::class.java)
@@ -57,7 +58,7 @@ class PhoneMigrationCheck {
         assumeTrue(File(root, "before/juststudy.db").isFile && File(root, "after/juststudy.db").isFile)
         val (_, raw) = raw(File(root, "before/juststudy.db"))
         // The app itself migrated `after`: opened here, Room would migrate an old copy and the check would prove nothing.
-        assertEquals("after: schema version", MIGRATION_3_4.endVersion.toLong(), raw(File(root, "after/juststudy.db")).first)
+        assertEquals("after: schema version", MIGRATION_4_5.endVersion.toLong(), raw(File(root, "after/juststudy.db")).first)
         val before = export("before")
         val after = export("after")
         File(root, "result.txt").writeText(SCHEMA.keys.joinToString("\n") { t ->
