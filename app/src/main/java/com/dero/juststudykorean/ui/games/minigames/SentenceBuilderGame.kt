@@ -29,6 +29,7 @@ import com.dero.juststudykorean.korean.games.Outcome
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.games.RoundSpec
 import com.dero.juststudykorean.ui.components.StickerButton
+import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.StickerColor
 import com.dero.juststudykorean.ui.games.pieces.Slot
 import com.dero.juststudykorean.ui.games.pieces.Tile
@@ -97,6 +98,6 @@ fun SentenceBuilderGame(spec: RoundSpec.SentenceBuilder, paused: Boolean, onResu
         FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             spec.tiles.forEachIndexed { t, word -> Tile(word, { place(t) }, state = if (t in line) TileState.Used else TileState.Normal) }
         }
-        StickerButton("Check", ::check, Modifier.fillMaxWidth(), ko = "확인", color = StickerColor.Action, enabled = line.none { it == null } && outcome == null && !paused)
+        StickerButton("Check", ::check, Modifier.fillMaxWidth(), ko = "확인", color = StickerColor.Action, size = StickerSize.Large, enabled = line.none { it == null } && outcome == null && !paused)
     }
 }

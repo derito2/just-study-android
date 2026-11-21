@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.ProgressBar
+import com.dero.juststudykorean.ui.components.StatStrip
+import com.dero.juststudykorean.ui.components.Stat
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -66,7 +69,9 @@ import com.dero.juststudykorean.ui.components.LucideIcon
 import com.dero.juststudykorean.ui.components.OptionState
 import com.dero.juststudykorean.ui.components.QuizOption
 import com.dero.juststudykorean.ui.components.StickerButton
+import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.StickerColor
+import com.dero.juststudykorean.ui.components.FileName
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
@@ -149,19 +154,15 @@ fun QuestionContent(
                 val answered = ui.answers[q.id]
                 val spokenBefore = run.questions.take(ui.index).count { it.id in ui.spoken } // practiced and passed
                 val done = ui.answers.size + spokenBefore
-                LinearProgressIndicator(
-                    { done.toFloat() / total }, Modifier.fillMaxWidth().padding(horizontal = Tokens.Space4).height(6.dp),
-                    color = c.brand, trackColor = c.canvas, gapSize = 0.dp, drawStopIndicator = {}, strokeCap = androidx.compose.ui.graphics.StrokeCap.Round,
-                )
+                ProgressBar(done.toFloat() / total, Modifier.fillMaxWidth().padding(horizontal = Tokens.Space4).height(6.dp))
                 if (ui.pendingAi > 0) Row(Modifier.padding(horizontal = Tokens.Space4, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
                     Text("Writing ${ui.pendingAi} more with AI…", fontSize = 12.sp, color = c.muted)
                     AiMark(short = true)
                 }
-                Row(Modifier.fillMaxWidth().padding(Tokens.Space4)) {
-                    Count("Done", "완료", "$done/$total", MaterialTheme.colorScheme.onSurface, Modifier.weight(1f))
-                    Count("Correct", "정답", "${ui.correct}", c.correctInk, Modifier.weight(1f))
-                    Count("Left", "남음", "${total - done}", MaterialTheme.colorScheme.onSurface, Modifier.weight(1f))
-                }
+                StatStrip(
+                    listOf(Stat("Done", "$done/$total", "완료"), Stat("Correct", "${ui.correct}", "정답", c.correctInk, pulse = true), Stat("Left", "${total - done}", "남음")),
+                    Modifier.padding(Tokens.Space4),
+                )
                 val mode = answerMode(q.type)
                 val scroll = rememberScrollState()
                 // P-32: Show answer (or a comparison) puts the answer and Listen in view; nobody should have to know the card scrolls.
@@ -184,7 +185,7 @@ fun QuestionContent(
                                 if (type != null) KoSide(type.second, 12.sp, Modifier.alignByBaseline(), color = c.muted)
                             }
                             if (q.id < 0) AiMark(Modifier.padding(end = Tokens.Space2), short = true) // written by the model (kept in memory only)
-                            ui.documents[q.id]?.let { Text(it.substringBeforeLast("."), style = MaterialTheme.typography.bodySmall, color = c.muted, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                            ui.documents[q.id]?.let { FileName(it, style = MaterialTheme.typography.bodySmall, color = c.muted, maxLines = 1) }
                         }
                         val korean = Regex("[가-힣]").containsMatchIn(q.prompt)
                         if (!ui.isSpoken) Text(q.prompt, style = if (korean) JustStudyTheme.korean.koPrompt else TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
@@ -227,11 +228,11 @@ fun QuestionContent(
                             ko = if (ui.index + 1 < total) "다음 문제" else "결과 보기", enabled = speaking.canGoOn,
                         )
                         answered != null -> if (ui.index + 1 < total) {
-                            StickerButton("Next question", onNext, Modifier.fillMaxWidth(), ko = "다음 문제")
+                            StickerButton("Next question", onNext, Modifier.fillMaxWidth(), ko = "다음 문제", size = StickerSize.Large)
                         } else {
-                            StickerButton("See results", onNext, Modifier.fillMaxWidth(), ko = "결과 보기")
+                            StickerButton("See results", onNext, Modifier.fillMaxWidth(), ko = "결과 보기", size = StickerSize.Large)
                         }
-                        mode != "choice" -> StickerButton("Check", { onAnswer(ui.typed) }, Modifier.fillMaxWidth(), ko = "확인", enabled = ui.typed.isNotBlank())
+                        mode != "choice" -> StickerButton("Check", { onAnswer(ui.typed) }, Modifier.fillMaxWidth(), ko = "확인", enabled = ui.typed.isNotBlank(), size = StickerSize.Large)
                     }
                 }
             }
@@ -243,17 +244,6 @@ fun QuestionContent(
             confirm = { m -> StickerButton("Leave", { leaving = false; onLeave() }, m, color = StickerColor.Danger) },
             dismiss = { m -> StickerButton("Stay", { leaving = false }, m, color = StickerColor.Gray) },
         )
-    }
-}
-
-@Composable
-private fun Count(label: String, ko: String, value: String, color: androidx.compose.ui.graphics.Color, modifier: Modifier) {
-    Column(modifier.clearAndSetSemantics { contentDescription = "$label: $value" }, horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(label.uppercase(), Modifier.alignByBaseline(), style = MaterialTheme.typography.labelMedium, color = JustStudyTheme.colors.muted)
-            KoSide(ko, MaterialTheme.typography.labelMedium.fontSize, Modifier.alignByBaseline(), color = JustStudyTheme.colors.muted)
-        }
-        Text(value, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.ExtraBold), color = color)
     }
 }
 

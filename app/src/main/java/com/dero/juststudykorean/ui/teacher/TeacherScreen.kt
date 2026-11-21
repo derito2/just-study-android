@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.teacher
 
+import com.dero.juststudykorean.ui.components.PillTone
+import com.dero.juststudykorean.ui.components.Pill
 import com.dero.juststudykorean.ui.components.AiMark
 import com.dero.juststudykorean.korean.ai.AI_MODEL
 import androidx.compose.animation.AnimatedVisibility
@@ -263,10 +265,7 @@ internal fun CoachCard(
     openAll: Boolean = false,
 ) = Card {
     val colors = JustStudyTheme.colors
-    Text(
-        "COACH", style = MaterialTheme.typography.labelMedium, color = colors.fillWarn,
-        modifier = Modifier.background(colors.warnFill, RoundedCornerShape(Tokens.RadiusSm)).padding(horizontal = 8.dp, vertical = 2.dp),
-    )
+    Pill("COACH", PillTone.Warn)
     Text(e.question, style = JustStudyTheme.korean.bodyBold, color = colors.muted)
     if (answer.ai) AiMark(fromNotes = true) // use 5: the model wrote the text from the rules' facts (R1-11)
     Text(answer.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)

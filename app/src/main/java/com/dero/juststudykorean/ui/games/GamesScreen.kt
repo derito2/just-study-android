@@ -1,5 +1,10 @@
 package com.dero.juststudykorean.ui.games
 
+import com.dero.juststudykorean.ui.components.SheetHeader
+import com.dero.juststudykorean.ui.components.StatStrip
+import com.dero.juststudykorean.ui.components.Stat
+import com.dero.juststudykorean.ui.components.BannerTone
+import com.dero.juststudykorean.ui.components.ResultBanner
 import android.view.accessibility.AccessibilityManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
@@ -225,7 +230,7 @@ fun GamesContent(
                     PauseSheetContent(counts, typingTimer, onTypingTimer, onResume, onEnd, voiceMissing, Modifier.align(Alignment.BottomCenter).background(MaterialTheme.colorScheme.surface, RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)))
                 } else {
                     val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-                    ModalBottomSheet(onDismissRequest = onResume, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface) {
+                    ModalBottomSheet(onDismissRequest = onResume, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface, dragHandle = null) {
                         PauseSheetContent(counts, typingTimer, onTypingTimer, onResume, onEnd, voiceMissing)
                     }
                 }
@@ -329,13 +334,12 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
     val ms = if (result.outcome == Outcome.WON) 900L else 1800L
     LaunchedEffect(result) { if (!talkBack) { delay(ms); onDone() } }
     val tap = { if (System.nanoTime() - shownAt >= 350_000_000L) onDone() }
-    val (fill, border, icon) = when {
-        result.timedOut -> Triple(c.wrongFill, c.wrongBorder, Lucide.Clock)
-        result.outcome == Outcome.WON -> Triple(c.correctFill, c.correctDeco, Lucide.Check)
-        result.outcome == Outcome.NEUTRAL -> Triple(c.tint, c.tintBorder, Lucide.Lightbulb)
-        else -> Triple(c.wrongFill, c.wrongBorder, Lucide.X)
+    val (tone, icon) = when {
+        result.timedOut -> BannerTone.Wrong to Lucide.Clock
+        result.outcome == Outcome.WON -> BannerTone.Correct to Lucide.Check
+        result.outcome == Outcome.NEUTRAL -> BannerTone.Neutral to Lucide.Lightbulb
+        else -> BannerTone.Wrong to Lucide.X
     }
-    val ink = when { result.outcome == Outcome.WON -> c.correctInk; result.outcome == Outcome.NEUTRAL -> c.brandText; else -> c.wrongInk }
     val (title, ko) = when {
         result.timedOut -> "Time's up" to "시간 종료"
         result.outcome == Outcome.WON -> when (counts.streak) { 3 -> "Three in a row!"; 5 -> "On fire!"; 10 -> "Unstoppable!"; else -> "Correct!" } to "정답!"
@@ -346,37 +350,32 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
     val answer = if (result.outcome == Outcome.WON) null else answerOf(round)
     // Neutral (Sentence Builder) shows the order of your notes under its text.
     Box(Modifier.fillMaxSize().clickable(remember { MutableInteractionSource() }, null, onClick = tap))
-    Row(
-        modifier.fillMaxWidth().heightIn(min = 64.dp).background(fill, RoundedCornerShape(16.dp)).border(2.dp, border, RoundedCornerShape(16.dp))
-            .clickable(remember { MutableInteractionSource() }, null, onClick = tap).padding(16.dp)
-            .semantics { liveRegion = LiveRegionMode.Polite },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        LucideIcon(icon, contentDescription = null, size = 20.dp, tint = ink)
-        Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f)) {
+    ResultBanner(
+        tone, title, modifier.heightIn(min = 64.dp).clickable(remember { MutableInteractionSource() }, null, onClick = tap).semantics { liveRegion = LiveRegionMode.Polite },
+        ko = ko, icon = icon, cornerRadius = 16.dp,
+        action = if (talkBack) ({ StickerButton("Next", onDone, color = StickerColor.Action, size = StickerSize.Small) }) else null,
+        body = if (answer == null) null else ({
             Row(verticalAlignment = Alignment.Bottom) {
-                Text(title, Modifier.alignByBaseline(), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = ink)
-                if (ko != null) KoSide(ko, 16.sp, Modifier.alignByBaseline(), color = ink)
-            }
-            if (answer != null) Row(verticalAlignment = Alignment.Bottom) {
                 Text("Answer: ", fontSize = 14.sp, color = c.fillMuted)
                 Text(answer, style = JustStudyTheme.korean.koBody, color = if (result.outcome == Outcome.NEUTRAL) MaterialTheme.colorScheme.onSurface else c.fillInk)
             }
-        }
-        if (talkBack) StickerButton("Next", onDone, color = StickerColor.Action, size = StickerSize.Small)
-    }
+        }),
+    )
 }
 
 /** 9: the pause sheet's content: four figures, the typing timer, Resume and End session. */
 @Composable
 fun PauseSheetContent(counts: SessionCounts, typingTimer: Boolean, onTypingTimer: (Boolean) -> Unit, onResume: () -> Unit, onEnd: () -> Unit, voiceMissing: Boolean = false, modifier: Modifier = Modifier) {
     // Scrolls when it doesn't fit (a small screen, 130 % text, the no-voice notice).
-    Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text("Paused", Modifier.alignByBaseline(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-            KoSide("일시정지", MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onSurface)
-        }
+    Column(modifier.fillMaxWidth()) {
+        SheetHeader("Paused", "일시정지")
+        PauseBody(counts, typingTimer, onTypingTimer, onResume, onEnd, voiceMissing)
+    }
+}
+
+@Composable
+private fun PauseBody(counts: SessionCounts, typingTimer: Boolean, onTypingTimer: (Boolean) -> Unit, onResume: () -> Unit, onEnd: () -> Unit, voiceMissing: Boolean) {
+    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 24.dp, end = 24.dp, bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Figures(counts.rounds.toLong(), counts.won.toLong(), counts.bestStreak.toLong(), counts.seconds)
         Row(Modifier.fillMaxWidth().clickable { onTypingTimer(!typingTimer) }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -393,27 +392,20 @@ fun PauseSheetContent(counts: SessionCounts, typingTimer: Boolean, onTypingTimer
             LucideIcon(Lucide.Volume2, contentDescription = null, size = 20.dp, tint = JustStudyTheme.colors.muted)
             Text("Listening games are off: no offline Korean voice on this phone. Install one in Android's text-to-speech settings.", fontSize = 12.sp, color = JustStudyTheme.colors.muted)
         }
-        StickerButton("Resume", onResume, Modifier.fillMaxWidth(), ko = "계속하기", color = StickerColor.Go)
-        StickerButton("End session", onEnd, Modifier.fillMaxWidth().padding(top = 0.dp), ko = "끝내기", color = StickerColor.Gray)
+        StickerButton("Resume", onResume, Modifier.fillMaxWidth(), ko = "계속하기", color = StickerColor.Go, size = StickerSize.Large)
+        StickerButton("End session", onEnd, Modifier.fillMaxWidth().padding(top = 0.dp), ko = "끝내기", color = StickerColor.Gray, size = StickerSize.Large)
     }
 }
 
 /** Rounds · Won · Best streak · Time, in a row. */
 @Composable
 private fun Figures(rounds: Long, won: Long, best: Long, seconds: Long) {
-    val c = JustStudyTheme.colors
-    Row(Modifier.fillMaxWidth()) {
+    StatStrip(
         listOf(
-            Triple("ROUNDS", "라운드", rounds.toString()), Triple("WON", "정답", won.toString()),
-            Triple("BEST STREAK", "최고 연속", best.toString()), Triple("TIME", "시간", "%d:%02d".format(seconds / 60, seconds % 60)),
-        ).forEachIndexed { i, (label, ko, value) ->
-            Column(Modifier.weight(1f).semantics(mergeDescendants = true) { }, horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(label, style = MaterialTheme.typography.labelSmall, color = c.muted, textAlign = TextAlign.Center)
-                Text(ko, style = JustStudyTheme.korean.koBelow, color = c.muted)
-                Text(value, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = if (i == 1) c.correctInk else MaterialTheme.colorScheme.onSurface)
-            }
-        }
-    }
+            Stat("Rounds", rounds.toString(), "라운드"), Stat("Won", won.toString(), "정답", JustStudyTheme.colors.correctInk),
+            Stat("Best streak", best.toString(), "최고 연속"), Stat("Time", "%d:%02d".format(seconds / 60, seconds % 60), "시간"),
+        ),
+    )
 }
 
 /** 10: the summary card over the full scene. */
@@ -445,8 +437,8 @@ fun SessionSummaryCard(summary: SessionSummary, counts: SessionCounts, onPlayAga
                 Text(item.meaning, style = MaterialTheme.typography.bodyMedium, color = c.muted, maxLines = 1)
             }
         }
-        StickerButton(if (empty) "Play" else "Play again", onPlayAgain, Modifier.fillMaxWidth(), ko = if (empty) "시작" else "다시 하기", color = StickerColor.Go)
-        StickerButton("Done", onDone, Modifier.fillMaxWidth(), ko = "완료", color = StickerColor.Action)
+        StickerButton(if (empty) "Play" else "Play again", onPlayAgain, Modifier.fillMaxWidth(), ko = if (empty) "시작" else "다시 하기", color = StickerColor.Go, size = StickerSize.Large)
+        StickerButton("Done", onDone, Modifier.fillMaxWidth(), ko = "완료", color = StickerColor.Action, size = StickerSize.Large)
     }
 }
 

@@ -48,7 +48,7 @@ fun WeaknessPanel(mistakes: List<MistakeLine>?, onFix: () -> Unit, modifier: Mod
                     Text("Questions you got wrong and haven't fixed yet, from all your quizzes.", style = MaterialTheme.typography.bodySmall, color = c.onHeroSoft)
                     mistakes.take(5).forEach { m ->
                         Column(Modifier.fillMaxWidth().background(c.onPhotoItem, MaterialTheme.shapes.small).padding(horizontal = Tokens.Space3, vertical = Tokens.Space2)) {
-                            Text(m.document, style = JustStudyTheme.korean.bodyBold, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            FileName(m.document, style = JustStudyTheme.korean.bodyBold, color = Color.White, maxLines = 1)
                             Text(m.detail, style = MaterialTheme.typography.bodySmall, color = c.onHeroSoft)
                         }
                     }

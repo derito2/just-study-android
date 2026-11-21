@@ -36,8 +36,11 @@ import com.dero.juststudykorean.ui.theme.Motion
 import com.dero.juststudykorean.ui.theme.Tokens
 
 enum class StickerColor { Action, Go, Fix, Danger, Gray }
-/** Mini: Today's session only (design/dashboard.md): 32 dp + 3 dp edge, 11 sp, Korean 10 sp, 48 dp touch area. */
-enum class StickerSize { Default, Small, Mini }
+/**
+ * design/polish.md P-01. Large: the action at the foot of a screen, full width (52 dp + 4 dp edge, 15 sp). Default: inside a card.
+ * Small: secondary and row actions. Mini: Today's session only (design/dashboard.md): 32 dp + 3 dp edge, 11 sp, Korean 10 sp, 48 dp touch area.
+ */
+enum class StickerSize { Default, Small, Mini, Large }
 
 private data class StickerPaint(val fill: Color, val pressed: Color, val edge: Color, val ink: Color)
 
@@ -84,8 +87,8 @@ internal fun StickerButton(
     val paint = colors.paint(color)
     val source = remember { MutableInteractionSource() }
     val pressed = enabled && (forcePressed || source.collectIsPressedAsState().value)
-    val edge = if (size == StickerSize.Default) Tokens.EdgeLg else Tokens.EdgeMd
-    val height = when (size) { StickerSize.Default -> Tokens.ButtonH; StickerSize.Small -> Tokens.ButtonSmH; StickerSize.Mini -> 32.dp }
+    val edge = if (size == StickerSize.Default || size == StickerSize.Large) Tokens.EdgeLg else Tokens.EdgeMd
+    val height = when (size) { StickerSize.Large -> Tokens.ButtonLgH; StickerSize.Default -> Tokens.ButtonH; StickerSize.Small -> Tokens.ButtonSmH; StickerSize.Mini -> 32.dp }
     val sink by animateDpAsState(if (pressed) edge else 0.dp, tween(Motion.Press, easing = Motion.EaseOut), label = "sink")
     val fill by animateColorAsState(
         when { !enabled -> colors.disabledFill; pressed -> paint.pressed; else -> paint.fill },
@@ -93,11 +96,11 @@ internal fun StickerButton(
     )
     val ink = if (enabled) paint.ink else colors.disabledInk
     val shape = MaterialTheme.shapes.medium
-    val label = when (size) { StickerSize.Default -> MaterialTheme.typography.labelLarge; StickerSize.Small -> JustStudyTheme.korean.buttonSm; StickerSize.Mini -> JustStudyTheme.korean.buttonSm.copy(fontSize = 11.sp) }
+    val label = when (size) { StickerSize.Large -> MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp); StickerSize.Default -> MaterialTheme.typography.labelLarge; StickerSize.Small -> JustStudyTheme.korean.buttonSm; StickerSize.Mini -> JustStudyTheme.korean.buttonSm.copy(fontSize = 11.sp) }
 
     Box(
         modifier
-            .then(if (size != StickerSize.Default) Modifier.minimumInteractiveComponentSize() else Modifier)
+            .then(if (size == StickerSize.Small || size == StickerSize.Mini) Modifier.minimumInteractiveComponentSize() else Modifier)
             .clickable(source, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(bottom = edge), // room for the edge: the button is height + edge tall
         propagateMinConstraints = true, // fillMaxWidth() on the button stretches the face
@@ -109,7 +112,7 @@ internal fun StickerButton(
                 .offset { IntOffset(0, sink.roundToPx()) }
                 .background(fill, shape)
                 .heightIn(min = height)
-                .padding(horizontal = when (size) { StickerSize.Default -> Tokens.Space4; StickerSize.Small -> Tokens.Space3; StickerSize.Mini -> 10.dp }, vertical = if (size == StickerSize.Mini) Tokens.Space1 else Tokens.Space2),
+                .padding(horizontal = when (size) { StickerSize.Default, StickerSize.Large -> Tokens.Space4; StickerSize.Small -> Tokens.Space3; StickerSize.Mini -> 10.dp }, vertical = if (size == StickerSize.Mini) Tokens.Space1 else Tokens.Space2),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {

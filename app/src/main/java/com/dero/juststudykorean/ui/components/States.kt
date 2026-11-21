@@ -87,22 +87,14 @@ internal fun LoadingState(text: String, modifier: Modifier, delayMs: Long, progr
     }
 }
 
-/** Error: `wrong-fill` box, `badge-alert` (shakes once), what happened, and Try again (Gray, Small). */
+/** Error (design/polish.md P-05): a wrong [ResultBanner] with `badge-alert` (shakes once), what happened and Try again (Gray, Small). */
 @Composable
 fun ErrorState(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier, title: String? = null, retryLabel: String = "Try again") {
-    val colors = JustStudyTheme.colors
     var shown by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { shown = true }
-    Row(
-        modifier.fillMaxWidth().background(colors.wrongFill, MaterialTheme.shapes.medium).padding(Tokens.Space4),
-    ) {
-        LucideIcon(Lucide.BadgeAlert, contentDescription = null, size = 20.dp, tint = colors.wrongInk, animateKey = shown)
-        Spacer(Modifier.width(Tokens.Space3))
-        Column {
-            if (title != null) Text(title, style = JustStudyTheme.korean.bodyBold, color = colors.wrongInk)
-            Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.fillInk)
-            Spacer(Modifier.height(Tokens.Space2))
-            StickerButton(retryLabel, onRetry, color = StickerColor.Gray, size = StickerSize.Small)
-        }
-    }
+    ResultBanner(
+        BannerTone.Wrong, title ?: message, modifier, icon = Lucide.BadgeAlert, iconAnimateKey = shown,
+        action = { StickerButton(retryLabel, onRetry, color = StickerColor.Gray, size = StickerSize.Small) },
+        body = if (title != null) ({ Text(message, style = MaterialTheme.typography.bodyMedium, color = JustStudyTheme.colors.fillInk) }) else null,
+    )
 }

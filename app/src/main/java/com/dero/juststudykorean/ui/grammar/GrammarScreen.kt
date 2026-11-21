@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.grammar
 
+import com.dero.juststudykorean.ui.components.SearchField
 import com.dero.juststudykorean.ui.components.GrammarCardAi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -68,11 +69,7 @@ fun GrammarContent(
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = Tokens.Space3).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
             GrammarFilter.entries.forEach { f -> FilterPill(f.name, f == ui.filter, { onFilter(f) }) }
         }
-        JsTextField(
-            ui.query, onQuery, Modifier.fillMaxWidth().padding(horizontal = Tokens.Space4, vertical = Tokens.Space2), placeholder = "Search in Korean or English",
-            leading = { LucideIcon(Lucide.Search, contentDescription = null, size = 20.dp, tint = c.muted) },
-            trailing = if (ui.query.isNotEmpty()) ({ IconButton({ onQuery("") }) { LucideIcon(Lucide.X, contentDescription = "Clear search", size = 20.dp, tint = c.muted) } }) else null,
-        )
+        SearchField(ui.query, onQuery, Modifier.fillMaxWidth().padding(horizontal = Tokens.Space4, vertical = Tokens.Space2))
         Box(Modifier.fillMaxSize()) {
             when {
                 ui.error -> Box(Modifier.padding(Tokens.Space4)) { ErrorState("Could not load grammar.", onRetry) }

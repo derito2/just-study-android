@@ -1,7 +1,8 @@
 package com.dero.juststudykorean.ui.screens
 
+import com.dero.juststudykorean.ui.components.PillTone
+import com.dero.juststudykorean.ui.components.Pill
 import com.dero.juststudykorean.ui.components.StickerSize
-import com.dero.juststudykorean.ui.library.Pill
 import com.dero.juststudykorean.ai.NanoStatus
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -184,10 +185,10 @@ internal fun OnDeviceAiRow(status: NanoStatus, onDownload: () -> Unit) {
             Box(Modifier.weight(1f)) { SettingsRow(Lucide.Sparkles, "On-device AI", "Gemini Nano runs on your phone. No internet.", animateKey = null) }
             Box(Modifier.padding(end = Tokens.Space6)) {
                 when (status) {
-                    NanoStatus.Available -> Pill("Ready", colors.correctFill, colors.correctInk)
+                    NanoStatus.Available -> Pill("Ready", PillTone.Correct)
                     NanoStatus.Downloadable -> StickerButton("Download", onDownload, color = StickerColor.Action, size = StickerSize.Small)
                     is NanoStatus.Downloading -> Text(status.percent?.let { "$it %" } ?: "Downloading…", style = MaterialTheme.typography.bodySmall, color = colors.muted)
-                    NanoStatus.Unavailable -> Pill("Not available", colors.canvas, colors.muted)
+                    NanoStatus.Unavailable -> Pill("Not available", PillTone.Neutral)
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.flashcards
 
+import com.dero.juststudykorean.ui.components.StatStrip
+import com.dero.juststudykorean.ui.components.Stat
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -298,19 +300,7 @@ private fun Modifier.card() = this
 
 /** New · Due now · Learned · Total: four Cards in a row, 8 dp apart. */
 @Composable
-private fun StatsRow(values: List<Pair<String, Int>>) {
-    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-        values.forEach { (label, n) ->
-            Column(
-                Modifier.weight(1f).fillMaxHeight().card().padding(horizontal = 4.dp, vertical = 10.dp).clearAndSetSemantics { contentDescription = "$label: $n" },
-                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-            ) {
-                Text(label.uppercase(), style = MaterialTheme.typography.labelMedium.copy(fontSize = 11.sp), color = JustStudyTheme.colors.muted, maxLines = 1)
-                Text("$n", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface, maxLines = 1)
-            }
-        }
-    }
-}
+private fun StatsRow(values: List<Pair<String, Int>>) = StatStrip(values.map { (label, n) -> Stat(label, "$n") }, tiled = true)
 
 @Composable
 private fun SectionTitle(text: String, ko: String) {
@@ -386,9 +376,8 @@ private fun OptionsSheet(current: Scheduling, onSave: (List<String>) -> String?,
     var values by remember { mutableStateOf(listOf(current.againMinutes, current.hardHours, current.goodHours, current.easyHours).map { it.toString() }) }
     var status by remember { mutableStateOf<String?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
-    JsSheet(onDismiss) {
+    JsSheet(onDismiss, "Settings", "설정") {
         Column(Modifier.padding(horizontal = Tokens.Space6), verticalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
-            SectionTitle("Settings", "설정")
             fields.forEachIndexed { i, (f, help) ->
                 Column {
                     Row(verticalAlignment = Alignment.Bottom) {

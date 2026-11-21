@@ -59,6 +59,7 @@ import com.dero.juststudykorean.ui.components.Lucide
 import com.dero.juststudykorean.ui.components.LucideIcon
 import com.dero.juststudykorean.ui.components.RatingButtons
 import com.dero.juststudykorean.ui.components.StickerButton
+import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.ThemeSwitch
 import com.dero.juststudykorean.ui.components.TypedResult
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
@@ -188,7 +189,7 @@ fun StudyContent(
             Box(Modifier.fillMaxWidth().padding(Tokens.Space3)) {
                 if (!ui.flipped) {
                     val meaning = if (typingFor(typeAnswer, card2, ui.details) && sideFor(direction, card2) != CardDirection.EnToKo) card2.card.front to card2.card.back else null
-                    StickerButton("Show answer", { onFlip(meaning) }, Modifier.fillMaxWidth(), ko = "정답 보기")
+                    StickerButton("Show answer", { onFlip(meaning) }, Modifier.fillMaxWidth(), ko = "정답 보기", size = StickerSize.Large)
                 } else {
                     RatingButtons(preview(card2, scheduling), onRate)
                 }

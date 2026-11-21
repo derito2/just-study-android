@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.PillTone
+import com.dero.juststudykorean.ui.components.Pill
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -66,6 +68,7 @@ import com.dero.juststudykorean.ui.components.LucideIcon
 import com.dero.juststudykorean.ui.components.StickerButton
 import com.dero.juststudykorean.ui.components.StickerColor
 import com.dero.juststudykorean.ui.components.StickerSize
+import com.dero.juststudykorean.ui.components.FileName
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import com.dero.juststudykorean.ui.theme.Tokens
@@ -95,15 +98,12 @@ fun SpokenQuestion(q: QuestionsEntity, document: String?, speaking: SpeakingUi, 
         Row(verticalAlignment = Alignment.Bottom) {
             Text("Say it in Korean", Modifier.alignByBaseline(), style = MaterialTheme.typography.bodySmall, color = c.muted)
             KoSide("한국어로 말하기", 12.sp, Modifier.alignByBaseline(), color = c.muted)
-            Text(
-                "PRACTICE", Modifier.padding(start = Tokens.Space2).background(c.tint, CircleShape).padding(horizontal = Tokens.Space2, vertical = 2.dp),
-                style = MaterialTheme.typography.labelMedium, color = c.brandText, maxLines = 1, softWrap = false,
-            )
+            Pill("PRACTICE", PillTone.Info, Modifier.padding(start = Tokens.Space2))
         }
         document?.let {
-            Text(
-                it.substringBeforeLast("."), Modifier.weight(1f).padding(start = Tokens.Space2), style = MaterialTheme.typography.bodySmall, color = c.muted,
-                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, textAlign = androidx.compose.ui.text.style.TextAlign.End,
+            FileName(
+                it, Modifier.weight(1f).padding(start = Tokens.Space2), style = MaterialTheme.typography.bodySmall, color = c.muted,
+                maxLines = 1, textAlign = androidx.compose.ui.text.style.TextAlign.End,
             )
         } ?: Spacer(Modifier.weight(1f))
     }
