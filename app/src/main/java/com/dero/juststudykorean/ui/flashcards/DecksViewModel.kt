@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.flashcards
 
+import com.dero.juststudykorean.ui.components.displayName
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dero.juststudykorean.data.db.DocumentsEntity
@@ -88,7 +89,7 @@ class DecksViewModel @Inject constructor(private val repo: FlashcardRepository, 
 
     fun delete(deck: Deck) = viewModelScope.launch {
         runCatchingCancellable { repo.delete(deck.id) }
-            .onSuccess { messages.send(DecksMessage("Deleted ${it.cards.size} cards from ${deck.name}.", undo = it)) }
+            .onSuccess { messages.send(DecksMessage("Deleted ${it.cards.size} cards from ${displayName(deck.name, 40)}.", undo = it)) }
             .onFailure { messages.send(DecksMessage(it.message ?: "Couldn't delete the deck.")) }
     }
 

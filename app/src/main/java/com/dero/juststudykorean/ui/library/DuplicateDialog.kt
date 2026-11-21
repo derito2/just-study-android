@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.library
 
+import com.dero.juststudykorean.ui.components.displayName
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,9 +26,9 @@ internal fun DuplicateDialog(shown: DuplicatesShown, onSkip: () -> Unit, onSkipA
     val c = JustStudyTheme.colors
     val count = if (shown.items.size > 1) " (${shown.index + 1} of ${shown.items.size})" else ""
     val message = if (d.kind == "word") {
-        "${shown.filename} repeats a word you already study. It stays as one word: its meanings and examples are combined (one flashcard)."
+        "${displayName(shown.filename, 40)} repeats a word you already study. It stays as one word: its meanings and examples are combined (one flashcard)."
     } else {
-        "${shown.filename} repeats a grammar point you already study. Your first version stays; the repeated one from this PDF is not saved again."
+        "${displayName(shown.filename, 40)} repeats a grammar point you already study. Your first version stays; the repeated one from this PDF is not saved again."
     }
     JsDialog(
         "Already in the app$count", "이미 있어요", message, onSkipAll,
@@ -57,6 +58,6 @@ private fun Box(title: String, info: DuplicateInfo, modifier: Modifier) {
         Text(info.meaning, style = MaterialTheme.typography.bodyMedium, color = ink)
         if (info.example.isNotEmpty()) Text(info.example, style = JustStudyTheme.korean.koBody, color = ink)
         if (info.exampleTranslation.isNotEmpty()) Text(info.exampleTranslation, style = MaterialTheme.typography.bodySmall, color = c.muted)
-        Text("${info.filename} · p. ${info.pageNumber}", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
+        Text("${displayName(info.filename, 40)} · p. ${info.pageNumber}", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
     }
 }

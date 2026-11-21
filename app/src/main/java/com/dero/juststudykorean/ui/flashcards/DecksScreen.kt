@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.flashcards
 
+import com.dero.juststudykorean.ui.components.displayName
 import com.dero.juststudykorean.ui.components.StatStrip
 import com.dero.juststudykorean.ui.components.Stat
 import androidx.compose.animation.core.Animatable
@@ -267,7 +268,7 @@ fun DecksContent(
 
     when (val o = over) {
         is Over.Delete -> JsDialog(
-            null, null, "Delete \"${o.deck.name}\"? Its cards and their progress are deleted too.", { over = null },
+            null, null, "Delete \"${displayName(o.deck.name, 40)}\"? Its cards and their progress are deleted too.", { over = null },
             confirm = { m -> StickerButton("Yes, delete", { over = null; onDelete(o.deck) }, m, ko = "삭제", color = StickerColor.Danger) },
             dismiss = { m -> StickerButton("Cancel", { over = null }, m, ko = "취소", color = StickerColor.Gray) },
         )

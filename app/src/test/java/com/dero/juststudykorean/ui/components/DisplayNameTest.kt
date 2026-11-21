@@ -40,6 +40,12 @@ class DisplayNameTest {
         assertEquals("한국어…완전판_정리", displayName("한국어_노트_학습자료_완전판_정리.pdf", 10))
     }
 
+    @Test fun aLongNameWrapsAtItsUnderscores() {
+        // Without spaces a name would break in the middle of a word ("Korean_Notes_Exam" / "ple"); the invisible break goes after "_".
+        assertEquals("Korean_\u200BNotes_\u200BExample", breakable("Korean_Notes_Example"))
+        assertEquals("Unit 3 · At school", breakable("Unit 3 · At school"))
+    }
+
     @Test fun aNameThatIsOnlyTheExtensionStays() {
         assertEquals(".pdf", displayName(".pdf", 10))
     }
