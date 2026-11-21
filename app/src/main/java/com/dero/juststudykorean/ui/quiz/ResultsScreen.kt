@@ -65,7 +65,13 @@ fun ResultsContent(rows: List<ResultRow>?, onClose: () -> Unit, onNewQuiz: () ->
                 verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
             ) {
                 val right = rows.count { it.correct }
-                Text("$right / ${rows.size} correct", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
+                // M-3: the score is "earned": one step per right answer, at least 60 ms each, 600 ms at most (ease-out); at once with reduced motion.
+                val still = com.dero.juststudykorean.ui.theme.reduceMotion() || com.dero.juststudykorean.ui.theme.LocalFrozenMotion.current
+                val shown = androidx.compose.runtime.remember { androidx.compose.animation.core.Animatable(if (still) right.toFloat() else 0f) }
+                androidx.compose.runtime.LaunchedEffect(right) {
+                    if (!still) shown.animateTo(right.toFloat(), androidx.compose.animation.core.tween((right * 60).coerceIn(1, 600), easing = com.dero.juststudykorean.ui.theme.Motion.EaseOut))
+                }
+                Text("${Math.round(shown.value)} / ${rows.size} correct", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
                 val line = when {
                     right == rows.size -> "Perfect. Now do it again tomorrow."
                     right * 2 >= rows.size -> "Not bad, but not enough. Go again."

@@ -58,7 +58,7 @@ fun SelectedGroup(options: List<String>, selected: Int, onSelect: (Int) -> Unit,
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             // P-38: the chosen one also carries a check, so the state is not only blue against gray.
                             if (checkChosen && chosen) { LucideIcon(Lucide.Check, contentDescription = null, size = 14.dp, tint = Color.White); Spacer(Modifier.width(Tokens.Space1)) }
-                            Text(label.uppercase(), color = Color.White, style = JustStudyTheme.korean.buttonSm, textAlign = TextAlign.Center, maxLines = 1)
+                            Text(label.uppercase(), color = Color.White, style = JustStudyTheme.korean.buttonSm, textAlign = TextAlign.Center, maxLines = if (checkChosen) 2 else 1)
                         }
                         if (ko != null) Text(ko[i], color = Color.White, style = JustStudyTheme.korean.koBelow, modifier = Modifier.alpha(0.85f), maxLines = 1)
                     }

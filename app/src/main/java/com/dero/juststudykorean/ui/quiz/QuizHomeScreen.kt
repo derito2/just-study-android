@@ -75,8 +75,9 @@ fun QuizHomeScreen(onMore: () -> Unit, onGenerate: () -> Unit, onOpenRun: (Long)
     LaunchedEffect(vm) {
         vm.messages.collect { e -> when (e) { is QuizEvent.Open -> onOpenRun(e.runId); is QuizEvent.Message -> snackbar.showSnackbar(e.text) } }
     }
+    val collapsed by vm.formCollapsed.collectAsStateWithLifecycle()
     QuizHomeContent(
-        form ?: return, documents, mistakes, history, snackbar, onMore = onMore, onForm = { vm.setForm(it) }, onGenerate = onGenerate,
+        form ?: return, documents, mistakes, history, snackbar, onMore = onMore, onForm = { vm.setForm(it) }, onGenerate = { vm.rememberCollapsed(); onGenerate() }, collapsed = collapsed ?: return,
         onPracticeSaved = { vm.practiceSaved() }, onFix = { vm.fixWeaknesses() }, onDetails = onDetails, ai = ai, speech = speech,
     )
 }
@@ -98,6 +99,7 @@ fun QuizHomeContent(
     onDetails: (String) -> Unit,
     photo: Boolean = true,
     ai: Boolean = false, // Gemini Nano Available (design/quiz.md A.2)
+    collapsed: Boolean = false, // P-30: Question types and Difficulty start closed after a quiz was generated
     speech: Boolean = true, // phase 9: Korean on-device speech is there (design/quiz-speaking.md A)
 ) {
     val c = JustStudyTheme.colors
@@ -121,7 +123,7 @@ fun QuizHomeContent(
                     if (LocalDensity.current.fontScale <= 1.15f) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) { qCol(Modifier); dCol(Modifier.weight(1f)) }
                     else { qCol(Modifier); dCol(Modifier) }
                     val usable = form.usableTypes(ai, speech)
-                    var typesOpen by rememberSaveable { mutableStateOf(true) }
+                    var typesOpen by rememberSaveable { mutableStateOf(!collapsed) }
                     LaunchedEffect(usable.isEmpty()) { if (usable.isEmpty()) typesOpen = true } // the error opens the section by itself
                     FoldSection("Question types", "문제 유형", "${usable.size} of ${QUIZ_TYPES.size} selected", typesOpen, { typesOpen = !typesOpen }) {
                         // design/quiz.md A.1/A.2: without Nano, the types only it writes are shown but cannot be used.
@@ -134,7 +136,7 @@ fun QuizHomeContent(
                     if (usable.isEmpty()) Text("Choose at least one question type.", style = MaterialTheme.typography.bodyMedium, color = c.wrongInk)
                     val levelsCount = form.levelsCount(ai)
                     if (levelsCount) { // P-30: only when it applies (Nano and a model question type checked)
-                        var levelsOpen by rememberSaveable { mutableStateOf(true) }
+                        var levelsOpen by rememberSaveable { mutableStateOf(!collapsed) }
                         FoldSection("Difficulty", "난이도", "Difficulty · ${form.levels.sorted().joinToString(", ").ifEmpty { "none" }}".removePrefix("Difficulty · "), levelsOpen, { levelsOpen = !levelsOpen }) {
                             Text("Only questions written by the model change with it.", style = MaterialTheme.typography.bodySmall, color = c.muted)
                             Grid(LEVELS) { (n, label, ko) -> CheckItem(label, ko, null, n in form.levels) { onForm(form.copy(levels = if (n in form.levels) form.levels - n else form.levels + n)) } }
