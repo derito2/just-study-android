@@ -78,4 +78,59 @@ class StageDirectorTest {
             assertEquals(id, d.playing)
         }
     }
+
+    @Test
+    fun entryRunsInFromTheLeftAndLandsOnHisSpot() {
+        assertEquals(1000, Tracks.A8.total)
+        assertEquals(-190f, Tracks.A8.sample(0f, rest).x, 0.01f)
+        assertEquals(0f, Tracks.A8.sample(400f, rest).x, 0.01f) // two hops of 200 ms
+        assertEquals(12f, Tracks.A8.sample(300f - 100f + 100f - 0f, rest).y.coerceAtMost(12f), 12f) // hops are 12 dp high
+        assertEquals(0f, Tracks.A8.sample(1000f, rest).x, 0.01f)
+    }
+
+    @Test
+    fun theStreakTracksFollowTheSheet() {
+        assertEquals(1200, Tracks.DoubleJump.total)
+        assertEquals(34f, Tracks.DoubleJump.sample(330f, rest).y, 0.01f)
+        assertEquals(24f, Tracks.DoubleJump.sample(680f, rest).y, 0.01f) // the second take-off at ~70 % of the height
+        assertEquals(48f, Tracks.Somersault.sample(250f, rest).y, 0.01f)
+        assertEquals(-360f, Tracks.Somersault.sample(530f, rest).rot, 0.01f) // 420 ms of flight (110 → 530)
+        assertEquals(1.28f, Tracks.Somersault.sample(640f, rest).sx, 0.001f) // lands (1.28, 0.74)
+        assertEquals(0.74f, Tracks.Somersault.sample(640f, rest).sy, 0.001f)
+    }
+
+    @Test
+    fun streakEventsPickTheirTrackAndTheFlameLightsAndGoesOut() {
+        val d = StageDirector()
+        d.handle(StageEvent.RoundWon, 0f, rest)
+        d.handle(StageEvent.Streak(3), 10f, rest) // the flame lights on top of A3: the track stays
+        assertEquals("A3", d.playing)
+        assertEquals(0f, d.flameScale(10f)!!, 0.01f)
+        assertTrue(d.flameScale(10f + 192f)!! > 1.1f) // overshoots to 1.3 on the way
+        assertNull(d.flameScale(10f + 330f)) // then the streak decides (steady 1)
+        d.handle(StageEvent.Streak(5), 100f, rest)
+        assertEquals("A3-double", d.playing)
+        d.handle(StageEvent.Streak(20), 2000f, rest)
+        assertEquals("A3-flip", d.playing)
+        d.handle(StageEvent.Streak(15), 5000f, rest)
+        assertEquals("A3-flip", d.playing) // 15 is not a multiple of 10: nothing new
+        d.handle(StageEvent.StreakLost, 9000f, rest)
+        assertEquals(0f, d.flameScale(9150f) ?: 0f, 0.01f) // out in 150 ms
+        assertNotNull(d.smoke(9100f)); assertNull(d.smoke(9400f)) // the ring lasts 300 ms
+    }
+
+    @Test
+    fun aFingerAnticipatesAndReleasesInTimeAndThinkingNeverInterrupts() {
+        val d = StageDirector()
+        d.handle(StageEvent.Touch(0.9f), 0f, rest)
+        assertEquals("A1", d.playing)
+        assertEquals(6f, d.pose(500f)!!.tilt, 0.01f) // holds while the finger is down
+        assertTrue(d.lookX > 0f)
+        d.handle(StageEvent.Release, 600f, rest)
+        assertEquals("A1-release", d.playing)
+        assertNull(d.pose(600f + 151f))
+        d.handle(StageEvent.RoundWon, 1000f, rest)
+        d.handle(StageEvent.Thinking, 1100f, rest) // never cuts a result animation
+        assertEquals("A3", d.playing)
+    }
 }

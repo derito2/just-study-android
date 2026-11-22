@@ -33,6 +33,8 @@ data class BeomPose(
     val lookX: Float = 0f, val lookY: Float = 0f, val blush: Float = 0f,
     /** Eye height factor for a blink (1 open → 0.1 → 1); only used with [BeomEyes.Open]. */
     val blink: Float = 1f,
+    /** Horizontal offset in dp from his spot (A8: he runs in from the left). */
+    val x: Float = 0f,
 ) {
     companion object {
         val Rest = BeomPose()
@@ -69,7 +71,7 @@ fun DrawScope.drawBeom(u: Float, footX: Float, footY: Float, pose: BeomPose) {
     val sky = Tokens.SkyLight
     val ink = Tokens.NightDeep
     val stripe = Tokens.NightShade
-    withTransform({ translate(footX, footY); scale(u, u, Offset.Zero) }) {
+    withTransform({ translate(footX + pose.x * u, footY); scale(u, u, Offset.Zero) }) {
         // Shadow: shrinks as he jumps.
         val shadowW = 44f * (1f - (pose.y / 80f).coerceIn(0f, 0.9f))
         drawOval(ink.copy(alpha = 0.45f), Offset(-shadowW / 2, -3f), Size(shadowW, 8f))

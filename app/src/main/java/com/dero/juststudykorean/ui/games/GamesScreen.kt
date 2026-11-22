@@ -1,5 +1,9 @@
 package com.dero.juststudykorean.ui.games
 
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.snapshotFlow
 import com.dero.juststudykorean.ui.games.stage.StageEvent
 import com.dero.juststudykorean.ui.components.SheetHeader
@@ -210,7 +214,26 @@ fun GamesContent(
     }
     LaunchedEffect(state is SessionState.Paused) { if (state is SessionState.Paused) stage.send(StageEvent.Paused) else if (stage.director.playing == "A9") stage.send(StageEvent.Resumed) }
     LaunchedEffect(ended) { if (ended) stage.send(StageEvent.SessionEnded(counts.rounds, counts.won)) }
-    LaunchedEffect(counts.streak) { stage.streak = counts.streak }
+    // F2 part 2: streak (3: the flame lights, 5: double jump, 10 and every 10: somersault; a lost streak puts the flame out).
+    var prevStreak by remember { mutableIntStateOf(0) }
+    LaunchedEffect(counts.streak) {
+        val n = counts.streak
+        stage.streak = n
+        if (n > prevStreak && (n == 3 || n == 5 || (n >= 10 && n % 10 == 0))) stage.send(StageEvent.Streak(n))
+        if (prevStreak >= 3 && n == 0) stage.send(StageEvent.StreakLost)
+        prevStreak = n
+    }
+    // A8: Beom is not on the scene during the opening and runs in when it ends.
+    LaunchedEffect(Unit) { if (!opened) stage.entering = true }
+    LaunchedEffect(opened) { if (opened && stage.entering) stage.send(StageEvent.Entered) }
+    // A1 / A12: a finger on the board (read without taking it from the game) and 8 s of nothing.
+    var lastTouch by remember { mutableLongStateOf(System.nanoTime()) }
+    LaunchedEffect(state is SessionState.Playing) {
+        while (state is SessionState.Playing && !still) {
+            delay(1000)
+            if ((System.nanoTime() - lastTouch) / 1_000_000 >= 8000) { stage.send(StageEvent.Thinking); lastTouch = System.nanoTime() }
+        }
+    }
     // A13 (Hangman, Word Recall): a lantern goes out, a sibling falls asleep; Beom only startles.
     LaunchedEffect(stage) {
         var last: Int? = null
@@ -236,6 +259,20 @@ fun GamesContent(
                     .padding(top = top + BOARD_TOP_DP.dp)
                     .graphicsLayer { translationY = full.value * with(density) { (maxH - top - BOARD_TOP_DP.dp).toPx() } }
                     .board()
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val e = awaitPointerEvent(PointerEventPass.Initial) // looks, never consumes
+                                val p = e.changes.firstOrNull() ?: continue
+                                lastTouch = System.nanoTime()
+                                when (e.type) {
+                                    PointerEventType.Press -> stage.send(StageEvent.Touch(p.position.x / size.width))
+                                    PointerEventType.Move -> stage.director.lookX = (p.position.x / size.width - 0.5f) * 4f
+                                    PointerEventType.Release -> stage.send(StageEvent.Release)
+                                }
+                            }
+                        }
+                    }
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottom),
             ) {
                 Board(state, round, stage, typingTimer, onResult, onLibrary, onDone, onRetry)
