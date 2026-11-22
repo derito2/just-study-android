@@ -38,13 +38,23 @@ internal fun SplashScene(scene: SceneData, t: () -> Float, still: Boolean, modif
                 val cover = max(size.width / SCENE_W, size.height / SCENE_H)
                 val origin = Offset((size.width - SCENE_W * cover) / 2f, (size.height - SCENE_H * cover) / 2f)
                 // Grain: one dot every 14 × 14 px, fixed seed, at physical resolution (it does not scale).
-                val grain = grainPoints(size.width, size.height)
+                val grainBrush = grainBrush(scene.grain)
                 onDrawBehind {
                     scene.layers.forEachIndexed { i, layer ->
                         val gl = layers[i]
                         if (!recorded[i]) {
-                            gl.record(IntSize(size.width.toInt(), size.height.toInt())) {
-                                withTransform({ translate(origin.x, origin.y); scale(cover, cover, Offset.Zero) }) { drawScenePaths(layer) }
+                            // Each layer is recorded at the size of its own content, not the whole screen: far fewer pixels to composite every frame.
+                            val b = layerBounds(layer)
+                            val left = (origin.x + b.left * cover).coerceIn(0f, size.width).toInt()
+                            val top = (origin.y + b.top * cover).coerceIn(0f, size.height).toInt()
+                            val right = (origin.x + b.right * cover).coerceIn(0f, size.width).toInt() + 1
+                            val bottom = (origin.y + b.bottom * cover).coerceIn(0f, size.height).toInt() + 1
+                            val pad = if (layer.blur > 0f) (layer.blur * cover * 3).toInt() else 0 // room for the blur to spread
+                            val l = (left - pad).coerceAtLeast(0); val tp = (top - pad).coerceAtLeast(0)
+                            val r = (right + pad).coerceAtMost(size.width.toInt()); val bt = (bottom + pad).coerceAtMost(size.height.toInt())
+                            gl.topLeft = androidx.compose.ui.unit.IntOffset(l, tp)
+                            gl.record(IntSize((r - l).coerceAtLeast(1), (bt - tp).coerceAtLeast(1))) {
+                                withTransform({ translate(origin.x - l, origin.y - tp); scale(cover, cover, Offset.Zero) }) { drawScenePaths(layer) }
                             }
                             if (layer.blur > 0f) gl.renderEffect = BlurEffect(layer.blur * cover, layer.blur * cover, TileMode.Decal)
                             recorded[i] = true
@@ -56,33 +66,39 @@ internal fun SplashScene(scene: SceneData, t: () -> Float, still: Boolean, modif
                         val drift = if (still) Offset.Zero else layer.drift * (cover * time)
                         withTransform({ scale(zoom, zoom, center); translate(drift.x, drift.y) }) { drawLayer(gl) }
                     }
-                    if (scene.grain > 0f) {
-                        drawPoints(grain.light, PointMode.Points, Color.White.copy(alpha = scene.grain), 1f, blendMode = BlendMode.SrcOver)
-                        drawPoints(grain.dark, PointMode.Points, Color(0xFF020B1F).copy(alpha = scene.grain), 1f, blendMode = BlendMode.SrcOver)
-                    }
+                    if (scene.grain > 0f) drawRect(grainBrush, size = size)
                 }
             },
         ) {}
     }
 }
 
-private class Grain(val light: List<Offset>, val dark: List<Offset>)
-
-private fun grainPoints(w: Float, h: Float): Grain {
-    val rnd = Random(7)
-    val light = ArrayList<Offset>()
-    val dark = ArrayList<Offset>()
-    var y = 0f
-    while (y < h) {
-        var x = 0f
-        while (x < w) {
-            val p = Offset(x + rnd.nextFloat() * 14f, y + rnd.nextFloat() * 14f)
-            if (rnd.nextBoolean()) light += p else dark += p
-            x += 14f
-        }
-        y += 14f
+/** The box a layer's paths fill, in scene units (strokes widened by half their width). Gradients that fade out lie inside the paths that carry them. */
+private fun layerBounds(layer: SceneLayer): androidx.compose.ui.geometry.Rect {
+    var rect: androidx.compose.ui.geometry.Rect? = null
+    for (p in layer.paths) {
+        val b = p.path.getBounds().let { if (p.stroke != null) it.inflate(p.strokeWidth / 2f) else it }
+        rect = rect?.let { r -> androidx.compose.ui.geometry.Rect(minOf(r.left, b.left), minOf(r.top, b.top), maxOf(r.right, b.right), maxOf(r.bottom, b.bottom)) } ?: b
     }
-    return Grain(light, dark)
+    return rect ?: androidx.compose.ui.geometry.Rect(0f, 0f, SCENE_W, SCENE_H)
+}
+
+/**
+ * The grain (design/splash.md §3): white and `night-deep` dots of 1 physical px, about one per 14 × 14 px, fixed seed. Drawn as a repeating
+ * 126 px tile (an ImageShader), not as ~13 000 separate points every frame: measured on the OPPO, the points cost ~10 ms of frame time.
+ */
+private fun grainBrush(opacity: Float): androidx.compose.ui.graphics.Brush {
+    val tile = androidx.compose.ui.graphics.ImageBitmap(126, 126)
+    val canvas = androidx.compose.ui.graphics.Canvas(tile)
+    val rnd = Random(7)
+    val light = androidx.compose.ui.graphics.Paint().apply { color = Color.White.copy(alpha = opacity) }
+    val dark = androidx.compose.ui.graphics.Paint().apply { color = Color(0xFF020B1F).copy(alpha = opacity) }
+    for (gy in 0 until 9) for (gx in 0 until 9) {
+        val x = gx * 14f + rnd.nextInt(14)
+        val y = gy * 14f + rnd.nextInt(14)
+        canvas.drawRect(x, y, x + 1f, y + 1f, if (rnd.nextBoolean()) light else dark)
+    }
+    return androidx.compose.ui.graphics.ShaderBrush(androidx.compose.ui.graphics.ImageShader(tile, TileMode.Repeated, TileMode.Repeated))
 }
 
 private fun DrawScope.drawScenePaths(layer: SceneLayer) {
