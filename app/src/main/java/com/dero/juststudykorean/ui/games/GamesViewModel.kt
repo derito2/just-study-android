@@ -152,4 +152,7 @@ class GamesViewModel @Inject constructor(
     }
 
     fun setTypingTimer(on: Boolean) = viewModelScope.launch { prefs.setTypingTimer(on) }
+
+    val speakWord: StateFlow<Boolean> = prefs.gamesSpeakWord.stateIn(viewModelScope, SharingStarted.Eagerly, true)
+    fun setSpeakWord(on: Boolean) = viewModelScope.launch { prefs.setGamesSpeakWord(on) }
 }

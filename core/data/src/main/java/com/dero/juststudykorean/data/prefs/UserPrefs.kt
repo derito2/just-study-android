@@ -56,6 +56,10 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     val typingTimer: Flow<Boolean> = store.data.map { it[TYPING_TIMER] ?: true }
     suspend fun setTypingTimer(on: Boolean) { store.edit { it[TYPING_TIMER] = on } }
 
+    /** D10-3: the Korean voice says the word at the end of each Games round. On by default. */
+    val gamesSpeakWord: Flow<Boolean> = store.data.map { it[GAMES_SPEAK_WORD] ?: true }
+    suspend fun setGamesSpeakWord(on: Boolean) { store.edit { it[GAMES_SPEAK_WORD] = on } }
+
     /** R1-14: repeats you skipped ("{document}:{kind}:{text}"), not asked again when the document is reprocessed. */
     val skippedDuplicates: Flow<Set<String>> = store.data.map { it[SKIPPED_DUPLICATES].orEmpty() }
     suspend fun addSkippedDuplicates(keys: Collection<String>) { store.edit { it[SKIPPED_DUPLICATES] = it[SKIPPED_DUPLICATES].orEmpty() + keys } }
@@ -78,6 +82,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     private companion object {
         val THEME = stringPreferencesKey("theme_mode")
         val SKIPPED_DUPLICATES = stringSetPreferencesKey("skipped_duplicates")
+        val GAMES_SPEAK_WORD = booleanPreferencesKey("games_speak_word")
         val TYPING_TIMER = booleanPreferencesKey("typing_timer")
         val CARD_DIRECTION = stringPreferencesKey("card_direction")
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
