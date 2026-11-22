@@ -20,7 +20,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 enum class DeungEyes { Open, Happy, Shut, Wide }
 
 /** [glow] 0…1.6; [flame]: the streak flame over the lid (streak ≥ 3). */
-data class DeungPose(val tilt: Float = 0f, val glow: Float = 1f, val sx: Float = 1f, val sy: Float = 1f, val eyes: DeungEyes = DeungEyes.Open, val flame: Boolean = false)
+data class DeungPose(val tilt: Float = 0f, val glow: Float = 1f, val sx: Float = 1f, val sy: Float = 1f, val eyes: DeungEyes = DeungEyes.Open, val flame: Boolean = false, val flameScale: Float = 1f, val flameHeight: Float = 1f)
 
 /** Deung centred on ([cx], [cy]) px; [u] is px per dp. At most ~14 draw operations. */
 fun DrawScope.drawDeung(u: Float, cx: Float, cy: Float, pose: DeungPose) {
@@ -28,8 +28,10 @@ fun DrawScope.drawDeung(u: Float, cx: Float, cy: Float, pose: DeungPose) {
     withTransform({ translate(cx, cy); rotate(pose.tilt, Offset.Zero); scale(u * pose.sx, u * pose.sy, Offset.Zero) }) {
         drawCircle(Brush.radialGradient(listOf(Tokens.Lantern.copy(alpha = 0.30f * g), Color.Transparent), Offset.Zero, 22f), 22f, Offset.Zero)
         drawLine(Tokens.SkyLight.copy(alpha = 0.6f), Offset(0f, -12f), Offset(0f, -22f), 1.5f)
-        if (pose.flame) drawPath(Path().apply { moveTo(0f, -26f); quadraticTo(5f, -20f, 0f -0f, -13.5f); quadraticTo(-5f, -20f, 0f, -26f); close() }.let { it }, Tokens.Lantern)
-        if (pose.flame) drawPath(Path().apply { moveTo(0f, -22f); quadraticTo(2f, -19f, 0f, -16f); quadraticTo(-2f, -19f, 0f, -22f); close() }, Color.White)
+        if (pose.flame && pose.flameScale > 0f) withTransform({ scale(pose.flameScale, pose.flameScale * pose.flameHeight, Offset(0f, -13.5f)) }) {
+            drawPath(Path().apply { moveTo(0f, -26f); quadraticTo(5f, -20f, 0f, -13.5f); quadraticTo(-5f, -20f, 0f, -26f); close() }, Tokens.Lantern)
+            drawPath(Path().apply { moveTo(0f, -22f); quadraticTo(2f, -19f, 0f, -16f); quadraticTo(-2f, -19f, 0f, -22f); close() }, Color.White)
+        }
         drawRoundRect(Tokens.NightDeep, Offset(-6f, -14f), Size(12f, 4f), CornerRadius(2f)) // lid
         drawRoundRect(Tokens.LanternRed, Offset(-11f, -12f), Size(22f, 24f), CornerRadius(9f)) // body
         for (x in listOf(-4f, 0f, 4f)) drawLine(Tokens.NightDeep.copy(alpha = 0.25f), Offset(x, -10f), Offset(x, 10f), 1f)

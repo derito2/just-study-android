@@ -64,6 +64,8 @@ class StageScope {
 
     /** The result of the round, for the fixed poses (F2 animates the way there). */
     var mood: StageMood by mutableStateOf(StageMood.Idle)
+    /** The opening is on: Beom and Deung are not on the scene yet (A8 brings Beom in). */
+    var entering: Boolean by mutableStateOf(false)
     /** Deung's flame shows from a streak of 3. */
     var streak: Int by mutableIntStateOf(0)
     /** Dal's face when it is not the clock's: [DalFace.Sleepy] in the pause, [DalFace.Proud] in the summary. */
@@ -81,6 +83,7 @@ class StageScope {
             is StageEvent.SessionEnded -> if (e.rounds > 0 && e.won * 10 >= e.rounds * 6) StageMood.Won else StageMood.Idle
             else -> if (e == StageEvent.NextRound || e == StageEvent.Resumed) StageMood.Idle else mood
         }
+        if (e == StageEvent.Entered) entering = false
         director.handle(e, clockMs(), beomIdle(clockMs() / 1000f))
     }
 
@@ -218,14 +221,23 @@ fun GameStage(scope: StageScope, parallaxKey: Any?, burst: Int, modifier: Modifi
                     StageMood.Idle -> BeomPose.Rest
                     StageMood.Won -> BeomPose.Happy
                     StageMood.Lost -> BeomPose.Sad
-                } else scope.director.pose(nowMs) ?: beomIdle(t)
+                } else (scope.director.pose(nowMs) ?: beomIdle(t)).let { p -> if (scope.director.playing == "A1") p.copy(lookX = scope.director.lookX) else p }
                 scope.director.dust(nowMs)?.let { x -> // A3's landing: two clouds of dust, 10 → 18 dp, fading
                     for (side in listOf(-20f, 20f)) drawOval(Tokens.SkyLight.copy(alpha = 0.4f * (1f - x)), Offset((150f + side - (10f + 8f * x)) * u, y(166f - 3f)), Size(2 * (10f + 8f * x) * u, 2 * 4f * u))
                 }
-                drawBeom(u, 150f * u, y(166f), pose)
-                val float = if (still) 0f else 3f * sin(2 * PI * t / 2.4f).toFloat()
-                val glow = if (still) when (scope.mood) { StageMood.Won -> 1.3f; StageMood.Lost -> 0.7f; else -> 1f } else scope.director.deungGlow(nowMs) ?: (1f + 0.08f * sin(2 * PI * t / 2.4f).toFloat())
-                drawDeung(u, 206f * u, y(112f + float), DeungPose(glow = glow, eyes = if (scope.mood == StageMood.Won) DeungEyes.Happy else DeungEyes.Open, flame = scope.streak >= 3))
+                if (!scope.entering) {
+                    drawBeom(u, 150f * u, y(166f), pose)
+                    val float = if (still) 0f else 3f * sin(2 * PI * t / 2.4f).toFloat()
+                    val lit = scope.streak >= 3
+                    val glow = if (still) when (scope.mood) { StageMood.Won -> 1.3f; StageMood.Lost -> 0.7f; else -> if (lit) 1.3f else 1f }
+                        else scope.director.deungGlow(nowMs) ?: ((if (lit) 1.3f else 1f) + 0.08f * sin(2 * PI * t / 2.4f).toFloat())
+                    val ignite = if (still) null else scope.director.flameScale(nowMs)
+                    val flicker = if (still) 1f else 1f + 0.1f * sin(2 * PI * t / 0.3f).toFloat() // 0.9–1.1, 300 ms
+                    drawDeung(u, 206f * u, y(112f + float), DeungPose(glow = glow, eyes = if (scope.mood == StageMood.Won) DeungEyes.Happy else DeungEyes.Open, flame = lit || ignite != null, flameScale = ignite ?: 1f, flameHeight = flicker))
+                    scope.director.smoke(nowMs)?.let { x -> // the flame went out: a ring of smoke, 6 → 16 dp
+                        drawCircle(Tokens.SkyLight.copy(alpha = 0.3f * (1f - x)), (6f + 10f * x) * u, Offset(206f * u, y(112f + float - 17f)), style = Stroke(1.5f * u))
+                    }
+                }
                 // 15 particles
                 if (petals.value < 1f) drawPetals(u, petals.value)
             }

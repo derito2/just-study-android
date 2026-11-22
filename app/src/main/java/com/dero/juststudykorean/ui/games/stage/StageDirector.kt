@@ -42,7 +42,7 @@ internal fun lerp(a: BeomPose, b: BeomPose, x: Float) = BeomPose(
     sx = l(a.sx, b.sx, x), sy = l(a.sy, b.sy, x), y = l(a.y, b.y, x), rot = l(a.rot, b.rot, x), tilt = l(a.tilt, b.tilt, x),
     earL = l(a.earL, b.earL, x), earR = l(a.earR, b.earR, x), armL = l(a.armL, b.armL, x), armR = l(a.armR, b.armR, x),
     tail = l(a.tail, b.tail, x), tailPuff = l(a.tailPuff, b.tailPuff, x), lookX = l(a.lookX, b.lookX, x), lookY = l(a.lookY, b.lookY, x),
-    blush = l(a.blush, b.blush, x), blink = l(a.blink, b.blink, x), eyes = if (x > 0f) b.eyes else a.eyes, mouth = if (x > 0f) b.mouth else a.mouth,
+    blush = l(a.blush, b.blush, x), blink = l(a.blink, b.blink, x), x = l(a.x, b.x, x), eyes = if (x > 0f) b.eyes else a.eyes, mouth = if (x > 0f) b.mouth else a.mouth,
 )
 
 /** The tracks of the sheet. Durations are the sheet's; the last pose of each is Beom's rest, except A4 (holds). */
@@ -92,6 +92,52 @@ object Tracks {
         Key(240, rest, BounceEasing),
     ))
 
+    /** A1: anticipation while a finger is down (120 ms, then it holds; the eyes follow the finger's x, set by the stage). */
+    val A1 = Track("A1", listOf(Key(120, BeomPose(tilt = 6f, earL = 8f, earR = 8f, lookY = 2f), Motion.EaseOut)), hold = true)
+
+    /** The finger is up: back to rest in 150 ms. */
+    val A1Release = Track("A1-release", listOf(Key(150, rest, Motion.EaseOut)))
+
+    /** A12: nothing touched for 8 s: the right arm scratches the head three times (300 ms each), looking at the hint. 900 ms. */
+    val A12 = Track("A12", listOf(
+        Key(300, BeomPose(armR = 130f, eyes = BeomEyes.Open, lookX = 2f), Motion.EaseInOut),
+        Key(600, BeomPose(armR = 110f, eyes = BeomEyes.Open, lookX = 2f), Motion.EaseInOut),
+        Key(900, rest, Motion.EaseInOut),
+    ))
+
+    /** A8: Beom runs in from the left in two hops (200 ms each, 12 dp high), then waves twice (400 ms). */
+    val A8 = Track("A8", listOf(
+        Key(0, BeomPose(x = -190f), Motion.EaseOut),
+        Key(100, BeomPose(x = -142f, y = 12f, sx = 0.94f, sy = 1.08f, eyes = BeomEyes.Happy), Motion.EaseOut),
+        Key(200, BeomPose(x = -95f, y = 0f, sx = 1.06f, sy = 0.94f, eyes = BeomEyes.Happy), Motion.EaseIn),
+        Key(300, BeomPose(x = -47f, y = 12f, sx = 0.94f, sy = 1.08f, eyes = BeomEyes.Happy), Motion.EaseOut),
+        Key(400, BeomPose(x = 0f, y = 0f, sx = 1.06f, sy = 0.94f, eyes = BeomEyes.Happy), Motion.EaseIn),
+        Key(500, BeomPose(armR = 165f, eyes = BeomEyes.Happy, mouth = BeomMouth.Open), Motion.EaseInOut),
+        Key(600, BeomPose(armR = 135f, eyes = BeomEyes.Happy, mouth = BeomMouth.Open), Motion.EaseInOut),
+        Key(700, BeomPose(armR = 165f, eyes = BeomEyes.Happy, mouth = BeomMouth.Open), Motion.EaseInOut),
+        Key(800, BeomPose(armR = 135f, eyes = BeomEyes.Happy, mouth = BeomMouth.Open), Motion.EaseInOut),
+        Key(1000, rest, Motion.EaseInOut),
+    ))
+
+    /** Streak 5: A3 with two take-offs in a row (the second at 70 % of the height); 1200 ms. */
+    val DoubleJump = Track("A3-double", listOf(
+        Key(110, BeomPose(sx = 1.18f, sy = 0.80f, armL = 0f, armR = 0f, eyes = BeomEyes.Squeeze), Motion.EaseIn),
+        Key(330, BeomPose(y = 34f, sx = 0.86f, sy = 1.20f, armL = 150f, armR = 150f, earL = -20f, earR = -20f, tail = 1f, mouth = BeomMouth.Open, eyes = BeomEyes.Happy), Motion.EaseOut),
+        Key(480, BeomPose(y = 0f, sx = 1.12f, sy = 0.88f, armL = 150f, armR = 150f, eyes = BeomEyes.Happy, mouth = BeomMouth.Open), Motion.EaseIn),
+        Key(680, BeomPose(y = 24f, sx = 0.88f, sy = 1.16f, armL = 150f, armR = 150f, earL = -20f, earR = -20f, tail = 1f, mouth = BeomMouth.Open, eyes = BeomEyes.Happy), Motion.EaseOut),
+        Key(860, BeomPose(y = 0f, sx = 1.22f, sy = 0.78f, armL = 100f, armR = 100f, eyes = BeomEyes.Happy, mouth = BeomMouth.Open), Motion.EaseIn),
+        Key(1200, BeomPose(blush = 1f, eyes = BeomEyes.Happy), BounceEasing),
+    ))
+
+    /** Streak 10 and every 10: A3 with y 48 and a somersault (rot 0° → −360°) in a 420 ms flight; lands (1.28, 0.74). 1300 ms. */
+    val Somersault = Track("A3-flip", listOf(
+        Key(110, BeomPose(sx = 1.20f, sy = 0.78f, armL = 0f, armR = 0f, eyes = BeomEyes.Squeeze), Motion.EaseIn),
+        Key(250, BeomPose(y = 48f, sx = 0.84f, sy = 1.22f, rot = -180f, armL = 150f, armR = 150f, mouth = BeomMouth.Open, eyes = BeomEyes.Happy), Motion.EaseOut),
+        Key(530, BeomPose(y = 0f, sx = 1.0f, sy = 1.0f, rot = -360f, armL = 150f, armR = 150f, mouth = BeomMouth.Open, eyes = BeomEyes.Happy), Motion.EaseIn),
+        Key(640, BeomPose(sx = 1.28f, sy = 0.74f, rot = -360f, armL = 100f, armR = 100f, eyes = BeomEyes.Happy), Motion.EaseIn),
+        Key(1300, BeomPose(blush = 1f, eyes = BeomEyes.Happy), BounceEasing),
+    ))
+
     /** A10, ≥ 60 % won: the victory dance (4 beats of 300 ms, twice) and a bow. 3100 ms; holds the bow's end at rest. */
     val Dance = Track("A10-won", buildList {
         var t = 0
@@ -130,6 +176,16 @@ sealed interface StageEvent {
     data object LifeLost : StageEvent
     /** The card closed: back to A0. */
     data object NextRound : StageEvent
+    /** A finger is down at [xFrac] (0…1 across the board); [Release] when it goes up. */
+    data class Touch(val xFrac: Float) : StageEvent
+    data object Release : StageEvent
+    /** 8 s without a touch (A12). */
+    data object Thinking : StageEvent
+    /** A8: the opening is over; Beom runs in. */
+    data object Entered : StageEvent
+    /** The streak reached [n] (3: the flame lights; 5: double jump; 10 and every 10: somersault). */
+    data class Streak(val n: Int) : StageEvent
+    data object StreakLost : StageEvent
     data object Paused : StageEvent
     data object Resumed : StageEvent
     data class SessionEnded(val rounds: Int, val won: Int) : StageEvent
@@ -145,6 +201,24 @@ class StageDirector {
     private var from: BeomPose = BeomPose.Rest
     private var dustAt = -1f
     private var glowTrack: Pair<Float, Float>? = null // (startMs, target glow) for Deung
+    private var flameIn = -1f
+    private var flameOut = -1f
+
+    /** Where the finger is, 0…1, for A1's eyes. */
+    var lookX = 0f
+
+    /** The flame: 0 → 1.3 → 1 in 320 ms when lit, → 0 in 150 ms when it goes out (null: nothing to say, the streak decides). */
+    fun flameScale(nowMs: Float): Float? {
+        if (flameOut >= 0f) return (1f - (nowMs - flameOut) / 150f).coerceIn(0f, 1f).takeIf { nowMs - flameOut < 150f }
+        if (flameIn >= 0f) {
+            val x = ((nowMs - flameIn) / 320f).coerceIn(0f, 1f)
+            return if (x >= 1f) null else 1.3f * sin(PI.toFloat() * x * 0.5f).let { if (x < 0.6f) it else l(1.3f, 1f, (x - 0.6f) / 0.4f) }
+        }
+        return null
+    }
+
+    /** The smoke ring of a flame that went out: 0..1 over 300 ms, or null. */
+    fun smoke(nowMs: Float): Float? = if (flameOut >= 0f && nowMs - flameOut in 0f..300f) (nowMs - flameOut) / 300f else null
 
     /** Beom's pose at [nowMs] from the playing track, or null if A0 should play. */
     fun pose(nowMs: Float): BeomPose? {
@@ -181,6 +255,16 @@ class StageDirector {
             StageEvent.RoundLost -> { play(Tracks.A4, nowMs, idle); glowTrack = nowMs to 0.5f }
             StageEvent.LifeLost -> play(Tracks.A13, nowMs, idle)
             StageEvent.NextRound -> { track = null; glowTrack = null }
+            is StageEvent.Touch -> { lookX = (e.xFrac - 0.5f) * 4f; if (track?.id != "A1") play(Tracks.A1, nowMs, idle) }
+            StageEvent.Release -> if (track?.id == "A1") play(Tracks.A1Release, nowMs, idle)
+            StageEvent.Thinking -> if (track == null) play(Tracks.A12, nowMs, idle)
+            StageEvent.Entered -> play(Tracks.A8, nowMs, idle)
+            is StageEvent.Streak -> when {
+                e.n == 3 -> { flameIn = nowMs; flameOut = -1f } // the flame lights on top of A3
+                e.n == 5 -> play(Tracks.DoubleJump, nowMs, idle)
+                e.n >= 10 && e.n % 10 == 0 -> play(Tracks.Somersault, nowMs, idle)
+            }
+            StageEvent.StreakLost -> { flameOut = nowMs; flameIn = -1f }
             StageEvent.Paused -> { play(Tracks.A9, nowMs, idle); glowTrack = nowMs to 0.6f }
             StageEvent.Resumed -> { play(Tracks.Resume, nowMs, idle); glowTrack = null }
             is StageEvent.SessionEnded -> play(
