@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.games
 
+import com.dero.juststudykorean.ui.components.PillTone
+import com.dero.juststudykorean.ui.components.Pill
+import androidx.compose.runtime.produceState
 import com.dero.juststudykorean.data.audio.VoiceState
 import androidx.compose.ui.draw.alpha
 import kotlinx.coroutines.withTimeoutOrNull
@@ -126,6 +129,9 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 /** TalkBack is on (no automatic advance, no clocks: games.md 12). Null: ask the system; tests set it. */
+/** The height of the space under the instruction, for the games that fill it (Word Sort, G-2). */
+val LocalGameArea = androidx.compose.runtime.compositionLocalOf { 0.dp }
+
 val LocalTalkBack = staticCompositionLocalOf<Boolean?> { null }
 
 @Composable
@@ -153,7 +159,7 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
     }
     BackHandler { if (state is SessionState.Ended || state is SessionState.Empty || state is SessionState.Failed) onBack() else vm.pause() }
     val speakWord by vm.speakWord.collectAsStateWithLifecycle()
-    CompositionLocalProvider(LocalGameBank provides bank, LocalKoreanVoice provides vm.voice, LocalSpeakWord provides SpeakWordSetting(speakWord, vm::setSpeakWord)) {
+    CompositionLocalProvider(LocalGameBank provides bank, LocalKoreanVoice provides vm.voice, LocalSpeakWord provides SpeakWordSetting(speakWord, vm::setSpeakWord), LocalItemProgress provides vm::itemProgress) {
         GamesContent(
             state, counts, typingTimer,
             onResult = vm::submit, onFeedbackDone = { vm.feedbackDone() }, onPause = vm::pause, onResume = vm::resume,
@@ -358,6 +364,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionS
             // than that fills it and scrolls, as before.
             BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().testTag("game-area")) {
                 val area = maxHeight
+                androidx.compose.runtime.CompositionLocalProvider(LocalGameArea provides area) {
                 Box(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
                     Box(Modifier.fillMaxWidth().heightIn(min = area), contentAlignment = Alignment.Center) {
                         Box(Modifier.fillMaxWidth().testTag("game-content")) {
@@ -368,6 +375,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionS
                             }
                         }
                     }
+                }
                 }
             }
             OriginMark(originOf(round, LocalGameBank.current), Modifier.padding(top = 8.dp))
@@ -396,11 +404,23 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
     val talkBack = talkBackOn()
     val shownAt = remember(result) { System.nanoTime() }
     val won = result.outcome == Outcome.WON
-    val learn = remember(round, result) { learnOf(round, result) }
+    val progressOf = LocalItemProgress.current
+    val learnState = produceState(initialValue = learnOf(round, result), round, result) { value = learnOf(round, result, runCatching { progressOf() }.getOrDefault(emptyMap())) }
+    val learn = learnState.value
     val voice = LocalKoreanVoice.current
     val speakSetting = LocalSpeakWord.current.on
     val voiceState = voice?.state?.collectAsStateWithLifecycle()?.value
     val scope = rememberCoroutineScope()
+    var speaking by remember { mutableStateOf(false) }
+    val still = LocalFrozenMotion.current || reduceMotion()
+    // Each syllable block pops in turn while the word sounds (a block every 280 ms: this voice does not report ranges).
+    var pop by remember { mutableIntStateOf(-1) }
+    LaunchedEffect(speaking, learn?.korean) {
+        val n = learn?.korean?.length ?: 0
+        if (!speaking || still || learn?.sentence != false || n == 0) { pop = -1; return@LaunchedEffect }
+        var i = 0
+        while (true) { pop = i % n; delay(280); i++ }
+    }
     // The voice does not sound if there is none offline, the media volume is 0, TalkBack reads the card, the setting is off, or (listening games) you just won.
     val canSpeak = learn != null && voice != null && speakSetting && !talkBack && voiceState == VoiceState.Ready && !voice.muted &&
         !(won && isListening(round)) && result.outcome != Outcome.NEUTRAL
@@ -410,7 +430,9 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
         if (canSpeak) {
             delay(200)
             val cap = if (won) 2500L else 4000L
+            speaking = true
             runCatching { withTimeoutOrNull(cap - 200) { voice!!.speak(learn!!.korean) } }
+            speaking = false
             voiceEnd = (System.nanoTime() - shownAt) / 1_000_000
         }
         val total = cardMs(won || result.outcome == Outcome.NEUTRAL, voiceEnd)
@@ -441,7 +463,7 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
         action = when {
             talkBack -> ({ StickerButton("Next", onDone, color = StickerColor.Action, size = StickerSize.Small) })
             canSpeak || (learn != null && voice != null && speakSetting && voiceState == VoiceState.Ready) -> ({
-                IconButton({ scope.launch { runCatching { voice!!.speak(learn!!.korean) } } }, Modifier.size(40.dp)) { // plays again, as often as you like; counts for nothing
+                IconButton({ scope.launch { speaking = true; runCatching { voice!!.speak(learn!!.korean) }; speaking = false } }, Modifier.size(40.dp)) { // plays again, as often as you like; counts for nothing
                     LucideIcon(Lucide.Volume2, contentDescription = "Say the word again", size = 20.dp, tint = c.action)
                 }
             })
@@ -457,13 +479,40 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
             learn == null -> null
             else -> ({
                 if (!won) Text("Answer:", fontSize = 14.sp, color = c.fillMuted)
-                Text(
-                    learn.korean,
-                    style = if (learn.sentence) JustStudyTheme.korean.koBody.copy(fontSize = 20.sp) else JustStudyTheme.korean.koBody.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
-                    color = c.fillInk,
-                )
+                if (learn.sentence) Text(learn.korean, style = JustStudyTheme.korean.koBody.copy(fontSize = 20.sp), color = c.fillInk)
+                else Box { // a word: one block per syllable, so each can pop
+                    Row {
+                        learn.korean.forEachIndexed { i, ch ->
+                            val s = androidx.compose.animation.core.animateFloatAsState(if (pop == i) 1.12f else 1f, androidx.compose.animation.core.tween(120), label = "pop").value
+                            Text(ch.toString(), Modifier.graphicsLayer { scaleX = s; scaleY = s }, style = JustStudyTheme.korean.koBody.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold), color = c.fillInk)
+                        }
+                    }
+                    if (learn.mastered && !still) MasteredSparkle(Modifier.matchParentSize())
+                }
                 Text(learn.meaning, fontSize = 14.sp, color = c.fillMuted)
+                if (learn.mastered) Pill("★ Mastered", PillTone.Correct)
             })
+        },
+    )
+}
+
+/** A `lantern` sparkle at the corner of a word that has just been mastered: scale 0 → 1 → 0 in 500 ms. */
+@Composable
+private fun MasteredSparkle(modifier: Modifier = Modifier) {
+    val t = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { t.animateTo(1f, tween(500, easing = LinearEasing)) }
+    Box(
+        modifier.clearAndSetSemantics { }.drawWithCache {
+            onDrawBehind {
+                val k = kotlin.math.sin(Math.PI * t.value).toFloat() // 0 → 1 → 0
+                val r = 9.dp.toPx() * k
+                val c = Offset(size.width, 0f)
+                val p = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(c.x, c.y - r); quadraticTo(c.x, c.y, c.x + r, c.y); quadraticTo(c.x, c.y, c.x, c.y + r)
+                    quadraticTo(c.x, c.y, c.x - r, c.y); quadraticTo(c.x, c.y, c.x, c.y - r); close()
+                }
+                drawPath(p, Tokens.Lantern)
+            }
         },
     )
 }

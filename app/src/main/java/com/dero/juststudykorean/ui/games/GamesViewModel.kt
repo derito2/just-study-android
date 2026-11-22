@@ -153,6 +153,9 @@ class GamesViewModel @Inject constructor(
 
     fun setTypingTimer(on: Boolean) = viewModelScope.launch { prefs.setTypingTimer(on) }
 
+    /** The card reads the items' progress (which word to teach, Mastered). */
+    suspend fun itemProgress() = repository.progress()
+
     val speakWord: StateFlow<Boolean> = prefs.gamesSpeakWord.stateIn(viewModelScope, SharingStarted.Eagerly, true)
     fun setSpeakWord(on: Boolean) = viewModelScope.launch { prefs.setGamesSpeakWord(on) }
 }

@@ -3,6 +3,7 @@ package com.dero.juststudykorean.ui.games
 import com.dero.juststudykorean.korean.games.Outcome
 import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.games.RoundSpec
+import com.dero.juststudykorean.korean.games.ItemStats
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -17,8 +18,8 @@ class LearnCardTest {
     @Test
     fun aSingleWordRoundTeachesItsWord() {
         val hangman = RoundSpec.Hangman(1, GameFixtures.library, false, listOf("도", "서", "관"), emptyList())
-        assertEquals(Learn("도서관", "Library"), learnOf(hangman, result(Outcome.WON)))
-        assertEquals(Learn("도서관", "Library"), learnOf(hangman, result(Outcome.LOST)))
+        assertEquals(Learn("도서관", "Library", key = GameFixtures.library.key), learnOf(hangman, result(Outcome.WON)))
+        assertEquals(Learn("도서관", "Library", key = GameFixtures.library.key), learnOf(hangman, result(Outcome.LOST)))
     }
 
     @Test
@@ -38,7 +39,7 @@ class LearnCardTest {
     fun aSentenceRoundTeachesTheSentenceAndItsTranslation() {
         val s = GameFixtures.sentence("학교에 가요.", "I go to school.")
         val spec = RoundSpec.SentenceBuilder(1, s, listOf("학교에", "가요."), listOf("학교에", "가요."), "sign", emptyList())
-        assertEquals(Learn("학교에 가요.", "I go to school.", sentence = true), learnOf(spec, result(Outcome.NEUTRAL)))
+        assertEquals(Learn("학교에 가요.", "I go to school.", sentence = true, key = s.key), learnOf(spec, result(Outcome.NEUTRAL)))
     }
 
     @Test
@@ -63,5 +64,27 @@ class LearnCardTest {
         assertEquals(2200L, cardMs(won = false, voiceEndMs = 1000))
         assertEquals(3000L, cardMs(won = false, voiceEndMs = 2400)) // 600 ms after the voice
         assertEquals(4000L, cardMs(won = false, voiceEndMs = 9000)) // capped
+    }
+
+    private fun stats(correct: Long, streak: Long = 0) = ItemStats(correct, correct, 0, streak, 0, null)
+
+    @Test
+    fun aWonMultiWordRoundTeachesTheWordWithTheFewestHits() {
+        val progress = mapOf(GameFixtures.apple.key to stats(5), GameFixtures.milk.key to stats(1), GameFixtures.school.key to stats(3))
+        assertEquals("우유", learnOf(match, result(Outcome.WON), progress)!!.korean)
+        // A word never seen counts as 0 hits.
+        assertEquals("학교", learnOf(match, result(Outcome.WON), mapOf(GameFixtures.apple.key to stats(2), GameFixtures.milk.key to stats(2)))!!.korean)
+        // A lost round still teaches the first one you missed, whatever the hits.
+        assertEquals("우유", learnOf(match, result(Outcome.LOST, failed = listOf(GameFixtures.milk.key)), progress)!!.korean)
+    }
+
+    @Test
+    fun aWordIsMasteredWhenThisWinTookItsStreakToThree() {
+        val hangman = RoundSpec.Hangman(1, GameFixtures.library, false, listOf("도", "서", "관"), emptyList())
+        val k = GameFixtures.library.key
+        assertTrue(learnOf(hangman, result(Outcome.WON), mapOf(k to stats(3, streak = 3)))!!.mastered)
+        assertFalse(learnOf(hangman, result(Outcome.WON), mapOf(k to stats(4, streak = 4)))!!.mastered) // it was already
+        assertFalse(learnOf(hangman, result(Outcome.WON), mapOf(k to stats(2, streak = 2)))!!.mastered)
+        assertFalse(learnOf(hangman, result(Outcome.LOST), mapOf(k to stats(3, streak = 3)))!!.mastered)
     }
 }
