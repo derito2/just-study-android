@@ -151,8 +151,9 @@ fun Instruction(text: String, ko: String, hint: String? = null, modifier: Modifi
     val c = JustStudyTheme.colors
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1f)) {
-            Text(text, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 2)
-            Text(ko, style = JustStudyTheme.korean.koBelow, color = c.muted)
+            // G-1: the first thing to read was the smallest text on the screen: English 16 sp 700, Korean 12 sp.
+            Text(text, style = JustStudyTheme.korean.bodyBold.copy(fontSize = 16.sp), color = MaterialTheme.colorScheme.onSurface, maxLines = 2)
+            Text(ko, style = JustStudyTheme.korean.koBelow.copy(fontSize = 12.sp), color = c.muted)
         }
         if (hint != null) Hint(hint)
     }

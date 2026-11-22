@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.games
 
+import com.dero.juststudykorean.data.audio.VoiceState
+import androidx.compose.ui.draw.alpha
+import kotlinx.coroutines.withTimeoutOrNull
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
@@ -149,7 +152,8 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
         onDispose { lifecycle.removeObserver(observer) }
     }
     BackHandler { if (state is SessionState.Ended || state is SessionState.Empty || state is SessionState.Failed) onBack() else vm.pause() }
-    CompositionLocalProvider(LocalGameBank provides bank, LocalKoreanVoice provides vm.voice) {
+    val speakWord by vm.speakWord.collectAsStateWithLifecycle()
+    CompositionLocalProvider(LocalGameBank provides bank, LocalKoreanVoice provides vm.voice, LocalSpeakWord provides SpeakWordSetting(speakWord, vm::setSpeakWord)) {
         GamesContent(
             state, counts, typingTimer,
             onResult = vm::submit, onFeedbackDone = { vm.feedbackDone() }, onPause = vm::pause, onResume = vm::resume,
@@ -381,24 +385,49 @@ private fun rememberRoundClock(paused: Boolean): () -> Long {
     return { (System.nanoTime() - started - pausedTotal) / 1_000_000 }
 }
 
-/** 7.2: the ribbon over the board's bottom. A tap anywhere moves on (not before 350 ms); with TalkBack, Next. */
+/**
+ * 7.2 and games-characters.md 6 (LearnCard): the card over the board's bottom. It names the word of the round, and 200 ms after it
+ * appears the Korean voice says it once (never a notice if it cannot). A tap moves on (not before 350 ms) and cuts the voice;
+ * with TalkBack, Next.
+ */
 @Composable
 private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: SessionCounts, onDone: () -> Unit, modifier: Modifier = Modifier) {
     val c = JustStudyTheme.colors
     val talkBack = talkBackOn()
     val shownAt = remember(result) { System.nanoTime() }
-    val ms = if (result.outcome == Outcome.WON) 900L else 1800L
-    LaunchedEffect(result) { if (!talkBack) { delay(ms); onDone() } }
-    val tap = { if (System.nanoTime() - shownAt >= 350_000_000L) onDone() }
+    val won = result.outcome == Outcome.WON
+    val learn = remember(round, result) { learnOf(round, result) }
+    val voice = LocalKoreanVoice.current
+    val speakSetting = LocalSpeakWord.current.on
+    val voiceState = voice?.state?.collectAsStateWithLifecycle()?.value
+    val scope = rememberCoroutineScope()
+    // The voice does not sound if there is none offline, the media volume is 0, TalkBack reads the card, the setting is off, or (listening games) you just won.
+    val canSpeak = learn != null && voice != null && speakSetting && !talkBack && voiceState == VoiceState.Ready && !voice.muted &&
+        !(won && isListening(round)) && result.outcome != Outcome.NEUTRAL
+    LaunchedEffect(result) {
+        if (talkBack) return@LaunchedEffect
+        var voiceEnd: Long? = null
+        if (canSpeak) {
+            delay(200)
+            val cap = if (won) 2500L else 4000L
+            runCatching { withTimeoutOrNull(cap - 200) { voice!!.speak(learn!!.korean) } }
+            voiceEnd = (System.nanoTime() - shownAt) / 1_000_000
+        }
+        val total = cardMs(won || result.outcome == Outcome.NEUTRAL, voiceEnd)
+        delay((total - (System.nanoTime() - shownAt) / 1_000_000).coerceAtLeast(0))
+        onDone()
+    }
+    DisposableEffect(result) { onDispose { voice?.stop() } }
+    val tap = { if (System.nanoTime() - shownAt >= 350_000_000L) { voice?.stop(); onDone() } }
     val (tone, icon) = when {
         result.timedOut -> BannerTone.Wrong to Lucide.Clock
-        result.outcome == Outcome.WON -> BannerTone.Correct to Lucide.Check
+        won -> BannerTone.Correct to Lucide.Check
         result.outcome == Outcome.NEUTRAL -> BannerTone.Neutral to Lucide.Lightbulb
         else -> BannerTone.Wrong to Lucide.X
     }
     val (title, ko) = when {
         result.timedOut -> "Time's up" to "시간 종료"
-        result.outcome == Outcome.WON -> when (counts.streak) { 3 -> "Three in a row!"; 5 -> "On fire!"; 10 -> "Unstoppable!"; else -> "Correct!" } to "정답!"
+        won -> when (counts.streak) { 3 -> "Three in a row!"; 5 -> "On fire!"; 10 -> "Unstoppable!"; else -> "Correct!" } to "정답!"
         result.outcome == Outcome.NEUTRAL -> neutralText(round) to null
         counts.lostInARow > 2 -> "Almost. Keep going." to "아쉬워요"
         else -> "Not quite" to "아쉬워요"
@@ -409,13 +438,33 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
     ResultBanner(
         tone, title, modifier.heightIn(min = 64.dp).clickable(remember { MutableInteractionSource() }, null, onClick = tap).semantics { liveRegion = LiveRegionMode.Polite },
         ko = ko, icon = icon, cornerRadius = 16.dp,
-        action = if (talkBack) ({ StickerButton("Next", onDone, color = StickerColor.Action, size = StickerSize.Small) }) else null,
-        body = if (answer == null) null else ({
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text("Answer: ", fontSize = 14.sp, color = c.fillMuted)
-                Text(answer, style = JustStudyTheme.korean.koBody, color = if (result.outcome == Outcome.NEUTRAL) MaterialTheme.colorScheme.onSurface else c.fillInk)
-            }
-        }),
+        action = when {
+            talkBack -> ({ StickerButton("Next", onDone, color = StickerColor.Action, size = StickerSize.Small) })
+            canSpeak || (learn != null && voice != null && speakSetting && voiceState == VoiceState.Ready) -> ({
+                IconButton({ scope.launch { runCatching { voice!!.speak(learn!!.korean) } } }, Modifier.size(40.dp)) { // plays again, as often as you like; counts for nothing
+                    LucideIcon(Lucide.Volume2, contentDescription = "Say the word again", size = 20.dp, tint = c.action)
+                }
+            })
+            else -> null
+        },
+        body = when {
+            result.outcome == Outcome.NEUTRAL -> if (answer == null) null else ({
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text("Answer: ", fontSize = 14.sp, color = c.fillMuted)
+                    Text(answer, style = JustStudyTheme.korean.koBody, color = MaterialTheme.colorScheme.onSurface)
+                }
+            })
+            learn == null -> null
+            else -> ({
+                if (!won) Text("Answer:", fontSize = 14.sp, color = c.fillMuted)
+                Text(
+                    learn.korean,
+                    style = if (learn.sentence) JustStudyTheme.korean.koBody.copy(fontSize = 20.sp) else JustStudyTheme.korean.koBody.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                    color = c.fillInk,
+                )
+                Text(learn.meaning, fontSize = 14.sp, color = c.fillMuted)
+            })
+        },
     )
 }
 
@@ -439,6 +488,15 @@ private fun PauseBody(counts: SessionCounts, typingTimer: Boolean, onTypingTimer
                 Text("타자 시간 제한", style = JustStudyTheme.korean.koBelow, color = JustStudyTheme.colors.muted)
             }
             ThemeSwitch(typingTimer, onTypingTimer)
+        }
+        val speak = LocalSpeakWord.current
+        Row(Modifier.fillMaxWidth().clickable(enabled = !voiceMissing) { speak.set(!speak.on) }.padding(vertical = 4.dp).alpha(if (voiceMissing) 0.5f else 1f), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Say the word after each round", style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
+                Text("단어 읽어 주기", style = JustStudyTheme.korean.koBelow, color = JustStudyTheme.colors.muted)
+                if (voiceMissing) Text("No offline Korean voice on this phone.", fontSize = 12.sp, color = JustStudyTheme.colors.muted)
+            }
+            ThemeSwitch(speak.on && !voiceMissing, { if (!voiceMissing) speak.set(it) })
         }
         // games.md 9: no button; the app never opens system settings.
         if (voiceMissing) Row(
@@ -486,11 +544,16 @@ fun SessionSummaryCard(summary: SessionSummary, counts: SessionCounts, onPlayAga
         }
         val review = if (empty) emptyList() else counts.failed.takeLast(5)
         if (!empty && review.isEmpty()) Text("Nothing to review. Clean session.", style = MaterialTheme.typography.bodyMedium, color = c.muted)
+        val voice = LocalKoreanVoice.current
+        val scope = rememberCoroutineScope()
+        val canSay = voice?.state?.collectAsStateWithLifecycle()?.value == VoiceState.Ready
         review.forEach { item: GameItem ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // A row says its word when tapped (the voice icon at its right): the same offline voice, no notice if there is none.
+            Row(Modifier.fillMaxWidth().heightIn(min = 40.dp).clickable(enabled = canSay) { scope.launch { runCatching { voice!!.speak(item.korean) } } }, verticalAlignment = Alignment.CenterVertically) {
                 Text(item.korean, style = JustStudyTheme.korean.koBody.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.width(8.dp))
-                Text(item.meaning, style = MaterialTheme.typography.bodyMedium, color = c.muted, maxLines = 1)
+                Text(item.meaning, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = c.muted, maxLines = 1)
+                if (canSay) LucideIcon(Lucide.Volume2, contentDescription = "Say ${item.korean}", size = 16.dp, tint = c.muted)
             }
         }
         StickerButton(if (empty) "Play" else "Play again", onPlayAgain, Modifier.fillMaxWidth(), ko = if (empty) "시작" else "다시 하기", color = StickerColor.Go, size = StickerSize.Large)
