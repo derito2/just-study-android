@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.games
 
+import androidx.compose.runtime.snapshotFlow
+import com.dero.juststudykorean.ui.games.stage.StageEvent
 import com.dero.juststudykorean.ui.components.SheetHeader
 import com.dero.juststudykorean.ui.components.StatStrip
 import com.dero.juststudykorean.ui.components.Stat
@@ -197,6 +199,23 @@ fun GamesContent(
     }
     val game = round?.game
     LaunchedEffect(game) { if (round == null) stage.clear() }
+    // F2: the game's events to the stage (games-characters.md 9). With motion off only the fixed pose changes.
+    val feedback = state as? SessionState.Feedback
+    LaunchedEffect(feedback?.result, counts.rounds) {
+        when (feedback?.result?.outcome) {
+            Outcome.WON -> stage.send(StageEvent.RoundWon)
+            Outcome.LOST -> stage.send(StageEvent.RoundLost)
+            else -> if (feedback == null) stage.send(StageEvent.NextRound)
+        }
+    }
+    LaunchedEffect(state is SessionState.Paused) { if (state is SessionState.Paused) stage.send(StageEvent.Paused) else if (stage.director.playing == "A9") stage.send(StageEvent.Resumed) }
+    LaunchedEffect(ended) { if (ended) stage.send(StageEvent.SessionEnded(counts.rounds, counts.won)) }
+    LaunchedEffect(counts.streak) { stage.streak = counts.streak }
+    // A13 (Hangman, Word Recall): a lantern goes out, a sibling falls asleep; Beom only startles.
+    LaunchedEffect(stage) {
+        var last: Int? = null
+        snapshotFlow { stage.lanterns?.second }.collect { now -> val before = last; if (before != null && now != null && now < before) stage.send(StageEvent.LifeLost); last = now }
+    }
     BoxWithConstraints(Modifier.fillMaxSize().background(Tokens.Night)) {
         val maxH = maxHeight
         val stageH = top + STAGE_DP.dp

@@ -69,6 +69,21 @@ class StageScope {
     /** Dal's face when it is not the clock's: [DalFace.Sleepy] in the pause, [DalFace.Proud] in the summary. */
     var dal: DalFace? by mutableStateOf(null)
 
+    val director = StageDirector()
+    /** Set by [GameStage]: its clock in ms (0 when motion is off). */
+    var clockMs: () -> Float = { 0f }
+
+    /** The game tells the stage what happened. With motion off only the fixed pose changes (a single frame). */
+    fun send(e: StageEvent) {
+        mood = when (e) {
+            StageEvent.RoundWon -> StageMood.Won
+            StageEvent.RoundLost -> StageMood.Lost
+            is StageEvent.SessionEnded -> if (e.rounds > 0 && e.won * 10 >= e.rounds * 6) StageMood.Won else StageMood.Idle
+            else -> if (e == StageEvent.NextRound || e == StageEvent.Resumed) StageMood.Idle else mood
+        }
+        director.handle(e, clockMs(), beomIdle(clockMs() / 1000f))
+    }
+
     fun clear() { timer = null; lanterns = null; mood = StageMood.Idle; streak = 0; dal = null }
 }
 
@@ -124,6 +139,7 @@ fun GameStage(scope: StageScope, parallaxKey: Any?, burst: Int, modifier: Modifi
             while (true) withFrameNanos { seconds.floatValue = (it - t0) / 1e9f }
         }
     }
+    scope.clockMs = { seconds.floatValue * 1000f }
     val parallax = remember { Animatable(0f) }
     val petals = remember { Animatable(1f) }
     LaunchedEffect(parallaxKey) {
@@ -197,14 +213,18 @@ fun GameStage(scope: StageScope, parallaxKey: Any?, burst: Int, modifier: Modifi
                     rotate(lean, Offset(gx * u, y(166f))) { drawLine(Tokens.NightShade, Offset(gx * u, y(166f)), Offset(gx * u, y(166f - gh)), 1.5f * u, StrokeCap.Round) }
                 }
                 // 13 Beom, 14 Deung
-                val pose = when (scope.mood) {
-                    StageMood.Idle -> if (still) BeomPose.Rest else beomIdle(t)
+                val nowMs = t * 1000f
+                val pose = if (still) when (scope.mood) { // one frame, no movement
+                    StageMood.Idle -> BeomPose.Rest
                     StageMood.Won -> BeomPose.Happy
                     StageMood.Lost -> BeomPose.Sad
+                } else scope.director.pose(nowMs) ?: beomIdle(t)
+                scope.director.dust(nowMs)?.let { x -> // A3's landing: two clouds of dust, 10 → 18 dp, fading
+                    for (side in listOf(-20f, 20f)) drawOval(Tokens.SkyLight.copy(alpha = 0.4f * (1f - x)), Offset((150f + side - (10f + 8f * x)) * u, y(166f - 3f)), Size(2 * (10f + 8f * x) * u, 2 * 4f * u))
                 }
                 drawBeom(u, 150f * u, y(166f), pose)
                 val float = if (still) 0f else 3f * sin(2 * PI * t / 2.4f).toFloat()
-                val glow = when (scope.mood) { StageMood.Won -> 1.3f; StageMood.Lost -> 0.7f; else -> if (still) 1f else 1f + 0.08f * sin(2 * PI * t / 2.4f).toFloat() }
+                val glow = if (still) when (scope.mood) { StageMood.Won -> 1.3f; StageMood.Lost -> 0.7f; else -> 1f } else scope.director.deungGlow(nowMs) ?: (1f + 0.08f * sin(2 * PI * t / 2.4f).toFloat())
                 drawDeung(u, 206f * u, y(112f + float), DeungPose(glow = glow, eyes = if (scope.mood == StageMood.Won) DeungEyes.Happy else DeungEyes.Open, flame = scope.streak >= 3))
                 // 15 particles
                 if (petals.value < 1f) drawPetals(u, petals.value)
