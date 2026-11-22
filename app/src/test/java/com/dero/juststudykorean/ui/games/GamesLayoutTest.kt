@@ -29,7 +29,8 @@ class GamesLayoutTest {
 
     @Test
     fun aShortGameIsCentredInTheBoard() {
-        val sort = RoundSpec.WordSort(1, listOf("food", "animals"), listOf(apple to 0, cat to 1, milk to 0))
+        // Hangman is short; Word Sort used to be the example but now fills the free height on purpose (G-2).
+        val sort = RoundSpec.Hangman(1, GameFixtures.library, false, listOf("도", "서", "관"), emptyList())
         compose.setContent {
             CompositionLocalProvider(LocalFrozenMotion provides true) {
                 JustStudyTheme { GamesScreenshotTest.Games(SessionState.Playing(GamesScreenshotTest.REF, sort)) }

@@ -89,6 +89,10 @@ fun WordSortGame(spec: RoundSpec.WordSort, paused: Boolean, onResult: (RoundResu
         onResult(RoundResult(if (mistakes <= 2) Outcome.WON else Outcome.LOST, mistakes, 0, spec.targets, missed.keys.map { spec.tiles[it].first.key }))
     }
 
+    // G-2: the bins take the height that is free (at least 140 dp) and the tray of 56 dp tiles stays at the bottom.
+    val area = com.dero.juststudykorean.ui.games.LocalGameArea.current
+    val trayRows = (spec.tiles.size + 2) / 3
+    val binsHeight = maxOf(140.dp, area - 20.dp - (56 * trayRows + 10 * (trayRows - 1)).dp)
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             spec.bins.forEachIndexed { b, label ->
@@ -96,7 +100,7 @@ fun WordSortGame(spec: RoundSpec.WordSort, paused: Boolean, onResult: (RoundResu
                 val total = spec.tiles.count { it.second == b }
                 val border = when { b == wrongBin -> c.wrongBorder; done -> c.correctDeco; selected != null -> c.brand; else -> c.line }
                 Column(
-                    Modifier.weight(1f).height(132.dp)
+                    Modifier.weight(1f).height(binsHeight)
                         .background(c.canvas, RoundedCornerShape(16.dp))
                         .drawBehind {
                             val dash = if (done || selected != null) null else PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx()))
