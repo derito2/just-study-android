@@ -141,6 +141,23 @@ fun talkBackOn(): Boolean {
     return remember(context) { (context.getSystemService(AccessibilityManager::class.java))?.isTouchExplorationEnabled == true }
 }
 
+/**
+ * The stage under the status bar is always night: in the light theme the system would draw dark clock and icons on it (found on the
+ * OPPO, round 3). While Games is on screen they are light; the previous look comes back on leaving.
+ */
+@Composable
+internal fun GamesStatusBarIcons() {
+    val view = androidx.compose.ui.platform.LocalView.current
+    if (view.isInEditMode) return
+    DisposableEffect(view) {
+        val window = generateSequence(view.context) { (it as? android.content.ContextWrapper)?.baseContext }.filterIsInstance<android.app.Activity>().firstOrNull()?.window
+        val controller = window?.let { androidx.core.view.WindowCompat.getInsetsController(it, view) }
+        val before = controller?.isAppearanceLightStatusBars
+        controller?.isAppearanceLightStatusBars = false
+        onDispose { if (before != null) controller.isAppearanceLightStatusBars = before }
+    }
+}
+
 /** Games (design/games.md): full screen, no catalogue; entering plays. */
 @Composable
 fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = hiltViewModel()) {
@@ -150,6 +167,7 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
     val bank by vm.bank.collectAsStateWithLifecycle()
     val voiceMissing by vm.voiceMissing.collectAsStateWithLifecycle()
     LaunchedEffect(vm) { vm.start() }
+    GamesStatusBarIcons()
     // 9: it pauses by itself when the screen loses the focus (a call, another app, the screen off).
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle) {
