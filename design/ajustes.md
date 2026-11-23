@@ -112,7 +112,7 @@ En la vista de lista no se muestra el resumen *New · Due now · Learned · Tota
 
 ### AJ-28 · Tamaño fijo del mazo
 - Cada mazo tiene un **alto fijo**, en las dos vistas, pase lo que pase: nombre largo, *Nothing due*, edición, letra del sistema.
-- **Cuadrícula:** el alto que tiene hoy un mazo con el nombre en una línea. Mídelo en la captura `flashcards_decks` y anótalo aquí: `deck-grid-h = ___ dp`.
+- **Cuadrícula:** el alto que tiene hoy un mazo con el nombre en una línea. Mídelo en la captura `flashcards_decks` y anótalo aquí: `deck-grid-h = 230 dp` (medido en `flashcards_decks` de 0.12.0: 602 px a 420 dpi = 229,3 dp, redondeado hacia arriba para no cortar nada).
 - **Lista:** **72 dp** (sin botón cabe en menos alto: nombre + Pill a la izquierda, cifras de 20 sp en el centro).
 - Con la letra al 130 % o más, el alto fijo sube en la misma proporción, para que no se corte nada; sigue siendo igual para todos los mazos.
 - Lo que no cabe se recorta con elipsis, nunca hace crecer el mazo.

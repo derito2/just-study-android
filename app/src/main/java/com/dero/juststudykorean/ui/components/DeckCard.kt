@@ -16,6 +16,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.semantics.Role
 import com.dero.juststudykorean.ui.theme.reduceMotion
 import androidx.compose.foundation.background
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +63,14 @@ import com.dero.juststudykorean.data.flashcards.Deck
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import com.dero.juststudykorean.ui.theme.Tokens
+
+/** design/ajustes.md AJ-28: every deck has one height (measured in flashcards_decks: a deck with a one-line name). */
+internal val DeckGridHeight = 230.dp
+internal val DeckRowHeight = 72.dp
+
+/** AJ-28: from 130 % text the fixed height grows in the same proportion, so nothing is cut. */
+@Composable
+private fun fixedHeight(base: Dp): Dp = LocalDensity.current.fontScale.let { if (it >= 1.3f) base * it else base }
 
 /** Where a dragged deck would land on this one: on it (combine) or at its start/end edge (move). */
 enum class DropMark { None, On, Before, After }
@@ -124,6 +136,8 @@ private fun DeckRowBody(
                     drawLine(colors.brand, Offset(x, 0f), Offset(x, size.height), 4.dp.toPx())
                 }
             }
+            .height(fixedHeight(DeckRowHeight))
+            .clip(MaterialTheme.shapes.large)
             .border(if (mark == DropMark.On) 4.dp else Tokens.Border, if (mark == DropMark.On) colors.brand else colors.line, MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
             .then(
@@ -131,11 +145,11 @@ private fun DeckRowBody(
                 else Modifier.clickable(source, indication = null, role = Role.Button, onClick = onOpen).semantics { contentDescription = "Open ${deck.name}" },
             ),
     ) {
-        BoxWithConstraints(Modifier.fillMaxWidth().padding(Tokens.Space3)) {
+        BoxWithConstraints(Modifier.fillMaxSize().padding(Tokens.Space3)) {
             val wide = maxWidth >= 560.dp
-            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
-                    if (editing) RenameField(deck, onRename, Modifier, TextAlign.Start)
+                    if (editing) RenameField(deck, onRename, Modifier, TextAlign.Start, JustStudyTheme.korean.bodyBold)
                     else Text(deck.name, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         // In a row the corner has no room for the mark (it would cover Due), so it stays here while editing.
@@ -167,7 +181,7 @@ private fun DeckRowBody(
 }
 
 @Composable
-private fun RowDivider() = Box(Modifier.padding(horizontal = Tokens.Space2).width(2.dp).fillMaxHeight().background(JustStudyTheme.colors.line))
+private fun RowDivider() = Box(Modifier.padding(horizontal = Tokens.Space2).width(2.dp).height(40.dp).background(JustStudyTheme.colors.line))
 
 @Composable
 private fun DeckCardBody(
@@ -191,6 +205,8 @@ private fun DeckCardBody(
                     drawLine(colors.brand, Offset(x, 0f), Offset(x, size.height), 4.dp.toPx())
                 }
             }
+            .height(fixedHeight(DeckGridHeight))
+            .clip(MaterialTheme.shapes.large) // what does not fit is cut, never grows the deck
             .border(if (mark == DropMark.On) 4.dp else Tokens.Border, ring, MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large),
     ) {
@@ -239,7 +255,7 @@ private fun DeckCardBody(
 
 /** AJ-26: the deck's name as a one-line field; saved on Done or when it loses focus (an empty name keeps the old one). */
 @Composable
-private fun RenameField(deck: Deck, onRename: (String) -> Unit, modifier: Modifier, align: TextAlign) {
+private fun RenameField(deck: Deck, onRename: (String) -> Unit, modifier: Modifier, align: TextAlign, style: TextStyle = MaterialTheme.typography.titleMedium) {
     val colors = JustStudyTheme.colors
     var name by remember(deck.name) { mutableStateOf(deck.name) }
     var hadFocus by remember { mutableStateOf(false) }
@@ -250,7 +266,7 @@ private fun RenameField(deck: Deck, onRename: (String) -> Unit, modifier: Modifi
             .drawBehind { drawLine(colors.field, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
             .onFocusChanged { if (it.isFocused) hadFocus = true else if (hadFocus) { hadFocus = false; save() } },
         singleLine = true,
-        textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = align),
+        textStyle = style.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = align),
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
         keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { save() }),
     )

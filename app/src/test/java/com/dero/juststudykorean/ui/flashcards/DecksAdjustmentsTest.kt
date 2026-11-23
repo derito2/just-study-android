@@ -5,6 +5,18 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.SnackbarHostState
+import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
+import com.dero.juststudykorean.ui.components.DeckCard
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.Modifier
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -149,5 +161,39 @@ class DecksAdjustmentsTest {
         compose.onNodeWithContentDescription("Open Nothing today").performClick()
         compose.onNodeWithText("Nothing due in this deck.").assertExists()
         assertEquals(emptyList<String>(), studied)
+    }
+
+    // AJ-28
+    private fun heights(asRow: Boolean, fontScale: Float = 1f): List<Float> {
+        val variants = listOf(
+            deck(1, "Unit 3") to false,
+            deck(2, "A very long deck name that never fits on one line, not even on a tablet") to false,
+            Deck(3, true, false, emptyList(), "Nothing due", 20, 0, 0, 0, 0, null, null, null) to false,
+            deck(4, "Unit 3") to true,
+        )
+        compose.setContent {
+            val d = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(d.density, fontScale), LocalFrozenMotion provides true) {
+                JustStudyTheme(darkTheme = false) {
+                    Column(Modifier.width(if (asRow) 379.dp else 183.5.dp)) {
+                        variants.forEachIndexed { i, (deck, editing) ->
+                            DeckCard(deck, {}, {}, Modifier.testTag("deck$i"), editing = editing, asRow = asRow)
+                        }
+                    }
+                }
+            }
+        }
+        return variants.indices.map { i -> compose.onNodeWithTag("deck$i").getBoundsInRoot().let { (it.bottom - it.top).value } }
+    }
+
+    @Test
+    fun gridDecksHaveOneFixedHeight() = heights(asRow = false).forEach { assertEquals(230f, it, 0.5f) }
+
+    @Test
+    fun listRowsHaveOneFixedHeight() = heights(asRow = true).forEach { assertEquals(72f, it, 0.5f) }
+
+    @Test
+    fun fixedHeightGrowsWithLargeText() {
+        heights(asRow = true, fontScale = 1.3f).forEach { assertEquals(72f * 1.3f, it, 0.5f) }
     }
 }
