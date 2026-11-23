@@ -178,7 +178,7 @@ Se quita *Answers come from all your documents.* bajo el composer, también de l
 - Es solo texto: sin botones ni estados de carga.
 - Los textos viven en un solo sitio (`QuizGuide.kt` junto a `QUIZ_TYPES` y `LEVELS`), para que formulario y guía no se separen.
 
-### AJ-41 · Textos (v2, comprobados contra el código de `main` el 2026-11-22)
+### AJ-41 · Textos (v3: v2 con las 4 correcciones de Code del 2026-11-22)
 
 | Tipo | Pill | Texto |
 |---|---|---|
@@ -187,9 +187,9 @@ Se quita *Answers come from all your documents.* bajo el composer, también de l
 | Vocabulary recognition · 어휘 알아보기 | By rules | Shows a Korean word; you pick its meaning from 4 options. The wrong ones are meanings of other words in the same document. Made by rules, so Difficulty doesn't change it. |
 | English → Korean · 영어 → 한국어 | By rules | Shows an English meaning; you pick the Korean word from 4 options taken from the same document. Made by rules, so Difficulty doesn't change it. |
 | Fill in the blank · 빈칸 채우기 | By rules | An example sentence of a grammar point in your notes, with its ending taken out; you pick the ending from 4 options (endings of other grammar points in the same document). Made by rules, so Difficulty doesn't change it. |
-| Multiple choice · 객관식 | By rules | 4 options about the grammar points and particles in your notes: what a pattern means, or which sentence means something. With On-device AI ready, the model also writes some (up to 3 per quiz, shared with Short answer); only those follow Difficulty. |
-| Grammar selection · 문법 고르기 | By rules | Shows what a grammar pattern or particle means; you pick it from 4 options, e.g. -(으)니까. If a grammar point in your notes has its own *Anki options*, those are used. Difficulty doesn't change it. |
-| Short answer · 단답형 | On-device AI | An open question about your notes that you answer in English. Only the model writes it (up to 3 per quiz, shared with Multiple choice), so it needs On-device AI ready and follows Difficulty. |
+| Multiple choice · 객관식 | By rules | 4 options about your notes: mostly what a grammar pattern or particle means, or which sentence means something; when there aren't enough, what one of your words means. With On-device AI ready, the model also writes some (up to 3 per quiz, shared with Short answer); only those follow Difficulty. |
+| Grammar selection · 문법 고르기 | By rules | Shows what a grammar pattern or particle means; you pick it, e.g. -(으)니까. Usually 4 options; if a grammar point in your notes has its own *Anki options*, you get those as you wrote them. Difficulty doesn't change it. |
+| Short answer · 단답형 | On-device AI | A short question about your notes; you type a short answer (a few words), in English or in Korean, as the question asks. The answer is always in your notes. Only the model writes it (up to 3 per quiz, shared with Multiple choice), so it needs On-device AI ready and follows Difficulty. |
 | Say it in Korean · 한국어로 말하기 | Practice · not scored | You say a Korean word or sentence from your notes out loud; the app shows what it heard next to your notes. Practice only: it never counts in your score. Needs the microphone and the phone's Korean speech recognition; the audio and what you said are never saved. |
 
 **Difficulty** · 난이도 — texto general: *Difficulty only changes the questions the model writes (some Multiple choice and all Short answer), so it only shows up when On-device AI is ready and one of those types is checked. Pick one or more levels; with several, they take turns. Everything else is made by rules from your notes and stays the same.*
@@ -198,7 +198,7 @@ Se quita *Answers come from all your documents.* bajo el composer, también de l
 |---|---|
 | 1 · Recall · 기억하기 | Remember one item: what a word or pattern means, or the key word of a sentence. |
 | 2 · Similar options · 비슷한 선택지 | Choose between look-alike options (e.g. 춥다 / 차갑다 / 시원하다), so you need to know the exact one. |
-| 3 · Apply a rule · 규칙 적용 | Use a grammar rule: pick the right particle or ending for a sentence (e.g. 오니까 vs 와서), or build an answer that isn't written in your notes. |
+| 3 · Apply a rule · 규칙 적용 | Use a grammar rule: pick the right particle or ending for a sentence (e.g. 오니까 vs 와서). The answer is still in your notes. |
 
 **Lo que se comprobó:**
 - el juez de significado solo corre en respuestas escritas en inglés que las reglas rechazan (`answerMode == "text"`);
