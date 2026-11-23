@@ -37,7 +37,7 @@ enum class Lucide(internal val durationMs: Int) {
     Check(300), X(300), SquarePen(500), Trash2(500), Search(400), Plus(300), RefreshCw(600), FileText(0), Sparkles(0),
     // Phase 8 (Games): still icons until the games screen gives them a motion (PR B).
     Gamepad2(0), Pause(0), Play(0), Flame(0), Volume2(0), Delete(0), Mic(0), Lightbulb(0), Clock(0),
-    SlidersHorizontal(0), // design/ajustes.md AJ-25: still
+    SlidersHorizontal(0), Rocket(0), BookOpenText(0), // design/ajustes.md AJ-25, AJ-01, AJ-02: still
 }
 
 /** How one part of an icon moves at progress t (0..1). Pivot in icon units (24 × 24). */
@@ -79,7 +79,7 @@ private fun Lucide.pose(part: Int, t: Float): PartPose = when (this) {
     Lucide.FileText -> PartPose() // a source line: never animated
     Lucide.Sparkles -> PartPose() // AiMark: never animated (design/shell.md)
     Lucide.Gamepad2, Lucide.Pause, Lucide.Play, Lucide.Flame, Lucide.Volume2, Lucide.Delete, Lucide.Mic, Lucide.Lightbulb, Lucide.Clock,
-    Lucide.SlidersHorizontal -> PartPose()
+    Lucide.SlidersHorizontal, Lucide.Rocket, Lucide.BookOpenText -> PartPose()
     Lucide.BadgeAlert -> PartPose(rotation = 8f * sin(4 * PI * t).toFloat() * (1f - t), scale = 1f + 0.1f * wave(t))
 }
 

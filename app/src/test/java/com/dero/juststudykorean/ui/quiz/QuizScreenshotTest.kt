@@ -61,11 +61,11 @@ class QuizScreenshotTest {
         id to Answered(given, Grade(given == qq.correctAnswer, qq.correctAnswer, null))
     }
 
-    private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, content: @Composable () -> Unit) =
+    private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, dark: Boolean = false, content: @Composable () -> Unit) =
         captureRoboImage("src/test/screenshots/$name.png") {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
-                JustStudyTheme(darkTheme = false) {
+                JustStudyTheme(darkTheme = dark) {
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.weight(1f)) { content() }
                         if (bar) JsBottomBar(current = TopLevel.Quiz, onSelect = {})
@@ -76,6 +76,22 @@ class QuizScreenshotTest {
 
     @Composable
     private fun Home() = QuizHomeContent(QuizForm(), emptyList(), mistakes, history, remember { SnackbarHostState() }, {}, {}, {}, {}, {}, {})
+
+    // design/ajustes.md AJ-40: the Quiz Guide at the top and scrolled to Difficulty, light and dark (opened over a tab: no bar).
+    @Composable
+    private fun Guide(atDifficulty: Boolean) = QuizGuideScreen({}, {}, androidx.compose.foundation.lazy.rememberLazyListState(if (atDifficulty) QUIZ_GUIDE.size + 1 else 0))
+
+    @Test
+    fun guideTop() = snap("quiz_guide", bar = false) { Guide(false) }
+
+    @Test
+    fun guideTopDark() = snap("quiz_guide_dark", bar = false, dark = true) { Guide(false) }
+
+    @Test
+    fun guideDifficulty() = snap("quiz_guide_difficulty", bar = false) { Guide(true) }
+
+    @Test
+    fun guideDifficultyDark() = snap("quiz_guide_difficulty_dark", bar = false, dark = true) { Guide(true) }
 
     @Test
     fun homeTop() = snap("quiz_home") { Home() }

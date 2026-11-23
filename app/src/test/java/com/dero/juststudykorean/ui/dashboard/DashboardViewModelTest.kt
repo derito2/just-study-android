@@ -33,6 +33,13 @@ class DashboardViewModelTest {
     fun close() { watcher.cancel(); app.close() }
 
     @Test
+    fun theWeekIsNotAskedOfTheModel() { // design/ajustes.md AJ-10: no weekly summary, so Gemini Nano is not even reachable from here
+        val params = DashboardViewModel::class.java.constructors.flatMap { it.parameterTypes.toList() }
+        assertFalse(params.any { it == com.dero.juststudykorean.data.ai.GrammarAi::class.java })
+        assertFalse(DashboardUi::class.java.declaredFields.any { it.name == "week" })
+    }
+
+    @Test
     fun loadsTheFiguresOfTheGoldenBase() {
         idleUntil { vm.state.value.summary != null }
         val ui = vm.state.value

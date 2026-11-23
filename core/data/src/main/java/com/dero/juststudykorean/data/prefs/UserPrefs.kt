@@ -17,6 +17,9 @@ import javax.inject.Singleton
 enum class ThemeMode { System, Light, Dark }
 enum class CardDirection { KoToEn, EnToKo, Both }
 
+/** design/ajustes.md AJ-32: the most questions a quiz can ask for; a larger saved count reads as this. */
+const val QUIZ_MAX_COUNT = 25
+
 /** design/ajustes.md AJ-25: how Flashcards shows the decks; stored as `grid` | `list`. */
 enum class DecksLayout { Grid, List }
 
@@ -43,7 +46,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     val quizForm: Flow<QuizForm> = store.data.map {
         val d = QuizForm()
         QuizForm(
-            it[QUIZ_COUNT] ?: d.count,
+            (it[QUIZ_COUNT] ?: d.count).coerceIn(1, QUIZ_MAX_COUNT),
             it[QUIZ_DOCS]?.split(",")?.mapNotNull(String::toLongOrNull)?.toSet() ?: d.documentIds,
             it[QUIZ_TYPES]?.split(",")?.filter(String::isNotEmpty)?.toSet() ?: d.types,
             it[QUIZ_LEVELS]?.split(",")?.mapNotNull(String::toIntOrNull)?.toSet() ?: d.levels,

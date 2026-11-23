@@ -5,7 +5,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** Uses 7 and 8 with fake outputs. */
+/** Use 7 with fake outputs, and the coach's fact check. */
 class GrammarPromptsTest {
     private val point = "-아서/어서 = because, so\n밥을 먹어서 배불러요. = I ate, so I'm full."
     private val notes = "먹다 = to eat\n배부르다 = to be full\n밥 = rice, meal\n가다 = to go\n학교 = school"
@@ -25,9 +25,8 @@ class GrammarPromptsTest {
     }
 
     @Test
-    fun weekWithoutTheModel() {
-        assertEquals("This week you learned 4 words and got 80% of your quiz answers right. Particles needs the most work.", weekTemplate(4, 80, "Particles"))
-        val facts = weekFacts(4, 80, 10, "Particles")
+    fun validFromFactsKeepsOnlyTheFacts() { // the coach's check (the Dashboard's week is gone: AJ-10)
+        val facts = "Words learned this week: 4\nQuiz answers this week: 10\nQuiz accuracy this week: 80%\nWeakest topic: Particles"
         assertNotNull(validFromFacts("You learned 4 words and got 80% right this week. Keep going with Particles.", facts, listOf("Particles", "Food")))
         assertNull(validFromFacts("You learned 6 words this week, great work on Food!", facts, listOf("Particles", "Food")))
     }

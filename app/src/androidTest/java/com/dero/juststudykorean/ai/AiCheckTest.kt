@@ -122,14 +122,13 @@ class AiCheckTest {
                 val sandboxFiles = com.dero.juststudykorean.data.documents.DocumentFiles(sandbox)
                 val messy = MessyNotes(gate, db, sandboxNotes, sandboxFiles, com.dero.juststudykorean.data.documents.DocumentIndexer(db, clock, progress, sandboxNotes, sandboxFiles))
                 measure("6 messy notes", gate) { messy.readReady() }
-                // Uses 7 and 8.
+                // Use 7 (use 8, the Dashboard's week, was removed: AJ-10).
                 val grammarAi = GrammarAi(gate, db, notes)
                 for (p in GrammarRepository(db).points(GrammarFilter.All, "").first().take(3)) {
                     val s = measure("7a simpler", gate) { grammarAi.simpler(p) }
                     if (s != null && inventedKorean(s, (listOf(p.pattern, p.meaning) + p.structure + p.explanation + p.examples.map { "${it.first} ${it.second}" } + p.notes).joinToString("\n")).isNotEmpty()) inventedShown++
                     measure("7b practice", gate) { grammarAi.practice(p) }
                 }
-                measure("8 dashboard", gate) { grammarAi.week(progress.weekly(), progress.recommended(1).firstOrNull()?.name) }
 
                 // Leaving the app with a call in progress: no crash, and the next call works again.
                 val pending = async { runCatching { quizAi.explainMistake("Pick one: 책___", "이", "가", "이/가 = subject marker") } }

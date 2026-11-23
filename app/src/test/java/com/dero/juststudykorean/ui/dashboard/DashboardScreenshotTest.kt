@@ -109,10 +109,6 @@ class DashboardScreenshotTest {
     @Test
     fun dashboardStudied() = snap("dashboard_studied", studied)
 
-    /** Phase 6, use 8: the week's sentence written by the model (AiMark), under the week's figures. */
-    @Test
-    fun dashboardWeekAi() = snap("dashboard_week_ai", studied.copy(week = com.dero.juststudykorean.data.ai.WeekSentence("You learned 4 words this week and got 80% of your quiz answers right. Keep going!", ai = true)))
-
     @Test
     fun dashboardEmpty() = snap("dashboard_empty", nothing)
 
@@ -137,6 +133,9 @@ class DashboardScreenshotTest {
             addActivityIfNotPresent(activity)
             addIntentFilterForActivity(activity, android.content.IntentFilter(android.content.Intent.ACTION_MAIN).apply { addCategory(android.content.Intent.CATEGORY_LAUNCHER) })
         }
+        // Only the bump moves: the KPI count-up (once per app start, a flag shared by every test) is already seen, so the
+        // frame does not depend on which tests ran before.
+        com.dero.juststudykorean.ui.components.KpiCountUp.consume()
         runComposeUiTest {
             mainClock.autoAdvance = false
             setContent { JustStudyTheme { DashboardContent(studied.copy(previousStreak = 17), onMore = {}, onUnit = {}, onPractice = {}, onAsk = {}, onRetry = {}) } }

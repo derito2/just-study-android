@@ -29,7 +29,7 @@ private val MARKDOWN_ITALIC = Regex("(?<![*\\w])\\*(?=\\S)([^*\\n]+?)(?<=\\S)\\*
 internal fun plainText(text: String): String = text.replace(MARKDOWN_EMPHASIS, "").replace(MARKDOWN_ITALIC, "$1").replace(MARKDOWN_LINE, "")
 
 enum class AiUse(val timeoutMs: Long) {
-    Judge(2_000), ExplainMistake(6_000), Questions(6_000), Teacher(6_000), Coach(5_000), MessyNotes(10_000), Grammar(6_000), Dashboard(3_000),
+    Judge(2_000), ExplainMistake(6_000), Questions(6_000), Teacher(6_000), Coach(5_000), MessyNotes(10_000), Grammar(6_000),
 }
 
 /**

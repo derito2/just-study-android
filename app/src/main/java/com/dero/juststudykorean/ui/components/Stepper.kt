@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
@@ -20,9 +21,8 @@ import com.dero.juststudykorean.ui.theme.Tokens
 @Composable
 fun Stepper(value: Int, onChange: (Int) -> Unit, range: IntRange, label: String, modifier: Modifier = Modifier) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
-        StickerButton("Fewer", { onChange(value - 1) }, Modifier.width(48.dp), color = StickerColor.Gray, size = StickerSize.Small, enabled = value > range.first, icon = Lucide.Minus)
-        Text("$value", Modifier.widthIn(min = 28.dp).semantics { contentDescription = "$label: $value" }, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center)
-        StickerButton("More", { onChange(value + 1) }, Modifier.width(48.dp), color = StickerColor.Gray, size = StickerSize.Small, enabled = value < range.last, icon = Lucide.Plus)
-        Text("${range.first} to ${range.last}", style = MaterialTheme.typography.bodySmall, color = JustStudyTheme.colors.muted)
+        StickerButton("Fewer", { onChange(value - 1) }, Modifier.width(40.dp), color = StickerColor.Gray, size = StickerSize.Small, enabled = value > range.first, icon = Lucide.Minus)
+        Text("$value", Modifier.widthIn(min = 28.dp).semantics { contentDescription = "$label: $value" }, style = MaterialTheme.typography.headlineSmall.copy(fontSize = 20.sp), color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center)
+        StickerButton("More", { onChange(value + 1) }, Modifier.width(40.dp), color = StickerColor.Gray, size = StickerSize.Small, enabled = value < range.last, icon = Lucide.Plus)
     }
 }

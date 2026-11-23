@@ -93,6 +93,12 @@ class TeacherBehaviourTest {
     }
 
     @Test
+    fun noDocumentsLineUnderTheComposer() { // design/ajustes.md AJ-35
+        compose.setContent { JustStudyTheme(darkTheme = false) { TeacherContent(TeacherUi(), TextFieldValue(), {}, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}) } }
+        compose.onNodeWithText("Answers come from all your documents.").assertDoesNotExist()
+    }
+
+    @Test
     fun maxLengthCut() {
         assertEquals(500, cut("가".repeat(2000)).length)
         vm.send("What does 근처 mean? " + "x".repeat(2000))

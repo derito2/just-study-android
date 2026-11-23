@@ -6,30 +6,20 @@ import com.dero.juststudykorean.ai.NanoGate
 import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.data.grammar.GrammarPointUi
 import com.dero.juststudykorean.data.notes.NotesSource
-import com.dero.juststudykorean.data.progress.Weekly
 import com.dero.juststudykorean.korean.ai.PRACTICE_VERSION
 import com.dero.juststudykorean.korean.ai.SIMPLER_VERSION
-import com.dero.juststudykorean.korean.ai.WEEK_VERSION
 import com.dero.juststudykorean.korean.ai.practicePrompt
 import com.dero.juststudykorean.korean.ai.simplerPrompt
-import com.dero.juststudykorean.korean.ai.validFromFacts
 import com.dero.juststudykorean.korean.ai.validPractice
 import com.dero.juststudykorean.korean.ai.validSimpler
-import com.dero.juststudykorean.korean.ai.weekFacts
-import com.dero.juststudykorean.korean.ai.weekPrompt
-import com.dero.juststudykorean.korean.ai.weekTemplate
 import com.dero.juststudykorean.korean.extractPairs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.roundToInt
-
-/** The Dashboard's week sentence: [ai] if the model wrote it (AiMark), else the template from the same figures. */
-data class WeekSentence(val text: String, val ai: Boolean)
 
 /**
- * Phase 6, task 6: Grammar (use 7) and Dashboard (use 8), through [NanoGate]. Nothing is saved: the practice sentence
+ * Phase 6, task 6: Grammar (use 7), through [NanoGate] (use 8, the Dashboard's week, was removed: design/ajustes.md AJ-10). Nothing is saved: the practice sentence
  * is always labelled PRACTICE and never becomes yours.
  */
 @Singleton
@@ -58,13 +48,4 @@ class GrammarAi @Inject constructor(private val gate: NanoGate, private val db: 
         }
     }
 
-    /** 8: one or two sentences from the week's figures; the template if the model is late or adds anything. */
-    suspend fun week(w: Weekly, weakest: String?): WeekSentence {
-        val accuracy = w.accuracyThisWeek?.let { (it * 100).roundToInt() }
-        val template = WeekSentence(weekTemplate(w.wordsThisWeek, accuracy, weakest), ai = false)
-        val facts = weekFacts(w.wordsThisWeek, accuracy, w.answersThisWeek, weakest)
-        val topics = withContext(Dispatchers.IO) { db.topicsDao().all().map { it.name } }
-        val text = gate.ask(AiRequest(AiUse.Dashboard, WEEK_VERSION, weekPrompt(facts), facts, 96, cache = true)) { validFromFacts(it, facts, topics, maxChars = 300) }
-        return if (text != null) WeekSentence(text, ai = true) else template
-    }
 }

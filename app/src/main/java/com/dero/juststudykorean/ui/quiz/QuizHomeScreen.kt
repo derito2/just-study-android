@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.height
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +57,7 @@ import com.dero.juststudykorean.ui.components.KoSide
 import com.dero.juststudykorean.ui.components.MistakeLine
 import com.dero.juststudykorean.ui.components.QuizHistoryCard
 import com.dero.juststudykorean.ui.components.Stepper
+import com.dero.juststudykorean.data.prefs.QUIZ_MAX_COUNT
 import com.dero.juststudykorean.ui.components.StickerButton
 import com.dero.juststudykorean.ui.components.StickerSize
 import com.dero.juststudykorean.ui.components.StickerColor
@@ -117,8 +119,8 @@ fun QuizHomeContent(
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space4),
                 ) {
                     Title("New quiz", "새 퀴즈", MaterialTheme.typography.titleMedium.fontSize)
-                    val qCol: @Composable (Modifier) -> Unit = { m -> Column(m) { Label("Questions", "문제 수"); Stepper(form.count, { onForm(form.copy(count = it)) }, 1..10, "Questions") } }
-                    val dCol: @Composable (Modifier) -> Unit = { m -> Column(m) { Label("Documents", "문서"); DocumentsField(form.documentIds, documents, { documentsOpen = true }) } }
+                    val qCol: @Composable (Modifier) -> Unit = { m -> Column(m) { Label("Questions", "문제 수"); Stepper(form.count, { onForm(form.copy(count = it)) }, 1..QUIZ_MAX_COUNT, "Questions") } }
+                    val dCol: @Composable (Modifier) -> Unit = { m -> Column(m) { Label("Documents", "문서"); DocumentsField(form.documentIds, documents, { documentsOpen = true }, Modifier.height(48.dp), maxLines = 1) } } // AJ-31: one line, 48 dp
                     // P-30: side by side when the width allows (stepper left, field right); stacked with large text.
                     if (LocalDensity.current.fontScale <= 1.15f) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) { qCol(Modifier); dCol(Modifier.weight(1f)) }
                     else { qCol(Modifier); dCol(Modifier) }
@@ -145,8 +147,8 @@ fun QuizHomeContent(
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
                         val ok = form.usableTypes(ai, speech).isNotEmpty() && !(levelsCount && form.levels.isEmpty())
-                        StickerButton("Generate quiz", onGenerate, Modifier.fillMaxWidth(), ko = "퀴즈 만들기", color = StickerColor.Go, enabled = ok, size = StickerSize.Large)
-                        StickerButton("Practice saved questions", onPracticeSaved, Modifier.fillMaxWidth(), ko = "저장된 문제 연습", size = StickerSize.Large)
+                        StickerButton("Generate quiz", onGenerate, Modifier.fillMaxWidth(), ko = "퀴즈 만들기", color = StickerColor.Go, enabled = ok) // AJ-30: Default size
+                        StickerButton("Practice saved questions", onPracticeSaved, Modifier.fillMaxWidth(), ko = "저장된 문제 연습")
                     }
                 }
                 WeaknessPanel(mistakes, onFix, photo = photo)

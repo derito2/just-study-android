@@ -49,7 +49,7 @@ fun JsSheet(onDismiss: () -> Unit, title: String? = null, ko: String? = null, co
 
 /** The Documents selector field: "All documents" (or how many) and `chevron-left` turned −90°. */
 @Composable
-fun DocumentsField(selected: Set<Long>, documents: List<DocumentsEntity>, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun DocumentsField(selected: Set<Long>, documents: List<DocumentsEntity>, onClick: () -> Unit, modifier: Modifier = Modifier, maxLines: Int = 2) {
     val text = when {
         selected.isEmpty() -> "All documents"
         selected.size == 1 -> documents.firstOrNull { it.id in selected }?.originalName ?: "1 document"
@@ -62,7 +62,7 @@ fun DocumentsField(selected: Set<Long>, documents: List<DocumentsEntity>, onClic
             .padding(horizontal = Tokens.Space4, vertical = Tokens.Space3),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FileName(text, Modifier.weight(1f))
+        FileName(text, Modifier.weight(1f), maxLines = maxLines)
         LucideIcon(Lucide.ChevronLeft, contentDescription = null, size = 20.dp, tint = JustStudyTheme.colors.muted, modifier = Modifier.rotate(-90f))
     }
 }
