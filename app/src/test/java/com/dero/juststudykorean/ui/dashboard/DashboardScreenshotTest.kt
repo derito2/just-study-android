@@ -133,6 +133,9 @@ class DashboardScreenshotTest {
             addActivityIfNotPresent(activity)
             addIntentFilterForActivity(activity, android.content.IntentFilter(android.content.Intent.ACTION_MAIN).apply { addCategory(android.content.Intent.CATEGORY_LAUNCHER) })
         }
+        // Only the bump moves: the KPI count-up (once per app start, a flag shared by every test) is already seen, so the
+        // frame does not depend on which tests ran before.
+        com.dero.juststudykorean.ui.components.KpiCountUp.consume()
         runComposeUiTest {
             mainClock.autoAdvance = false
             setContent { JustStudyTheme { DashboardContent(studied.copy(previousStreak = 17), onMore = {}, onUnit = {}, onPractice = {}, onAsk = {}, onRetry = {}) } }
