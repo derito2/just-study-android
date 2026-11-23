@@ -39,6 +39,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,8 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import com.dero.juststudykorean.data.prefs.DecksLayout
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -100,6 +103,7 @@ import java.util.Locale
 fun DecksScreen(onMore: () -> Unit, onStudy: (Deck) -> Unit, vm: DecksViewModel = hiltViewModel()) {
     val ui by vm.state.collectAsStateWithLifecycle()
     val scheduling by vm.scheduling.collectAsStateWithLifecycle()
+    val layout by vm.layout.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(vm) {
         vm.events.collect { m ->
@@ -112,7 +116,7 @@ fun DecksScreen(onMore: () -> Unit, onStudy: (Deck) -> Unit, vm: DecksViewModel 
     DecksContent(
         ui, scheduling, snackbar, onMore = onMore, onStudy = onStudy, onRetry = vm::retry, onDelete = { vm.delete(it) },
         onRename = { d, n -> vm.rename(d, n) }, onReorder = { vm.reorder(it) }, onMerge = vm::merge, onCreate = { vm.createCards(it) },
-        onSaveScheduling = vm::saveScheduling,
+        onSaveScheduling = vm::saveScheduling, layout = layout, onLayout = { vm.setLayout(it) },
     )
 }
 
@@ -143,6 +147,8 @@ fun DecksContent(
     editingAtStart: Boolean = false,
     mergeAtStart: Pair<Int, Int>? = null,
     mergeNameAtStart: String = "",
+    layout: DecksLayout = DecksLayout.Grid,
+    onLayout: (DecksLayout) -> Unit = {},
 ) {
     val colors = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -167,6 +173,52 @@ fun DecksContent(
     val fly = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
 
+    @Composable
+    fun DeckItem(deck: Deck, asRow: Boolean) {
+        val dragged = deck.id == dragId
+        DeckCard(
+            deck,
+            onContinue = {
+                if (!asRow || deck.availableNow > 0) onStudy(deck)
+                else scope.launch { snackbar.showSnackbar("Nothing due in this deck.") } // AJ-27: the row stays tappable
+            },
+            onDelete = { over = Over.Delete(deck) },
+            modifier = Modifier
+                .then(if (dragged) Modifier.zIndex(1f) else Modifier)
+                .onGloballyPositioned { if (!dragged) bounds[deck.id] = it.boundsInRoot() }
+                .graphicsLayer {
+                    if (dragged) { translationX = dragOffset.x; translationY = dragOffset.y }
+                    if (dragged && fly.value > 0f) { val s = 1f - 0.4f * fly.value; scaleX = s; scaleY = s; alpha = 1f - fly.value }
+                }
+                .then(
+                    if (editing) Modifier.pointerInput(deck.id) {
+                        detectDragGesturesAfterLongPress(
+                            onDragStart = { dragId = deck.id; dragOffset = Offset.Zero },
+                            onDrag = { change, amount -> change.consume(); dragOffset += amount },
+                            onDragCancel = { dragId = null },
+                            onDragEnd = {
+                                val t = target()
+                                when (t?.second) {
+                                    DropMark.On -> over = Over.Merge(t.first, deck)
+                                    DropMark.Before, DropMark.After -> {
+                                        val ids = decks.map { it.id }.toMutableList().apply { remove(deck.id) }
+                                        val at = ids.indexOf(t.first.id) + if (t.second == DropMark.After) 1 else 0
+                                        ids.add(at, deck.id)
+                                        onReorder(ids)
+                                        dragId = null
+                                    }
+                                    else -> dragId = null
+                                }
+                            },
+                        )
+                    } else Modifier,
+                ),
+            editing = editing, wiggle = editing && !reduce && !dragged, alternate = decks.indexOf(deck) % 2 == 1,
+            dragged = dragged, mark = if (hover?.first?.id == deck.id) hover.second else DropMark.None,
+            onRename = { onRename(deck, it) }, asRow = asRow,
+        )
+    }
+
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(Modifier.fillMaxSize().nestedScroll(scroll.nestedScrollConnection)) {
             JsTopBar(
@@ -190,16 +242,20 @@ fun DecksContent(
                         )
                     }
                     else -> {
-                        if (!editing) ui.stats?.let { s -> full("stats") { StatsRow(listOf("New" to s.new, "Due now" to s.dueNow, "Learned" to s.learned, "Total" to s.total)) } }
+                        if (!editing && layout == DecksLayout.Grid) ui.stats?.let { s -> full("stats") { StatsRow(listOf("New" to s.new, "Due now" to s.dueNow, "Learned" to s.learned, "Total" to s.total)) } }
                         full("header") {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Row(Modifier.weight(1f).semantics { heading() }, verticalAlignment = Alignment.Bottom) {
-                                    Text("Continue flashcards", Modifier.alignByBaseline(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
-                                    KoSide("단어 카드 계속하기", MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onBackground)
+                                    Text("Decks Created", Modifier.alignByBaseline(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                                    KoSide("만든 덱", MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onBackground)
                                 }
-                                if (editing) StickerButton("Done", { editing = false; dragId = null }, ko = "완료", size = StickerSize.Small)
-                                else IconButton(onClick = { editing = true; dragId = null }) {
-                                    LucideIcon(Lucide.SquarePen, contentDescription = "Edit decks", tint = colors.control)
+                                // AJ-25: layout switch, then the pen (blue while editing; tap it again to leave). No Done.
+                                val grid = layout == DecksLayout.Grid
+                                IconButton(onClick = { onLayout(if (grid) DecksLayout.List else DecksLayout.Grid) }) {
+                                    LucideIcon(Lucide.SlidersHorizontal, contentDescription = if (grid) "Show decks as a list" else "Show decks as a grid", tint = colors.control)
+                                }
+                                IconButton(onClick = { editing = !editing; dragId = null }, Modifier.semantics { if (editing) stateDescription = "On" }) {
+                                    LucideIcon(Lucide.SquarePen, contentDescription = if (editing) "Done editing decks" else "Edit decks", tint = if (editing) colors.action else colors.control)
                                 }
                             }
                         }
@@ -209,45 +265,10 @@ fun DecksContent(
                                 style = MaterialTheme.typography.bodyMedium, color = colors.muted,
                             )
                         }
-                        items(decks, key = { it.id }) { deck ->
-                            val dragged = deck.id == dragId
-                            DeckCard(
-                                deck, onContinue = { onStudy(deck) }, onDelete = { over = Over.Delete(deck) },
-                                modifier = Modifier
-                                    .then(if (dragged) Modifier.zIndex(1f) else Modifier)
-                                    .onGloballyPositioned { if (!dragged) bounds[deck.id] = it.boundsInRoot() }
-                                    .graphicsLayer {
-                                        if (dragged) { translationX = dragOffset.x; translationY = dragOffset.y }
-                                        if (dragged && fly.value > 0f) { val s = 1f - 0.4f * fly.value; scaleX = s; scaleY = s; alpha = 1f - fly.value }
-                                    }
-                                    .then(
-                                        if (editing) Modifier.pointerInput(deck.id) {
-                                            detectDragGesturesAfterLongPress(
-                                                onDragStart = { dragId = deck.id; dragOffset = Offset.Zero },
-                                                onDrag = { change, amount -> change.consume(); dragOffset += amount },
-                                                onDragCancel = { dragId = null },
-                                                onDragEnd = {
-                                                    val t = target()
-                                                    when (t?.second) {
-                                                        DropMark.On -> over = Over.Merge(t.first, deck)
-                                                        DropMark.Before, DropMark.After -> {
-                                                            val ids = decks.map { it.id }.toMutableList().apply { remove(deck.id) }
-                                                            val at = ids.indexOf(t.first.id) + if (t.second == DropMark.After) 1 else 0
-                                                            ids.add(at, deck.id)
-                                                            onReorder(ids)
-                                                            dragId = null
-                                                        }
-                                                        else -> dragId = null
-                                                    }
-                                                },
-                                            )
-                                        } else Modifier,
-                                    ),
-                                editing = editing, wiggle = editing && !reduce && !dragged, alternate = decks.indexOf(deck) % 2 == 1,
-                                dragged = dragged, mark = if (hover?.first?.id == deck.id) hover.second else DropMark.None,
-                                onRename = { onRename(deck, it) },
-                            )
-                        }
+                        // AJ-27: the list puts every deck on its own full-width row, 8 dp apart; the grid stays as it was.
+                        if (layout == DecksLayout.List) full("decks") {
+                            Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) { decks.forEach { key(it.id) { DeckItem(it, asRow = true) } } }
+                        } else items(decks, key = { it.id }) { DeckItem(it, asRow = false) }
                     }
                 }
                 if (ui.decks != null && !ui.error) {

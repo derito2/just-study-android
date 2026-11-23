@@ -17,6 +17,9 @@ import javax.inject.Singleton
 enum class ThemeMode { System, Light, Dark }
 enum class CardDirection { KoToEn, EnToKo, Both }
 
+/** design/ajustes.md AJ-25: how Flashcards shows the decks; stored as `grid` | `list`. */
+enum class DecksLayout { Grid, List }
+
 /** The New quiz form (design/quiz.md A.2), kept between sessions. An empty [documentIds] means all documents. */
 data class QuizForm(
     val count: Int = 5,
@@ -53,6 +56,8 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     }
 
     /** Games (design/games.md 9): the clock of the typing games; on by default. */
+    val decksLayout: Flow<DecksLayout> = store.data.map { if (it[DECKS_LAYOUT] == "list") DecksLayout.List else DecksLayout.Grid }
+    suspend fun setDecksLayout(layout: DecksLayout) { store.edit { it[DECKS_LAYOUT] = layout.name.lowercase() } }
     val typingTimer: Flow<Boolean> = store.data.map { it[TYPING_TIMER] ?: true }
     suspend fun setTypingTimer(on: Boolean) { store.edit { it[TYPING_TIMER] = on } }
 
@@ -81,6 +86,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
 
     private companion object {
         val THEME = stringPreferencesKey("theme_mode")
+        val DECKS_LAYOUT = stringPreferencesKey("decks_layout")
         val SKIPPED_DUPLICATES = stringSetPreferencesKey("skipped_duplicates")
         val GAMES_SPEAK_WORD = booleanPreferencesKey("games_speak_word")
         val TYPING_TIMER = booleanPreferencesKey("typing_timer")

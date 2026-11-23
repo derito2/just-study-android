@@ -12,7 +12,9 @@ ICONS = ["layout-grid", "book-text", "layers", "circle-help", "graduation-cap", 
          "trending-up", "calendar-days", "moon", "settings", "chevron-left", "badge-alert", "download", "trending-down", "minus", "check", "x", "square-pen", "trash-2", "search", "plus",
          "refresh-cw", "file-text", "sparkles",
          # Phase 8 (Games)
-         "gamepad-2", "pause", "play", "flame", "volume-2", "delete", "mic", "lightbulb", "clock"]
+         "gamepad-2", "pause", "play", "flame", "volume-2", "delete", "mic", "lightbulb", "clock",
+         # Owner adjustments (design/ajustes.md)
+         "sliders-horizontal"]
 
 
 def attrs(tag):
