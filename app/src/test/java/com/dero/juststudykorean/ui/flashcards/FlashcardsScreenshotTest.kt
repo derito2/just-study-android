@@ -19,6 +19,7 @@ import com.dero.juststudykorean.data.flashcards.FlashcardStats
 import com.dero.juststudykorean.data.flashcards.LastCard
 import com.dero.juststudykorean.data.flashcards.StudyCard
 import com.dero.juststudykorean.data.prefs.CardDirection
+import com.dero.juststudykorean.data.prefs.DecksLayout
 import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.navigation.TopLevel
@@ -79,11 +80,11 @@ class FlashcardsScreenshotTest {
         org.junit.Assert.assertEquals(1, result.pixelDifferences) // 8 steps ignored, 9 counted
     }
 
-    private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, options: RoborazziOptions = RoborazziOptions(), content: @Composable () -> Unit) =
+    private fun snap(name: String, fontScale: Float = 1f, bar: Boolean = true, options: RoborazziOptions = RoborazziOptions(), dark: Boolean = false, content: @Composable () -> Unit) =
         captureRoboImage("src/test/screenshots/$name.png", options) {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale), LocalFrozenMotion provides true) {
-                JustStudyTheme(darkTheme = false) {
+                JustStudyTheme(darkTheme = dark) {
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.weight(1f)) { content() }
                         if (bar) JsBottomBar(current = TopLevel.Flashcards, onSelect = {})
@@ -93,9 +94,9 @@ class FlashcardsScreenshotTest {
         }
 
     @Composable
-    private fun Decks(ui: DecksUi, editing: Boolean = false, merge: Pair<Int, Int>? = null) = DecksContent(
+    private fun Decks(ui: DecksUi, editing: Boolean = false, merge: Pair<Int, Int>? = null, layout: DecksLayout = DecksLayout.Grid) = DecksContent(
         ui, Scheduling(), remember { SnackbarHostState() }, {}, {}, {}, {}, { _, _ -> }, {}, { _, _ -> true }, {}, { null },
-        editingAtStart = editing, mergeAtStart = merge, mergeNameAtStart = if (merge != null) "School + -아서" else "",
+        editingAtStart = editing, mergeAtStart = merge, mergeNameAtStart = if (merge != null) "School + -아서" else "", layout = layout,
     )
 
     @Composable
@@ -107,6 +108,25 @@ class FlashcardsScreenshotTest {
 
     @Test
     fun decksEdit() = snap("flashcards_decks_edit", options = koreanAlphaTolerance) { Decks(ui, editing = true) }
+
+    // design/ajustes.md AJ-25..AJ-29: both layouts and edit mode, light and dark.
+    @Test
+    fun decksDark() = snap("flashcards_decks_dark", dark = true) { Decks(ui) }
+
+    @Test
+    fun decksEditDark() = snap("flashcards_decks_edit_dark", options = koreanAlphaTolerance, dark = true) { Decks(ui, editing = true) }
+
+    @Test
+    fun decksList() = snap("flashcards_decks_list") { Decks(ui, layout = DecksLayout.List) }
+
+    @Test
+    fun decksListDark() = snap("flashcards_decks_list_dark", dark = true) { Decks(ui, layout = DecksLayout.List) }
+
+    @Test
+    fun decksListEdit() = snap("flashcards_decks_list_edit", options = koreanAlphaTolerance) { Decks(ui, editing = true, layout = DecksLayout.List) }
+
+    @Test
+    fun decksListEditDark() = snap("flashcards_decks_list_edit_dark", options = koreanAlphaTolerance, dark = true) { Decks(ui, editing = true, layout = DecksLayout.List) }
 
     @Test
     fun mergeDialog() = snap("flashcards_merge", options = koreanAlphaTolerance) { Decks(ui, editing = true, merge = 0 to 2) }

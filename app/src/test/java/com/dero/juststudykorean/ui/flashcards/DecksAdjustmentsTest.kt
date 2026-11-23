@@ -8,6 +8,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
@@ -52,15 +53,16 @@ class DecksAdjustmentsTest {
     @get:Rule(order = 1)
     val compose = createComposeRule()
 
-    private fun deck(id: Long, name: String, due: Int = 3) =
-        Deck(id, false, false, emptyList(), name, 20, 5, 1, due, 5 + due, null, LastCard("도서관", ""), null)
+    private fun deck(id: Long, name: String, due: Int = 3, ready: Boolean = true) =
+        Deck(id, false, false, emptyList(), name, 20, 5, 1, due, if (ready) 5 + due else 0, null, LastCard("도서관", ""), null)
 
-    private val decks = listOf(deck(1, "Unit 3"), deck(2, "Lesson 5 · Verbs"))
+    private val decks = listOf(deck(1, "Unit 3"), deck(2, "Lesson 5 · Verbs"), deck(3, "Nothing today", 0, ready = false))
+    private val studied = mutableListOf<String>()
 
     private fun show(layout: DecksLayout = DecksLayout.Grid, onLayout: (DecksLayout) -> Unit = {}) = compose.setContent {
         JustStudyTheme(darkTheme = false) {
             DecksContent(
-                DecksUi(decks, FlashcardStats(40, 6, 2, 0, 10, null)), Scheduling(), SnackbarHostState(), {}, {}, {}, {}, { _, _ -> }, {},
+                DecksUi(decks, FlashcardStats(40, 6, 2, 0, 10, null)), Scheduling(), SnackbarHostState(), {}, { studied += it.name }, {}, {}, { _, _ -> }, {},
                 { _, _ -> true }, {}, { null }, layout = layout, onLayout = onLayout,
             )
         }
@@ -118,5 +120,34 @@ class DecksAdjustmentsTest {
         compose.onAllNodesWithText("Continue", substring = true, ignoreCase = true).assertCountEquals(0)
         compose.onNodeWithContentDescription("Delete Unit 3").performClick()
         compose.onNodeWithText("Yes, delete", ignoreCase = true, substring = true).assertExists()
+    }
+
+    // AJ-27
+    @Test
+    fun listRowOpensTheDeckAsAButton() {
+        show(DecksLayout.List)
+        compose.onNodeWithText("Due now").assertDoesNotExist() // no summary in the list view
+        compose.onNodeWithContentDescription("Open Unit 3")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
+            .performClick()
+        assertEquals(listOf("Unit 3"), studied)
+        compose.onAllNodesWithText("Continue", substring = true, ignoreCase = true).assertCountEquals(0)
+    }
+
+    @Test
+    fun listRowDoesNotOpenWhileEditing() {
+        show(DecksLayout.List)
+        compose.onNodeWithContentDescription("Edit decks").performClick()
+        compose.onNodeWithContentDescription("Open Unit 3").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Delete Unit 3").assertExists()
+        assertEquals(emptyList<String>(), studied)
+    }
+
+    @Test
+    fun listRowWithNothingDueShowsTheSnackbar() {
+        show(DecksLayout.List)
+        compose.onNodeWithContentDescription("Open Nothing today").performClick()
+        compose.onNodeWithText("Nothing due in this deck.").assertExists()
+        assertEquals(emptyList<String>(), studied)
     }
 }

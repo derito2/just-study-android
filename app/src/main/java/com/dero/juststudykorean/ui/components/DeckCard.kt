@@ -6,6 +6,15 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.semantics.Role
+import com.dero.juststudykorean.ui.theme.reduceMotion
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -70,6 +79,7 @@ fun DeckCard(
     dragged: Boolean = false,
     mark: DropMark = DropMark.None,
     onRename: (String) -> Unit = {},
+    asRow: Boolean = false,
 ) {
     val angle = when {
         !wiggle -> 0f
@@ -80,8 +90,84 @@ fun DeckCard(
         }
     }
     // Only this thin shell recomposes on every wiggle frame: the card itself is skipped (same arguments).
-    DeckCardBody(deck, onContinue, onDelete, modifier.rotate(angle), editing, dragged, mark, onRename)
+    if (asRow) DeckRowBody(deck, onContinue, onDelete, modifier.rotate(angle), editing, dragged, mark, onRename)
+    else DeckCardBody(deck, onContinue, onDelete, modifier.rotate(angle), editing, dragged, mark, onRename)
 }
+
+/**
+ * AJ-27: one deck as a full-width row: name and size, New · Study · Due, (the last word from 560 dp), an arrow.
+ * The whole row opens the deck ([onOpen]) and sinks 2 dp while pressed; while editing it does not open.
+ */
+@Composable
+private fun DeckRowBody(
+    deck: Deck,
+    onOpen: () -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier,
+    editing: Boolean,
+    dragged: Boolean,
+    mark: DropMark,
+    onRename: (String) -> Unit,
+) {
+    val colors = JustStudyTheme.colors
+    val source = remember { MutableInteractionSource() }
+    val pressed by source.collectIsPressedAsState()
+    val reduce = reduceMotion()
+    val sink by animateDpAsState(if (pressed && !editing) 2.dp else 0.dp, if (reduce) snap() else tween(90), label = "sink")
+    Box(
+        modifier
+            .offset(y = sink)
+            .alpha(if (dragged) 0.5f else 1f)
+            .drawBehind {
+                if (mark == DropMark.Before || mark == DropMark.After) {
+                    val x = if (mark == DropMark.Before) -6.dp.toPx() else size.width + 6.dp.toPx()
+                    drawLine(colors.brand, Offset(x, 0f), Offset(x, size.height), 4.dp.toPx())
+                }
+            }
+            .border(if (mark == DropMark.On) 4.dp else Tokens.Border, if (mark == DropMark.On) colors.brand else colors.line, MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
+            .then(
+                if (editing) Modifier
+                else Modifier.clickable(source, indication = null, role = Role.Button, onClick = onOpen).semantics { contentDescription = "Open ${deck.name}" },
+            ),
+    ) {
+        BoxWithConstraints(Modifier.fillMaxWidth().padding(Tokens.Space3)) {
+            val wide = maxWidth >= 560.dp
+            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
+                    if (editing) RenameField(deck, onRename, Modifier, TextAlign.Start)
+                    else Text(deck.name, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        // In a row the corner has no room for the mark (it would cover Due), so it stays here while editing.
+                        if (deck.custom) { TeacherMark(); Spacer(Modifier.width(Tokens.Space1)) }
+                        Pill("${deck.total} cards", PillTone.Neutral)
+                    }
+                }
+                RowDivider()
+                Count(deck.new, "New", colors.countNew, Modifier.width(44.dp))
+                Count(deck.learning, "Study", colors.fix, Modifier.width(44.dp))
+                Count(deck.due, "Due", colors.wrongInk, Modifier.width(44.dp))
+                RowDivider()
+                if (wide) {
+                    val word = deck.lastCard?.koreanWord
+                    Text(
+                        word ?: "Not studied yet.", Modifier.weight(1f).padding(horizontal = Tokens.Space2),
+                        style = if (word != null) JustStudyTheme.korean.bodyBold else MaterialTheme.typography.bodyMedium,
+                        color = if (word != null) MaterialTheme.colorScheme.onSurface else colors.muted, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                // The arrow is only a sign (the row is the target); while editing it hides and keeps its room.
+                Box(Modifier.width(32.dp), contentAlignment = Alignment.Center) {
+                    if (!editing) LucideIcon(Lucide.ChevronLeft, contentDescription = null, size = 24.dp, tint = if (deck.availableNow > 0) colors.control else colors.disabledInk, modifier = Modifier.rotate(180f))
+                }
+            }
+        }
+        if (editing) DeleteCorner(deck, onDelete, Modifier.align(Alignment.TopEnd), mark = false)
+    }
+}
+
+@Composable
+private fun RowDivider() = Box(Modifier.padding(horizontal = Tokens.Space2).width(2.dp).fillMaxHeight().background(JustStudyTheme.colors.line))
 
 @Composable
 private fun DeckCardBody(
@@ -180,9 +266,9 @@ private fun TeacherMark() {
 
 /** AJ-26: the cross in the deck's top right corner (20 dp, 48 dp target); a Teacher deck's mark sits to its left. */
 @Composable
-private fun DeleteCorner(deck: Deck, onDelete: () -> Unit, modifier: Modifier) {
+private fun DeleteCorner(deck: Deck, onDelete: () -> Unit, modifier: Modifier, mark: Boolean = true) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        if (deck.custom) TeacherMark()
+        if (deck.custom && mark) TeacherMark()
         IconButton(onClick = onDelete, Modifier.size(48.dp)) {
             LucideIcon(Lucide.X, contentDescription = "Delete ${deck.name}", size = 20.dp, tint = JustStudyTheme.colors.wrongInk)
         }
