@@ -364,8 +364,5 @@ private fun Composer(input: TextFieldValue, onInput: (TextFieldValue) -> Unit, o
             )
             StickerButton("Send", onSend, ko = "보내기", color = StickerColor.Go, enabled = canSend(input.text) && !busy)
         }
-        Back(!keyboard) {
-            Text("Answers come from all your documents.", fontSize = 12.sp, color = colors.muted, modifier = Modifier.padding(start = Tokens.Space4, bottom = Tokens.Space2))
-        }
     }
 }
