@@ -34,10 +34,10 @@ import com.dero.juststudykorean.ui.navigation.MoreDestination
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
-/** More: Grammar, Calendar · divider · Dark mode with ThemeSwitch · Settings. */
+/** More: Calendar, Quiz Guide · divider · Dark mode with ThemeSwitch · Settings. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDestination) -> Unit, onDismiss: () -> Unit, onGames: () -> Unit = {}) {
+fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDestination) -> Unit, onDismiss: () -> Unit) {
     val shape = RoundedCornerShape(topStart = Tokens.RadiusLg, topEnd = Tokens.RadiusLg)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -52,17 +52,18 @@ fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDes
         SideEffect { generateSequence(view.parent) { it.parent }.filterIsInstance<DialogWindowProvider>().firstOrNull()?.window?.isNavigationBarContrastEnforced = false }
         Column(Modifier.border(Tokens.Border, JustStudyTheme.colors.line, shape).navigationBarsPadding()) {
             SheetHeader("More", "더 보기")
-            MoreSheetContent(darkMode, onDarkMode, onOpen, onGames)
+            MoreSheetContent(darkMode, onDarkMode, onOpen)
         }
     }
 }
 
 /** The rows of MoreSheet, without the sheet (screenshot tests render this). */
 @Composable
-internal fun MoreSheetContent(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDestination) -> Unit, onGames: () -> Unit = {}) {
+internal fun MoreSheetContent(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDestination) -> Unit) {
     Column(Modifier.fillMaxWidth().padding(vertical = Tokens.Space2)) {
-        MoreRow(Lucide.Gamepad2, "Games", "게임", onGames) // D8-1: the first row
+        // design/ajustes.md AJ-02: Games and Grammar moved to the bottom bar.
         MoreRow(Lucide.CalendarDays, "Calendar", "달력") { onOpen(MoreDestination.Calendar) }
+        MoreRow(Lucide.BookOpenText, "Quiz Guide", "퀴즈 안내") { onOpen(MoreDestination.QuizGuide) }
         HorizontalDivider(Modifier.padding(vertical = Tokens.Space2), thickness = Tokens.Border, color = JustStudyTheme.colors.line)
         var moonTaps by remember { mutableIntStateOf(0) }
         Row(

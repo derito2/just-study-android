@@ -19,6 +19,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.dero.juststudykorean.ui.navigation.MoreDestination
 import com.dero.juststudykorean.ui.navigation.TopLevel
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import org.junit.Assert.assertEquals
@@ -88,5 +89,18 @@ class BottomBarTest {
         compose.waitForIdle()
         val after = compose.onNodeWithContentDescription("Grammar").getUnclippedBoundsInRoot()
         assertTrue("Grammar is whole on screen: $after", after.left >= 0.dp && after.right <= 411.dp)
+    }
+
+    // AJ-02
+    @Test
+    fun moreHasCalendarQuizGuideDarkModeAndSettings() {
+        val opened = mutableListOf<MoreDestination>()
+        compose.setContent { JustStudyTheme(darkTheme = false) { MoreSheetContent(darkMode = false, onDarkMode = {}, onOpen = { opened += it }) } }
+        val top = listOf("Calendar", "Quiz Guide", "Dark mode", "Settings").map { compose.onNodeWithText(it).getUnclippedBoundsInRoot().top.value }
+        assertEquals(top.sorted(), top)
+        compose.onNodeWithText("Games").assertDoesNotExist()
+        compose.onNodeWithText("Grammar").assertDoesNotExist()
+        compose.onNodeWithText("Quiz Guide").performClick()
+        assertEquals(listOf(MoreDestination.QuizGuide), opened)
     }
 }

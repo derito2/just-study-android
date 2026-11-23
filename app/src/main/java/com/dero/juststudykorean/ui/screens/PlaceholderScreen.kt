@@ -29,6 +29,7 @@ private val Route.text: ScreenText
             "Calendar", "달력", "Every day you studied, and every day you didn't.", "공부한 날도, 안 한 날도 전부.", Lucide.CalendarDays,
         )
         MoreDestination.Settings -> ScreenText("Settings", "설정", null, null, Lucide.Settings)
+        MoreDestination.QuizGuide -> ScreenText("Quiz Guide", "퀴즈 안내", "What each question type asks and what Difficulty changes.", null, Lucide.BookOpenText)
         null -> when (tab) {
             TopLevel.Dashboard -> ScreenText(
                 "Dashboard", "대시보드", "No excuses. This is where you really stand.", "변명은 없어. 이게 진짜 네 실력이야.", Lucide.LayoutGrid,

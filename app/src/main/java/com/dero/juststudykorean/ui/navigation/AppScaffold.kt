@@ -99,7 +99,6 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
             onDarkMode = onDarkMode,
             onOpen = { moreOpen = false; nav.open(it) },
             onDismiss = { moreOpen = false },
-            onGames = { moreOpen = false; nav.push(nav.current, Screen.Games) },
         )
     }
 }
