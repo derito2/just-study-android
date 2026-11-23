@@ -11,6 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -104,5 +106,17 @@ class DecksAdjustmentsTest {
         show()
         compose.onNodeWithContentDescription("Edit decks").performClick()
         compose.onNodeWithContentDescription("Show decks as a list").assertExists()
+    }
+
+    // AJ-26
+    @Test
+    fun editModeHasTheCornerCrossAndNoLineOrContinue() {
+        show()
+        compose.onAllNodesWithText("Continue", substring = true, ignoreCase = true).assertCountEquals(2)
+        compose.onNodeWithContentDescription("Edit decks").performClick()
+        compose.onNodeWithText("Drag to move", substring = true).assertDoesNotExist()
+        compose.onAllNodesWithText("Continue", substring = true, ignoreCase = true).assertCountEquals(0)
+        compose.onNodeWithContentDescription("Delete Unit 3").performClick()
+        compose.onNodeWithText("Yes, delete", ignoreCase = true, substring = true).assertExists()
     }
 }

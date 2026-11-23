@@ -96,7 +96,7 @@ private fun DeckCardBody(
 ) {
     val colors = JustStudyTheme.colors
     val ring = when (mark) { DropMark.On -> colors.brand; else -> colors.line }
-    Column(
+    Box(
         modifier
             .alpha(if (dragged) 0.5f else 1f)
             .drawBehind {
@@ -106,65 +106,85 @@ private fun DeckCardBody(
                 }
             }
             .border(if (mark == DropMark.On) 4.dp else Tokens.Border, ring, MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
-            .padding(Tokens.Space3),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Tokens.Space2),
+            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large),
     ) {
-        // P-25: the name leads (2 lines), then the size; the trash only shows while editing.
-        if (editing) {
-            var name by remember(deck.name) { mutableStateOf(deck.name) }
-            var hadFocus by remember { mutableStateOf(false) }
-            val save = { onRename(name.trim().ifEmpty { deck.name }.also { if (name.isBlank()) name = deck.name }) }
-            androidx.compose.foundation.text.BasicTextField(
-                name, { if (it.length <= 120) name = it },
-                Modifier.fillMaxWidth().semantics { contentDescription = "Name of ${deck.name}" }
-                    .drawBehind { drawLine(colors.field, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
-                    .onFocusChanged { if (it.isFocused) hadFocus = true else if (hadFocus) { hadFocus = false; save() } },
-                singleLine = true,
-                textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center),
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
-                keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { save() }),
-            )
-        } else {
-            FileName(deck.name, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        }
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-            if (deck.custom) {
-                Box(Modifier.size(24.dp).background(colors.tint, CircleShape).semantics { contentDescription = "Made by Teacher" }, contentAlignment = Alignment.Center) {
-                    LucideIcon(Lucide.GraduationCap, contentDescription = null, size = 16.dp, tint = colors.brandText)
-                }
-                Spacer(Modifier.width(Tokens.Space1))
-            }
-            Pill("${deck.total} cards", PillTone.Neutral)
+        Column(
+            Modifier.fillMaxWidth().padding(Tokens.Space3),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space2),
+        ) {
+            // P-25: the name leads, then the size. AJ-26: while editing the name is a field, clear of the corner cross.
             if (editing) {
-                Spacer(Modifier.width(Tokens.Space2))
-                IconButton(onClick = onDelete, Modifier.size(48.dp)) {
-                    LucideIcon(Lucide.Trash2, contentDescription = "Delete ${deck.name}", size = 20.dp, tint = colors.wrongInk)
-                }
+                RenameField(deck, onRename, Modifier.padding(start = 36.dp, end = if (deck.custom) 60.dp else 36.dp), TextAlign.Center)
+            } else {
+                FileName(deck.name, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
             }
-        }
-        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
-            Count(deck.new, "New", colors.countNew, Modifier.weight(1f))
-            Box(Modifier.width(2.dp).fillMaxHeight().background(colors.line))
-            Count(deck.learning, "Study", colors.fix, Modifier.weight(1f))
-            Box(Modifier.width(2.dp).fillMaxHeight().background(colors.line))
-            Count(deck.due, "Due", colors.wrongInk, Modifier.weight(1f))
-        }
-        val word = deck.lastCard?.koreanWord
-        if (word != null) {
-            Text(word, style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.ExtraBold), color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        } else {
-            Text("Not studied yet.", Modifier.padding(vertical = 5.dp), style = MaterialTheme.typography.bodyMedium, color = colors.muted)
-        }
-        if (editing) {
-            Text("Drag to move · tap the name to rename", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = colors.muted)
-        } else {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                if (deck.custom && !editing) {
+                    TeacherMark()
+                    Spacer(Modifier.width(Tokens.Space1))
+                }
+                Pill("${deck.total} cards", PillTone.Neutral)
+            }
+            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
+                Count(deck.new, "New", colors.countNew, Modifier.weight(1f))
+                Box(Modifier.width(2.dp).fillMaxHeight().background(colors.line))
+                Count(deck.learning, "Study", colors.fix, Modifier.weight(1f))
+                Box(Modifier.width(2.dp).fillMaxHeight().background(colors.line))
+                Count(deck.due, "Due", colors.wrongInk, Modifier.weight(1f))
+            }
+            val word = deck.lastCard?.koreanWord
+            if (word != null) {
+                Text(word, style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.ExtraBold), color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            } else {
+                Text("Not studied yet.", Modifier.padding(vertical = 5.dp), style = MaterialTheme.typography.bodyMedium, color = colors.muted)
+            }
+            // AJ-26: while editing, Continue is hidden but keeps its room, so the deck does not change size.
             val ready = deck.availableNow > 0
             StickerButton(
-                if (ready) "Continue" else "Nothing due", onContinue, Modifier.fillMaxWidth(),
-                ko = if (ready) "계속하기" else "복습 없음", size = StickerSize.Small, enabled = ready,
+                if (ready) "Continue" else "Nothing due", if (editing) ({}) else onContinue,
+                Modifier.fillMaxWidth().then(if (editing) Modifier.alpha(0f).clearAndSetSemantics {} else Modifier),
+                ko = if (ready) "계속하기" else "복습 없음", size = StickerSize.Small, enabled = ready && !editing,
             )
+        }
+        if (editing) DeleteCorner(deck, onDelete, Modifier.align(Alignment.TopEnd))
+    }
+}
+
+/** AJ-26: the deck's name as a one-line field; saved on Done or when it loses focus (an empty name keeps the old one). */
+@Composable
+private fun RenameField(deck: Deck, onRename: (String) -> Unit, modifier: Modifier, align: TextAlign) {
+    val colors = JustStudyTheme.colors
+    var name by remember(deck.name) { mutableStateOf(deck.name) }
+    var hadFocus by remember { mutableStateOf(false) }
+    val save = { onRename(name.trim().ifEmpty { deck.name }.also { if (name.isBlank()) name = deck.name }) }
+    androidx.compose.foundation.text.BasicTextField(
+        name, { if (it.length <= 120) name = it },
+        modifier.fillMaxWidth().semantics { contentDescription = "Name of ${deck.name}" }
+            .drawBehind { drawLine(colors.field, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx()) }
+            .onFocusChanged { if (it.isFocused) hadFocus = true else if (hadFocus) { hadFocus = false; save() } },
+        singleLine = true,
+        textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = align),
+        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
+        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { save() }),
+    )
+}
+
+@Composable
+private fun TeacherMark() {
+    val colors = JustStudyTheme.colors
+    Box(Modifier.size(24.dp).background(colors.tint, CircleShape).semantics { contentDescription = "Made by Teacher" }, contentAlignment = Alignment.Center) {
+        LucideIcon(Lucide.GraduationCap, contentDescription = null, size = 16.dp, tint = colors.brandText)
+    }
+}
+
+/** AJ-26: the cross in the deck's top right corner (20 dp, 48 dp target); a Teacher deck's mark sits to its left. */
+@Composable
+private fun DeleteCorner(deck: Deck, onDelete: () -> Unit, modifier: Modifier) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        if (deck.custom) TeacherMark()
+        IconButton(onClick = onDelete, Modifier.size(48.dp)) {
+            LucideIcon(Lucide.X, contentDescription = "Delete ${deck.name}", size = 20.dp, tint = JustStudyTheme.colors.wrongInk)
         }
     }
 }
