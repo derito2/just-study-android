@@ -1,11 +1,5 @@
 package com.dero.juststudykorean.ui.library
 
-import androidx.compose.ui.draw.rotate
-import androidx.compose.foundation.border
-import com.dero.juststudykorean.ui.components.KoSide
-import com.dero.juststudykorean.ui.components.LucideIcon
-import com.dero.juststudykorean.ui.components.Lucide
-import com.dero.juststudykorean.ui.components.EmptyState
 import androidx.compose.material3.SnackbarResult
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.dero.juststudykorean.data.ai.MessyNotesState
@@ -74,7 +68,6 @@ fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, onTemplate: (
     val docs by vm.documents.collectAsStateWithLifecycle()
     val uploading by vm.uploading.collectAsStateWithLifecycle()
     val open by vm.open.collectAsStateWithLifecycle()
-    val vocabCount by vm.vocabCount.collectAsStateWithLifecycle()
     val messy by vm.messy.collectAsStateWithLifecycle()
     LifecycleResumeEffect(vm) { vm.readMessyNotes(); onPauseOrDispose {} }
     val extracted by vm.extracted.collectAsStateWithLifecycle()
@@ -100,7 +93,7 @@ fun LibraryScreen(onMore: () -> Unit, onAllVocabulary: () -> Unit, onTemplate: (
 
     LibraryContent(
         docs, uploading, open, extracted, duplicates, snackbar, ZoneId.systemDefault(), onMore, onAllVocabulary,
-        onTemplate = onTemplate, vocabCount = vocabCount,
+        onTemplate = onTemplate,
         onUpload = {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                 pick.launch(arrayOf("application/pdf"))
@@ -139,7 +132,6 @@ fun LibraryContent(
     messy: Map<Long, MessyNotesState> = emptyMap(), // use 6 (phase 6)
     onAddPairs: (Long, List<com.dero.juststudykorean.korean.VocabPair>) -> Unit = { _, _ -> },
     onTemplate: () -> Unit = {},
-    vocabCount: Int? = null,
 ) {
     val c = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -153,14 +145,16 @@ fun LibraryContent(
                 verticalArrangement = Arrangement.spacedBy(Tokens.Space3),
             ) {
                 item(key = "upload") { UploadCard(uploading, onUpload) }
-                item(key = "vocabulary") { VocabularyRow(vocabCount, onAllVocabulary) }
+                item(key = "vocabulary") {
+                    StickerButton("All vocabulary", onAllVocabulary, Modifier.fillMaxWidth(), ko = "모든 단어", color = StickerColor.Fix)
+                }
                 val docs = state.documents
                 when {
                     state.error -> item(key = "error") { ErrorState("Could not load documents.", onRetry) }
                     docs == null -> item(key = "loading") { LoadingState("Loading…") }
                     docs.isEmpty() -> item(key = "empty") {
                         Column {
-                            EmptyState(Lucide.FileText, "No documents yet", "아직 문서가 없어요", "Upload a PDF and get to work.")
+                            Text("No documents yet. Upload a PDF and get to work.", style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp), color = c.muted)
                             // Fase 10: the Notes template lives in Settings; back returns here.
                             Box(Modifier.heightIn(min = 48.dp).clickable(role = Role.Button, onClick = onTemplate), contentAlignment = Alignment.CenterStart) {
                                 Text("How to write notes: Notes template", style = JustStudyTheme.korean.bodyBold.copy(fontSize = 14.sp), color = c.action)
@@ -223,28 +217,5 @@ private fun UploadCard(uploading: Boolean, onUpload: () -> Unit) {
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted, textAlign = TextAlign.Center,
         )
         StickerButton(if (uploading) "Uploading…" else "Choose files", onUpload, ko = if (uploading) "올리는 중…" else "파일 선택", enabled = !uploading, size = StickerSize.Default)
-    }
-}
-
-/** P-20: All vocabulary is a navigation row inside a card (56 dp), not a second primary button. */
-@Composable
-private fun VocabularyRow(count: Int?, onClick: () -> Unit) {
-    val c = JustStudyTheme.colors
-    Row(
-        Modifier.fillMaxWidth()
-            .border(Tokens.Border, c.line, MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
-            .heightIn(min = 56.dp).clickable(role = Role.Button, onClick = onClick).padding(horizontal = Tokens.Space4),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        LucideIcon(Lucide.BookText, contentDescription = null, size = 24.dp, tint = c.control)
-        Spacer(Modifier.width(Tokens.Space3))
-        Row(Modifier.weight(1f), verticalAlignment = Alignment.Bottom) {
-            Text("All vocabulary", Modifier.alignByBaseline(), style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
-            KoSide("모든 단어", MaterialTheme.typography.bodyMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onSurface)
-        }
-        if (count != null) Text("$count words", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
-        Spacer(Modifier.width(Tokens.Space2))
-        LucideIcon(Lucide.ChevronLeft, contentDescription = null, size = 20.dp, tint = c.muted, modifier = Modifier.rotate(180f))
     }
 }

@@ -66,13 +66,6 @@ class LibraryViewModel @Inject constructor(
     private val messyNotes: MessyNotes? = null,
     private val prefs: com.dero.juststudykorean.data.prefs.UserPrefs? = null,
 ) : ViewModel() {
-    /** P-20: the number on the All vocabulary row; null while it loads or if it fails. */
-    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    val vocabCount: StateFlow<Int?> by lazy {
-        documents.mapLatest { runCatchingCancellable { repo.vocabulary().size }.getOrNull() }
-            .flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-    }
-
     /** Use 6: the model's pairs of each document's messy notes, and whether they wait for the app (design/library.md E). */
     val messy: StateFlow<Map<Long, MessyNotesState>> = messyNotes?.state ?: MutableStateFlow(emptyMap())
 

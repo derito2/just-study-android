@@ -1,9 +1,5 @@
 package com.dero.juststudykorean.ui.library
 
-import androidx.compose.foundation.clickable
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.semantics.Role
-import androidx.compose.foundation.layout.heightIn
 import com.dero.juststudykorean.ui.components.PillTone
 import com.dero.juststudykorean.ui.components.Pill
 import com.dero.juststudykorean.data.ai.MessyNotesState
@@ -97,13 +93,13 @@ internal fun DocumentCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 FileName(doc.originalName, style = JustStudyTheme.korean.bodyBold)
-                if (state != DocState.Ready) Text("Uploaded ${uploadedFormat.format(Instant.ofEpochMilli(doc.createdAt).atZone(zone))}", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
+                Text("Uploaded ${uploadedFormat.format(Instant.ofEpochMilli(doc.createdAt).atZone(zone))}", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted)
             }
             Spacer(Modifier.width(Tokens.Space2))
             StatePill(state)
-            var trash by remember { mutableIntStateOf(0) }
-            IconButton({ trash++; onDelete() }, Modifier.size(48.dp)) {
-                LucideIcon(Lucide.Trash2, contentDescription = "Delete", size = 20.dp, tint = c.wrongInk, animateKey = trash)
+            var taps by remember { mutableIntStateOf(0) }
+            IconButton({ taps++; onReprocess() }, Modifier.size(48.dp), enabled = state != DocState.Processing && state != DocState.Queued) {
+                LucideIcon(Lucide.RefreshCw, contentDescription = "Reprocess", size = 20.dp, tint = c.control, animateKey = taps)
             }
         }
         when (state) {
@@ -115,10 +111,7 @@ internal fun DocumentCard(
             DocState.Queued -> Unit
             DocState.Ready -> {
                 Text(
-                    listOfNotNull(
-                        "Uploaded ${uploadedFormat.format(Instant.ofEpochMilli(doc.createdAt).atZone(zone))}", plural(doc.pageCount.toInt(), "page"),
-                        plural(doc.tableCount.toInt(), "table").takeIf { doc.tableCount > 0 }, plural(doc.charCount.toInt(), "character"),
-                    ).joinToString(" · "),
+                    listOf(plural(doc.pageCount.toInt(), "page"), plural(doc.tableCount.toInt(), "table"), plural(doc.charCount.toInt(), "character")).joinToString(" · "),
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = c.muted,
                 )
                 // design/library.md E: the messy notes wait for the app.
@@ -135,11 +128,12 @@ internal fun DocumentCard(
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
             StickerButton("Details", onDetails, ko = "자세히", color = StickerColor.Gray, size = StickerSize.Small, enabled = state == DocState.Ready)
+            StickerButton("Delete", onDelete, ko = "삭제", color = StickerColor.Danger, size = StickerSize.Small)
             Spacer(Modifier.weight(1f))
-            var again by remember { mutableIntStateOf(0) }
-            LabelledIcon(Lucide.RefreshCw, "Reprocess", again, enabled = state != DocState.Processing && state != DocState.Queued) { again++; onReprocess() }
             var taps by remember { mutableIntStateOf(0) }
-            LabelledIcon(Lucide.Download, "Save PDF", taps, enabled = true) { taps++; onSave() }
+            IconButton({ taps++; onSave() }, Modifier.size(48.dp)) {
+                LucideIcon(Lucide.Download, contentDescription = "Save PDF", size = 20.dp, tint = c.control, animateKey = taps)
+            }
         }
         if (open) ExtractedView(extracted, aiPairs = messy?.pairs.orEmpty(), onAdd = onAddPairs)
     }
@@ -155,18 +149,4 @@ private fun StatePill(state: DocState) {
         DocState.NotSupported -> PillTone.Warn
     }
     Pill(state.label, tone)
-}
-
-/** P-22: a 20 dp `control` icon with its visible label (12 sp, 700, `muted`), 48 dp tall. */
-@Composable
-private fun LabelledIcon(icon: Lucide, label: String, animateKey: Int, enabled: Boolean, onClick: () -> Unit) {
-    val c = JustStudyTheme.colors
-    Row(
-        Modifier.heightIn(min = 48.dp).clickable(enabled = enabled, role = Role.Button, onClick = onClick).padding(horizontal = Tokens.Space2),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        LucideIcon(icon, contentDescription = null, size = 20.dp, tint = if (enabled) c.control else c.muted, animateKey = animateKey)
-        Spacer(Modifier.width(Tokens.Space1))
-        Text(label, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold), color = c.muted)
-    }
 }
