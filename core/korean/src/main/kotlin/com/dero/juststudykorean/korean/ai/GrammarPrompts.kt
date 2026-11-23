@@ -3,11 +3,10 @@ package com.dero.juststudykorean.korean.ai
 import com.dero.juststudykorean.korean.hasForm
 import com.dero.juststudykorean.korean.teacher.patternForms
 
-// Phase 6, task 6: Grammar (use 7: a simpler explanation and a practice sentence) and Dashboard (use 8).
+// Phase 6, task 6: Grammar (use 7: a simpler explanation and a practice sentence).
 
 const val SIMPLER_VERSION = "grammar.simpler.v2"
 const val PRACTICE_VERSION = "grammar.practice.v2"
-const val WEEK_VERSION = "dashboard.week.v1"
 
 private val HANGUL_WORD = Regex("[가-힣]+")
 
@@ -36,21 +35,3 @@ fun validPractice(output: String, pattern: String, notes: String): String? {
     if (patternForms(pattern).filter { it.length >= 1 && HANGUL_WORD.containsMatchIn(it) }.none { hasForm(ko, it) }) return null
     return ko
 }
-
-/** 8: the week's facts (the Dashboard's own figures) and its sentence without the model. */
-fun weekFacts(words: Int, accuracy: Int?, answers: Int, weakest: String?): String = buildString {
-    append("Words learned this week: $words\nQuiz answers this week: $answers")
-    if (accuracy != null) append("\nQuiz accuracy this week: $accuracy%")
-    if (weakest != null) append("\nWeakest topic: $weakest")
-}
-
-fun weekTemplate(words: Int, accuracy: Int?, weakest: String?): String = buildString {
-    append("This week you learned $words ${if (words == 1) "word" else "words"}")
-    if (accuracy != null) append(" and got $accuracy% of your quiz answers right")
-    append(".")
-    if (weakest != null) append(" $weakest needs the most work.")
-}
-
-fun weekPrompt(facts: String) =
-    "Write one or two short, encouraging English sentences for a Korean learner about their week, using only these " +
-        "facts. Do not add any number, Korean word or topic that is not in them.\n\nFacts:\n$facts"

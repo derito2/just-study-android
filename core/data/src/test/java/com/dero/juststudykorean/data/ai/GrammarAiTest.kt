@@ -10,7 +10,6 @@ import com.dero.juststudykorean.data.golden.GoldenDb
 import com.dero.juststudykorean.data.grammar.GrammarFilter
 import com.dero.juststudykorean.data.grammar.GrammarRepository
 import com.dero.juststudykorean.data.notes.NotesSource
-import com.dero.juststudykorean.data.progress.Weekly
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
@@ -57,13 +56,4 @@ class GrammarAiTest : GoldenDb() {
         assertNull(ai(Fake { "KOREAN: 우주선을 타요.\nENGLISH: I ride a spaceship." }).practice(p))
     }
 
-    @Test
-    fun weekFromTheSameFigures() = runBlocking {
-        val w = Weekly(4, 2, 0.8, 0.5, 10, 6)
-        val written = ai(Fake { "You learned 4 words this week and got 80% right. Nice work!" }).week(w, null)
-        assertTrue(written.ai)
-        val template = ai(Fake { "You learned 40 words this week. Amazing!" }).week(w, null)
-        assertFalse(template.ai)
-        assertEquals("This week you learned 4 words and got 80% of your quiz answers right.", template.text)
-    }
 }
