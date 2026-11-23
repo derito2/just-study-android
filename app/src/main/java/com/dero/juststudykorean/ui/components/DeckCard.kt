@@ -18,6 +18,7 @@ import com.dero.juststudykorean.ui.theme.reduceMotion
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.fillMaxSize
@@ -129,7 +130,7 @@ private fun DeckRowBody(
     val sink by animateDpAsState(if (pressed && !editing) 2.dp else 0.dp, if (reduce) snap() else tween(90), label = "sink")
     Box(
         modifier
-            .offset(y = sink)
+            .offset { IntOffset(0, sink.roundToPx()) }
             .alpha(if (dragged) 0.5f else 1f)
             .drawBehind {
                 if (mark == DropMark.Before || mark == DropMark.After) {
