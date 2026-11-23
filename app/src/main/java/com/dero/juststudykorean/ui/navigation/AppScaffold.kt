@@ -66,6 +66,7 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                         )
                         route.section == MoreDestination.Settings -> SettingsScreen(onMore = more, onBack = back)
                         route.section == MoreDestination.Calendar -> CalendarScreen(onMore = more, onBack = back)
+                        route.section == MoreDestination.QuizGuide -> com.dero.juststudykorean.ui.quiz.QuizGuideScreen(onMore = more, onBack = back)
                         route == Route(TopLevel.Dashboard) -> DashboardScreen(
                             onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onAsk = { coachAsks++; nav.select(TopLevel.Teacher) },
                             onGoLibrary = { nav.select(TopLevel.Library) }, onStartQuiz = { nav.select(TopLevel.Quiz) },
