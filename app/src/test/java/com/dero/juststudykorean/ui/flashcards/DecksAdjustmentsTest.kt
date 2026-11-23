@@ -10,13 +10,15 @@ import com.dero.juststudykorean.ui.components.DeckCard
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -175,7 +177,7 @@ class DecksAdjustmentsTest {
             val d = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(d.density, fontScale), LocalFrozenMotion provides true) {
                 JustStudyTheme(darkTheme = false) {
-                    Column(Modifier.width(if (asRow) 379.dp else 183.5.dp)) {
+                    Column(Modifier.width(if (asRow) 379.dp else 183.5.dp).verticalScroll(rememberScrollState())) {
                         variants.forEachIndexed { i, (deck, editing) ->
                             DeckCard(deck, {}, {}, Modifier.testTag("deck$i"), editing = editing, asRow = asRow)
                         }
@@ -183,11 +185,11 @@ class DecksAdjustmentsTest {
                 }
             }
         }
-        return variants.indices.map { i -> compose.onNodeWithTag("deck$i").getBoundsInRoot().let { (it.bottom - it.top).value } }
+        return variants.indices.map { i -> compose.onNodeWithTag("deck$i").getUnclippedBoundsInRoot().let { (it.bottom - it.top).value } }
     }
 
     @Test
-    fun gridDecksHaveOneFixedHeight() = heights(asRow = false).forEach { assertEquals(230f, it, 0.5f) }
+    fun gridDecksHaveOneFixedHeight() = heights(asRow = false).let { h -> h.forEach { assertEquals(h.toString(), 230f, it, 0.5f) } }
 
     @Test
     fun listRowsHaveOneFixedHeight() = heights(asRow = true).forEach { assertEquals(72f, it, 0.5f) }
@@ -195,5 +197,47 @@ class DecksAdjustmentsTest {
     @Test
     fun fixedHeightGrowsWithLargeText() {
         heights(asRow = true, fontScale = 1.3f).forEach { assertEquals(72f * 1.3f, it, 0.5f) }
+    }
+
+    // AJ-29
+    private val long = "A very long deck name that never fits on one line"
+
+    private fun showName(asRow: Boolean) = compose.setContent {
+        JustStudyTheme(darkTheme = false) {
+            Column(Modifier.width(if (asRow) 379.dp else 183.5.dp)) { DeckCard(deck(1, long), {}, {}, asRow = asRow) }
+        }
+    }
+
+    @Test
+    fun longNameScrollsWholeOnOneLineInAList() {
+        animations(1f)
+        showName(asRow = true)
+        compose.onNodeWithText(long).assertExists()
+        compose.onNodeWithContentDescription(long).assertExists()
+    }
+
+    private fun animations(scale: Float) = android.provider.Settings.Global.putFloat(
+        ApplicationProvider.getApplicationContext<android.app.Application>().contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, scale,
+    )
+
+    @Test
+    fun longNameScrollsWholeOnOneLine() {
+        animations(1f)
+        showName(asRow = false)
+        compose.onNodeWithText(long).assertExists() // the whole name, moved by the marquee
+        compose.onNodeWithContentDescription(long).assertExists()
+    }
+
+    @Test
+    fun withReduceMotionTheNameIsShortenedInTheMiddleAndStill() {
+        animations(0f)
+        try {
+            showName(asRow = false)
+            compose.onNodeWithText(long).assertDoesNotExist()
+            compose.onNodeWithText("…", substring = true).assertExists()
+            compose.onNodeWithContentDescription(long).assertExists() // TalkBack still reads it whole
+        } finally {
+            animations(1f)
+        }
     }
 }

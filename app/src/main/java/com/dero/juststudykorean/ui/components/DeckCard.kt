@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.semantics.Role
 import com.dero.juststudykorean.ui.theme.reduceMotion
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.draw.clip
@@ -150,7 +151,7 @@ private fun DeckRowBody(
             Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
                     if (editing) RenameField(deck, onRename, Modifier, TextAlign.Start, JustStudyTheme.korean.bodyBold)
-                    else Text(deck.name, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    else DeckName(deck.name, JustStudyTheme.korean.bodyBold, TextAlign.Start, maxChars = 24)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         // In a row the corner has no room for the mark (it would cover Due), so it stays here while editing.
                         if (deck.custom) { TeacherMark(); Spacer(Modifier.width(Tokens.Space1)) }
@@ -178,6 +179,24 @@ private fun DeckRowBody(
         }
         if (editing) DeleteCorner(deck, onDelete, Modifier.align(Alignment.TopEnd), mark = false)
     }
+}
+
+/**
+ * AJ-29: the deck's name on one line. If it does not fit it scrolls by itself (24 dp/s, 1.5 s before the first pass,
+ * 2 s between passes); with reduce motion it stands still, shortened in the middle (P-04). TalkBack reads it whole.
+ */
+@Composable
+private fun DeckName(name: String, style: TextStyle, align: TextAlign, maxChars: Int) {
+    val still = reduceMotion()
+    val frozen = LocalFrozenMotion.current // screenshot tests: the marquee's first frame, without an endless animation
+    Text(
+        displayName(name, if (still) maxChars else Int.MAX_VALUE),
+        Modifier.fillMaxWidth()
+            .then(if (still || frozen) Modifier else Modifier.basicMarquee(Int.MAX_VALUE, repeatDelayMillis = 2000, initialDelayMillis = 1500, velocity = 24.dp))
+            .semantics { contentDescription = name },
+        style = style, color = MaterialTheme.colorScheme.onSurface, textAlign = align, maxLines = 1,
+        softWrap = false, overflow = if (still) TextOverflow.Ellipsis else TextOverflow.Clip,
+    )
 }
 
 @Composable
@@ -219,7 +238,7 @@ private fun DeckCardBody(
             if (editing) {
                 RenameField(deck, onRename, Modifier.padding(start = 36.dp, end = if (deck.custom) 60.dp else 36.dp), TextAlign.Center)
             } else {
-                FileName(deck.name, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+                DeckName(deck.name, MaterialTheme.typography.titleMedium, TextAlign.Center, maxChars = 18)
             }
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                 if (deck.custom && !editing) {
