@@ -115,7 +115,7 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
                     if (busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = JustStudyTheme.colors.brand, trackColor = JustStudyTheme.colors.tint, gapSize = 0.dp)
                     error?.let { ErrorState(it, onRetry = { pick.launch(BACKUP_TYPES) }, title = "Couldn't finish") }
                 }
-                SettingsRow(Lucide.FileText, "Licenses", "Poppins (OFL), Lucide (MIT), MuPDF (AGPL).", animateKey = null) { licenses = true } // R1-04
+                SettingsRow(Lucide.FileText, "Licenses", "Poppins (OFL), Lucide (ISC), MuPDF (AGPL).", animateKey = null) { licenses = true } // R1-04
                 val version = remember { context.packageManager.getPackageInfo(context.packageName, 0).versionName }
                 Text("Version $version", Modifier.fillMaxWidth().padding(vertical = Tokens.Space6), style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = JustStudyTheme.colors.muted, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
             }
