@@ -14,7 +14,7 @@ ICONS = ["layout-grid", "book-text", "layers", "circle-help", "graduation-cap", 
          # Phase 8 (Games)
          "gamepad-2", "pause", "play", "flame", "volume-2", "delete", "mic", "lightbulb", "clock",
          # Owner adjustments (design/ajustes.md)
-         "sliders-horizontal"]
+         "sliders-horizontal", "rocket"]
 
 
 def attrs(tag):

@@ -62,7 +62,6 @@ fun MoreSheet(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDes
 internal fun MoreSheetContent(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, onOpen: (MoreDestination) -> Unit, onGames: () -> Unit = {}) {
     Column(Modifier.fillMaxWidth().padding(vertical = Tokens.Space2)) {
         MoreRow(Lucide.Gamepad2, "Games", "게임", onGames) // D8-1: the first row
-        MoreRow(Lucide.Languages, "Grammar", "문법") { onOpen(MoreDestination.Grammar) }
         MoreRow(Lucide.CalendarDays, "Calendar", "달력") { onOpen(MoreDestination.Calendar) }
         HorizontalDivider(Modifier.padding(vertical = Tokens.Space2), thickness = Tokens.Border, color = JustStudyTheme.colors.line)
         var moonTaps by remember { mutableIntStateOf(0) }

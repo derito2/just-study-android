@@ -42,7 +42,7 @@ import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 
 @Composable
-fun GrammarScreen(onMore: () -> Unit, onBack: () -> Unit, onLibrary: () -> Unit, vm: GrammarViewModel = hiltViewModel()) {
+fun GrammarScreen(onMore: () -> Unit, onBack: (() -> Unit)?, onLibrary: () -> Unit, vm: GrammarViewModel = hiltViewModel()) {
     val ui by vm.state.collectAsStateWithLifecycle()
     GrammarContent(ui, onMore, onBack, onLibrary, vm::setFilter, vm::setQuery, vm::toggle, vm::retry, vm::explainSimpler, vm::practiceSentence)
 }
@@ -53,7 +53,7 @@ fun GrammarScreen(onMore: () -> Unit, onBack: () -> Unit, onLibrary: () -> Unit,
 fun GrammarContent(
     ui: GrammarUi,
     onMore: () -> Unit,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)?,
     onLibrary: () -> Unit,
     onFilter: (GrammarFilter) -> Unit,
     onQuery: (String) -> Unit,

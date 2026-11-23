@@ -65,7 +65,6 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                             onOpenRun = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onDetails = { nav.push(TopLevel.Quiz, Screen.Results(it)) },
                         )
                         route.section == MoreDestination.Settings -> SettingsScreen(onMore = more, onBack = back)
-                        route.section == MoreDestination.Grammar -> GrammarScreen(onMore = more, onBack = back, onLibrary = { nav.select(TopLevel.Library) })
                         route.section == MoreDestination.Calendar -> CalendarScreen(onMore = more, onBack = back)
                         route == Route(TopLevel.Dashboard) -> DashboardScreen(
                             onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) }, onAsk = { coachAsks++; nav.select(TopLevel.Teacher) },
@@ -75,6 +74,7 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                             coachAsks, onMore = more, onOpenQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) },
                             onOpenFlashcards = { nav.select(TopLevel.Flashcards) },
                         )
+                        route == Route(TopLevel.Grammar) -> GrammarScreen(onMore = more, onBack = null, onLibrary = { nav.select(TopLevel.Library) })
                         route == Route(TopLevel.Flashcards) -> DecksScreen(onMore = more, onStudy = { nav.push(TopLevel.Flashcards, Screen.Study(it.id, it.name)) })
                         else -> PlaceholderScreen(route, onMore = more, onBack = if (route.section != null || screen != null) back else null)
                     }
@@ -83,7 +83,7 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
         )
     }
     Scaffold(
-        bottomBar = { if (!nav.fullScreen) JsBottomBar(current = nav.current, onSelect = nav::select) },
+        bottomBar = { if (!nav.fullScreen) JsBottomBar(current = nav.current, onSelect = nav::select, onGames = { nav.push(nav.current, Screen.Games) }) },
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0), // the top bar handles the status bar; the bottom bar, the navigation bar
     ) { padding ->
