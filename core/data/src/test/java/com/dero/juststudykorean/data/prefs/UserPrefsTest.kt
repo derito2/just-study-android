@@ -51,4 +51,12 @@ class UserPrefsTest {
         withPrefs(file) { it.addSkippedDuplicates(listOf("3:word:학교")); it.addSkippedDuplicates(listOf("3:grammar:거든")) }
         assertEquals(setOf("3:word:학교", "3:grammar:거든"), withPrefs(file) { it.skippedDuplicates.first() })
     }
+
+    @Test
+    fun decksLayoutDefaultsToGridAndPersists() { // design/ajustes.md AJ-25
+        val file = File(tmp.root, "prefs.preferences_pb")
+        assertEquals(DecksLayout.Grid, withPrefs(file) { it.decksLayout.first() })
+        withPrefs(file) { it.setDecksLayout(DecksLayout.List) }
+        assertEquals(DecksLayout.List, withPrefs(file) { it.decksLayout.first() })
+    }
 }

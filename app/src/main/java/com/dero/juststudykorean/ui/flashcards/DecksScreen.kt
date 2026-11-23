@@ -59,6 +59,8 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import com.dero.juststudykorean.data.prefs.DecksLayout
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -100,6 +102,7 @@ import java.util.Locale
 fun DecksScreen(onMore: () -> Unit, onStudy: (Deck) -> Unit, vm: DecksViewModel = hiltViewModel()) {
     val ui by vm.state.collectAsStateWithLifecycle()
     val scheduling by vm.scheduling.collectAsStateWithLifecycle()
+    val layout by vm.layout.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(vm) {
         vm.events.collect { m ->
@@ -112,7 +115,7 @@ fun DecksScreen(onMore: () -> Unit, onStudy: (Deck) -> Unit, vm: DecksViewModel 
     DecksContent(
         ui, scheduling, snackbar, onMore = onMore, onStudy = onStudy, onRetry = vm::retry, onDelete = { vm.delete(it) },
         onRename = { d, n -> vm.rename(d, n) }, onReorder = { vm.reorder(it) }, onMerge = vm::merge, onCreate = { vm.createCards(it) },
-        onSaveScheduling = vm::saveScheduling,
+        onSaveScheduling = vm::saveScheduling, layout = layout, onLayout = { vm.setLayout(it) },
     )
 }
 
@@ -143,6 +146,8 @@ fun DecksContent(
     editingAtStart: Boolean = false,
     mergeAtStart: Pair<Int, Int>? = null,
     mergeNameAtStart: String = "",
+    layout: DecksLayout = DecksLayout.Grid,
+    onLayout: (DecksLayout) -> Unit = {},
 ) {
     val colors = JustStudyTheme.colors
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -194,12 +199,16 @@ fun DecksContent(
                         full("header") {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Row(Modifier.weight(1f).semantics { heading() }, verticalAlignment = Alignment.Bottom) {
-                                    Text("Continue flashcards", Modifier.alignByBaseline(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
-                                    KoSide("단어 카드 계속하기", MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onBackground)
+                                    Text("Decks Created", Modifier.alignByBaseline(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                                    KoSide("만든 덱", MaterialTheme.typography.titleMedium.fontSize, Modifier.alignByBaseline(), color = MaterialTheme.colorScheme.onBackground)
                                 }
-                                if (editing) StickerButton("Done", { editing = false; dragId = null }, ko = "완료", size = StickerSize.Small)
-                                else IconButton(onClick = { editing = true; dragId = null }) {
-                                    LucideIcon(Lucide.SquarePen, contentDescription = "Edit decks", tint = colors.control)
+                                // AJ-25: layout switch, then the pen (blue while editing; tap it again to leave). No Done.
+                                val grid = layout == DecksLayout.Grid
+                                IconButton(onClick = { onLayout(if (grid) DecksLayout.List else DecksLayout.Grid) }) {
+                                    LucideIcon(Lucide.SlidersHorizontal, contentDescription = if (grid) "Show decks as a list" else "Show decks as a grid", tint = colors.control)
+                                }
+                                IconButton(onClick = { editing = !editing; dragId = null }, Modifier.semantics { if (editing) stateDescription = "On" }) {
+                                    LucideIcon(Lucide.SquarePen, contentDescription = if (editing) "Done editing decks" else "Edit decks", tint = if (editing) colors.action else colors.control)
                                 }
                             }
                         }

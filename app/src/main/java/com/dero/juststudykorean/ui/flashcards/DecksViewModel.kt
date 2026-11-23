@@ -9,6 +9,7 @@ import com.dero.juststudykorean.data.flashcards.DeletedDeck
 import com.dero.juststudykorean.data.flashcards.FlashcardRepository
 import com.dero.juststudykorean.data.flashcards.FlashcardStats
 import com.dero.juststudykorean.data.flashcards.ReviewItem
+import com.dero.juststudykorean.data.prefs.DecksLayout
 import com.dero.juststudykorean.data.prefs.UserPrefs
 import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.ui.components.plural
@@ -54,6 +55,10 @@ class DecksViewModel @Inject constructor(private val repo: FlashcardRepository, 
     val events = messages.receiveAsFlow()
 
     val scheduling: StateFlow<Scheduling> = prefs.scheduling.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Scheduling())
+
+    /** AJ-25: grid or list, remembered. */
+    val layout: StateFlow<DecksLayout> = prefs.decksLayout.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DecksLayout.Grid)
+    fun setLayout(layout: DecksLayout) = viewModelScope.launch { prefs.setDecksLayout(layout) }
 
     private val loaded = retry.flatMapLatest {
         repo.decks().map<List<Deck>, Loaded?> { decks -> Loaded(decks, repo.statsNow(), repo.history(30), repo.readyDocuments()) }.catch { emit(null) }
