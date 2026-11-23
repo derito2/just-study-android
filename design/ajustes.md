@@ -75,34 +75,45 @@ Se quitan **Games** y **Grammar**. `book-open-text` entra en `design/icons/` igu
   - Sustituye a `trash-2`, que desaparece de los mazos.
   - Solo se ve en modo edición.
   - Si el mazo lleva el icono de Teacher, ese icono se corre a la izquierda de la cruz.
-- *Continue* se oculta en modo edición, pero **su hueco se mantiene** (invisible): el mazo no cambia de tamaño (AJ-28).
+- En la cuadrícula, *Continue* se oculta en modo edición, pero **su hueco se mantiene** (invisible); en la lista, lo mismo con la flecha. El mazo no cambia de tamaño (AJ-28).
 - Arrastrar para mover o combinar y tocar el nombre para renombrar siguen igual, en las dos vistas.
 
 ### AJ-27 · Vista de lista
-Una fila por mazo, a ancho completo, con el marco de tarjeta de siempre: borde 2 dp `line`, radio 16, relleno 12 dp, 8 dp entre filas. **No lleva la flecha `›`** de la referencia.
+Una fila por mazo, a ancho completo, con el marco de tarjeta de siempre: borde 2 dp `line`, radio 16, relleno 12 dp, 8 dp entre filas. **Sin botón *Continue*:** en su lugar va una flecha, y **toda la fila abre el mazo** (dueño, 2026-11-22).
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│ Anki_vocabulary_1 │ 212 │  0  │  1  │ [ CONTINUE ]     │
-│ (213 cards)       │ NEW │STUDY│ DUE │ [  계속하기 ]     │
-└──────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ Anki_vocabulary_1  │ 212 │  0  │  1  │      ›   │
+│ (213 cards)        │ NEW │STUDY│ DUE │          │
+└──────────────────────────────────────────────────────┘
 ```
 
-De izquierda a derecha, con divisores verticales de 2 dp `line`:
+De izquierda a derecha, con divisores verticales de 2 dp `line` entre el nombre y las cifras, y entre las cifras y lo que sigue:
 1. **Nombre** (`body-bold`, una línea, AJ-29) y debajo el `Pill neutral` *{n} cards*. Ocupa el ancho que sobra (`weight(1f)`).
 2. **New · Study · Due**:
    - tres columnas de 44 dp;
    - dígito de 20 sp (800) y etiqueta `label-caps` de 10.5 sp;
    - colores de P-25: `correct-ink`, `count-learn` y `wrong-ink`.
-3. **Última palabra / *Not studied yet.***: solo si la fila mide **560 dp o más** (tableta, horizontal), con `weight(1f)` y una línea. En el OPPO en vertical (379 dp útiles) no cabe y no se muestra.
-4. **Continue** · 계속하기: StickerButton Small (`Action`), con *Nothing due* deshabilitado igual que hoy.
+3. **Última palabra / *Not studied yet.***: solo si la fila mide **560 dp o más** (tableta, horizontal), con `weight(1f)` y una línea. En el OPPO en vertical no se muestra.
+4. **Flecha:** `chevron-left` girado 180°, 24 dp, `control`, centrada en vertical en un hueco de 32 dp. Es solo una señal: no tiene zona táctil propia.
 
-En la vista de lista no se muestra el resumen *New · Due now · Learned · Total* de arriba (tampoco en edición). En la de cuadrícula se queda como hoy.
+**Tocar la fila** hace lo que hacía *Continue*:
+- `Modifier.clickable` en toda la tarjeta, sin ripple: la fila se hunde 2 dp, igual que un StickerButton al pulsarse, en 90 ms (sin movimiento con *Quitar animaciones*);
+- TalkBack: rol botón, *Open {mazo}*;
+- si el mazo no tiene nada para hoy (lo que antes era *Nothing due*), la fila sigue siendo táctil y sale el Snackbar *Nothing due in this deck.*; la flecha va en `disabled-ink`.
+
+**En modo edición:**
+- la fila **no** abre el mazo;
+- la flecha se oculta, pero su hueco se mantiene;
+- la cruz `x` (AJ-26) va arriba a la derecha, sobre ese hueco;
+- tocar el nombre renombra y arrastrar mueve o combina, como en la cuadrícula.
+
+En la vista de lista no se muestra el resumen *New · Due now · Learned · Total* de arriba (tampoco en edición). En la de cuadrícula se queda como hoy, con su botón *Continue*.
 
 ### AJ-28 · Tamaño fijo del mazo
 - Cada mazo tiene un **alto fijo**, en las dos vistas, pase lo que pase: nombre largo, *Nothing due*, edición, letra del sistema.
 - **Cuadrícula:** el alto que tiene hoy un mazo con el nombre en una línea. Mídelo en la captura `flashcards_decks` y anótalo aquí: `deck-grid-h = ___ dp`.
-- **Lista:** **88 dp**.
+- **Lista:** **72 dp** (sin botón cabe en menos alto: nombre + Pill a la izquierda, cifras de 20 sp en el centro).
 - Con la letra al 130 % o más, el alto fijo sube en la misma proporción, para que no se corte nada; sigue siendo igual para todos los mazos.
 - Lo que no cabe se recorta con elipsis, nunca hace crecer el mazo.
 
