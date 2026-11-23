@@ -178,30 +178,35 @@ Se quita *Answers come from all your documents.* bajo el composer, también de l
 - Es solo texto: sin botones ni estados de carga.
 - Los textos viven en un solo sitio (`QuizGuide.kt` junto a `QUIZ_TYPES` y `LEVELS`), para que formulario y guía no se separen.
 
-### AJ-41 · Textos (en inglés; adaptados de la web a lo que hace la app Android hoy)
+### AJ-41 · Textos (v2, comprobados contra el código de `main` el 2026-11-22)
 
 | Tipo | Pill | Texto |
 |---|---|---|
-| Korean → English · 한국어 → 영어 | By rules | Shows a Korean word from your notes; you type its English meaning. Made by rules from your word pairs, so Difficulty doesn't change it. With On-device AI ready, an answer that means the same in other words also counts. |
-| Write in Korean · 한국어로 쓰기 | By rules | Shows the English meaning; you type the Korean. Words or sentences; spaces and punctuation don't count. Made by rules, so Difficulty doesn't change it. |
-| Vocabulary recognition · 어휘 알아보기 | By rules | Shows a Korean word; you pick its meaning from 4 options taken from other words of the same document. Made by rules, so Difficulty doesn't change it. |
-| English → Korean · 영어 → 한국어 | By rules | Shows an English meaning; you pick the Korean word from 4 options of the same document. Made by rules, so Difficulty doesn't change it. |
-| Fill in the blank · 빈칸 채우기 | By rules | A Korean sentence from your notes with a gap; you pick what goes in it. Made by rules from your sentences, so Difficulty doesn't change it. |
-| Multiple choice · 객관식 | By rules | A question about your notes with 4 options. Your grammar points become rule-based questions. With On-device AI ready, the model also writes a few (at most 3 per quiz), and only those follow Difficulty. |
-| Grammar selection · 문법 고르기 | By rules | Shows what a grammar pattern means; you pick the pattern, e.g. -(으)니까. Made from the grammar points in your notes (their *Anki options*, if they have them). Difficulty doesn't change it. |
-| Short answer · 단답형 | On-device AI | An open question about your notes that you answer in English. Written by the model, so it needs On-device AI ready and follows Difficulty. |
-| Say it in Korean · 한국어로 말하기 | Practice · not scored | You say a Korean word or sentence from your notes out loud; the app shows what it heard next to your notes. Practice only: it never counts in your score. Needs the microphone; audio and what you said are never saved. |
+| Korean → English · 한국어 → 영어 | By rules | Shows a Korean word from your notes; you type its English meaning. Made by rules from your word pairs, so Difficulty doesn't change it. With On-device AI ready, an answer the rules reject but that means the same also counts. |
+| Write in Korean · 한국어로 쓰기 | By rules | Shows an English meaning from your notes; you type the Korean. Spaces and punctuation don't count. Made by rules, so Difficulty doesn't change it. |
+| Vocabulary recognition · 어휘 알아보기 | By rules | Shows a Korean word; you pick its meaning from 4 options. The wrong ones are meanings of other words in the same document. Made by rules, so Difficulty doesn't change it. |
+| English → Korean · 영어 → 한국어 | By rules | Shows an English meaning; you pick the Korean word from 4 options taken from the same document. Made by rules, so Difficulty doesn't change it. |
+| Fill in the blank · 빈칸 채우기 | By rules | An example sentence of a grammar point in your notes, with its ending taken out; you pick the ending from 4 options (endings of other grammar points in the same document). Made by rules, so Difficulty doesn't change it. |
+| Multiple choice · 객관식 | By rules | 4 options about the grammar points and particles in your notes: what a pattern means, or which sentence means something. With On-device AI ready, the model also writes some (up to 3 per quiz, shared with Short answer); only those follow Difficulty. |
+| Grammar selection · 문법 고르기 | By rules | Shows what a grammar pattern or particle means; you pick it from 4 options, e.g. -(으)니까. If a grammar point in your notes has its own *Anki options*, those are used. Difficulty doesn't change it. |
+| Short answer · 단답형 | On-device AI | An open question about your notes that you answer in English. Only the model writes it (up to 3 per quiz, shared with Multiple choice), so it needs On-device AI ready and follows Difficulty. |
+| Say it in Korean · 한국어로 말하기 | Practice · not scored | You say a Korean word or sentence from your notes out loud; the app shows what it heard next to your notes. Practice only: it never counts in your score. Needs the microphone and the phone's Korean speech recognition; the audio and what you said are never saved. |
 
-**Difficulty** · 난이도 — texto general: *Difficulty only changes questions written by the model: Multiple choice (the model's ones) and Short answer, and only when On-device AI is ready. Pick one or more levels; with several, they take turns. Everything else is made by rules from your notes and stays the same.*
+**Difficulty** · 난이도 — texto general: *Difficulty only changes the questions the model writes (some Multiple choice and all Short answer), so it only shows up when On-device AI is ready and one of those types is checked. Pick one or more levels; with several, they take turns. Everything else is made by rules from your notes and stays the same.*
 
 | Nivel | Texto |
 |---|---|
-| 1 · Recall · 기억하기 | Remember one item: what a word means, or the key word missing from a sentence. |
+| 1 · Recall · 기억하기 | Remember one item: what a word or pattern means, or the key word of a sentence. |
 | 2 · Similar options · 비슷한 선택지 | Choose between look-alike options (e.g. 춥다 / 차갑다 / 시원하다), so you need to know the exact one. |
-| 3 · Apply a rule · 규칙 적용 | Use a grammar rule: the gap is a particle or an ending (e.g. 오니까 vs 와서), or the answer isn't written in your notes and you build it. |
+| 3 · Apply a rule · 규칙 적용 | Use a grammar rule: pick the right particle or ending for a sentence (e.g. 오니까 vs 와서), or build an answer that isn't written in your notes. |
 
-**Antes de copiar estos textos**, Code comprueba cada frase contra el código. Si algo no es verdad hoy en Android, **para y lo dice; no corrige el texto por su cuenta**. Por ejemplo:
-- que la calificación por significado de *Korean → English* use Nano;
-- el tope de 3 preguntas del modelo;
-- cómo hace *Fill in the blank* las reglas (R-017);
-- que *Difficulty* solo aplique a *Multiple choice* y *Short answer* (`levelsCount`).
+**Lo que se comprobó:**
+- el juez de significado solo corre en respuestas escritas en inglés que las reglas rechazan (`answerMode == "text"`);
+- `AI_TYPES` = Multiple choice + Short answer, con `AI_MAX_QUESTIONS` = 3 para los dos juntos;
+- Fill in the blank sale de `buildBlankFromExample` (R-017);
+- las opciones de Vocabulary recognition y English → Korean salen del mismo documento (`buildFromPair`, `pool`);
+- `levelsCount` y `levelTurns`.
+
+Si al copiarlos algo no cuadra, para y dilo; no corrijas el texto.
+
+**Nota:** `LEVEL_TYPES` en `QuizViewModels.kt` todavía incluye `fill_blank`, que ya no escribe el modelo (R-017). No se usa para decidir nada (lo decide `levelsCount`); se puede dejar o quitar en este PR, sin cambiar comportamiento.
