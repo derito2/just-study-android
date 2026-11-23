@@ -72,10 +72,10 @@ fun QuizForm.usableTypes(ai: Boolean = false, speech: Boolean = true): List<Stri
 fun SpeechAvailability?.offered() = this is SpeechAvailability.Ready || this is SpeechAvailability.NeedsDownload
 
 /** Difficulty only counts with a type the model writes (multiple choice or short answer) and Nano Available. */
-fun QuizForm.levelsCount(ai: Boolean) = ai && types.any { it == "multiple_choice" || it == "short_answer" }
+fun QuizForm.levelsCount(ai: Boolean) = ai && types.any { it in LEVEL_TYPES }
 
-/** Types the model writes: only these change with the difficulty (the web's LEVEL_TYPES). */
-val LEVEL_TYPES = setOf("fill_blank", "multiple_choice", "short_answer")
+/** Types the model writes: only these change with the difficulty (the web's LEVEL_TYPES, without fill_blank: R-017). */
+val LEVEL_TYPES = setOf("multiple_choice", "short_answer")
 val LEVELS = listOf(Triple(1, "1 · Recall", "기억하기"), Triple(2, "2 · Similar options", "비슷한 선택지"), Triple(3, "3 · Apply a rule", "규칙 적용"))
 
 /** How a question is answered (the web's answer_mode): options, typed English or typed Korean. */

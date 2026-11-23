@@ -126,4 +126,9 @@ class QuizFormAdjustmentsTest {
             app.close()
         }
     }
+
+    @Test
+    fun difficultyTypesAreTheOnesTheModelWrites() { // R-017: Fill in the blank is made by the rules
+        assertEquals(com.dero.juststudykorean.data.ai.AI_TYPES, LEVEL_TYPES)
+    }
 }
