@@ -10,6 +10,7 @@ import com.dero.juststudykorean.data.db.MIGRATION_1_2
 import com.dero.juststudykorean.data.db.MIGRATION_2_3
 import com.dero.juststudykorean.data.db.MIGRATION_3_4
 import com.dero.juststudykorean.data.db.MIGRATION_4_5
+import com.dero.juststudykorean.data.db.MIGRATION_5_6
 import com.dero.juststudykorean.data.golden.GoldenDb
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
@@ -33,7 +34,7 @@ class MigrationV4ToV5Check {
     private val dbFile = File(dir, "juststudy.db")
 
     private fun open() = Room.databaseBuilder(context, JustStudyDatabase::class.java, dbFile.path)
-        .setDriver(BundledSQLiteDriver()).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
+        .setDriver(BundledSQLiteDriver()).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).build()
 
     private fun tables(db: JustStudyDatabase, name: String): JSONObject = runBlocking {
         val zip = File(dir, "$name.jsbackup.zip")
@@ -71,7 +72,7 @@ class MigrationV4ToV5Check {
             } + "\n")
             for (t in SCHEMA.keys) assertEquals(t, before.getJSONObject(t).toString(), after.getJSONObject(t).toString())
         } finally { db.close() }
-        assertEquals(5L, raw("PRAGMA user_version"))
+        assertEquals(6L, raw("PRAGMA user_version")) // and on to v6 (phase 11), which only adds the word tables
         for (t in listOf("game_sessions", "game_rounds", "game_item_progress")) assertEquals(t, 0L, raw("SELECT COUNT(*) FROM $t"))
     }
 }
