@@ -89,6 +89,8 @@ fun CardBack(
     modifier: Modifier = Modifier,
     typed: (@Composable () -> Unit)? = null,
     meaningFirst: Boolean = false,
+    /** F2: under the word, Fill the Gap's whole sentence (design/beta.md 2.2). */
+    extra: (@Composable () -> Unit)? = null,
 ) {
     val colors = JustStudyTheme.colors
     val ink = MaterialTheme.colorScheme.onSurface
@@ -97,6 +99,7 @@ fun CardBack(
         val en = @Composable { Text(meaning, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.ExtraBold), color = ink, textAlign = TextAlign.Center) }
         if (meaningFirst) { en(); ko() } else {
             ko()
+            extra?.invoke()
             if (!romanization.isNullOrBlank()) Text(romanization, style = MaterialTheme.typography.bodyMedium, color = colors.muted)
             en()
         }

@@ -75,6 +75,11 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     suspend fun setThemeMode(mode: ThemeMode) { store.edit { it[THEME] = mode.name } }
     suspend fun setCardDirection(direction: CardDirection) { store.edit { it[CARD_DIRECTION] = direction.name } }
     suspend fun setTypeAnswer(on: Boolean) { store.edit { it[TYPE_ANSWER] = on } }
+    /** F2 (design/beta.md 2.1): Fill the Gap and Listen Only in a review session; both off, the session is as before. */
+    val gapCards: Flow<Boolean> = store.data.map { it[GAP_CARDS] ?: false }
+    val listenCards: Flow<Boolean> = store.data.map { it[LISTEN_CARDS] ?: false }
+    suspend fun setGapCards(on: Boolean) { store.edit { it[GAP_CARDS] = on } }
+    suspend fun setListenCards(on: Boolean) { store.edit { it[LISTEN_CARDS] = on } }
     /** Phase 11 (H-03 B): word_state was written from the sources on v6; until then WordProgress computes on the fly. */
     val wordStateBuiltV6: Flow<Boolean> = store.data.map { it[WORD_STATE_BUILT_V6] ?: false }
     suspend fun setWordStateBuiltV6(built: Boolean) { store.edit { it[WORD_STATE_BUILT_V6] = built } }
@@ -98,6 +103,8 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         val TYPING_TIMER = booleanPreferencesKey("typing_timer")
         val CARD_DIRECTION = stringPreferencesKey("card_direction")
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
+        val GAP_CARDS = booleanPreferencesKey("gap_cards")
+        val LISTEN_CARDS = booleanPreferencesKey("listen_cards")
         val WORD_STATE_BUILT_V6 = booleanPreferencesKey("wordStateBuiltV6")
         val CHART_UNIT = stringPreferencesKey("chart_unit")
         val LAST_STREAK = intPreferencesKey("last_streak")
