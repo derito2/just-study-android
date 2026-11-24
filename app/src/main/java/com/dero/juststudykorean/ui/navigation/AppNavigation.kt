@@ -25,6 +25,14 @@ sealed interface Screen {
     data object Vocabulary : Screen
     /** Games (design/games.md, D8-1): full screen over the tab it was opened from. */
     data object Games : Screen
+    /** Phase 11 (design/beta.md, D11-5): BETA, opened from More, and its four screens. */
+    data object Beta : Screen
+    /** [pointKey]: norm of a grammar point's pattern; null = all your points. */
+    data class GrammarLab(val pointKey: String?) : Screen
+    data object Listening : Screen
+    data object Mistakes : Screen
+    /** [documentId]: null = choose a document first. */
+    data class Reader(val documentId: Long?) : Screen
 
     companion object {
         fun encode(s: Screen): String = when (s) {
@@ -33,6 +41,11 @@ sealed interface Screen {
             is Results -> "results|${s.key}"
             Vocabulary -> "vocabulary|"
             Games -> "games|"
+            Beta -> "beta|"
+            is GrammarLab -> "grammarlab|${s.pointKey ?: ""}"
+            Listening -> "listening|"
+            Mistakes -> "mistakes|"
+            is Reader -> "reader|${s.documentId ?: ""}"
         }
         fun decode(text: String): Screen {
             val p = text.split("|", limit = 3)
@@ -41,6 +54,11 @@ sealed interface Screen {
                 "question" -> Question(p[1].toLongOrNull())
                 "vocabulary" -> Vocabulary
                 "games" -> Games
+                "beta" -> Beta
+                "grammarlab" -> GrammarLab(p.drop(1).joinToString("|").ifEmpty { null }) // a pattern may hold "|"
+                "listening" -> Listening
+                "mistakes" -> Mistakes
+                "reader" -> Reader(p[1].toLongOrNull())
                 else -> Results(p.drop(1).joinToString("|"))
             }
         }

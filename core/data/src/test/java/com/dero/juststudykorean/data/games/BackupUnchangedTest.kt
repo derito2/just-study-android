@@ -12,6 +12,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import com.dero.juststudykorean.data.db.GrammarDrillAttemptsEntity
+import com.dero.juststudykorean.data.db.ListeningAttemptsEntity
 import com.dero.juststudykorean.data.db.QuestionWordsEntity
 import com.dero.juststudykorean.data.db.WordStateEntity
 import java.io.File
@@ -34,6 +36,9 @@ class BackupUnchangedTest : GoldenDb() {
         // Phase 11 (H-03 B): word_state and question_words are phone-only too.
         db.wordStateDao().upsert(listOf(WordStateEntity("가방", 1, 2, 0, 0, 1, 1, null, false)))
         db.questionWordsDao().insert(listOf(QuestionWordsEntity(1, "가방")))
+        // Phase 11 (PR 3): the labs' attempts are phone-only as well.
+        db.grammarDrillAttemptsDao().insert(GrammarDrillAttemptsEntity(1, "-아서/어서", "먹다", "-어서", "Produce", "먹어서", true, NOW.toEpochMilli()))
+        db.listeningAttemptsDao().insert(ListeningAttemptsEntity(1, "dictation", "가방", false, NOW.toEpochMilli()))
         val out = File(context.cacheDir, "export.jsbackup.zip")
         assertTrue(BackupExporter(context, db).export(Uri.fromFile(out)) is ExportResult.Ok)
         val exported = sha(out)
