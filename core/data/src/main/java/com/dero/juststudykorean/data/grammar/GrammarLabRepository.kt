@@ -44,8 +44,9 @@ class GrammarLabRepository @Inject constructor(
     private val notes: NotesSource,
     private val clock: AppClock,
 ) {
-    suspend fun points(): List<LabPoint> = grammar.all().mapNotNull { p -> endingOf(p.pattern)?.let { LabPoint(norm(p.pattern), p.pattern, p.meaning, it, p.examples) } }
-        .distinctBy { it.key }
+    suspend fun points(): List<LabPoint> = withContext(Dispatchers.IO) { // off the main thread, as verbs() and session()
+        grammar.all().mapNotNull { p -> endingOf(p.pattern)?.let { LabPoint(norm(p.pattern), p.pattern, p.meaning, it, p.examples) } }.distinctBy { it.key }
+    }
 
     /** The verbs and adjectives of your notes, each with its type when it is sure. */
     suspend fun verbs(): List<LabVerb> = withContext(Dispatchers.IO) {

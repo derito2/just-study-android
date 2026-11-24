@@ -89,7 +89,7 @@ Funcionamiento:
   - **Choose:** 3 o 4 `QuizOption` con las formas;
   - **Produce:** campo de una línea más el teclado. Por defecto `HangulKeys`; en la cabecera, un `keyboard` (24 dp, `control`) cambia al teclado del sistema y se recuerda;
   - **FillExample:** tu ejemplo con `____` y su traducción, y el campo debajo;
-  - pie: **Check** · 확인 (`Go`, Large), como en el Quiz.
+  - pie: **Check** · 확인 (`Go`, Large), como en el Quiz. Con el teclado Hangul visible, **Check es su propia tecla** y el botón grande del pie no sale (solo sale con el teclado del sistema).
 - **Resultado:**
   - ResultBanner (acierto o fallo) + TypedResult;
   - debajo, la **explicación por reglas** en un `softBox()`: *먹 ends in ㅓ, so -어서: 먹 + 어서 → 먹어서*;
