@@ -2,6 +2,11 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-23 — `gen_room_entities.py` ya no se ejecuta; `JustStudyDatabase.kt` se edita a mano
+**Decisión:** `tools/data/gen_room_entities.py` ya no se puede ejecutar: leía el `models.py` del proyecto web, que ya no está en el Mac. Desde la v6 (fase 11, PR 2), `JustStudyDatabase.kt` se edita a mano **siguiendo el formato que escribía el script** (la cabecera, las entidades de la web y, detrás, las tablas solo del teléfono; un `abstract fun …Dao()` por tabla). `APP_TABLES` y `DB_VERSION` del script se mantienen al día **solo como referencia**.
+**Por qué:** el dueño desinstaló el proyecto web (2026-11-23). Las 18 tablas del respaldo no cambian (`BackupSchema.kt` sigue igual), así que lo que el script generaba de la web ya no se mueve; solo crecen las tablas del teléfono, que siempre fueron a mano (`db/*Tables.kt`).
+**Descartado:** volver a bajar el repo web de GitHub para ejecutar el script (solo se consulta si el dueño lo pide).
+
 ## 2026-11-23 — Fase 11: palabra única (H-03) y funciones de estudio en BETA (D11-1…D11-8)
 **Origen:** `docs/AUDIT_2.md` (H-03) y `docs/PLAN_FUNCIONES_ESTUDIO.md`. Plan en `docs/FASE_11_PLAN.md` (manda sobre el plan largo); diseño en `design/beta.md`.
 **Decisiones del dueño (2026-11-23):**
