@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.speech.SpeakingUi
+import com.dero.juststudykorean.ui.components.speech.SpeakActions
 import com.dero.juststudykorean.ui.components.ProgressBar
 import com.dero.juststudykorean.ui.components.StatStrip
 import com.dero.juststudykorean.ui.components.Stat
