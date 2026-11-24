@@ -211,7 +211,7 @@ fun StudyContent(
                                     JsTextField(ui.typed, onType, placeholder = hint, center = true, onDone = { onFlip(meaning) })
                                 }) else null // typing is on but this is a grammar card: the notice is under the switch (P-27)
                                 when {
-                                    cloze != null -> GapFront(cloze, m, field)
+                                    cloze != null -> GapFront(cloze, card.card.back, m, field)
                                     listening -> ListenFront({ onSpeak(word) }, m, field)
                                     else -> WithSpeaker(speakWord.takeIf { !enToKo }, m) { inner ->
                                         CardFront(if (enToKo) card.card.back else card.card.front, korean = !enToKo, isNew = card.isNew, modifier = inner, typingField = field)

@@ -122,6 +122,15 @@ class FlashcardsScreenshotTest {
     @Test
     fun gapBackDark() = snap("flashcards_gap_back_dark", bar = false, dark = true) { Study(gapUi(true), gap = true, voiceReady = true) }
 
+    // design/beta.md 2.2: an example without a translation shows the card's meaning instead.
+    private fun gapUiNoTranslation() = gapUi(false).copy(clozes = mapOf(7L to Cloze("학교 ", "에 살아요.", "근처", null)))
+
+    @Test
+    fun gapFrontNoTranslation() = snap("flashcards_gap_front_meaning", bar = false) { Study(gapUiNoTranslation(), gap = true, voiceReady = true) }
+
+    @Test
+    fun gapFrontNoTranslationDark() = snap("flashcards_gap_front_meaning_dark", bar = false, dark = true) { Study(gapUiNoTranslation(), gap = true, voiceReady = true) }
+
     @Test
     fun listenFront() = snap("flashcards_listen_front", bar = false) { Study(gapUi(false), listen = true, voiceReady = true) }
 
