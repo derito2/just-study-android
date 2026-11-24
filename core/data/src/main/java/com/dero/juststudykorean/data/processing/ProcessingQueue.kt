@@ -12,6 +12,7 @@ import com.dero.juststudykorean.data.documents.DocumentIndexer
 import com.dero.juststudykorean.data.documents.STAGE_CHUNKING
 import com.dero.juststudykorean.data.documents.STAGE_EXTRACTING
 import com.dero.juststudykorean.data.documents.STAGE_INDEXING
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.data.documents.STAGE_PARSING
 import com.dero.juststudykorean.data.documents.STAGE_PENDING
 import com.dero.juststudykorean.data.progress.ProgressRepository
@@ -65,6 +66,8 @@ class ProcessingQueue @Inject constructor(
     private val progress: ProgressRepository,
     private val files: DocumentFiles,
     private val indexer: DocumentIndexer,
+    /** H-03 B: word_state is rebuilt when a document is ready (tests that do not look at it leave it out). */
+    private val words: WordProgress? = null,
     private val reader: PdfReader,
 ) : GateGuard {
     private val running = Mutex()
@@ -157,6 +160,7 @@ class ProcessingQueue @Inject constructor(
                         val pages = db.documentsDao().all().firstOrNull { it.id == id }?.pageCount ?: 0
                         // Counts only (time, pages, memory), never names or text: the phase's goals are measured from these.
                         Log.i("JustStudy", "document_processed id=$id ms=${(System.nanoTime() - start) / 1_000_000} pages=$pages pss_kb=${android.os.Debug.getPss()}")
+                        words?.rebuildWordState() // reprocessing can drop cards: the cache is written again from the sources
                         return
                     }
                     else -> error("unknown stage")

@@ -5,7 +5,12 @@ import com.dero.juststudykorean.data.db.GameItemProgressEntity
 import com.dero.juststudykorean.data.db.GameRoundsEntity
 import com.dero.juststudykorean.data.db.QuestionAttemptsEntity
 import com.dero.juststudykorean.data.db.QuestionsEntity
+import com.dero.juststudykorean.data.documents.DocumentFiles
+import com.dero.juststudykorean.data.documents.DocumentIndexer
+import com.dero.juststudykorean.data.documents.DocumentRepository
+import com.dero.juststudykorean.data.documents.goldenParsed
 import com.dero.juststudykorean.data.flashcards.FlashcardRepository
+import com.dero.juststudykorean.data.processing.ProcessingQueue
 import com.dero.juststudykorean.data.games.GameRepository
 import com.dero.juststudykorean.data.golden.GoldenDb
 import com.dero.juststudykorean.data.notes.NotesSource
@@ -125,5 +130,41 @@ class WordStateTest : GoldenDb() {
         for (q in run.questions) quiz.answer(run.id, q.id, q.optionsJson?.let { org.json.JSONArray(it).getString(0) } ?: "no", 1000)
         assertSameAsSources()
         assertTrue(db.questionWordsDao().all().size > 2)
+    }
+
+    @Test
+    fun deletingADocumentWithItsCardsAndReprocessingAnotherRebuildTheCache() = runBlocking {
+        synthetic()
+        words.rebuildWordState()
+        val progress = ProgressRepository(db, clock)
+        val notes = NotesSource(context)
+        val files = DocumentFiles(context)
+        val indexer = DocumentIndexer(db, clock, progress, notes, files)
+        val queue = ProcessingQueue(db, clock, progress, files, indexer, words) { goldenParsed("Korean_Notes_Example") }
+        val repo = DocumentRepository(db, clock, notes, files, indexer, FlashcardRepository(db, clock, progress, notes, words), queue)
+        val ready = db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id }
+
+        val learnedBefore = words.computed().values.count { it.status.mastered }
+        repo.delete(ready[0].id, withCards = true) // its words and their reviews go: the cache must not keep them
+        assertSameAsSources()
+        assertTrue(words.learned() <= learnedBefore)
+
+        repo.reprocess(ready[1].id)
+        queue.runAll()
+        assertSameAsSources()
+    }
+
+    @Test
+    fun creatingDeletingAndRestoringCardsRebuildTheCache() = runBlocking {
+        val (cardWord, _) = synthetic()
+        words.rebuildWordState()
+        val cards = FlashcardRepository(db, clock, ProgressRepository(db, clock), NotesSource(context), words)
+        val deck = cards.decksNow().first { it.total > 0 && !it.custom }
+        val deleted = cards.delete(deck.id)
+        assertSameAsSources()
+        cards.undoDelete(deleted)
+        assertSameAsSources()
+        cards.createCustomDeck("Mine", listOf(cardWord))
+        assertSameAsSources()
     }
 }
