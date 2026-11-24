@@ -78,9 +78,12 @@ fun WithSpeaker(speak: (() -> Unit)?, modifier: Modifier, face: @Composable (Mod
     }
 }
 
-/** 2.2 front: FILL THE GAP, your sentence with a 4-character gap, its translation and, with Type the answer, the field. */
+/**
+ * 2.2 front: FILL THE GAP, your sentence with a 4-character gap, its translation (or, without one, "Missing word:" and the
+ * card's [meaning]) and, with Type the answer, the field.
+ */
 @Composable
-fun GapFront(cloze: Cloze, modifier: Modifier = Modifier, typingField: (@Composable () -> Unit)? = null) {
+fun GapFront(cloze: Cloze, meaning: String, modifier: Modifier = Modifier, typingField: (@Composable () -> Unit)? = null) {
     val colors = JustStudyTheme.colors
     val line = colors.line
     val text = buildAnnotatedString {
@@ -98,7 +101,7 @@ fun GapFront(cloze: Cloze, modifier: Modifier = Modifier, typingField: (@Composa
     ) {
         Pill("FILL THE GAP", PillTone.Info)
         Text(text, style = sentenceStyle, color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center, inlineContent = mapOf("gap" to gap))
-        Text(cloze.translation, fontSize = 14.sp, color = colors.muted, textAlign = TextAlign.Center)
+        Text(cloze.translation ?: "Missing word: $meaning", fontSize = 14.sp, color = colors.muted, textAlign = TextAlign.Center)
         if (typingField != null) Box(Modifier.widthIn(max = 320.dp)) { typingField() }
     }
 }

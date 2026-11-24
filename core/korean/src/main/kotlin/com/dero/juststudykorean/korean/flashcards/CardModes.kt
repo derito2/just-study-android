@@ -9,8 +9,8 @@ import kotlin.random.Random
 
 enum class CardMode { Classic, Cloze, Listen }
 
-/** One of YOUR examples with a gap: [before] + [answer] + [after] is the sentence as written. */
-data class Cloze(val before: String, val after: String, val answer: String, val translation: String)
+/** One of YOUR examples with a gap: [before] + [answer] + [after] is the sentence as written; [translation] null if it has none. */
+data class Cloze(val before: String, val after: String, val answer: String, val translation: String?)
 
 // What may follow the word inside its eojeol: particles (nouns), or endings after the stem / the 아/어 form / the past (verbs).
 private val PARTICLES = listOf(
@@ -32,11 +32,15 @@ private fun forms(word: String): List<Pair<String, List<String>>> {
     return aeo.map { it to AFTER_AEO } + aeo.mapNotNull(::past).map { it to AFTER_PAST } + listOf(word.dropLast(1) to AFTER_STEM)
 }
 
-/** A gap in one of [examples] (Korean, translation) where [word] stands; null if none uses it for sure. [seed] picks one. */
+/**
+ * A gap in one of [examples] (Korean, translation; the translation may be blank) where [word] stands; null if none uses it
+ * for sure. The same sentence with and without a translation counts once, with it. [seed] picks one.
+ */
 fun clozeFor(word: String, examples: List<Pair<String, String>>, seed: Long): Cloze? {
     val w = word.trim()
     if (w.isEmpty()) return null
-    val options = examples.filter { it.second.isNotBlank() }.mapNotNull { (ko, en) -> gapIn(w, ko)?.let { (at, form) -> Cloze(ko.take(at), ko.drop(at + form.length), form, en.trim()) } }
+    val sentences = examples.groupBy { it.first.trim() }.map { (ko, all) -> ko to all.firstOrNull { it.second.isNotBlank() }?.second?.trim() }
+    val options = sentences.mapNotNull { (ko, en) -> gapIn(w, ko)?.let { (at, form) -> Cloze(ko.take(at), ko.drop(at + form.length), form, en) } }
     return options.takeIf { it.isNotEmpty() }?.let { it[Random(seed).nextInt(it.size)] }
 }
 

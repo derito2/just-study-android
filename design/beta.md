@@ -53,7 +53,7 @@ Funcionamiento:
 - **Frente:**
   - `Pill info` *FILL THE GAP* arriba;
   - uno de tus ejemplos con un hueco `____` (subrayado de 2 dp `line`, ancho de 4 caracteres), con `font-hangul`, 22 sp y 700;
-  - debajo, su traducción (14 sp, `muted`).
+  - debajo, su traducción (14 sp, `muted`). Si el ejemplo no tiene traducción, en ese sitio va *Missing word: {significado de la tarjeta}* (14 sp, todo en `muted`). Si el mismo ejemplo está con y sin traducción, gana el que la tiene. La regla del hueco no cambia (solo un eojeol seguro; si no, la tarjeta sale clásica). El dorso no cambia.
   - Con *Type the answer*, el campo de siempre, donde escribes lo que falta.
 - **Dorso:**
   - la palabra (como hoy) y la frase completa con la palabra resaltada en `brand-text`, 700;

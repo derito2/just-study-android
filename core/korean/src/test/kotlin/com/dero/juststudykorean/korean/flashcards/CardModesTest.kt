@@ -32,10 +32,21 @@ class CardModesTest {
     }
 
     @Test
-    fun withoutAnExampleOrATranslationTheCardStaysClassic() {
+    fun withoutAnExampleTheCardStaysClassic() {
         assertNull(clozeFor("학교", emptyList(), seed = 1))
-        assertNull(clozeFor("학교", ex("학교에 가요." to ""), seed = 1)) // the front shows the translation: none, no gap
         assertEquals(CardMode.Classic, modeFor(7, gap = true, listen = false, hasCloze = false, voice = true))
+    }
+
+    @Test
+    fun anExampleWithoutTranslationStillGivesAGapWithoutOne() { // the front shows "Missing word: {meaning}" instead
+        assertEquals(Cloze("", "에 가요.", "학교", null), clozeFor("학교", ex("학교에 가요." to ""), seed = 1))
+        assertNull(clozeFor("가", ex("가방이 커요." to ""), seed = 1)) // the same safety rule: no sure eojeol, no gap
+    }
+
+    @Test
+    fun theSameExampleWithAndWithoutTranslationKeepsTheTranslatedOne() {
+        val examples = ex("학교에 가요." to "", "학교에 가요." to "I go to school.")
+        assertEquals((1L..20L).map { "I go to school." }, (1L..20L).map { clozeFor("학교", examples, seed = it)!!.translation })
     }
 
     @Test
