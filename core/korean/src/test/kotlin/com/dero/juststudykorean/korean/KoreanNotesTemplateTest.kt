@@ -86,6 +86,9 @@ class KoreanNotesTemplateTest {
     fun theIntroductionIsNeitherWordNorNote() {
         val intro = chunks.filter { it.section == "My Korean notes" }
         assertTrue(intro.flatMap(::extractPairs).isEmpty())
-        assertTrue(pairs.none { p -> p.notes.any { it.startsWith("One rule") || it.startsWith("Korean sentences") } })
+        assertTrue(intro.flatMap(::extractGrammar).isEmpty())
+        val introStarts = listOf("One rule", "Korean sentences", "Particles:", "Grammar:")
+        assertTrue(pairs.none { p -> p.notes.any { n -> introStarts.any(n::startsWith) } })
+        assertTrue(grammar.none { g -> g.explanation.orEmpty().let { e -> introStarts.any { it in e } } })
     }
 }

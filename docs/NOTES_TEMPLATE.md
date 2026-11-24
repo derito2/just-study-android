@@ -66,6 +66,8 @@ Translation: I was hungry, so I ate.
   고양이가 집 뒤에 숨었어요. — The cat hid behind the house.
   ```
 
+  La línea de la función va solo en inglés: el lector la corta en el primer carácter coreano (por eso «도 … (replaces 은/는…)» se leía mal). Pon al menos 3 partículas bajo cada título Particles. Como mucho, 1500 caracteres bajo un mismo título (unas 25 filas cortas como la del ejemplo; menos si las funciones son largas): por encima, el lector parte el grupo y el corte puede caer dentro de una fila, que se pierde. Un grupo no debe pasar de página: si en la página siguiente quedan menos de 3 filas, esas se pierden.
+
 ## 4 · Consejos
 
 - Una entrada por número; no mezcles dos palabras en una línea.
@@ -73,3 +75,4 @@ Translation: I was hungry, so I ate.
 - No hace falta nada más: sin límite de ejemplos, de notas ni de líneas de explicación.
 - Empieza cada punto de gramática en la misma página que sus ejemplos (hoy el lector no une un punto partido entre dos páginas).
 - Para las partículas, escribe cada fila en tres líneas (partícula, función, ejemplo — traducción), no una tabla de Word ni filas con |.
+- Partículas: la función solo en inglés (el lector la corta en el primer carácter coreano), al menos 3 y como mucho 1500 caracteres (unas 25 filas) bajo cada título Particles, y el grupo en una sola página.
