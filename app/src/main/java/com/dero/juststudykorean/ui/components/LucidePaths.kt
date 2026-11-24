@@ -231,4 +231,10 @@ internal val Lucide.paths: List<String>
             "M10 8h.01", "M12 12h.01", "M14 8h.01", "M16 12h.01", "M18 8h.01", "M6 8h.01", "M7 16h10", "M8 12h.01",
             "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
         )
+        // design/beta.md 4, lucide-static 0.460.0.
+        Lucide.RotateCcw -> listOf("M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", "M3 3v5h5")
+        Lucide.Turtle -> listOf(
+            "m12 10 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a8 8 0 1 0-16 0v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3l2-4h4Z",
+            "M4.82 7.9 8 10", "M15.18 7.9 12 10", "M16.93 10H20a2 2 0 0 1 0 4H2",
+        )
     }

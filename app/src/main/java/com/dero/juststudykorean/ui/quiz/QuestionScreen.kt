@@ -1,5 +1,6 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.speech.findActivity
 import com.dero.juststudykorean.ui.components.speech.SpeakingUi
 import com.dero.juststudykorean.ui.components.speech.SpeakActions
 import com.dero.juststudykorean.ui.components.ProgressBar
@@ -111,12 +112,6 @@ fun QuestionScreen(runId: Long?, onLeave: () -> Unit, onResults: (Long) -> Unit,
             onListen = vm::listenNotes, onRetry = { vm.retrySpeech() },
         ),
     )
-}
-
-private tailrec fun android.content.Context.findActivity(): android.app.Activity? = when (this) {
-    is android.app.Activity -> this
-    is android.content.ContextWrapper -> baseContext.findActivity()
-    else -> null
 }
 
 /** A smaller top bar: an icon button, the title and, on the right, a note. */

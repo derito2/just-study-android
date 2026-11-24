@@ -150,3 +150,10 @@ class SpeakingMachine(
         const val TALKBACK_MS = 600L
     }
 }
+
+/** The activity behind a Compose context (to ask whether the microphone permission was refused for good). */
+internal tailrec fun android.content.Context.findActivity(): android.app.Activity? = when (this) {
+    is android.app.Activity -> this
+    is android.content.ContextWrapper -> baseContext.findActivity()
+    else -> null
+}

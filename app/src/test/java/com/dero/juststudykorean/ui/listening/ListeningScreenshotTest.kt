@@ -1,0 +1,41 @@
+package com.dero.juststudykorean.ui.listening
+
+import androidx.compose.runtime.Composable
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.dero.juststudykorean.korean.compareAnswer
+import com.dero.juststudykorean.korean.listening.LabSentence
+import com.dero.juststudykorean.korean.listening.ListenMode
+import com.dero.juststudykorean.ui.components.speech.SpeakingUi
+import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+
+/** design/beta.md 4: Listening Lab's three modes and a dictation result, light and dark, at 411 dp (no bottom bar). */
+@RunWith(AndroidJUnit4::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [36], qualifiers = "w411dp-h905dp-420dpi")
+class ListeningScreenshotTest {
+    private val sentence = LabSentence("s:1", "학교에 가요.", "I go to school.")
+    private val base = ListeningUi(loading = false, items = listOf(sentence))
+
+    private fun snap(name: String, dark: Boolean, content: @Composable () -> Unit) =
+        captureRoboImage("src/test/screenshots/$name.png") { JustStudyTheme(darkTheme = dark) { content() } }
+
+    @Composable
+    private fun Lab(ui: ListeningUi) = ListeningContent(ui, SpeakingUi(), systemKeyboard = false, voiceReady = true, permissionNeeded = true)
+
+    private val result = base.copy(typed = "학교에 가여", result = DictationResult("학교에 가여", false, compareAnswer("학교에 가여", "학교에 가요.", korean = true)))
+    private val hands = base.copy(mode = ListenMode.HandsFree, items = listOf(LabSentence("w:근처", "근처", "near, nearby")), dueCount = 12, running = true, showMeaning = true)
+
+    @Test fun dictation() = snap("listening_dictation", false) { Lab(base.copy(typed = "학교에")) }
+    @Test fun dictationDark() = snap("listening_dictation_dark", true) { Lab(base.copy(typed = "학교에")) }
+    @Test fun dictationResult() = snap("listening_dictation_result", false) { Lab(result) }
+    @Test fun dictationResultDark() = snap("listening_dictation_result_dark", true) { Lab(result) }
+    @Test fun shadowing() = snap("listening_shadowing", false) { Lab(base.copy(mode = ListenMode.Shadowing)) }
+    @Test fun shadowingDark() = snap("listening_shadowing_dark", true) { Lab(base.copy(mode = ListenMode.Shadowing)) }
+    @Test fun handsFree() = snap("listening_handsfree", false) { Lab(hands) }
+    @Test fun handsFreeDark() = snap("listening_handsfree_dark", true) { Lab(hands) }
+}
