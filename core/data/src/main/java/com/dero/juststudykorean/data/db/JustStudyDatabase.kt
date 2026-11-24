@@ -31,8 +31,10 @@ import androidx.room3.RoomDatabase
         GameItemProgressEntity::class,
         WordStateEntity::class,
         QuestionWordsEntity::class,
+        GrammarDrillAttemptsEntity::class,
+        ListeningAttemptsEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = true,
 )
 abstract class JustStudyDatabase : RoomDatabase() {
@@ -61,5 +63,7 @@ abstract class JustStudyDatabase : RoomDatabase() {
     abstract fun gameItemProgressDao(): GameItemProgressDao
     abstract fun wordStateDao(): WordStateDao
     abstract fun questionWordsDao(): QuestionWordsDao
+    abstract fun grammarDrillAttemptsDao(): GrammarDrillAttemptsDao
+    abstract fun listeningAttemptsDao(): ListeningAttemptsDao
     abstract fun hotDao(): HotDao
 }
