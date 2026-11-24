@@ -2,6 +2,18 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-23 — Fase 11: palabra única (H-03) y funciones de estudio en BETA (D11-1…D11-8)
+**Origen:** `docs/AUDIT_2.md` (H-03) y `docs/PLAN_FUNCIONES_ESTUDIO.md`. Plan en `docs/FASE_11_PLAN.md` (manda sobre el plan largo); diseño en `design/beta.md`.
+**Decisiones del dueño (2026-11-23):**
+- **D11-1:** **«Dominada»** (*Learned*) significa lo mismo en toda la app: una tarjeta con `interval_hours ≥ 504` (21 días) y sin *Again* en sus últimas 5 valoraciones, **o** una racha de juegos ≥ 3 en ≥ 2 días distintos. **«Difícil»**: ≥ 3 *Again* en las últimas 10 valoraciones, **o** `wrong > correct` en juegos, **o** el último intento de Quiz de esa palabra fallido. Las cifras de *Learned* van a bajar: es lo esperado.
+- **D11-2:** **no se hace B2:** el tiempo en las pantallas BETA (Listening Lab, Grammar Lab, My Mistakes y Reader) **no** cuenta para racha, calendario ni *Study time*. Lo que lanzan esas pantallas en otras partes (un quiz, un mazo) cuenta como siempre.
+- **D11-3:** **no se hace B4** (no hay Journal). `NanoGate` no se toca, salvo para añadir el uso `SentenceExplain` (B5) del Reader.
+- **D11-4:** **entran** F2 sin pista de memoria; F3; F4; F5 sin resumen semanal; F7 (los 4 juegos); F8; y F1 solo como recordatorio, **al final**. **No entran:** F6 (Journal), F9 (Situations), F10 (Goals y Exam), el widget de F1 ni la pista de memoria de F2.
+- **D11-5:** Listening Lab, Grammar Lab, My Mistakes y Reader viven en una pantalla **BETA**, que se abre desde More. La barra inferior no cambia. Library, Dashboard, Quiz y las demás pantallas no se tocan, salvo lo que nombra la sección 2 del plan.
+- **D11-6:** **micrófono (amplía D9-1):** también en el shadowing de Listening Lab y en el juego Speak It, con las mismas condiciones: se pide al tocar; nunca se guardan ni el audio ni lo dicho; nada va a los logs. **No es un permiso nuevo.**
+- **D11-7:** **recordatorio sin `RECEIVE_BOOT_COMPLETED`:** tras reiniciar el teléfono, basta con abrir la app una vez para que el recordatorio vuelva. Sin permisos nuevos. El teléfono no vibra (canal sin vibración).
+- **D11-8:** Speak It **no** cuenta para «mastered» de Games: solo suma `seen` (D9-6, sin nota).
+
 ## 2026-11-15 — Fase 10: pulido, oscuro legible, Games con personajes y pantallas de carga vectoriales (D10-1…D10-4)
 **Origen:** `docs/AUDIT_2.md` y la ronda 2 de QA. Plan en `docs/FASE_10_PLAN.md`; diseño en `design/polish.md`, `design/quiz.md` (E), `design/games-characters.md`, `design/splash.md` y `design/tokens.json` v2.
 **Decisiones del dueño (2026-11-15):**
