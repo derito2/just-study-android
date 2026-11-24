@@ -136,9 +136,16 @@ Lo dice `PLAN_FUNCIONES_ESTUDIO.md` F3, «Motor de conjugación»: `Conjugator`,
 
 **Regla de oro:** si no se sabe conjugar con seguridad, no se pregunta.
 
+**Terminaciones (opción A del dueño, 2026-11-24).** Las 14 del plan largo más las de tus notas que se conjugan de forma mecánica: 36 en total. La lista y a qué se aplica cada una están en `K/grammar/Conjugator.kt` (`Ending`, `Applies`); **la referencia es el código y `ConjugatorTest`, no la tabla de `PLAN_FUNCIONES_ESTUDIO.md`**.
+- Cada `Ending` declara a qué se aplica: verbo, adjetivo o ambos (con su fuente de krdict en el código). Solo verbos, por decisión del dueño: -(으)ㄹ게요, -기로 하다, -지 마세요, -(으)ㄹ 뻔했다, -아/어 보다, -(으)ㅂ시다, -(으)세요, -고 있어요, -고 싶어요.
+- Si el tipo de palabra de tus notas no es seguro (`wordKindOf`), solo se usan terminaciones que valen para ambos.
+- Las que cambian según sea verbo o adjetivo (-대요, -구나, -(으)ㄴ/는데요, -는 것 같다; -는 동안 solo verbos): solo en presente y solo con el tipo seguro.
+- Fuera: 이다/아니다, partículas, puntos que comparan dos formas, y cualquier forma con más de una correcta que `conjugate` no pueda listar entera (por ejemplo, -(으)세요 de 먹다, que es 드세요).
+- Las mismas reglas para todas: ㄹ que cae ante ㄴ/ㅂ/ㅅ y se funde con -(으)ㄹ, 으 que cae, 하다, y los irregulares de la lista cerrada (ㅂ, ㄷ, ㅅ, 르, ㅎ). Un verbo fuera de la lista con un final ambiguo no se pregunta.
+
 **Pruebas:**
-- `ConjugatorTest`, con la tabla de casos del plan largo;
-- `EndingMatchTest` con los puntos de `golden/grammar/*.json` y los 18 de `WW1_Grammar`: informa del porcentaje reconocido (objetivo ≥ 70 %);
+- `ConjugatorTest`: por cada terminación, un verbo regular con consonante final, uno sin ella, uno en ㄹ, uno de 하다 y un irregular de la lista, si se aplica; cada caso irregular lleva un comentario con su fuente;
+- `EndingMatchTest` con los puntos de `golden/grammar/*.json` y los 18 de `WW1_Grammar` (este, solo en local): sin contar las partículas, **≥ 70 % en cada uno** (si no, PARA);
 - `DrillsTest`.
 
 Sin web: la tabla de casos de ConjugatorTest es la referencia; cada caso irregular lleva un comentario con su fuente (diccionario o gramática).
@@ -227,7 +234,7 @@ Para y pregunta si:
 - una migración en el OPPO no deja las 18 tablas idénticas;
 - cambia una captura de una pantalla que no está en la sección 2;
 - el conjugador falla un caso de la tabla y la única salida es ampliar la lista de irregulares sin una fuente;
-- `EndingMatch` reconoce menos del 50 % de los puntos;
+- `EndingMatch` reconoce menos del 70 % de las terminaciones de `golden/grammar` o de `WW1_Grammar` (sin contar las partículas);
 - Games pasa de P90 8 ms o de P99 12 ms;
 - algo pide aceptar un diálogo del sistema o cambiar un ajuste del teléfono;
 - un PR pasa de ~600 líneas de código de producto (se parte);
