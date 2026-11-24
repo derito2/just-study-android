@@ -30,6 +30,7 @@ internal fun plainText(text: String): String = text.replace(MARKDOWN_EMPHASIS, "
 
 enum class AiUse(val timeoutMs: Long) {
     Judge(2_000), ExplainMistake(6_000), Questions(6_000), Teacher(6_000), Coach(5_000), MessyNotes(10_000), Grammar(6_000),
+    SentenceExplain(6_000), // phase 11, the Reader (D11-3: the only new use)
 }
 
 /**
