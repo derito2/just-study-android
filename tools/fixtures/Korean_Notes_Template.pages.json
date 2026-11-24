@@ -5,7 +5,7 @@
     "pages": [
         {
             "page_number": 1,
-            "text": "## My Korean notes\nOne rule: number, Korean = English. Everything under an entry, until the next number, belongs to it:\nKorean sentences that use the word are its examples; everything else is a note. Use / for synonyms.\nParticles: write each one on three lines: the particle, what it does (in English only, never Korean), and\nan example sentence, a long dash and its translation. Put at least 3 particles under each Particles\nheading.\nGrammar: start each grammar point on the same page as its examples. Don't use Word tables.\n## Vocabulary\n1. 근처 = Nearby\n이 근처에는 카페가 없어요. = There are no cafes in this vicinity.\n학교가 집 근처에 있어요. = The school is nearby my house.\n2. 가장 / 제일 = The most / best\n가장 좋아하는 음식이 뭐예요? = What is your favorite food?\n3. 걷다 (geotda) = To walk\n매일 공원에서 걸어요. = I walk in the park every day.\n내일은 학교까지 걸을 거야.\nTranslation: Tomorrow I will walk to school.\n4. 갚다 = To repay; To pay back\n돈 꼭 갚을게요. = I will definitely pay you back.\n-지 모르겠어요 -> I don't know if…\nNote: this line and the one above are notes, not examples.\n5. 얼른 = Quickly, right away\n얼른 와! = Come quickly!\n빨리 → fast (synonym: saved as a note)\n6. 챙기다 = To take (so you don't forget)\n우산 챙기세요. = Take an umbrella.\nUse it like \"don't forget to take this\", because it's important.\n## Sentences\n1. 피곤하니까 집에 갈래요 = Since I am tired, I want to go home.\n2. 비가 오니까 우산을 챙기세요 = Because it's raining, take an umbrella.\nUse 으니까 because we cannot use 어서 in commands.",
+            "text": "## My Korean notes\nOne rule: number, Korean = English. Everything under an entry, until the next number, belongs to it:\nKorean sentences that use the word are its examples; everything else is a note. Use / for synonyms.\nParticles: write each one on three lines: the particle, what it does (in English only, never Korean), and\nan example sentence, a long dash and its translation. Put 3 to 25 particles under each Particles\nheading (for more, start a new Particles heading) and keep each group on one page.\nGrammar: start each grammar point on the same page as its examples. Don't use Word tables.\n## Vocabulary\n1. 근처 = Nearby\n이 근처에는 카페가 없어요. = There are no cafes in this vicinity.\n학교가 집 근처에 있어요. = The school is nearby my house.\n2. 가장 / 제일 = The most / best\n가장 좋아하는 음식이 뭐예요? = What is your favorite food?\n3. 걷다 (geotda) = To walk\n매일 공원에서 걸어요. = I walk in the park every day.\n내일은 학교까지 걸을 거야.\nTranslation: Tomorrow I will walk to school.\n4. 갚다 = To repay; To pay back\n돈 꼭 갚을게요. = I will definitely pay you back.\n-지 모르겠어요 -> I don't know if…\nNote: this line and the one above are notes, not examples.\n5. 얼른 = Quickly, right away\n얼른 와! = Come quickly!\n빨리 → fast (synonym: saved as a note)\n6. 챙기다 = To take (so you don't forget)\n우산 챙기세요. = Take an umbrella.\nUse it like \"don't forget to take this\", because it's important.\n## Sentences\n1. 피곤하니까 집에 갈래요 = Since I am tired, I want to go home.\n2. 비가 오니까 우산을 챙기세요 = Because it's raining, take an umbrella.\nUse 으니까 because we cannot use 어서 in commands.",
             "headings": [
                 "My Korean notes",
                 "Vocabulary",
@@ -14,7 +14,7 @@
             "section": "My Korean notes",
             "tables": [],
             "image_count": 0,
-            "char_count": 1421
+            "char_count": 1492
         },
         {
             "page_number": 2,

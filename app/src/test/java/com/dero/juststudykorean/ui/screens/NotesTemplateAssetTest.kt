@@ -11,7 +11,7 @@ class NotesTemplateAssetTest {
     fun assetIsTheApprovedTemplate() {
         val bytes = File("src/main/assets/Korean_Notes_Template.docx").readBytes()
         val sha = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
-        assertEquals("238af6190dd1bec79f1604727b759dccb2df387d89e0033911486fcdae1a3ce6", sha)
+        assertEquals("dd514de38a9f57abb5960d0204c9f4407633b4dc16288f00351d5385f63f5641", sha)
     }
 }
 
