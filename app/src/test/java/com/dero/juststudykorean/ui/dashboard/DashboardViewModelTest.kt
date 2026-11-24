@@ -26,7 +26,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [36])
 class DashboardViewModelTest {
     private val app = GoldenApp()
-    private val vm = DashboardViewModel(app.progress, app.quiz, app.prefs, app.clock)
+    private val vm = DashboardViewModel(app.progress, app.quiz, app.prefs, app.words, app.clock)
     private val watcher = CoroutineScope(Dispatchers.IO).launch { vm.state.collect { } } // WhileSubscribed: someone has to listen
 
     @After
