@@ -50,6 +50,10 @@ import com.dero.juststudykorean.data.prefs.CardDirection
 import com.dero.juststudykorean.korean.Rating
 import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.korean.compareAnswer
+import com.dero.juststudykorean.korean.flashcards.CardMode
+import com.dero.juststudykorean.ui.components.Pill
+import com.dero.juststudykorean.ui.components.PillTone
+import androidx.compose.foundation.layout.fillMaxHeight
 import com.dero.juststudykorean.ui.components.CardBack
 import com.dero.juststudykorean.ui.components.CardFront
 import com.dero.juststudykorean.ui.components.EmptyState
@@ -79,10 +83,16 @@ fun StudyScreen(deckId: Long?, deckName: String, onBack: () -> Unit, vm: StudyVi
     val direction by vm.direction.collectAsStateWithLifecycle()
     val typeAnswer by vm.typeAnswer.collectAsStateWithLifecycle()
     val scheduling by vm.scheduling.collectAsStateWithLifecycle()
+    val gap by vm.gapCards.collectAsStateWithLifecycle()
+    val listen by vm.listenCards.collectAsStateWithLifecycle()
+    val voiceReady by vm.voiceReady.collectAsStateWithLifecycle()
+    val voiceMissing by vm.voiceMissing.collectAsStateWithLifecycle()
     BackHandler(onBack = onBack) // every rating is already saved
     StudyContent(
         ui, deckName, direction, typeAnswer, scheduling, onBack = onBack, onDirection = { vm.setDirection(it) },
         onTypeAnswer = { vm.setTypeAnswer(it) }, onType = vm::type, onFlip = vm::flip, onRate = vm::rate,
+        gap = gap, listen = listen, voiceReady = voiceReady, voiceMissing = voiceMissing,
+        onGap = { vm.setGapCards(it) }, onListen = { vm.setListenCards(it) }, onSpeak = vm::speak,
     )
 }
 
@@ -102,6 +112,14 @@ fun StudyContent(
     onType: (String) -> Unit,
     onFlip: (meaning: Pair<String, String>?) -> Unit,
     onRate: (Rating) -> Unit,
+    // F2 (design/beta.md 2): Fill the Gap, Listen Only and 🔊.
+    gap: Boolean = false,
+    listen: Boolean = false,
+    voiceReady: Boolean = false,
+    voiceMissing: Boolean = false,
+    onGap: (Boolean) -> Unit = {},
+    onListen: (Boolean) -> Unit = {},
+    onSpeak: (String) -> Unit = {},
 ) {
     val colors = JustStudyTheme.colors
     val ink = MaterialTheme.colorScheme.onSurface
@@ -147,6 +165,13 @@ fun StudyContent(
         if (switchOn && (!canType || (typeAnswer && card != null && !typingFor(true, card, ui.details)))) {
             Text("Typing works on word cards.", Modifier.padding(start = Tokens.Space3, end = Tokens.Space3, bottom = Tokens.Space2), fontSize = 12.sp, color = colors.muted)
         }
+        // 2.1: one 48 dp row in two halves; Listen Only needs the voice (it can still be turned off without it).
+        Row(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = Tokens.Space3), horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
+            ModeSwitch("Fill the Gap", "빈칸", gap, enabled = true, onGap, Modifier.weight(1f))
+            ModeSwitch("Listen Only", "듣기", listen, enabled = voiceReady || listen, onListen, Modifier.weight(1f))
+        }
+        if (voiceMissing) Text("Needs the phone's Korean voice.", Modifier.padding(start = Tokens.Space3, end = Tokens.Space3, bottom = Tokens.Space2), style = MaterialTheme.typography.bodySmall, color = colors.muted)
+        if (ui.volumeHint) Pill("Turn the volume up to hear it.", PillTone.Warn, Modifier.padding(start = Tokens.Space3, bottom = Tokens.Space2))
         Box(Modifier.weight(1f).fillMaxWidth().padding(horizontal = Tokens.Space3)) {
             when {
                 ui.loading -> LoadingState("Loading cards…")
@@ -156,10 +181,18 @@ fun StudyContent(
                     action = "Back to decks", actionKo = "덱으로 돌아가기", onAction = onBack,
                 )
                 else -> {
-                    val side = sideFor(direction, card)
-                    val enToKo = side == CardDirection.EnToKo
+                    val mode = cardMode(card, ui, gap, listen, voiceReady)
+                    val cloze = ui.clozes?.get(card.card.id)?.takeIf { mode == CardMode.Cloze }
+                    val listening = mode == CardMode.Listen
+                    // Fill the Gap and Listen Only show the Korean on the back, whatever the direction.
+                    val enToKo = mode == CardMode.Classic && sideFor(direction, card) == CardDirection.EnToKo
                     val typing = typingFor(typeAnswer, card, ui.details)
-                    val meaning = if (typing && !enToKo) card.card.front to card.card.back else null // what the meaning judge may check
+                    val typedKorean = enToKo || mode != CardMode.Classic // what you type is Korean
+                    val typedAnswer = cloze?.answer ?: if (typedKorean) card.card.front else card.card.back
+                    val meaning = if (typing && mode == CardMode.Classic && !enToKo) card.card.front to card.card.back else null // what the meaning judge may check
+                    val word = card.card.koreanWord
+                    val speakWord: (() -> Unit)? = if (voiceReady) ({ onSpeak(word) }) else null
+                    LaunchedEffect(card.card.id, listening) { if (listening && !ui.flipped) onSpeak(word) } // 2.3: Listen sounds by itself, once
                     // The next card comes up 8 dp (240 ms).
                     val rise = remember(card.card.id) { Animatable(if (ui.reviewed > 0) 1f else 0f) }
                     val reduce = reduceMotion()
@@ -173,21 +206,28 @@ fun StudyContent(
                         FlipCard(
                             ui.flipped, modifier = if (ui.flipped) Modifier else Modifier.weight(1f),
                             front = { m ->
-                                CardFront(
-                                    if (enToKo) card.card.back else card.card.front, korean = !enToKo, isNew = card.isNew,
-                                    modifier = m,
-                                    typingField = if (typing) ({
-                                        JsTextField(ui.typed, onType, placeholder = if (enToKo) "Type it in Korean" else "Type the meaning", center = true, onDone = { onFlip(meaning) })
-                                    }) else null, // typing is on but this is a grammar card: the notice is under the switch (P-27)
-                                )
+                                val field: (@Composable () -> Unit)? = if (typing) ({
+                                    val hint = when { cloze != null -> "Type the missing word"; listening -> "Type what you hear"; enToKo -> "Type it in Korean"; else -> "Type the meaning" }
+                                    JsTextField(ui.typed, onType, placeholder = hint, center = true, onDone = { onFlip(meaning) })
+                                }) else null // typing is on but this is a grammar card: the notice is under the switch (P-27)
+                                when {
+                                    cloze != null -> GapFront(cloze, m, field)
+                                    listening -> ListenFront({ onSpeak(word) }, m, field)
+                                    else -> WithSpeaker(speakWord.takeIf { !enToKo }, m) { inner ->
+                                        CardFront(if (enToKo) card.card.back else card.card.front, korean = !enToKo, isNew = card.isNew, modifier = inner, typingField = field)
+                                    }
+                                }
                             },
                             back = { m ->
-                                CardBack(
-                                    card.card.front, card.card.romanization,
-                                    card.card.back, source, m,
-                                    meaningFirst = typing && enToKo,
-                                    typed = if (typing) ({ TypedResult(ui.typed, compareAnswer(ui.typed, if (enToKo) card.card.front else card.card.back, korean = enToKo), aiAccepted = ui.aiAccepted == card.card.id) }) else null,
-                                )
+                                WithSpeaker(speakWord, m) { inner ->
+                                    CardBack(
+                                        card.card.front, card.card.romanization,
+                                        card.card.back, source, inner,
+                                        meaningFirst = typing && enToKo,
+                                        typed = if (typing) ({ TypedResult(ui.typed, compareAnswer(ui.typed, typedAnswer, korean = typedKorean), aiAccepted = ui.aiAccepted == card.card.id) }) else null,
+                                        extra = cloze?.let { c -> { GapSentence(c, if (voiceReady) ({ onSpeak(c.before + c.answer + c.after) }) else null) } },
+                                    )
+                                }
                             },
                         )
                         if (ui.flipped) {
@@ -206,12 +246,28 @@ fun StudyContent(
         if (!ui.loading && card2 != null) {
             Box(Modifier.fillMaxWidth().padding(Tokens.Space3)) {
                 if (!ui.flipped) {
-                    val meaning = if (typingFor(typeAnswer, card2, ui.details) && sideFor(direction, card2) != CardDirection.EnToKo) card2.card.front to card2.card.back else null
+                    val classic = cardMode(card2, ui, gap, listen, voiceReady) == CardMode.Classic
+                    val meaning = if (classic && typingFor(typeAnswer, card2, ui.details) && sideFor(direction, card2) != CardDirection.EnToKo) card2.card.front to card2.card.back else null
                     StickerButton("Show answer", { onFlip(meaning) }, Modifier.fillMaxWidth(), ko = "정답 보기", size = StickerSize.Large)
                 } else {
                     RatingButtons(preview(card2, scheduling), rate, enabled = exit.value == 0f)
                 }
             }
         }
+    }
+}
+
+/** 2.1: half of the modes row, like Type the answer: the name on the left, ThemeSwitch on the right, all of it tappable. */
+@Composable
+private fun ModeSwitch(name: String, ko: String, on: Boolean, enabled: Boolean, onChange: (Boolean) -> Unit, modifier: Modifier) {
+    Row(
+        modifier.fillMaxHeight().alpha(if (enabled) 1f else 0.5f).toggleable(on, enabled = enabled, role = Role.Switch, onValueChange = onChange),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(Modifier.weight(1f), verticalAlignment = Alignment.Bottom) {
+            Text(name, Modifier.alignByBaseline(), style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 1)
+            KoSide(ko, 14.sp, Modifier.alignByBaseline(), color = JustStudyTheme.colors.muted)
+        }
+        ThemeSwitch(checked = on, onCheckedChange = null)
     }
 }

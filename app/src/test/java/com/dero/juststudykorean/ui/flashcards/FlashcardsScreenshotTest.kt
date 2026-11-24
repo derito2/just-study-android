@@ -23,6 +23,7 @@ import com.dero.juststudykorean.data.prefs.DecksLayout
 import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.ui.components.JsBottomBar
 import com.dero.juststudykorean.ui.navigation.TopLevel
+import com.dero.juststudykorean.korean.flashcards.Cloze
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import com.dropbox.differ.ImageComparator
@@ -100,8 +101,38 @@ class FlashcardsScreenshotTest {
     )
 
     @Composable
-    private fun Study(ui: StudyUi, direction: CardDirection = CardDirection.KoToEn, typing: Boolean = false) =
-        StudyContent(ui, "Unit 3 · At school.pdf", direction, typing, Scheduling(), {}, {}, {}, {}, {}, {})
+    private fun Study(
+        ui: StudyUi, direction: CardDirection = CardDirection.KoToEn, typing: Boolean = false,
+        gap: Boolean = false, listen: Boolean = false, voiceReady: Boolean = false,
+    ) = StudyContent(ui, "Unit 3 · At school.pdf", direction, typing, Scheduling(), {}, {}, {}, {}, {}, {}, gap = gap, listen = listen, voiceReady = voiceReady)
+
+    // F2 (design/beta.md 2): Fill the Gap and Listen Only, front and back, light and dark.
+    private val gap = mapOf(7L to Cloze("학교 ", "에 살아요.", "근처", "I live near the school."))
+    private fun gapUi(flipped: Boolean) = StudyUi(loading = false, queue = List(12) { near }, flipped = flipped, details = details, sources = sources, clozes = gap)
+
+    @Test
+    fun gapFront() = snap("flashcards_gap_front", bar = false) { Study(gapUi(false), gap = true, voiceReady = true) }
+
+    @Test
+    fun gapFrontDark() = snap("flashcards_gap_front_dark", bar = false, dark = true) { Study(gapUi(false), gap = true, voiceReady = true) }
+
+    @Test
+    fun gapBack() = snap("flashcards_gap_back", bar = false) { Study(gapUi(true), gap = true, voiceReady = true) }
+
+    @Test
+    fun gapBackDark() = snap("flashcards_gap_back_dark", bar = false, dark = true) { Study(gapUi(true), gap = true, voiceReady = true) }
+
+    @Test
+    fun listenFront() = snap("flashcards_listen_front", bar = false) { Study(gapUi(false), listen = true, voiceReady = true) }
+
+    @Test
+    fun listenFrontDark() = snap("flashcards_listen_front_dark", bar = false, dark = true) { Study(gapUi(false), listen = true, voiceReady = true) }
+
+    @Test
+    fun listenBack() = snap("flashcards_listen_back", bar = false) { Study(gapUi(true), listen = true, voiceReady = true) }
+
+    @Test
+    fun listenBackDark() = snap("flashcards_listen_back_dark", bar = false, dark = true) { Study(gapUi(true), listen = true, voiceReady = true) }
 
     @Test
     fun decks() = snap("flashcards_decks") { Decks(ui) }
