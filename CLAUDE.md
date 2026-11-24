@@ -3,7 +3,7 @@
 App Android nativa (Kotlin + Jetpack Compose, Material 3) para el OPPO Find X8 Pro del usuario. Todo en el teléfono, sin internet. El usuario habla español; la UI va en inglés. Plan completo: `docs/PLAN.md`; decisiones: `docs/DECISIONS.md`.
 
 ## Ahorra tokens (léelo primero)
-- **No leas documentos enteros.** `docs/PLAN.md` y los docs del proyecto web son de consulta: `grep -n "^#"` y lee solo la sección que necesitas.
+- **No leas documentos enteros.** `docs/PLAN.md` es de consulta: `grep -n "^#"` y lee solo la sección que necesitas.
 - **Código: primero CodeGraph** (`codegraph_explore` MCP o `codegraph explore "<pregunta>"`) antes de abrir archivos. Lee solo los rangos que vas a cambiar.
 - **Memoria: Engram**, proyecto `just-study-android`, `topic_key` `android/*`.
 - Respuestas cortas: resultado, ✅/⚠️/❌ y lo que falta.
