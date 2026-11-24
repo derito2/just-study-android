@@ -11,6 +11,7 @@ import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.data.notes.NotesSource
 import com.dero.juststudykorean.data.prefs.CardDirection
 import com.dero.juststudykorean.data.progress.ProgressRepository
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.data.quiz.Topics
 import com.dero.juststudykorean.data.time.AppClock
 import com.dero.juststudykorean.korean.CardState
@@ -132,6 +133,8 @@ class FlashcardRepository @Inject constructor(
     private val clock: AppClock,
     private val progress: ProgressRepository,
     private val notes: NotesSource,
+    /** H-03 B: keeps word_state up to date (tests that do not look at it leave it out). */
+    private val words: WordProgress? = null,
 ) {
     private val zone get() = clock.zone
     private fun local(millis: Long): ZonedDateTime = Instant.ofEpochMilli(millis).atZone(zone)
@@ -333,6 +336,7 @@ class FlashcardRepository @Inject constructor(
     /** [activeMs]: the card's active time (activeCardMs), for the session's time (R1-13); null: [elapsedMs]. */
     suspend fun review(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling = Scheduling(), activeMs: Long? = null): Next = withContext(Dispatchers.IO) {
         db.withWriteTransaction { reviewNow(cardId, rating, elapsedMs, cfg, activeMs) }
+            .also { db.hotDao().flashcard(cardId)?.let { words?.refresh(listOf(norm(it.koreanWord))) } }
     }
 
     private suspend fun reviewNow(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling, activeMs: Long?): Next {
@@ -432,7 +436,7 @@ class FlashcardRepository @Inject constructor(
         places.forEach { db.deckPlacesDao().delete(it) }
         groups.forEach { db.deckGroupsDao().delete(it) }
         DeletedDeck(cards, reviews, customs, places, groups)
-    }
+    }.also { this.words?.rebuildWordState() } // cards came or went: word_state is written again from the sources
 
     suspend fun undoDelete(deleted: DeletedDeck) = db.withWriteTransaction {
         deleted.groups.forEach { db.deckGroupsDao().insert(it) }
@@ -440,7 +444,7 @@ class FlashcardRepository @Inject constructor(
         deleted.customDecks.forEach { db.customDecksDao().insert(it) }
         deleted.cards.forEach { db.flashcardsDao().insert(it) }
         deleted.reviews.forEach { db.flashcardReviewsDao().insert(it) }
-    }
+    }.also { this.words?.rebuildWordState() } // cards came or went: word_state is written again from the sources
 
     /**
      * Creates the cards still missing for some documents (empty: all). A word that already has a card in that
@@ -482,7 +486,7 @@ class FlashcardRepository @Inject constructor(
         }
         mergeRepeatedCards(ready)
         CreateResult(created, skipped, db.flashcardsDao().count())
-    }
+    }.also { this.words?.rebuildWordState() } // cards came or went: word_state is written again from the sources
 
     /**
      * A new deck from the coach with those words of your notes (flashcard_service.create_custom_deck): COPIES of the
@@ -523,7 +527,7 @@ class FlashcardRepository @Inject constructor(
             nextId++
         }
         -deck.id
-    }
+    }.also { this.words?.rebuildWordState() } // cards came or went: word_state is written again from the sources
 
     /** R1-28 (design/flashcards.md): "Your mistakes", then "Your mistakes · 13 Nov", then "… (2)", "… (3)". */
     private suspend fun freeName(name: String): String {

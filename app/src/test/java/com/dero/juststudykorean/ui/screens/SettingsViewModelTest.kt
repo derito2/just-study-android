@@ -17,6 +17,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -45,7 +46,7 @@ class SettingsViewModelTest {
     }
     private val vm = SettingsViewModel(
         app.prefs, BackupImporter(app.context, app.db), BackupExporter(app.context, app.db),
-        DocumentIndexer(app.db, app.clock, app.progress, app.notes, files), NanoState(model),
+        DocumentIndexer(app.db, app.clock, app.progress, app.notes, files), NanoState(model), app.words,
     )
     private val messages = Collections.synchronizedList(mutableListOf<String>())
     private val collector = CoroutineScope(Dispatchers.IO).launch { vm.messages.collect { messages += it } }
@@ -62,6 +63,11 @@ class SettingsViewModelTest {
         assertTrue(messages.single().startsWith("Imported "))
         assertNull(vm.error.value)
         assertFalse(vm.importing.value)
+        // H-03 B: word_state is not in the backup; the import writes it again from the imported data (golden: 4 learned).
+        kotlinx.coroutines.runBlocking {
+            assertTrue(app.prefs.wordStateBuiltV6.first())
+            assertEquals(4, app.words.learned())
+        }
     }
 
     @Test

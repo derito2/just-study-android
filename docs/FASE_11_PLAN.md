@@ -96,9 +96,10 @@ En el PR 0 se anotan D11-1…D11-8 en `docs/DECISIONS.md`.
 ### PR 2 · H-03 fase B
 
 1. Tablas solo del teléfono, en `D/db/WordTables.kt` y en `APP_TABLES`:
-   - `word_state(word_key PK, first_seen_at, last_event_at, again_count, wrong_count, correct_count, source_mask, mastered_at)`;
+   - `word_state(word_key PK, first_seen_at, last_event_at, again_count, wrong_count, correct_count, source_mask, mastered_at, hard)`, con `hard INTEGER NOT NULL DEFAULT 0`. Es una caché: la verdad sigue en las fuentes. Cada escritor (Quiz, Flashcards, Games) recalcula esa palabra con `WordRules` del PR 1 y guarda `hard` y `mastered_at`, sin lógica propia;
    - `question_words(question_id, word_key)`.
-2. `MIGRATION_5_6`: `CREATE TABLE IF NOT EXISTS` y relleno desde `flashcards`/`flashcard_reviews` y `game_item_progress`. El Quiz solo cuenta desde la migración, porque las preguntas antiguas no llevan palabra.
+2. `MIGRATION_5_6`: solo crea las tablas e índices, en SQL puro. El Quiz cuenta también hacia atrás: `question_words` se rellena para las preguntas antiguas con la regla del PR 1 (respuesta o enunciado == palabra, con `norm()`), fuera de la migración.
+   Una sola función, `rebuildWordState()`, rellena `question_words` y `word_state` desde las fuentes. Se llama la primera vez que la app abre con v6 (marca `wordStateBuiltV6` en DataStore, fuera del hilo principal), después de *Import backup*, después de borrar un documento con «Also delete its flashcards…» y después de reprocesar. Mientras no se ha reconstruido, `WordProgress` calcula al vuelo como en el PR 1: nunca da números distintos ni vacíos.
 3. Quiz (al generar y al responder), Flashcards (al valorar) y Games (al acabar la ronda) escriben `word_state`. `WordProgress` pasa a leer de ahí y da los mismos resultados que en el PR 1. Pruébalo con las dos implementaciones a la vez.
 4. **Pruebas:**
    - `MigrationTest` 5 → 6: las 18 tablas del respaldo, idénticas (sha256);

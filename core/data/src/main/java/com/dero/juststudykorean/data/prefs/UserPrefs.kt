@@ -75,6 +75,9 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     suspend fun setThemeMode(mode: ThemeMode) { store.edit { it[THEME] = mode.name } }
     suspend fun setCardDirection(direction: CardDirection) { store.edit { it[CARD_DIRECTION] = direction.name } }
     suspend fun setTypeAnswer(on: Boolean) { store.edit { it[TYPE_ANSWER] = on } }
+    /** Phase 11 (H-03 B): word_state was written from the sources on v6; until then WordProgress computes on the fly. */
+    val wordStateBuiltV6: Flow<Boolean> = store.data.map { it[WORD_STATE_BUILT_V6] ?: false }
+    suspend fun setWordStateBuiltV6(built: Boolean) { store.edit { it[WORD_STATE_BUILT_V6] = built } }
     suspend fun setChartUnit(unit: TimelineUnit) { store.edit { it[CHART_UNIT] = unit.name } }
     suspend fun setLastStreak(days: Int) { store.edit { it[LAST_STREAK] = days } }
     suspend fun setQuizForm(f: QuizForm) {
@@ -95,6 +98,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         val TYPING_TIMER = booleanPreferencesKey("typing_timer")
         val CARD_DIRECTION = stringPreferencesKey("card_direction")
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
+        val WORD_STATE_BUILT_V6 = booleanPreferencesKey("wordStateBuiltV6")
         val CHART_UNIT = stringPreferencesKey("chart_unit")
         val LAST_STREAK = intPreferencesKey("last_streak")
         val QUIZ_FORM_COLLAPSED = booleanPreferencesKey("quiz_form_collapsed")

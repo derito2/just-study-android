@@ -43,7 +43,7 @@ class GoldenApp {
     val notes = NotesSource(context)
     val flashcards = FlashcardRepository(db, clock, progress, notes)
     val quiz = QuizRepository(db, clock, progress, notes)
-    val words = WordProgress(db, clock)
+    val words = WordProgress(db, clock, prefs)
 
     init {
         val r = runBlocking { BackupImporter(context, db).import(Uri.fromFile(File("../golden/db/fixture.jsbackup.zip"))) }

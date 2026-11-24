@@ -12,6 +12,7 @@ import com.dero.juststudykorean.data.backup.NO_SPACE
 import com.dero.juststudykorean.data.backup.ImportResult
 import com.dero.juststudykorean.data.prefs.ThemeMode
 import com.dero.juststudykorean.data.prefs.UserPrefs
+import com.dero.juststudykorean.data.progress.WordProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,7 @@ class SettingsViewModel @Inject constructor(
     private val exporter: BackupExporter,
     private val indexer: DocumentIndexer,
     private val nanoState: NanoState,
+    private val words: WordProgress,
 ) : ViewModel() {
     /** Gemini Nano (On-device AI): the download only starts with Download. */
     val nano = nanoState.status
@@ -66,6 +68,7 @@ class SettingsViewModel @Inject constructor(
         when (val result = importer.import(uri)) {
             is ImportResult.Ok -> {
                 indexer.rebuildIndex() // the notes index is not in the backup: rebuilt from its extracted/
+                words.rebuildWordState() // nor is word_state: written again from the imported cards, Games and Quiz
                 snackbar.send("Imported ${result.rows} rows from ${result.tables} tables.")
             }
             is ImportResult.Failed -> _error.value = result.reason.message() + " Nothing was changed."

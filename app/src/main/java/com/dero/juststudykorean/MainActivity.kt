@@ -20,6 +20,7 @@ import com.dero.juststudykorean.data.documents.DocumentIndexer
 import com.dero.juststudykorean.data.processing.ProcessingQueue
 import com.dero.juststudykorean.processing.ProcessingService
 import com.dero.juststudykorean.data.prefs.UserPrefs
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.ui.navigation.AppScaffold
 import com.dero.juststudykorean.ui.splash.SplashOverlay
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var queue: ProcessingQueue
     @Inject lateinit var indexer: DocumentIndexer
     @Inject lateinit var nano: NanoState
+    @Inject lateinit var words: WordProgress
 
     override fun onStart() {
         super.onStart()
@@ -49,6 +51,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         // A PDF left half processed (ColorOS closed the app): go on from its last saved stage.
+        // Phase 11 (H-03 B): the first open on v6 writes word_state once, off the main thread (until then: on the fly).
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) { words.ensureBuilt() }
         lifecycleScope.launch {
             indexer.ensureIndex()
             if (queue.hasWork()) ProcessingService.start(this@MainActivity)

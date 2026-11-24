@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import java.io.File
 
-/** v1 → v2 (phase 4) only adds notes_fts and processing_jobs, v2 → v3 and v3 → v4 only indices: every row of the 18 backup tables stays as it was. */
+/** v1 → v2 (phase 4) only adds notes_fts and processing_jobs, v2 → v3 and v3 → v4 only indices, v4 → v5 and v5 → v6 only phone-only tables: every row of the 18 backup tables stays as it was. */
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [36])
 class MigrationTest {
@@ -62,5 +62,10 @@ class MigrationTest {
         val v5 = helper.runMigrationsAndValidate(5, listOf(MIGRATION_4_5)) // phase 8: Games' phone-only tables, against schemas/5.json
         assertEquals(before, dump(v5))
         v5.close()
+
+        val v6 = helper.runMigrationsAndValidate(6, listOf(MIGRATION_5_6)) // phase 11 (H-03 B): word_state and question_words, empty
+        assertEquals(before, dump(v6))
+        for (t in listOf("word_state", "question_words")) v6.prepare("SELECT COUNT(*) FROM $t").use { it.step(); assertEquals(t, 0L, it.getLong(0)) }
+        v6.close()
     }
 }
