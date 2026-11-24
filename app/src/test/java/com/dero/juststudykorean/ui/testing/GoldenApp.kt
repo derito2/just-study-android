@@ -14,6 +14,7 @@ import com.dero.juststudykorean.data.flashcards.FlashcardRepository
 import com.dero.juststudykorean.data.notes.NotesSource
 import com.dero.juststudykorean.data.prefs.UserPrefs
 import com.dero.juststudykorean.data.progress.ProgressRepository
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.data.quiz.QuizRepository
 import com.dero.juststudykorean.data.time.FixedClock
 import kotlinx.coroutines.CoroutineScope
@@ -42,6 +43,7 @@ class GoldenApp {
     val notes = NotesSource(context)
     val flashcards = FlashcardRepository(db, clock, progress, notes)
     val quiz = QuizRepository(db, clock, progress, notes)
+    val words = WordProgress(db, clock)
 
     init {
         val r = runBlocking { BackupImporter(context, db).import(Uri.fromFile(File("../golden/db/fixture.jsbackup.zip"))) }

@@ -49,7 +49,7 @@ class FlashcardsBehaviourTest {
 
     @Test
     fun deleteThenUndoRestoresCards() {
-        val vm = DecksViewModel(app.flashcards, app.prefs)
+        val vm = DecksViewModel(app.flashcards, app.prefs, app.words)
         val messages = Collections.synchronizedList(mutableListOf<DecksMessage>())
         val collector = CoroutineScope(Dispatchers.IO).launch { vm.events.collect { messages += it } }
         val deck = decks().first { it.total > 0 }
@@ -68,7 +68,7 @@ class FlashcardsBehaviourTest {
 
     @Test
     fun renameEmptyKeepsOldName() {
-        val vm = DecksViewModel(app.flashcards, app.prefs)
+        val vm = DecksViewModel(app.flashcards, app.prefs, app.words)
         val deck = decks().first()
         vm.rename(deck, "   ")
         repeat(20) { idleUntil { true }; Thread.sleep(5) }
@@ -79,7 +79,7 @@ class FlashcardsBehaviourTest {
 
     @Test
     fun mergeNeedsName() {
-        val vm = DecksViewModel(app.flashcards, app.prefs)
+        val vm = DecksViewModel(app.flashcards, app.prefs, app.words)
         val before = decks()
         assertFalse(vm.merge(before.take(2).map { it.id }, "  "))
         repeat(20) { idleUntil { true }; Thread.sleep(5) }

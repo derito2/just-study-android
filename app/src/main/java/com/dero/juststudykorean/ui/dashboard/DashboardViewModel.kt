@@ -10,6 +10,7 @@ import com.dero.juststudykorean.data.progress.Recommendation
 import com.dero.juststudykorean.data.progress.Timeline
 import com.dero.juststudykorean.data.progress.TimelineUnit
 import com.dero.juststudykorean.data.progress.Weekly
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.data.quiz.QuizRepository
 import com.dero.juststudykorean.data.quiz.QuizRequest
 import com.dero.juststudykorean.data.time.AppClock
@@ -58,6 +59,7 @@ class DashboardViewModel @Inject constructor(
     private val progress: ProgressRepository,
     private val quiz: QuizRepository,
     private val prefs: UserPrefs,
+    private val words: WordProgress,
     clock: AppClock,
 ) : ViewModel() {
     private val today = clock.now().atZone(clock.zone).toLocalDate()
@@ -79,7 +81,7 @@ class DashboardViewModel @Inject constructor(
             val summary = progress.summary()
             previousStreak.filterNotNull().first()
             prefs.setLastStreak(summary.streakDays)
-            Loaded(summary, progress.weekly(), month, progress.recommended(3), progress.timeline(unit), quiz.readyDocuments().isNotEmpty())
+            Loaded(summary, weekly(), month, progress.recommended(3), progress.timeline(unit), quiz.readyDocuments().isNotEmpty())
         }.catch { emit(null) }
     }
 
@@ -90,6 +92,9 @@ class DashboardViewModel @Inject constructor(
             hasDocuments = data?.hasDocuments ?: true,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DashboardUi(today))
+
+    /** D11-1: the words counted are the ones learned (WordProgress), as in Flashcards; the rest of the week is the web's. */
+    private suspend fun weekly(): Weekly = words.learnedWeekly().let { (now, before) -> progress.weekly().copy(wordsThisWeek = now, wordsLastWeek = before) }
 
     fun setUnit(unit: TimelineUnit) = viewModelScope.launch { prefs.setChartUnit(unit) }
 

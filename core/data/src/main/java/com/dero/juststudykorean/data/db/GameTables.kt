@@ -64,6 +64,9 @@ interface GameSessionsDao {
     @Query("SELECT * FROM game_sessions ORDER BY id") suspend fun all(): List<GameSessionsEntity>
 }
 
+/** One row of [GameRoundsDao.gradedKeys]: the items of a round that changed their progress, and when. */
+data class RoundKeys(val itemKeys: String, val createdAt: Long)
+
 /** One row of [GameRoundsDao.perGame]. */
 data class GameTotals(val game: String, val rounds: Int, val won: Int, val averageResponseMs: Long, val lastPlayedAt: Long)
 
@@ -84,6 +87,9 @@ interface GameRoundsDao {
             "CAST(AVG(response_ms) AS INTEGER) AS averageResponseMs, MAX(created_at) AS lastPlayedAt FROM game_rounds GROUP BY game ORDER BY game",
     )
     suspend fun perGame(): List<GameTotals>
+    /** Rounds that changed item progress (not neutral; skipped ones are never saved), oldest first. */
+    @Query("SELECT item_keys AS itemKeys, created_at AS createdAt FROM game_rounds WHERE outcome != 'neutral' ORDER BY created_at, id")
+    suspend fun gradedKeys(): List<RoundKeys>
 }
 
 @Dao

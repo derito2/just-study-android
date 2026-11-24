@@ -11,6 +11,7 @@ import com.dero.juststudykorean.data.flashcards.FlashcardStats
 import com.dero.juststudykorean.data.flashcards.ReviewItem
 import com.dero.juststudykorean.data.prefs.DecksLayout
 import com.dero.juststudykorean.data.prefs.UserPrefs
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.korean.Scheduling
 import com.dero.juststudykorean.ui.components.plural
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,7 +48,11 @@ private class Loaded(val decks: List<Deck>, val stats: FlashcardStats, val histo
 /** Decks (design/flashcards.md A and B): counters, decks, edit mode, create cards and review history. */
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class DecksViewModel @Inject constructor(private val repo: FlashcardRepository, private val prefs: UserPrefs) : ViewModel() {
+class DecksViewModel @Inject constructor(
+    private val repo: FlashcardRepository,
+    private val prefs: UserPrefs,
+    private val words: WordProgress,
+) : ViewModel() {
     private val retry = MutableStateFlow(0)
     private val creating = MutableStateFlow(false)
     private val notice = MutableStateFlow<String?>(null)
@@ -61,7 +66,7 @@ class DecksViewModel @Inject constructor(private val repo: FlashcardRepository, 
     fun setLayout(layout: DecksLayout) = viewModelScope.launch { prefs.setDecksLayout(layout) }
 
     private val loaded = retry.flatMapLatest {
-        repo.decks().map<List<Deck>, Loaded?> { decks -> Loaded(decks, repo.statsNow(), repo.history(30), repo.readyDocuments()) }.catch { emit(null) }
+        repo.decks().map<List<Deck>, Loaded?> { decks -> Loaded(decks, repo.statsNow().copy(learned = words.learned()), repo.history(30), repo.readyDocuments()) }.catch { emit(null) }
     }
 
     val state: StateFlow<DecksUi> = combine(loaded, creating, notice) { data, busy, note ->
