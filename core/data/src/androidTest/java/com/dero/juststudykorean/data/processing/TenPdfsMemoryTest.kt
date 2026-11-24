@@ -41,7 +41,7 @@ class TenPdfsMemoryTest {
             val clock = SystemClock()
             val progress = ProgressRepository(db, clock)
             val files = DocumentFiles(context)
-            val queue = ProcessingQueue(db, clock, progress, files, DocumentIndexer(db, clock, progress, NotesSource(context), files), MuPdfReader())
+            val queue = ProcessingQueue(db, clock, progress, files, DocumentIndexer(db, clock, progress, NotesSource(context), files), reader = MuPdfReader())
             val names = assets.list("pdfs")!!.filter { it.endsWith(".pdf") }.sorted() + "extra/Tablas_sinteticas.pdf".let { listOf(it) }
             val pdfs = (names + names.take(3)).take(10).mapIndexed { i, n -> n to assets.open(if (n.contains("/")) n else "pdfs/$n").use { it.readBytes() } + if (i >= names.size) "\n%copy$i\n".toByteArray() else ByteArray(0) }
             for ((i, p) in pdfs.withIndex()) assertTrue(queue.upload(p.second.inputStream(), "pdf$i.pdf") is UploadResult.Queued)
