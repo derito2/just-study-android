@@ -193,7 +193,7 @@ fun ListeningContent(
                     }
                     speaking.comparison?.let { c ->
                         if (c.matches) ResultBanner(BannerTone.Correct, "Matches your notes.")
-                        Comparison(c, null, voiceReady, speakActions.onListen)
+                        Comparison(c, null, voiceReady, speakActions.onListen, showMatch = false) // the banner above already says it
                     }
                 }
                 else -> {

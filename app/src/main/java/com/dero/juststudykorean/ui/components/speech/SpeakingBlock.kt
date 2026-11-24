@@ -195,13 +195,13 @@ private fun LevelWave(s: SpeakingUi, still: Boolean, mirrored: Boolean) {
 
 /** We heard / Your notes, the warn underlines, Matches your notes and Listen (design B). [onlyNotes]: Show answer. */
 @Composable
-internal fun Comparison(comparison: SpokenComparison?, onlyNotes: String?, voiceReady: Boolean, onListen: () -> Unit) {
+internal fun Comparison(comparison: SpokenComparison?, onlyNotes: String?, voiceReady: Boolean, onListen: () -> Unit, showMatch: Boolean = true) {
     val c = JustStudyTheme.colors
     val still = LocalFrozenMotion.current || reduceMotion()
     val enter = remember(comparison) { Animatable(if (still) 1f else 0f) }
     LaunchedEffect(comparison) { if (!still) enter.animateTo(1f, tween(240, easing = FastOutSlowInEasing)) }
     Column(Modifier.fillMaxWidth().graphicsLayer { alpha = enter.value; translationY = (1 - enter.value) * 8.dp.toPx() }, verticalArrangement = Arrangement.spacedBy(Tokens.Space2)) {
-        if (comparison?.matches == true) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
+        if (showMatch && comparison?.matches == true) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space1)) {
             LucideIcon(Lucide.Check, contentDescription = null, size = 18.dp, tint = c.correctInk)
             Text("Matches your notes", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = c.correctInk)
         }
