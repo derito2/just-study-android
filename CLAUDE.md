@@ -3,13 +3,13 @@
 App Android nativa (Kotlin + Jetpack Compose, Material 3) para el OPPO Find X8 Pro del usuario. Todo en el teléfono, sin internet. El usuario habla español; la UI va en inglés. Plan completo: `docs/PLAN.md`; decisiones: `docs/DECISIONS.md`.
 
 ## Ahorra tokens (léelo primero)
-- **No leas documentos enteros.** `docs/PLAN.md` y los docs del proyecto web son de consulta: `grep -n "^#"` y lee solo la sección que necesitas.
-- **Código: primero CodeGraph** (`codegraph_explore` MCP o `codegraph explore "<pregunta>"`) aquí y en el proyecto web, antes de abrir archivos. Lee solo los rangos que vas a cambiar.
-- **Memoria: Engram**, proyecto `just-study-android`, `topic_key` `android/*`. Las memorias del web están en el proyecto `korean-study-assistant` (`mem_search`).
+- **No leas documentos enteros.** `docs/PLAN.md` es de consulta: `grep -n "^#"` y lee solo la sección que necesitas.
+- **Código: primero CodeGraph** (`codegraph_explore` MCP o `codegraph explore "<pregunta>"`) antes de abrir archivos. Lee solo los rangos que vas a cambiar.
+- **Memoria: Engram**, proyecto `just-study-android`, `topic_key` `android/*`.
 - Respuestas cortas: resultado, ✅/⚠️/❌ y lo que falta.
 
 ## Proyecto web: referencia de solo lectura
-`/Users/dero/Documents/visual/korean-study-assistant` — de ahí salen el contexto (CLAUDE.md, docs/), el Python a portar (`backend/app/`) y las pruebas doradas. **No se edita** desde aquí.
+El proyecto web ya no está en el Mac. Todo lo necesario (doradas en golden/, código portado y docs) ya está en este repo. El repo derito2/korean-study-assistant de GitHub solo se consulta si el dueño lo pide.
 
 ## Protocolo (dos sesiones)
 1. **Diseño (claude.ai):** planes de fase, sistema de diseño, pantallas, revisión de diffs y prompts cortos para Claude Code. No compila ni usa git.
@@ -18,10 +18,10 @@ App Android nativa (Kotlin + Jetpack Compose, Material 3) para el OPPO Find X8 P
 4. Nunca los mismos archivos desde las dos sesiones a la vez. **No mergear sin la confirmación del usuario en esa tarea.**
 
 ## Mac y teléfono
-- MacBook Air M1, **8 GB**: **sin emulador** (el OPPO por USB). `org.gradle.jvmargs=-Xmx2g`. Al compilar, parar la web (`/Users/dero/Documents/visual/korean-study-assistant/scripts/study.sh stop`), Colima y Ollama.
+- MacBook Air M1, **8 GB**: **sin emulador** (el OPPO por USB). `org.gradle.jvmargs=-Xmx2g`.
 - adb: `~/Library/Android/sdk/platform-tools/adb` (añadir al `PATH` si no está).
 - No cambiar ningún ajuste del teléfono (pantalla, bloqueo, batería, desarrollador, red, idioma…) sin preguntar antes. Solo se permite lo que el plan de la tarea nombra (modo avión y wifi en la PoC 2), y se deja como estaba al terminar. Antes de cambiar algo, anota su valor y restáuralo.
-- No leer, copiar ni filtrar archivos del usuario fuera de JustStudyApp y del proyecto web (ni Descargas del Mac ni del teléfono), salvo el archivo exacto que la tarea nombra.
+- No leer, copiar ni filtrar archivos del usuario fuera de JustStudyApp (ni Descargas del Mac ni del teléfono), salvo el archivo exacto que la tarea nombra.
 - `adb pull`/`push` solo con la ruta exacta de un archivo, comprobada y no vacía. Nunca una carpeta ni un comodín.
 - Nunca aceptar diálogos ni permisos del sistema por el usuario. Si hace falta uno, parar y pedírselo.
 - Sin capturas salvo que sean imprescindibles.
