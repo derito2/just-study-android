@@ -226,4 +226,9 @@ internal val Lucide.paths: List<String>
             "M12 7v14",
             "M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z",
         )
+        // design/beta.md 3, lucide-static 0.460.0 (its rect x=2 y=4 20×16 rx=2 as a path).
+        Lucide.Keyboard -> listOf(
+            "M10 8h.01", "M12 12h.01", "M14 8h.01", "M16 12h.01", "M18 8h.01", "M6 8h.01", "M7 16h10", "M8 12h.01",
+            "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
+        )
     }

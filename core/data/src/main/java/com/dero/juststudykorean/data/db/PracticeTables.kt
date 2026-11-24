@@ -6,6 +6,7 @@ import androidx.room3.Entity
 import androidx.room3.Index
 import androidx.room3.Insert
 import androidx.room3.PrimaryKey
+import androidx.room3.Query
 import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
@@ -36,9 +37,16 @@ data class ListeningAttemptsEntity(
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )
 
+/** How often a verb was missed in a point (Grammar Lab puts those first). */
+data class DrillMisses(val pointKey: String, val verb: String, val misses: Int)
+
 @Dao
 interface GrammarDrillAttemptsDao {
     @Insert suspend fun insert(row: GrammarDrillAttemptsEntity)
+    @Query("SELECT COALESCE(MAX(id), 0) FROM grammar_drill_attempts") suspend fun maxId(): Long
+    @Query("SELECT COUNT(*) FROM grammar_drill_attempts") suspend fun count(): Int
+    @Query("SELECT point_key AS pointKey, verb, COUNT(*) AS misses FROM grammar_drill_attempts WHERE correct = 0 GROUP BY point_key, verb")
+    suspend fun misses(): List<DrillMisses>
 }
 
 @Dao

@@ -80,6 +80,9 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     val listenCards: Flow<Boolean> = store.data.map { it[LISTEN_CARDS] ?: false }
     suspend fun setGapCards(on: Boolean) { store.edit { it[GAP_CARDS] = on } }
     suspend fun setListenCards(on: Boolean) { store.edit { it[LISTEN_CARDS] = on } }
+    /** Grammar Lab (design/beta.md 3): the system keyboard instead of HangulKeys. */
+    val labSystemKeyboard: Flow<Boolean> = store.data.map { it[LAB_SYSTEM_KEYBOARD] ?: false }
+    suspend fun setLabSystemKeyboard(on: Boolean) { store.edit { it[LAB_SYSTEM_KEYBOARD] = on } }
     /** Phase 11 (H-03 B): word_state was written from the sources on v6; until then WordProgress computes on the fly. */
     val wordStateBuiltV6: Flow<Boolean> = store.data.map { it[WORD_STATE_BUILT_V6] ?: false }
     suspend fun setWordStateBuiltV6(built: Boolean) { store.edit { it[WORD_STATE_BUILT_V6] = built } }
@@ -105,6 +108,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
         val GAP_CARDS = booleanPreferencesKey("gap_cards")
         val LISTEN_CARDS = booleanPreferencesKey("listen_cards")
+        val LAB_SYSTEM_KEYBOARD = booleanPreferencesKey("lab_system_keyboard")
         val WORD_STATE_BUILT_V6 = booleanPreferencesKey("wordStateBuiltV6")
         val CHART_UNIT = stringPreferencesKey("chart_unit")
         val LAST_STREAK = intPreferencesKey("last_streak")
