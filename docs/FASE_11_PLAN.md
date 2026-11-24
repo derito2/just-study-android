@@ -140,7 +140,7 @@ Lo dice `PLAN_FUNCIONES_ESTUDIO.md` F3, «Motor de conjugación»: `Conjugator`,
 - `EndingMatchTest` con los puntos de `golden/grammar/*.json` y los 18 de `WW1_Grammar`: informa del porcentaje reconocido (objetivo ≥ 70 %);
 - `DrillsTest`.
 
-Si el web tiene más formas de conjugación, se exportan como doradas.
+Sin web: la tabla de casos de ConjugatorTest es la referencia; cada caso irregular lleva un comentario con su fuente (diccionario o gramática).
 
 ### PR 6 · Grammar Lab (`beta.md` 3)
 
