@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.speech.SpeakingMachine
+import com.dero.juststudykorean.ui.components.speech.SpeakPhase
+import com.dero.juststudykorean.ui.components.speech.SpeakingUi
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

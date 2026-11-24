@@ -3,6 +3,7 @@ package com.dero.juststudykorean.data.prefs
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -83,6 +84,11 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     /** Grammar Lab (design/beta.md 3): the system keyboard instead of HangulKeys. */
     val labSystemKeyboard: Flow<Boolean> = store.data.map { it[LAB_SYSTEM_KEYBOARD] ?: false }
     suspend fun setLabSystemKeyboard(on: Boolean) { store.edit { it[LAB_SYSTEM_KEYBOARD] = on } }
+    /** Listening Lab (design/beta.md 4): the mode (Dictation, Shadowing, HandsFree) and the speed, remembered. */
+    val listeningMode: Flow<String> = store.data.map { it[LISTENING_MODE] ?: "Dictation" }
+    val listeningRate: Flow<Float> = store.data.map { it[LISTENING_RATE] ?: 1f }
+    suspend fun setListeningMode(mode: String) { store.edit { it[LISTENING_MODE] = mode } }
+    suspend fun setListeningRate(rate: Float) { store.edit { it[LISTENING_RATE] = rate } }
     /** Phase 11 (H-03 B): word_state was written from the sources on v6; until then WordProgress computes on the fly. */
     val wordStateBuiltV6: Flow<Boolean> = store.data.map { it[WORD_STATE_BUILT_V6] ?: false }
     suspend fun setWordStateBuiltV6(built: Boolean) { store.edit { it[WORD_STATE_BUILT_V6] = built } }
@@ -109,6 +115,8 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         val GAP_CARDS = booleanPreferencesKey("gap_cards")
         val LISTEN_CARDS = booleanPreferencesKey("listen_cards")
         val LAB_SYSTEM_KEYBOARD = booleanPreferencesKey("lab_system_keyboard")
+        val LISTENING_MODE = stringPreferencesKey("listening_mode")
+        val LISTENING_RATE = floatPreferencesKey("listening_rate")
         val WORD_STATE_BUILT_V6 = booleanPreferencesKey("wordStateBuiltV6")
         val CHART_UNIT = stringPreferencesKey("chart_unit")
         val LAST_STREAK = intPreferencesKey("last_streak")

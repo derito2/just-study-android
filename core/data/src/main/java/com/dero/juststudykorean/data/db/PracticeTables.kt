@@ -52,6 +52,8 @@ interface GrammarDrillAttemptsDao {
 @Dao
 interface ListeningAttemptsDao {
     @Insert suspend fun insert(row: ListeningAttemptsEntity)
+    @Query("SELECT COALESCE(MAX(id), 0) FROM listening_attempts") suspend fun maxId(): Long
+    @Query("SELECT * FROM listening_attempts ORDER BY id") suspend fun all(): List<ListeningAttemptsEntity>
 }
 
 /** v6 → v7 only creates the two tables and their indices, empty. */

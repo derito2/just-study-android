@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.speech.SpeakPhase
+import com.dero.juststudykorean.ui.components.speech.SpeakingUi
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider

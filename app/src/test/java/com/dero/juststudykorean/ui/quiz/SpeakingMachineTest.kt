@@ -1,5 +1,7 @@
 package com.dero.juststudykorean.ui.quiz
 
+import com.dero.juststudykorean.ui.components.speech.SpeakingMachine
+import com.dero.juststudykorean.ui.components.speech.SpeakPhase
 import com.dero.juststudykorean.data.speech.SpeechAvailability
 import com.dero.juststudykorean.data.speech.SpeechEvent
 import com.dero.juststudykorean.data.speech.SpeechFailure
