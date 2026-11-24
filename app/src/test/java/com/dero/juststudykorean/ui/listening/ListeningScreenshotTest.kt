@@ -1,6 +1,8 @@
 package com.dero.juststudykorean.ui.listening
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.dero.juststudykorean.ui.theme.LocalFrozenMotion
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dero.juststudykorean.korean.compareAnswer
 import com.dero.juststudykorean.korean.listening.LabSentence
@@ -24,7 +26,8 @@ class ListeningScreenshotTest {
     private val base = ListeningUi(loading = false, items = listOf(sentence))
 
     private fun snap(name: String, dark: Boolean, content: @Composable () -> Unit) =
-        captureRoboImage("src/test/screenshots/$name.png") { JustStudyTheme(darkTheme = dark) { content() } }
+        // The microphone block has endless animations: frozen on their first frame, as in the Quiz's captures (else CI waits minutes).
+        captureRoboImage("src/test/screenshots/$name.png") { CompositionLocalProvider(LocalFrozenMotion provides true) { JustStudyTheme(darkTheme = dark) { content() } } }
 
     @Composable
     private fun Lab(ui: ListeningUi) = ListeningContent(ui, SpeakingUi(), systemKeyboard = false, voiceReady = true, permissionNeeded = true)
