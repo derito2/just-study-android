@@ -2,6 +2,7 @@ package com.dero.juststudykorean.ui.flashcards
 
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -55,14 +56,14 @@ class TypingNoticeTest {
     @Test
     fun switchIsLockedWhenNoCardInTheDeckCanBeTyped() {
         show(listOf(grammar), typeAnswer = false)
-        compose.onNode(isToggleable()).assertIsNotEnabled()
+        compose.onNode(isToggleable() and hasText("Type the answer")).assertIsNotEnabled()
         compose.onNodeWithText("Typing works on word cards.").assertExists()
     }
 
     @Test
     fun switchWorksWhenThereAreWordCards() {
         show(listOf(grammar, word), typeAnswer = false)
-        compose.onNode(isToggleable()).assertIsEnabled()
+        compose.onNode(isToggleable() and hasText("Type the answer")).assertIsEnabled()
         compose.onNodeWithText("Typing works on word cards.").assertDoesNotExist()
     }
 }
