@@ -23,7 +23,11 @@ import java.time.Duration
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [36])
 class WordProgressTest : GoldenDb() {
-    private val words by lazy { WordProgress(db, clock) }
+    private val temp = TempPrefs()
+    private val words by lazy { WordProgress(db, clock, temp.prefs) }
+
+    @org.junit.After
+    fun closePrefs() = temp.close()
     private val now = NOW.toEpochMilli()
     private fun daysAgo(d: Long, h: Long = 0) = now - Duration.ofDays(d).toMillis() - Duration.ofHours(h).toMillis()
 
@@ -72,12 +76,14 @@ class WordProgressTest : GoldenDb() {
     @Test
     fun gamesKeysLoseTheirPrefixAndJoinTheCardsWord() = runBlocking {
         val key = norm(freshCard().koreanWord)
+        val before = words.all().getValue(key).correct
         playRounds(key, daysAgo(2), daysAgo(2, 1), daysAgo(1))
         db.gameItemProgressDao().upsert(GameItemProgressEntity("w:$key", 3, 3, 0, 3, daysAgo(1), null))
         val state = words.all().getValue(key)
         assertTrue(state.status.mastered)
         assertEquals(daysAgo(1), state.status.masteredAt)
-        assertEquals(3L, state.gameCorrect)
+        assertEquals(before + 3, state.correct)
+        assertEquals(FROM_CARDS or FROM_GAMES, state.sourceMask and (FROM_CARDS or FROM_GAMES)) // it may have quiz questions too
         assertEquals(5, words.learned())
     }
 
@@ -109,13 +115,16 @@ class WordProgressTest : GoldenDb() {
         db.questionAttemptsDao().insert(QuestionAttemptsEntity(++aid, unrelated, null, null, "x", true, 1000, daysAgo(0)))
         val state = words.all().getValue(key)
         assertTrue(state.status.hard) // its last attempt failed; the later right answer was to a question not about it
-        assertEquals(1, state.quizCorrect)
-        assertEquals(1, state.quizWrong)
+        assertEquals(2L, state.correct) // one in Games, one in Quiz
+        assertEquals(1L, state.wrong)
+        assertEquals(FROM_GAMES or FROM_QUIZ, state.sourceMask)
+        assertEquals(daysAgo(2), state.firstSeenAt) // Games' row has no rounds here: its two quiz answers give the times
+        assertEquals(daysAgo(1), state.lastEventAt)
     }
 
     @Test
     fun aWordNeverStudiedHasNoDate() = runBlocking {
-        val state = words.all().values.first { it.again == 0 && it.gameCorrect == 0L }
+        val state = words.all().values.first { it.sourceMask == FROM_CARDS && it.firstSeenAt == null }
         assertNull(state.status.masteredAt)
     }
 }
