@@ -5,7 +5,16 @@ import com.dero.juststudykorean.data.db.GameItemProgressEntity
 import com.dero.juststudykorean.data.db.GameRoundsEntity
 import com.dero.juststudykorean.data.db.QuestionAttemptsEntity
 import com.dero.juststudykorean.data.db.QuestionsEntity
+import com.dero.juststudykorean.data.flashcards.FlashcardRepository
+import com.dero.juststudykorean.data.games.GameRepository
 import com.dero.juststudykorean.data.golden.GoldenDb
+import com.dero.juststudykorean.data.notes.NotesSource
+import com.dero.juststudykorean.data.quiz.QuizRepository
+import com.dero.juststudykorean.data.quiz.QuizRequest
+import com.dero.juststudykorean.korean.Rating
+import com.dero.juststudykorean.korean.games.GameType
+import com.dero.juststudykorean.korean.games.Outcome
+import com.dero.juststudykorean.korean.games.RoundResult
 import com.dero.juststudykorean.korean.norm
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -83,5 +92,38 @@ class WordStateTest : GoldenDb() {
         assertEquals(state, db.wordStateDao().all().sortedBy { it.wordKey })
         assertEquals(links, db.questionWordsDao().all().sortedBy { it.questionId })
         assertTrue(links.size >= 2)
+    }
+
+    /** Every word of the cache equals PR 1's on-the-fly computation. */
+    private suspend fun assertSameAsSources() {
+        val onTheFly = words.computed()
+        val cached = words.all()
+        assertEquals(onTheFly.keys, cached.keys)
+        for (key in onTheFly.keys) assertEquals(key, onTheFly.getValue(key), cached.getValue(key))
+    }
+
+    @Test
+    fun reviewsRoundsAndAnswersKeepTheCacheEqualToTheSources() = runBlocking {
+        val (cardWord, _) = synthetic()
+        words.rebuildWordState()
+        val progress = ProgressRepository(db, clock)
+        val notes = NotesSource(context)
+        val cards = FlashcardRepository(db, clock, progress, notes, words)
+        val games = GameRepository(db, clock, words)
+        val quiz = QuizRepository(db, clock, progress, notes, words)
+
+        val card = db.flashcardsDao().all().first { norm(it.koreanWord) == cardWord }
+        cards.review(card.id, Rating.Again, 1000) // the word's Again count and its Hard
+        assertSameAsSources()
+
+        val session = games.startSession(7)
+        games.saveRound(session, 0, GameType.WordMatch, 1, RoundResult(Outcome.LOST, 1, 900, listOf("w:$cardWord")))
+        games.saveRound(session, 1, GameType.WordMatch, 1, RoundResult(Outcome.WON, 0, 900, listOf("w:강아지"))) // a word the cache didn't know
+        assertSameAsSources()
+
+        val run = quiz.generate(QuizRequest(count = 8, seed = 11))!! // new questions are linked to their word as they are written
+        for (q in run.questions) quiz.answer(run.id, q.id, q.optionsJson?.let { org.json.JSONArray(it).getString(0) } ?: "no", 1000)
+        assertSameAsSources()
+        assertTrue(db.questionWordsDao().all().size > 2)
     }
 }

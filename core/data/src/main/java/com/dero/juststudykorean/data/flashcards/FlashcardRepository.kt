@@ -11,6 +11,7 @@ import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.data.notes.NotesSource
 import com.dero.juststudykorean.data.prefs.CardDirection
 import com.dero.juststudykorean.data.progress.ProgressRepository
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.data.quiz.Topics
 import com.dero.juststudykorean.data.time.AppClock
 import com.dero.juststudykorean.korean.CardState
@@ -132,6 +133,8 @@ class FlashcardRepository @Inject constructor(
     private val clock: AppClock,
     private val progress: ProgressRepository,
     private val notes: NotesSource,
+    /** H-03 B: keeps word_state up to date (tests that do not look at it leave it out). */
+    private val words: WordProgress? = null,
 ) {
     private val zone get() = clock.zone
     private fun local(millis: Long): ZonedDateTime = Instant.ofEpochMilli(millis).atZone(zone)
@@ -333,6 +336,7 @@ class FlashcardRepository @Inject constructor(
     /** [activeMs]: the card's active time (activeCardMs), for the session's time (R1-13); null: [elapsedMs]. */
     suspend fun review(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling = Scheduling(), activeMs: Long? = null): Next = withContext(Dispatchers.IO) {
         db.withWriteTransaction { reviewNow(cardId, rating, elapsedMs, cfg, activeMs) }
+            .also { db.hotDao().flashcard(cardId)?.let { words?.refresh(listOf(norm(it.koreanWord))) } }
     }
 
     private suspend fun reviewNow(cardId: Long, rating: Rating, elapsedMs: Long, cfg: Scheduling, activeMs: Long?): Next {

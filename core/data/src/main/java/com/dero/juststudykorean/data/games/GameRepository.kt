@@ -6,6 +6,7 @@ import com.dero.juststudykorean.data.db.GameRoundsEntity
 import com.dero.juststudykorean.data.db.GameSessionsEntity
 import com.dero.juststudykorean.data.db.GameTotals
 import com.dero.juststudykorean.data.db.JustStudyDatabase
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.data.time.AppClock
 import com.dero.juststudykorean.korean.games.GameType
 import com.dero.juststudykorean.korean.games.Outcome
@@ -37,7 +38,12 @@ private fun GameItemProgressEntity.stats() = ItemStats(seen, correct, wrong, str
 
 /** Saves Games' sessions, rounds and the progress of each item (phone-only tables, D8-3). Never touches the 18 tables. */
 @Singleton
-class GameRepository @Inject constructor(private val db: JustStudyDatabase, private val clock: AppClock) {
+class GameRepository @Inject constructor(
+    private val db: JustStudyDatabase,
+    private val clock: AppClock,
+    /** H-03 B: keeps word_state up to date (tests that do not look at it leave it out). */
+    private val words: WordProgress? = null,
+) {
     private fun now() = clock.now().toEpochMilli()
 
     suspend fun startSession(seed: Long): Long = db.withWriteTransaction {
@@ -79,6 +85,7 @@ class GameRepository @Inject constructor(private val db: JustStudyDatabase, priv
                 db.gameItemProgressDao().upsert(GameItemProgressEntity(key, p.seen, p.correct, p.wrong, p.streak, p.lastSeenAt, p.lastWrongAt))
             }
         }
+        if (result.outcome != Outcome.NEUTRAL) words?.refresh(result.itemKeys.filter { it.startsWith("w:") }.map { it.removePrefix("w:") })
     }
 
     suspend fun endSession(id: Long) = db.withWriteTransaction {

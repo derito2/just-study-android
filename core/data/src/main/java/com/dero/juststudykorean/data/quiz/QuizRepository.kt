@@ -9,6 +9,7 @@ import com.dero.juststudykorean.data.db.QuizRunsEntity
 import com.dero.juststudykorean.data.db.DocumentsEntity
 import com.dero.juststudykorean.data.notes.NotesSource
 import com.dero.juststudykorean.data.progress.ProgressRepository
+import com.dero.juststudykorean.data.progress.WordProgress
 import com.dero.juststudykorean.data.time.AppClock
 import com.dero.juststudykorean.korean.PyRandom
 import com.dero.juststudykorean.korean.isCorrect
@@ -75,6 +76,8 @@ class QuizRepository @Inject constructor(
     private val clock: AppClock,
     private val progress: ProgressRepository,
     private val notes: NotesSource,
+    /** H-03 B: keeps word_state and question_words up to date (tests that do not look at them leave it out). */
+    private val words: WordProgress? = null,
 ) {
     /**
      * Questions the model wrote (phase 6): only in memory, never in `questions` or `question_attempts` (the owner's rule:
@@ -302,6 +305,7 @@ class QuizRepository @Inject constructor(
     suspend fun generate(request: QuizRequest, ai: List<com.dero.juststudykorean.korean.Candidate> = emptyList(), pendingAi: Int = 0): QuizRun? {
         val rules = request.copy(count = request.count - ai.size - pendingAi)
         val questions = if (rules.count > 0) generateQuestions(rules, PyRandom(request.seed ?: clock.now().toEpochMilli())).orEmpty() else emptyList()
+        words?.link(questions)
         if (questions.isEmpty() && ai.isEmpty() && pendingAi == 0) return null
         val run = createRun(questions.map { it.id })
         if (ai.isEmpty()) return run
@@ -319,7 +323,7 @@ class QuizRepository @Inject constructor(
             aiAnswers[questionId] = given to ok
             return@withContext Grade(ok, q.correctAnswer, q.explanation, aiAccepted = accepted && !check(q, given))
         }
-        db.withWriteTransaction { answerNow(runId, questionId, given, elapsedMs, accepted) }
+        db.withWriteTransaction { answerNow(runId, questionId, given, elapsedMs, accepted) }.also { words?.refreshQuestion(questionId) }
     }
 
     private suspend fun answerNow(runId: Long?, questionId: Long, given: String, elapsedMs: Long, accepted: Boolean): Grade {

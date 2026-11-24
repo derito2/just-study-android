@@ -135,6 +135,34 @@ class WordProgress @Inject constructor(private val db: JustStudyDatabase, privat
         Log.i("JustStudy", "word_state_rebuilt words=$words ms=${(System.nanoTime() - start) / 1_000_000}") // counts only
     }
 
+    /**
+     * After a review, a round or an answer: writes the words it touched again from the sources. A word the cache does not
+     * know yet can change which word an old question belongs to, so then everything is rebuilt. Nothing before the first build.
+     */
+    suspend fun refresh(keys: Collection<String>) {
+        val wanted = keys.filter { it.isNotEmpty() }.toSet()
+        if (wanted.isEmpty()) return
+        val unknown = lock.withLock {
+            if (!prefs.wordStateBuiltV6.first()) return
+            if (db.wordStateDao().existing(wanted.toList()).size < wanted.size) return@withLock true
+            db.withWriteTransaction { db.wordStateDao().upsert(compute(wanted).states.values.map { it.row() }) }
+            false
+        }
+        if (unknown) rebuildWordState()
+    }
+
+    /** New quiz questions: each linked to its word by the same rule as the rebuild, then those words written again. */
+    suspend fun link(questions: List<QuestionsEntity>) {
+        if (questions.isEmpty() || !prefs.wordStateBuiltV6.first()) return
+        val known = db.wordStateDao().existing(questions.flatMap { listOf(norm(it.correctAnswer), norm(it.prompt)) }.distinct()).toSet()
+        val links = questions.mapNotNull { q -> (norm(q.correctAnswer).takeIf { it in known } ?: norm(q.prompt).takeIf { it in known })?.let { QuestionWordsEntity(q.id, it) } }
+        db.questionWordsDao().insert(links)
+        refresh(links.map { it.wordKey })
+    }
+
+    /** The words of a quiz question (none if it is about no word). */
+    suspend fun refreshQuestion(questionId: Long) = refresh(db.questionWordsDao().wordsOf(questionId))
+
     /** First open on v6: builds the cache once (off the main thread; the screens compute on the fly meanwhile). */
     suspend fun ensureBuilt() { if (!prefs.wordStateBuiltV6.first()) rebuildWordState() }
 
