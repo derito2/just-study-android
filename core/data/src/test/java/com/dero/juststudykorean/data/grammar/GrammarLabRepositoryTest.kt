@@ -3,7 +3,10 @@ package com.dero.juststudykorean.data.grammar
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dero.juststudykorean.data.golden.GoldenDb
 import com.dero.juststudykorean.data.notes.NotesSource
+import com.dero.juststudykorean.korean.grammar.Applies
 import com.dero.juststudykorean.korean.grammar.Drill
+import com.dero.juststudykorean.korean.grammar.Ending
+import com.dero.juststudykorean.korean.grammar.drills
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -56,5 +59,20 @@ class GrammarLabRepositoryTest : GoldenDb() {
         assertTrue(!isRight(d, "가 거예요"))
         val c = Drill.Choose("k", "가다", com.dero.juststudykorean.korean.grammar.Ending.SoBecause, listOf("가서", "가아서"), "가서")
         assertTrue(isRight(c, "가서") && !isRight(c, "가아서"))
+    }
+
+    /**
+     * PR 10 (owner): a word whose type isn't sure (wordKindOf null) never gets an ending whose form depends on the type
+     * (-대요, -구나, -(으)ㄴ/는데요, -는 것 같다) nor a verb-only one (-는 동안…), at any level, with any example.
+     */
+    @Test
+    fun aWordOfUnsureTypeNeverGetsATypeOrVerbOnlyEnding() = runBlocking {
+        val unsure = repo.verbs().filter { it.kind == null }
+        assertTrue("the golden notes have words of unsure type", unsure.isNotEmpty())
+        val examples = unsure.map { it.verb to "" } // any sentence with the word itself
+        for (ending in Ending.entries.filter { it.applies != Applies.Both }) for (level in 1..3) for (seed in 0L..4L) {
+            val made = drills("p", ending, unsure, examples, 50, level, seed)
+            assertTrue("${ending.label} level $level: ${made.size} drills", made.isEmpty())
+        }
     }
 }
