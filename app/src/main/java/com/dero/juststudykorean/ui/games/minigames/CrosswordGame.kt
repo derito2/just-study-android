@@ -148,17 +148,15 @@ fun CrosswordGame(spec: RoundSpec.Crossword, paused: Boolean, onResult: (RoundRe
                 }
             }
         }
-        // The clues, numbered: tapping one selects its word (the way in without the grid, for TalkBack too).
-        Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
-            for (across in listOf(true, false)) {
-                val clues = spec.entries.filter { it.across == across }
-                if (clues.isEmpty()) continue
+        // The clues, numbered, Across | Down side by side (the keyboard must fit under them): tapping one selects its word.
+        androidx.compose.foundation.layout.Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            for (across in listOf(true, false)) Column(Modifier.weight(1f)) {
                 Text(if (across) "Across" else "Down", style = JustStudyTheme.korean.bodyBold, color = ink)
-                clues.forEach { e ->
+                spec.entries.filter { it.across == across }.forEach { e ->
                     Text(
                         "${e.number}. ${e.item.meaning}${if (e in done) " ✓" else ""}",
                         Modifier.fillMaxWidth().heightIn(min = 32.dp).clickable(role = Role.Button, onClickLabel = "Write this word") { if (outcome == null && !paused) select(e) },
-                        style = MaterialTheme.typography.bodyMedium, color = if (e == entry) c.brand else if (e in done) c.correctInk else ink,
+                        style = MaterialTheme.typography.bodySmall, color = if (e == entry) c.brand else if (e in done) c.correctInk else ink, maxLines = 2,
                     )
                 }
             }
