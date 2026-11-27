@@ -17,6 +17,7 @@ class BaselineProfileGenerator {
         startActivityAndWait()
         flashcards()
         teacher()
+        games() // phase 11, PR 10: the stage and the boards (generated with the new games in play)
         tap("Library")
         tap("Dashboard")
     }

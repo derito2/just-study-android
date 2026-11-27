@@ -9,9 +9,11 @@ import java.util.regex.Pattern
 const val TARGET = "com.dero.juststudykorean.benchmark"
 
 private fun any(text: String) = By.text(Pattern.compile("(?i)" + Pattern.quote(text)))
+private fun anyDesc(text: String) = By.desc(Pattern.compile("(?i)" + Pattern.quote(text)))
 
+/** By its text, or by its description (the bottom bar's tabs have only a description since phase 10). */
 fun MacrobenchmarkScope.tap(text: String, timeoutMs: Long = 5_000): Boolean {
-    val node = device.wait(Until.findObject(any(text)), timeoutMs) ?: return false
+    val node = device.wait(Until.findObject(any(text)), timeoutMs) ?: device.findObject(anyDesc(text)) ?: return false
     node.click()
     device.waitForIdle()
     return true
@@ -56,10 +58,10 @@ fun MacrobenchmarkScope.teacher() {
     }
 }
 
-/** Games (phase 8, task 11): More → Games (the opening), pause, resume, pause and end: the screen's transitions. */
+/** Games (phase 8, task 11): the Games tab (the opening), pause, resume, pause and end: the screen's transitions. */
 fun MacrobenchmarkScope.games() {
-    device.wait(Until.findObject(By.desc("More")), 5_000)?.click() ?: return
-    if (!tap("Games")) return
+    // Since phase 10 Games is a tab of the bottom bar (its description only), no longer a row of More.
+    device.wait(Until.findObject(By.desc("Games")), 5_000)?.click() ?: return
     device.wait(Until.hasObject(By.desc("Pause game")), 10_000)
     Thread.sleep(2_500) // the opening and the first round's entrance
     device.findObject(By.desc("Pause game"))?.click()
