@@ -23,6 +23,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 
+private const val LISTENING = "Listening"
+
 /** 7 days · 30 days · All. */
 val PERIOD_DAYS = listOf(7L, 30L, null)
 
@@ -39,6 +41,8 @@ data class MistakesUi(
     val loading: Boolean = true,
     val period: Int = 0,
     val patterns: List<Pattern> = emptyList(),
+    /** Patterns with failed dictations: they also get Practice this → the dictation (Quiz me and Make a deck stay). */
+    val dictation: Set<PatternKind> = emptySet(),
     /** "Deck created: …" or why a quiz or a deck couldn't be made. */
     val message: String? = null,
 )
@@ -58,7 +62,7 @@ class MistakesViewModel @Inject constructor(
     fun setPeriod(i: Int) = viewModelScope.launch {
         val since = PERIOD_DAYS[i]?.let { clock.now().minus(Duration.ofDays(it)).toEpochMilli() } ?: 0L
         all = repo.mistakes(since)
-        _state.value = MistakesUi(loading = false, period = i, patterns = patterns(all, since))
+        _state.value = MistakesUi(loading = false, period = i, patterns = patterns(all, since), dictation = all.filter { it.source == LISTENING }.map(::classify).toSet())
     }
 
     /** Your words of that pattern in the period (word_state's keys), at most 10. */
@@ -67,8 +71,9 @@ class MistakesViewModel @Inject constructor(
     /** Grammar Lab opens with the point of the newest example that has one. */
     fun pointOf(p: Pattern): String? = all.filter { classify(it) == p.kind }.sortedByDescending { it.at }.firstNotNullOfOrNull { it.pointKey }
 
-    /** The dictation of Listening Lab with your words of that pattern. */
-    fun dictationWords(p: Pattern): List<String> = words(p)
+    /** The dictation of Listening Lab with your words of that pattern, and the sentences of its failed dictations. */
+    fun dictationWords(p: Pattern): List<String> =
+        all.filter { classify(it) == p.kind }.mapNotNull { it.wordKey ?: it.expected.takeIf { _ -> it.source == LISTENING } }.distinct().take(10)
 
     fun quizMe(p: Pattern, onOpen: (Long) -> Unit) = viewModelScope.launch {
         val words = words(p)

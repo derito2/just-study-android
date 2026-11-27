@@ -56,12 +56,13 @@ fun MistakesScreen(onBack: () -> Unit, onGrammarLab: (String?) -> Unit, onDictat
             }
         },
         onDeck = { vm.makeDeck(it) },
+        onDictation = { onDictation(vm.dictationWords(it)) },
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MistakesContent(ui: MistakesUi, onBack: () -> Unit, onPeriod: (Int) -> Unit, onPractice: (Pattern) -> Unit, onDeck: (Pattern) -> Unit) {
+fun MistakesContent(ui: MistakesUi, onBack: () -> Unit, onPeriod: (Int) -> Unit, onPractice: (Pattern) -> Unit, onDeck: (Pattern) -> Unit, onDictation: (Pattern) -> Unit = {}) {
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val pad = Modifier.padding(horizontal = Tokens.Space4)
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).navigationBarsPadding().nestedScroll(scroll.nestedScrollConnection)) {
@@ -72,14 +73,14 @@ fun MistakesContent(ui: MistakesUi, onBack: () -> Unit, onPeriod: (Int) -> Unit,
             ui.loading -> LoadingState(modifier = pad)
             ui.patterns.isEmpty() -> EmptyState(Lucide.NotebookPen, "No mistakes yet in this period.", null, "Do a quiz or a few games and come back.", pad)
             else -> LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(start = Tokens.Space4, end = Tokens.Space4, bottom = Tokens.Space4), verticalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
-                items(ui.patterns, key = { it.kind }) { PatternCard(it, onPractice, onDeck) }
+                items(ui.patterns, key = { it.kind }) { PatternCard(it, it.kind in ui.dictation, onPractice, onDictation, onDeck) }
             }
         }
     }
 }
 
 @Composable
-private fun PatternCard(p: Pattern, onPractice: (Pattern) -> Unit, onDeck: (Pattern) -> Unit) {
+private fun PatternCard(p: Pattern, dictation: Boolean, onPractice: (Pattern) -> Unit, onDictation: (Pattern) -> Unit, onDeck: (Pattern) -> Unit) {
     Column(
         Modifier.fillMaxWidth().border(Tokens.Border, JustStudyTheme.colors.line, MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large).padding(Tokens.Space4),
@@ -93,7 +94,9 @@ private fun PatternCard(p: Pattern, onPractice: (Pattern) -> Unit, onDeck: (Patt
         if (practiceOf(p.kind) == Practice.Words) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {
             StickerButton("Quiz me", { onPractice(p) })
             StickerButton("Make a deck", { onDeck(p) })
-        } else StickerButton("Practice this", { onPractice(p) }, ko = "연습하기")
+        }
+        if (practiceOf(p.kind) == Practice.Words && dictation) StickerButton("Practice this", { onDictation(p) }, ko = "연습하기")
+        if (practiceOf(p.kind) != Practice.Words) StickerButton("Practice this", { onPractice(p) }, ko = "연습하기")
     }
 }
 
