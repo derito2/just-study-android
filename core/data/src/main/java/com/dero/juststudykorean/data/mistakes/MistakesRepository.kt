@@ -2,7 +2,9 @@ package com.dero.juststudykorean.data.mistakes
 
 import com.dero.juststudykorean.data.db.JustStudyDatabase
 import com.dero.juststudykorean.korean.grammar.Ending
+import com.dero.juststudykorean.korean.grammar.WordKind
 import com.dero.juststudykorean.korean.grammar.conjugate
+import com.dero.juststudykorean.korean.hangul.jamoDistance
 import com.dero.juststudykorean.korean.mistakes.Mistake
 import com.dero.juststudykorean.korean.norm
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +32,10 @@ class MistakesRepository @Inject constructor(private val db: JustStudyDatabase) 
             hot.drillMistakes(since).mapNotNull { r ->
                 val (verb, label) = r.expected.split('|', limit = 2).takeIf { it.size == 2 } ?: return@mapNotNull null
                 val ending = Ending.entries.firstOrNull { it.label == label } ?: return@mapNotNull null
-                Mistake("Grammar Lab", conjugate(verb, ending).firstOrNull() ?: return@mapNotNull null, r.given, word(verb), r.ref, r.at)
+                // An ambiguous stem (비다: verb or adjective) has no form without its kind: the one closest to yours is the one asked.
+                val forms = conjugate(verb, ending).ifEmpty { WordKind.entries.flatMap { conjugate(verb, ending, it) } }
+                val expected = forms.minByOrNull { r.given?.let { g -> jamoDistance(it, g) } ?: 0 } ?: return@mapNotNull null
+                Mistake("Grammar Lab", expected, r.given, word(verb), r.ref, r.at)
             } +
             hot.dictationMistakes(since).map { Mistake("Listening", it.expected.substringAfter(':'), null, it.ref?.takeIf { k -> k.startsWith("w:") }?.drop(2), null, it.at) }
     }

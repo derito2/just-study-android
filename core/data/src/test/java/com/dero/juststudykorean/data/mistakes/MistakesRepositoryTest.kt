@@ -45,4 +45,13 @@ class MistakesRepositoryTest : GoldenDb() {
         assertEquals(PatternKind.VowelHarmony, classify(drill))
         assertEquals("비가 와요", recent.single { it.source == "Listening" }.expected)
     }
+
+    /** 비다 is a verb or an adjective: the form closest to what you typed is the one you meant (phone test, PR 9). */
+    @Test
+    fun anAmbiguousStemKeepsTheFormClosestToYours() = runBlocking {
+        db.grammarDrillAttemptsDao().insert(GrammarDrillAttemptsEntity(1, "구나", "비다", Ending.Realize.label, "Choose", "비어구나", false, now))
+        val drill = repo.mistakes(now).single { it.source == "Grammar Lab" }
+        assertEquals("비구나", drill.expected)
+        assertEquals(PatternKind.Contraction, classify(drill))
+    }
 }
