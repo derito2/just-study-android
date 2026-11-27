@@ -104,7 +104,29 @@ sealed class RoundSpec {
             override val targets get() = order.map { it.key }
         }
     }
+
+    /** F7. [jamo]: the word's jamo (the grid's width); [attempts]: 6, or 5 at level 3; [firstSyllable]: level 1's clue. */
+    data class HangulWordle(override val level: Int, val item: GameItem, val jamo: List<Char>, val attempts: Int, val firstSyllable: String?) : RoundSpec() {
+        override val game get() = GameType.HangulWordle
+        override val targets get() = listOf(item.key)
+    }
+
+    /** F7. A syllable crossword of [rows] × [cols] (cell = row × cols + col); [givens]: cells shown from the start (level 1). */
+    data class Crossword(override val level: Int, val rows: Int, val cols: Int, val entries: List<CrossEntry>, val givens: Set<Int>) : RoundSpec() {
+        override val game get() = GameType.Crossword
+        override val targets get() = entries.map { it.item.key }
+        /** Every cell's syllable. */
+        fun solution(): Map<Int, String> = entries.flatMap { e -> e.cells(cols).zip(e.item.blocks) }.toMap()
+    }
 }
+
+/** A word of the crossword: its first cell, its direction and its clue's number. */
+data class CrossEntry(val item: GameItem, val row: Int, val col: Int, val across: Boolean, val number: Int) {
+    fun cells(cols: Int): List<Int> = item.blocks.indices.map { if (across) row * cols + col + it else (row + it) * cols + col }
+}
+
+/** Hangul Wordle's colours: in place, elsewhere in the word, not in it. */
+enum class JamoMark { Hit, Present, Miss }
 
 /** A word of Sound Detective: from your notes ([key]) or from the fixed list (no key, [extra]). */
 data class SoundWord(val korean: String, val meaning: String, val key: String?, val extra: Boolean)

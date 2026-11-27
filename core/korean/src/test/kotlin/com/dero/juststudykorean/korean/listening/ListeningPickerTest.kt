@@ -37,5 +37,6 @@ class ListeningPickerTest {
         val all = listOf(LabSentence("s:1", "학교에 가요", "I go to school"), LabSentence("s:2", "물을 마셨어요", "I drank water"), LabSentence("s:3", "비가 와요", "It rains"))
         org.junit.Assert.assertEquals(listOf("s:1", "s:2"), withWords(all, listOf("학교", "마시다")).map { it.key })
         org.junit.Assert.assertTrue(withWords(all, listOf("우산")).isEmpty())
+        org.junit.Assert.assertEquals(listOf("s:3"), withWords(all, listOf("비가 와요")).map { it.key }) // a failed dictation's sentence
     }
 }

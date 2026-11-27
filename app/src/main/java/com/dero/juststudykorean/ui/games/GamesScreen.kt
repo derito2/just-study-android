@@ -113,7 +113,6 @@ import com.dero.juststudykorean.ui.components.ThemeSwitch
 import com.dero.juststudykorean.ui.games.pieces.LocalKoreanVoice
 import com.dero.juststudykorean.ui.games.pieces.GameName
 import com.dero.juststudykorean.ui.games.pieces.Instruction
-import com.dero.juststudykorean.ui.games.pieces.OriginMark
 import com.dero.juststudykorean.ui.games.stage.BOARD_TOP_DP
 import com.dero.juststudykorean.ui.games.stage.GameStage
 import com.dero.juststudykorean.ui.games.stage.STAGE_DP
@@ -396,7 +395,6 @@ private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionS
                 }
                 }
             }
-            OriginMark(originOf(round, LocalGameBank.current), Modifier.padding(top = 8.dp))
         }
     }
 }

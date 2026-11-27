@@ -14,7 +14,11 @@ internal fun level(ctx: RoundContext, one: Int, two: Int, three: Int) = when (ct
  * [n] items with no sense in common and no Korean in common (4.3: never two right answers on screen), in the order the
  * chooser prefers; null if there are not that many. Distractors would be chosen the same way.
  */
-internal fun distinctSenses(ctx: RoundContext, candidates: List<GameItem>, n: Int): List<GameItem>? {
+internal fun distinctSenses(ctx: RoundContext, candidates: List<GameItem>, n: Int): List<GameItem>? =
+    distinctPool(ctx, candidates, n).takeIf { it.size == n }
+
+/** The candidates, in the order the chooser prefers, without a sense or a Korean already taken (up to [max]). */
+internal fun distinctPool(ctx: RoundContext, candidates: List<GameItem>, max: Int = Int.MAX_VALUE): List<GameItem> {
     val out = mutableListOf<GameItem>()
     val senses = mutableSetOf<String>()
     val koreans = mutableSetOf<String>()
@@ -23,9 +27,9 @@ internal fun distinctSenses(ctx: RoundContext, candidates: List<GameItem>, n: In
         val k = com.dero.juststudykorean.korean.games.flatKorean(item.korean)
         if (s.isEmpty() || s.any { it in senses } || k in koreans) continue
         out += item; senses += s; koreans += k
-        if (out.size == n) return out
+        if (out.size == max) break
     }
-    return null
+    return out
 }
 
 /** [items] shuffled so the result is never [items] itself (null if that is impossible: all equal). */

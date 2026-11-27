@@ -1,7 +1,9 @@
 package com.dero.juststudykorean.korean.games
 
 import com.dero.juststudykorean.korean.englishSenses
+import com.dero.juststudykorean.korean.games.rounds.CrosswordRounds
 import com.dero.juststudykorean.korean.games.rounds.GrammarFixerRounds
+import com.dero.juststudykorean.korean.games.rounds.HangulWordleRounds
 import com.dero.juststudykorean.korean.games.rounds.HangmanRounds
 import com.dero.juststudykorean.korean.games.rounds.HangulBuilderRounds
 import com.dero.juststudykorean.korean.games.rounds.HangulTypingRounds
@@ -24,7 +26,7 @@ val FACTORIES: Map<GameType, RoundFactory> = mapOf(
     GameType.MemoryFlip to MemoryFlipRounds, GameType.WordScramble to WordScrambleRounds, GameType.ListenGuess to ListenGuessRounds,
     GameType.HangulBuilder to HangulBuilderRounds, GameType.WordSort to WordSortRounds, GameType.GrammarFixer to GrammarFixerRounds,
     GameType.WordRecall to WordRecallRounds, GameType.HangulTyping to HangulTypingRounds, GameType.WordPath to WordPathRounds,
-    GameType.SoundDetective to SoundDetectiveRounds,
+    GameType.SoundDetective to SoundDetectiveRounds, GameType.HangulWordle to HangulWordleRounds, GameType.Crossword to CrosswordRounds,
 )
 
 /** Under this many words: "not enough content" (games.md, 11). */
@@ -47,6 +49,8 @@ fun validItems(game: GameType, bank: GameBank): Int = when (game) {
     GameType.HangulTyping -> bank.words.size
     GameType.WordPath -> bank.words.count { it.blocks.size in 3..5 }
     GameType.SoundDetective -> bank.words.size
+    GameType.HangulWordle -> wordleCandidates(bank).size
+    GameType.Crossword -> bank.words.count { it.blocks.size in 2..5 }
 }
 
 /** 4.2: the game has its minimum content (and the Korean voice, for the two listening games). */
@@ -61,6 +65,8 @@ fun available(game: GameType, bank: GameBank, voice: Boolean): Boolean {
         GameType.GrammarFixer -> n >= 3
         GameType.WordSort -> (1..3).any { WordSortRounds.build(RoundContext(bank, it, Random(0))) != null }
         GameType.SoundDetective -> n >= 6
+        GameType.HangulWordle -> n >= 10
+        GameType.Crossword -> (1..3).any { CrosswordRounds.build(RoundContext(bank, it, Random(0))) != null }
     }
 }
 

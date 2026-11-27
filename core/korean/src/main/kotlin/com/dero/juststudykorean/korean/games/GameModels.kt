@@ -9,7 +9,7 @@ enum class Gesture { Keyboard, Match, Order, Listen, Build, Drag, Correct, Trace
 
 enum class Skill { Writing, Vocabulary, Structure, Memory, Listening, Grammar }
 
-/** The 13 games. [gentle] / [demanding]: how the selector weighs them after two lost rounds (5.2). */
+/** The 15 games (Hangul Wordle and Crossword: phase 11, F7). [gentle] / [demanding]: how the selector weighs them after two lost rounds (5.2). */
 enum class GameType(val gesture: Gesture, val skill: Skill, val gentle: Boolean = false, val demanding: Boolean = false, val needsVoice: Boolean = false) {
     Hangman(Gesture.Keyboard, Skill.Writing),
     WordMatch(Gesture.Match, Skill.Vocabulary, gentle = true),
@@ -24,6 +24,8 @@ enum class GameType(val gesture: Gesture, val skill: Skill, val gentle: Boolean 
     HangulTyping(Gesture.Keyboard, Skill.Writing, demanding = true),
     WordPath(Gesture.Trace, Skill.Vocabulary, demanding = true),
     SoundDetective(Gesture.Listen, Skill.Listening, needsVoice = true),
+    HangulWordle(Gesture.Keyboard, Skill.Writing),
+    Crossword(Gesture.Keyboard, Skill.Vocabulary),
 }
 
 enum class ItemKind { WORD, SENTENCE }

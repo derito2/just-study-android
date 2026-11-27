@@ -19,4 +19,6 @@ val GAME_TEXTS: Map<GameType, GameText> = mapOf(
     GameType.HangulTyping to GameText("Hangul Typing", "한글 타자", "Type this word.", "이 단어를 쓰세요."),
     GameType.WordPath to GameText("Korean Word Path", "단어 길", "Trace the word through the grid.", "글자를 이어 단어를 만드세요."),
     GameType.SoundDetective to GameText("Sound Detective", "소리 탐정", "Same word or different?", "같은 단어예요, 다른 단어예요?"),
+    GameType.HangulWordle to GameText("Hangul Wordle", "한글 워들", "Guess the word, jamo by jamo.", "자모로 단어를 맞히세요."),
+    GameType.Crossword to GameText("Crossword", "십자말풀이", "Fill in your words from their meanings.", "뜻을 보고 단어를 채우세요."),
 )

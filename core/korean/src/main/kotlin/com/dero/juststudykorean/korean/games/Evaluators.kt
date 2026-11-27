@@ -79,6 +79,45 @@ object Evaluators {
 
     fun order(spec: RoundSpec.SoundDetective.WhatOrder, order: List<GameItem>): Boolean = order.map { it.key } == spec.order.map { it.key }
 
+    /** F7, Hangul Wordle: Wordle's rule with repeated jamo (greens first; a yellow only while that jamo is left). */
+    fun wordle(target: List<Char>, guess: List<Char>): List<JamoMark> {
+        val left = target.indices.filter { target[it] != guess.getOrNull(it) }.groupingBy { target[it] }.eachCount().toMutableMap()
+        return guess.mapIndexed { i, j ->
+            when {
+                target.getOrNull(i) == j -> JamoMark.Hit
+                (left[j] ?: 0) > 0 -> JamoMark.Present.also { left[j] = left.getValue(j) - 1 }
+                else -> JamoMark.Miss
+            }
+        }
+    }
+
+    fun wordleWon(target: List<Char>, guess: List<Char>) = target == guess
+
+    /** F7, Crossword: the word's cells hold its syllables. */
+    fun crossWord(entry: CrossEntry, spec: RoundSpec.Crossword, filled: Map<Int, String>) = entry.cells(spec.cols).map { filled[it] } == entry.item.blocks
+
+    fun crossSolved(spec: RoundSpec.Crossword, filled: Map<Int, String>) = spec.entries.all { crossWord(it, spec, filled) }
+
     /** Two meanings say the same (for tests and the summary). */
     fun sameMeaning(a: String, b: String) = norm(a) == norm(b)
 }
+
+/** Hangul Wordle's words: 2 or 3 syllables, one way of writing them. */
+fun wordleWords(bank: GameBank): List<GameItem> =
+    bank.words.filter { it.blocks.size in 2..3 && it.variants.size == 1 && it.blocks.all { b -> b.length == 1 && b[0] in '가'..'힣' } }
+
+private fun wordleJamoOf(item: GameItem) = item.blocks.flatMap { com.dero.juststudykorean.korean.hangul.jamoOf(it.single()) }
+
+/** The jamo length all Wordle rounds use (the most common among your words, the shorter on a tie): a fixed grid. */
+fun wordleLength(bank: GameBank): Int? =
+    wordleWords(bank).groupingBy { wordleJamoOf(it).size }.eachCount().entries.sortedWith(compareBy({ -it.value }, { it.key })).firstOrNull()?.key
+
+/** The Wordle words of that length, and their jamo. */
+fun wordleCandidates(bank: GameBank): List<Pair<GameItem, List<Char>>> {
+    val n = wordleLength(bank) ?: return emptyList()
+    return wordleWords(bank).map { it to wordleJamoOf(it) }.filter { it.second.size == n }
+}
+
+/** A typed guess as jamo, only if it is whole syllables of [length] jamo; else null. */
+fun wordleJamo(text: String, length: Int): List<Char>? =
+    text.trim().takeIf { t -> t.isNotEmpty() && t.all { it in '가'..'힣' } }?.flatMap { com.dero.juststudykorean.korean.hangul.jamoOf(it) }?.takeIf { it.size == length }

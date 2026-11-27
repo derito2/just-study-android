@@ -67,4 +67,15 @@ class MistakesViewModelTest {
         assertTrue(m.state.value.message!!, m.state.value.message!!.startsWith("Deck created: Mistakes · "))
         assertNotNull(runBlocking { app.db.customDecksDao().all().firstOrNull { it.name.startsWith("Mistakes") } })
     }
+
+    /** PR 10 (owner): a pattern with failed dictations also gets Practice this → the dictation with those sentences. */
+    @Test
+    fun aPatternWithFailedDictationsAlsoOpensTheDictation() {
+        runBlocking { app.db.listeningAttemptsDao().insert(com.dero.juststudykorean.data.db.ListeningAttemptsEntity(1, "dictation", "s:비가 와요", false, app.clock.now().toEpochMilli())) }
+        val m = vm(0)
+        val words = m.state.value.patterns.single { it.kind == PatternKind.WrongWord }
+        assertTrue(PatternKind.WrongWord in m.state.value.dictation)
+        assertTrue("비가 와요" in m.dictationWords(words))
+        assertTrue(PatternKind.Meaning !in vm(2).state.value.dictation) // the golden quiz mistakes have no dictation
+    }
 }
