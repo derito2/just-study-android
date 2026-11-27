@@ -149,6 +149,9 @@ Funcionamiento:
   - si no está en tus notas: *Not in your notes.* y las frases donde aparece (como Teacher).
 - **Pulsación larga en una línea:** *Explain this sentence* (con Nano y AiMark; sin Nano, la lista de palabras con su significado), *Hear sentence* y *Copy*.
 - **Accesibilidad:** TalkBack lee la línea entera, y cada palabra es un enlace con su descripción.
+- **Notas de implementación (PR 8, #73):**
+  - el resaltado al tocar es el `pressedStyle` del enlace (fondo `tint`) y **no lleva radio 4**: el estilo de un enlace dentro del texto no admite esquinas;
+  - una **partícula sola** (`(으)로`, `이/가`…) no se busca como punto de gramática: se quita de la palabra antes de buscar (학교에서 → 학교 + `에서`).
 
 ---
 
