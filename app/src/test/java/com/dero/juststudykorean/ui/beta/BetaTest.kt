@@ -45,7 +45,7 @@ class BetaTest {
         val opened = mutableListOf<Screen>()
         compose.setContent { JustStudyTheme { BetaScreen(onBack = {}, onOpen = { opened += it }) } }
         for (tag in listOf("listening", "grammar", "mistakes", "reader")) compose.onNodeWithTag("beta-open-$tag").performClick()
-        assertEquals(listOf(Screen.Listening, Screen.GrammarLab(null), Screen.Mistakes, Screen.Reader(null)), opened)
+        assertEquals(listOf(Screen.Listening(null), Screen.GrammarLab(null), Screen.Mistakes, Screen.Reader(null)), opened)
         compose.onNodeWithText("Time here doesn't count toward your streak.").assertExists() // D11-2
     }
 

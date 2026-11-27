@@ -62,10 +62,10 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                         screen is Screen.GrammarLab -> com.dero.juststudykorean.ui.grammarlab.GrammarLabScreen(
                             screen.pointKey, onBack = back, onLibrary = { nav.back(); nav.back(); nav.select(TopLevel.Library) },
                         )
-                        screen is Screen.Listening -> com.dero.juststudykorean.ui.listening.ListeningScreen(onBack = back)
+                        screen is Screen.Listening -> com.dero.juststudykorean.ui.listening.ListeningScreen(screen.keys, onBack = back)
                         screen is Screen.Reader -> com.dero.juststudykorean.ui.reader.ReaderScreen(screen.documentId, onBack = back)
                         screen is Screen.Mistakes -> com.dero.juststudykorean.ui.mistakes.MistakesScreen(
-                            onBack = back, onGrammarLab = { nav.push(route.tab, Screen.GrammarLab(it)) }, onDictation = { nav.push(route.tab, Screen.Listening) },
+                            onBack = back, onGrammarLab = { nav.push(route.tab, Screen.GrammarLab(it)) }, onDictation = { nav.push(route.tab, Screen.Listening(it)) },
                             onQuiz = { nav.push(TopLevel.Quiz, Screen.Question(it)) },
                         )
                         screen is Screen.Games -> com.dero.juststudykorean.ui.games.GamesScreen(onBack = back, onLibrary = { nav.back(); nav.select(TopLevel.Library) })

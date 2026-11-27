@@ -26,7 +26,7 @@ class MistakesViewModelTest {
     @After
     fun close() = app.close()
 
-    private fun vm(period: Int) = MistakesViewModel(MistakesRepository(app.db), app.quiz, app.flashcards, app.prefs, app.clock).also {
+    private fun vm(period: Int) = MistakesViewModel(MistakesRepository(app.db), app.quiz, app.flashcards, app.clock).also {
         it.setPeriod(period)
         idleUntil { !it.state.value.loading }
     }
@@ -49,13 +49,18 @@ class MistakesViewModelTest {
     }
 
     @Test
+    fun aSoundPatternSendsItsWordsToTheDictation() {
+        runBlocking { app.db.grammarDrillAttemptsDao().insert(GrammarDrillAttemptsEntity(1, "아서어서", "먹다", Ending.SoBecause.label, "Produce", "먹엇서", false, app.clock.now().toEpochMilli())) }
+        val m = vm(0)
+        val p = m.state.value.patterns.single { it.kind == PatternKind.Batchim }
+        assertEquals(Practice.Dictation, practiceOf(p.kind))
+        assertEquals(listOf("먹다"), m.dictationWords(p))
+    }
+
+    @Test
     fun soundsOpenTheDictationAndWordsMakeADeck() {
         assertEquals(Practice.Dictation, practiceOf(PatternKind.Batchim))
         val m = vm(2)
-        var opened = false
-        m.dictation { opened = true }
-        idleUntil { opened }
-        assertEquals("Dictation", runBlocking { app.prefs.listeningMode.first() })
         val words = m.state.value.patterns.first { it.kind == PatternKind.WrongWord }
         m.makeDeck(words)
         idleUntil { m.state.value.message != null }

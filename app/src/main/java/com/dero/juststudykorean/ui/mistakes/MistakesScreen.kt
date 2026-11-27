@@ -43,7 +43,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 private val HANGUL = Regex("[가-힣]")
 
 @Composable
-fun MistakesScreen(onBack: () -> Unit, onGrammarLab: (String?) -> Unit, onDictation: () -> Unit, onQuiz: (Long) -> Unit, vm: MistakesViewModel = hiltViewModel()) {
+fun MistakesScreen(onBack: () -> Unit, onGrammarLab: (String?) -> Unit, onDictation: (List<String>) -> Unit, onQuiz: (Long) -> Unit, vm: MistakesViewModel = hiltViewModel()) {
     LaunchedEffect(Unit) { vm.setPeriod(vm.state.value.period) }
     val ui by vm.state.collectAsStateWithLifecycle()
     MistakesContent(
@@ -51,7 +51,7 @@ fun MistakesScreen(onBack: () -> Unit, onGrammarLab: (String?) -> Unit, onDictat
         onPractice = { p ->
             when (practiceOf(p.kind)) {
                 Practice.GrammarLab -> onGrammarLab(vm.pointOf(p))
-                Practice.Dictation -> vm.dictation(onDictation)
+                Practice.Dictation -> onDictation(vm.dictationWords(p))
                 Practice.Words -> vm.quizMe(p, onQuiz)
             }
         },

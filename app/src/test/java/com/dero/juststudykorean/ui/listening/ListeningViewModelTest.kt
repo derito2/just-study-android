@@ -57,6 +57,21 @@ class ListeningViewModelTest {
     }
 
     @Test
+    fun withWordsTheDictationHasOnlyTheirSentences() {
+        val any = lab(ListenMode.Dictation).state.value.items.first()
+        val word = any.korean.split(" ").first()
+        val vm = ListeningViewModel(repo, app.prefs, FakeKoreanVoices(app.context, voice), speech).also {
+            it.setMode(ListenMode.Shadowing) // a list of words is always a dictation
+            it.open(listOf(word))
+            idleUntil { !it.state.value.loading }
+        }
+        assertEquals(ListenMode.Dictation, vm.state.value.mode)
+        assertTrue(vm.state.value.items.isNotEmpty() && vm.state.value.items.all { word in it.korean })
+        val none = ListeningViewModel(repo, app.prefs, FakeKoreanVoices(app.context, voice), speech).also { it.open(listOf("없는단어")); idleUntil { !it.state.value.loading } }
+        assertEquals(NO_SENTENCE_FOR_WORDS, none.state.value.reason)
+    }
+
+    @Test
     fun replayUsesTheSpeedAndSlowerIsPointSeven() {
         val vm = lab(ListenMode.Dictation)
         vm.setRate(1.2f)

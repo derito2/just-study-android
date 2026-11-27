@@ -17,6 +17,7 @@ import com.dero.juststudykorean.korean.listening.ListenMode
 import com.dero.juststudykorean.korean.listening.dictation
 import com.dero.juststudykorean.korean.listening.shadowing
 import com.dero.juststudykorean.korean.listening.unavailable
+import com.dero.juststudykorean.korean.listening.withWords
 import com.dero.juststudykorean.ui.components.runCatchingCancellable
 import com.dero.juststudykorean.ui.components.speech.SpeakPhase
 import com.dero.juststudykorean.ui.components.speech.SpeakingMachine
@@ -35,6 +36,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import kotlin.random.Random
+
+/** My Mistakes sent words, and none has a dictation sentence. */
+const val NO_SENTENCE_FOR_WORDS = "None of these words has a sentence to dictate."
 
 private const val SLOWER = 0.7f
 private const val VOICE_CHECK_MS = 3_000L
@@ -96,9 +100,14 @@ class ListeningViewModel @Inject constructor(
         machine?.let { m -> viewModelScope.launch { var seen = 0; m.state.collect { s -> if (s.phase == SpeakPhase.Compared && s.attempts > seen) { seen = s.attempts; save(s.comparison?.matches == true) } } } }
     }
 
-    fun open() {
+    /** Only for My Mistakes: a dictation of the sentences with these words. */
+    private var keys: List<String>? = null
+
+    fun open(keys: List<String>? = null) {
         if (started) return
         started = true
+        this.keys = keys
+        if (keys != null) { modeChosen = true; _state.value = _state.value.copy(mode = ListenMode.Dictation) }
         viewModelScope.launch {
             if (!modeChosen) _state.value = _state.value.copy(mode = runCatching { ListenMode.valueOf(prefs.listeningMode.first()) }.getOrDefault(ListenMode.Dictation))
             _state.value = _state.value.copy(rate = prefs.listeningRate.first())
@@ -118,11 +127,12 @@ class ListeningViewModel @Inject constructor(
             val sentences = runCatchingCancellable { repo.sentences() }.getOrDefault(emptyList())
             val (cards, due) = if (mode == ListenMode.HandsFree) runCatchingCancellable { repo.cards() }.getOrDefault(emptyList<LabSentence>() to 0) else emptyList<LabSentence>() to 0
             val items = when (mode) {
-                ListenMode.Dictation -> dictation(sentences).shuffled(Random(seed))
+                ListenMode.Dictation -> dictation(sentences).let { d -> keys?.let { withWords(d, it) } ?: d }.shuffled(Random(seed))
                 ListenMode.Shadowing -> shadowing(sentences).shuffled(Random(seed))
                 ListenMode.HandsFree -> cards
             }
             val reason = unavailable(mode, sentences, cards.size, voice.state.value == VoiceState.Ready)
+                ?: NO_SENTENCE_FOR_WORDS.takeIf { mode == ListenMode.Dictation && keys != null && items.isEmpty() }
             _state.value = _state.value.copy(loading = false, items = items, index = 0, typed = "", result = null, dueCount = due, reason = reason, showMeaning = false)
             if (reason == null) enter()
         }

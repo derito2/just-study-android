@@ -14,7 +14,7 @@ class ScreenEncodeTest {
             Screen.Results("run-4"), Screen.Vocabulary, Screen.Games,
             // Phase 11: BETA and its four screens.
             Screen.Beta, Screen.GrammarLab("-아서/어서"), Screen.GrammarLab("a|b"), Screen.GrammarLab(null),
-            Screen.Listening, Screen.Mistakes, Screen.Reader(12), Screen.Reader(null),
+            Screen.Listening(null), Screen.Listening(listOf("학교", "물 마시다", "a|b")), Screen.Listening(emptyList()), Screen.Mistakes, Screen.Reader(12), Screen.Reader(null),
         ).forEach(::roundTrip)
     }
 }

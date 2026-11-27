@@ -34,7 +34,7 @@ import com.dero.juststudykorean.ui.theme.Tokens
 
 /** design/beta.md 1: the four BETA functions, in the design's order. */
 enum class BetaFeature(val title: String, val ko: String, val line: String, val icon: Lucide, val tag: String, val screen: Screen) {
-    Listening("Listening Lab", "듣기 연습", "Dictation, shadowing and hands-free review with your sentences.", Lucide.Headphones, "listening", Screen.Listening),
+    Listening("Listening Lab", "듣기 연습", "Dictation, shadowing and hands-free review with your sentences.", Lucide.Headphones, "listening", Screen.Listening(null)),
     Grammar("Grammar Lab", "문법 연습", "Conjugate your verbs with your grammar points.", Lucide.Dumbbell, "grammar", Screen.GrammarLab(null)),
     Mistakes("My Mistakes", "내 실수", "Your mistakes grouped into patterns, ready to practice.", Lucide.NotebookPen, "mistakes", Screen.Mistakes),
     Reader("Reader", "읽기", "Read your PDFs and tap a word to see your notes.", Lucide.BookOpen, "reader", Screen.Reader(null));

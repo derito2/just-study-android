@@ -30,4 +30,12 @@ class ListeningPickerTest {
         assertEquals("No cards are due right now.", unavailable(ListenMode.HandsFree, all, 0, voiceReady = true))
         assertNull(unavailable(ListenMode.Dictation, all, 0, voiceReady = true))
     }
+
+    /** My Mistakes' Practice this (FASE_11_PLAN PR 9): only the sentences with those words, also conjugated. */
+    @Test
+    fun withWordsKeepsTheSentencesThatHaveThem() {
+        val all = listOf(LabSentence("s:1", "학교에 가요", "I go to school"), LabSentence("s:2", "물을 마셨어요", "I drank water"), LabSentence("s:3", "비가 와요", "It rains"))
+        org.junit.Assert.assertEquals(listOf("s:1", "s:2"), withWords(all, listOf("학교", "마시다")).map { it.key })
+        org.junit.Assert.assertTrue(withWords(all, listOf("우산")).isEmpty())
+    }
 }

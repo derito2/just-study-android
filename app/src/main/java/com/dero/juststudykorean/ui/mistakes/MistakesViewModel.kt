@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dero.juststudykorean.data.flashcards.FlashcardRepository
 import com.dero.juststudykorean.data.mistakes.MistakesRepository
-import com.dero.juststudykorean.data.prefs.UserPrefs
 import com.dero.juststudykorean.data.quiz.QuizRepository
 import com.dero.juststudykorean.data.quiz.QuizRequest
 import com.dero.juststudykorean.data.quiz.RULE_TYPES
@@ -50,7 +49,6 @@ class MistakesViewModel @Inject constructor(
     private val repo: MistakesRepository,
     private val quiz: QuizRepository,
     private val cards: FlashcardRepository,
-    private val prefs: UserPrefs,
     private val clock: AppClock,
 ) : ViewModel() {
     private val _state = MutableStateFlow(MistakesUi())
@@ -69,7 +67,8 @@ class MistakesViewModel @Inject constructor(
     /** Grammar Lab opens with the point of the newest example that has one. */
     fun pointOf(p: Pattern): String? = all.filter { classify(it) == p.kind }.sortedByDescending { it.at }.firstNotNullOfOrNull { it.pointKey }
 
-    fun dictation(onOpen: () -> Unit) = viewModelScope.launch { prefs.setListeningMode("Dictation"); onOpen() }
+    /** The dictation of Listening Lab with your words of that pattern. */
+    fun dictationWords(p: Pattern): List<String> = words(p)
 
     fun quizMe(p: Pattern, onOpen: (Long) -> Unit) = viewModelScope.launch {
         val words = words(p)
