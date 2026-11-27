@@ -168,6 +168,10 @@ Funcionamiento:
     - **un quiz** con esas palabras (`QuizProposal`) o **un mazo nuevo** *Mistakes · {fecha}*: palabra equivocada o significado. En este caso, dos botones: **Quiz me** y **Make a deck**.
 - **Vacío:** `notebook-pen`, *No mistakes yet in this period.*, *Do a quiz or a few games and come back.*
 - **Sin resumen semanal y sin nada en el Dashboard.**
+- **Notas de implementación (PR 9, #75):**
+  - los ejemplos usan `TypedResult` a su **tamaño normal** (no tiene variante pequeña); no se ha creado otra;
+  - **sin «Yours»** cuando la fuente solo guarda acierto o fallo (*Again* de Flashcards, rondas perdidas de Games, dictados de Listening Lab): el ejemplo muestra solo *Expected* y la fuente. Por eso un dictado fallado cuenta como *Words you mix up*, y el dictado de Listening Lab lo abren los patrones de 받침 y vocal, que vienen de respuestas escritas;
+  - el dictado de *Practice this* recibe las palabras del patrón (`Screen.Listening(keys)`) y usa solo las frases que las contienen; si ninguna, *None of these words has a sentence to dictate.* con Back.
 
 ---
 
