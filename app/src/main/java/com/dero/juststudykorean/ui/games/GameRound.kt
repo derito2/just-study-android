@@ -21,12 +21,13 @@ import com.dero.juststudykorean.ui.games.minigames.WordScrambleGame
 import com.dero.juststudykorean.ui.games.minigames.WordSortGame
 import com.dero.juststudykorean.ui.games.stage.StageScope
 
-/** The 13 games; the two listening games only come when the phone has an offline Korean voice (the engine checks). */
+/** The 15 games; the two listening games only come when the phone has an offline Korean voice (the engine checks). */
 val PLAYABLE: Set<GameType> = setOf(
     GameType.ListenGuess, GameType.SoundDetective,
     GameType.WordMatch, GameType.MemoryFlip, GameType.WordScramble, GameType.SentenceBuilder, GameType.WordRecall,
     GameType.Hangman, GameType.HangulBuilder, GameType.HangulTyping,
     GameType.WordSort, GameType.WordPath, GameType.GrammarFixer,
+    GameType.HangulWordle, GameType.Crossword,
 )
 
 /** The bank of your notes, for Word Path's "another word of your notes" (empty in tests and before it loads). */
@@ -52,6 +53,8 @@ fun GameRound(spec: RoundSpec, paused: Boolean, stage: StageScope, timer: Boolea
         is RoundSpec.GrammarFixer -> GrammarFixerGame(spec, paused, onResult, stage)
         is RoundSpec.ListenGuess -> ListenGuessGame(spec, paused, onResult, stage)
         is RoundSpec.SoundDetective -> SoundDetectiveGame(spec, paused, onResult, stage)
+        is RoundSpec.HangulWordle -> com.dero.juststudykorean.ui.games.minigames.HangulWordleGame(spec, paused, onResult, stage)
+        is RoundSpec.Crossword -> com.dero.juststudykorean.ui.games.minigames.CrosswordGame(spec, paused, onResult, stage)
     }
 }
 
@@ -70,6 +73,7 @@ fun hintOf(spec: RoundSpec): String? = when (spec) {
     is RoundSpec.WordScramble -> spec.item.meaning
     is RoundSpec.HangulBuilder -> spec.item.meaning
     is RoundSpec.WordPath -> spec.item.meaning
+    is RoundSpec.HangulWordle -> spec.item.meaning
     else -> null
 }
 
@@ -90,6 +94,8 @@ fun originOf(spec: RoundSpec, bank: GameBank = GameBank(emptyList(), emptyList()
     is RoundSpec.SoundDetective.SameOrDifferent -> if (spec.first.extra || spec.second.extra) null else spec.first.key?.let { bank.byKey[it]?.documentName }
     is RoundSpec.SoundDetective.CameTwice -> spec.words.first().documentName
     is RoundSpec.SoundDetective.WhatOrder -> spec.order.first().documentName
+    is RoundSpec.HangulWordle -> spec.item.documentName
+    is RoundSpec.Crossword -> spec.entries.first().item.documentName
     else -> null
 }
 
@@ -100,6 +106,7 @@ fun answerOf(spec: RoundSpec): String? = when (spec) {
     is RoundSpec.HangulBuilder -> "${spec.item.korean} — ${spec.item.meaning}"
     is RoundSpec.HangulTyping -> "${spec.item.korean} — ${spec.item.meaning}"
     is RoundSpec.WordPath -> "${spec.item.korean} — ${spec.item.meaning}"
+    is RoundSpec.HangulWordle -> "${spec.item.korean} — ${spec.item.meaning}"
     is RoundSpec.SentenceBuilder -> spec.item.korean
     is RoundSpec.GrammarFixer -> spec.item.korean
     is RoundSpec.WordRecall -> spec.sequence.joinToString(" · ") { it.korean }

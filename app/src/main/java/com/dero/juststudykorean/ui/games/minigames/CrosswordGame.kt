@@ -1,0 +1,171 @@
+package com.dero.juststudykorean.ui.games.minigames
+
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.dero.juststudykorean.korean.games.CrossEntry
+import com.dero.juststudykorean.korean.games.Evaluators
+import com.dero.juststudykorean.korean.games.Outcome
+import com.dero.juststudykorean.korean.games.RoundResult
+import com.dero.juststudykorean.korean.games.RoundSpec
+import com.dero.juststudykorean.korean.hangul.HangulIme
+import com.dero.juststudykorean.ui.games.LocalSpeakWord
+import com.dero.juststudykorean.ui.games.pieces.HangulKeyboard
+import com.dero.juststudykorean.ui.games.pieces.LocalKoreanVoice
+import com.dero.juststudykorean.ui.games.stage.StageScope
+import com.dero.juststudykorean.ui.theme.JustStudyTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+private const val MAX_MISTAKES = 3
+private val CELL = 46.dp
+
+/**
+ * Crossword (design/beta.md 7, F7): a grid of syllables drawn in ONE Canvas (never a Box per cell). Tap a cell (or a
+ * clue) and write its syllable with the Hangul keys; Check puts it in and moves on. A full word is checked: right, it
+ * turns green and sounds (D10-3); wrong, its cells empty again. Three wrong words lose the round. [initial]: test state.
+ */
+@Composable
+fun CrosswordGame(spec: RoundSpec.Crossword, paused: Boolean, onResult: (RoundResult) -> Unit, stage: StageScope, initial: Map<Int, String> = emptyMap()) {
+    val c = JustStudyTheme.colors
+    val solution = remember(spec) { spec.solution() }
+    val filled = remember { mutableStateMapOf<Int, String>().apply { spec.givens.forEach { put(it, solution.getValue(it)) }; putAll(initial) } }
+    val done = remember { mutableStateMapOf<CrossEntry, Boolean>() }
+    var entry by remember { mutableStateOf(spec.entries.first()) }
+    var cell by remember { mutableIntStateOf(spec.entries.first().cells(spec.cols).first { it !in spec.givens }) }
+    val ime = remember { HangulIme() }
+    var text by remember { mutableStateOf("") }
+    var mistakes by remember { mutableIntStateOf(0) }
+    var outcome by remember { mutableStateOf<Outcome?>(null) }
+    var said by remember { mutableStateOf("") }
+    val voice = LocalKoreanVoice.current
+    val speak = LocalSpeakWord.current.on
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(spec) { stage.clear() }
+    LaunchedEffect(mistakes) { stage.lanterns = MAX_MISTAKES to (MAX_MISTAKES - mistakes) }
+
+    fun locked(i: Int) = i in spec.givens || done.keys.any { i in it.cells(spec.cols) }
+    fun select(e: CrossEntry, at: Int? = null) { entry = e; cell = at ?: e.cells(spec.cols).firstOrNull { it !in filled } ?: e.cells(spec.cols).first() }
+    fun place() {
+        val syllable = text.lastOrNull { it in '가'..'힣' }?.toString() ?: return
+        while (ime.text.isNotEmpty()) ime.delete()
+        text = ""
+        if (locked(cell)) return
+        filled[cell] = syllable
+        for (e in spec.entries.filter { cell in it.cells(spec.cols) && it !in done && it.cells(spec.cols).all { k -> k in filled } }) {
+            if (Evaluators.crossWord(e, spec, filled)) {
+                done[e] = true
+                said = "${e.number}: right"
+                if (speak) voice?.let { v -> scope.launch { runCatching { v.speak(e.item.korean) } } }
+            } else {
+                mistakes++
+                said = "${e.number}: not quite"
+                e.cells(spec.cols).filter { !locked(it) }.forEach { filled.remove(it) }
+            }
+        }
+        when {
+            Evaluators.crossSolved(spec, filled) -> outcome = Outcome.WON
+            mistakes >= MAX_MISTAKES -> outcome = Outcome.LOST
+            else -> entry.cells(spec.cols).firstOrNull { it !in filled }?.let { cell = it }
+                ?: spec.entries.firstOrNull { it !in done }?.let { select(it) }
+        }
+    }
+    LaunchedEffect(outcome) {
+        val o = outcome ?: return@LaunchedEffect
+        delay(if (o == Outcome.WON) 700 else 900)
+        val failed = spec.entries.filter { it !in done }.map { it.item.key }
+        onResult(RoundResult(o, mistakes, 0, spec.targets, if (o == Outcome.LOST) failed else emptyList()))
+    }
+    fun key(action: () -> Unit) { if (paused || outcome != null) return; action(); text = ime.text }
+
+    val measurer = rememberTextMeasurer()
+    val ink = MaterialTheme.colorScheme.onSurface
+    val shown = if (outcome == Outcome.LOST) solution else filled
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Canvas(
+            Modifier.size(CELL * spec.cols, CELL * spec.rows)
+                .semantics { liveRegion = LiveRegionMode.Polite; contentDescription = "Crossword, ${spec.entries.size} words. $said" }
+                .pointerInput(spec) {
+                    detectTapGestures { p ->
+                        val i = (p.y / CELL.toPx()).toInt() * spec.cols + (p.x / CELL.toPx()).toInt()
+                        if (i !in solution || paused || outcome != null) return@detectTapGestures
+                        val mine = spec.entries.filter { i in it.cells(spec.cols) }
+                        select(if (i == cell && mine.size > 1) mine.first { it != entry } else mine.firstOrNull { it == entry } ?: mine.first(), i)
+                    }
+                },
+        ) {
+            val s = CELL.toPx()
+            val gap = 2.dp.toPx()
+            for ((i, _) in solution) {
+                val at = Offset((i % spec.cols) * s + gap, (i / spec.cols) * s + gap)
+                val size = Size(s - 2 * gap, s - 2 * gap)
+                val right = done.keys.any { i in it.cells(spec.cols) }
+                val fill = when { right -> c.correctFill; i == cell && outcome == null -> c.tint; i in entry.cells(spec.cols) && outcome == null -> c.canvas; else -> c.surface }
+                drawRoundRect(fill, at, size, CornerRadius(6.dp.toPx()))
+                drawRoundRect(if (i == cell && outcome == null) c.brand else if (right) c.correctDeco else c.line, at, size, CornerRadius(6.dp.toPx()), style = Stroke(2.dp.toPx()))
+                spec.entries.firstOrNull { it.cells(spec.cols).first() == i }?.let { e ->
+                    drawText(measurer, "${e.number}", at + Offset(3.dp.toPx(), 1.dp.toPx()), TextStyle(fontSize = 9.sp, color = c.muted, fontWeight = FontWeight.Bold))
+                }
+                val syllable = if (i == cell && text.isNotEmpty()) text.last().toString() else shown[i]
+                if (syllable != null) {
+                    val t = measurer.measure(syllable, TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (right) c.fillInk else if (outcome == Outcome.LOST && i !in filled) c.wrongInk else ink))
+                    drawText(t, topLeft = at + Offset((size.width - t.size.width) / 2, (size.height - t.size.height) / 2))
+                }
+            }
+        }
+        // The clues, numbered: tapping one selects its word (the way in without the grid, for TalkBack too).
+        Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+            for (across in listOf(true, false)) {
+                val clues = spec.entries.filter { it.across == across }
+                if (clues.isEmpty()) continue
+                Text(if (across) "Across" else "Down", style = JustStudyTheme.korean.bodyBold, color = ink)
+                clues.forEach { e ->
+                    Text(
+                        "${e.number}. ${e.item.meaning}${if (e in done) " ✓" else ""}",
+                        Modifier.fillMaxWidth().heightIn(min = 32.dp).clickable(role = Role.Button, onClickLabel = "Write this word") { if (outcome == null && !paused) select(e) },
+                        style = MaterialTheme.typography.bodyMedium, color = if (e == entry) c.brand else if (e in done) c.correctInk else ink,
+                    )
+                }
+            }
+        }
+        HangulKeyboard(
+            onJamo = { j -> key { ime.input(j) } }, onSpace = {}, onDelete = { key { ime.delete() } },
+            onCheck = { if (!paused && outcome == null) place() }, checkEnabled = text.any { it in '가'..'힣' } && outcome == null, enabled = !paused && outcome == null,
+        )
+    }
+}
