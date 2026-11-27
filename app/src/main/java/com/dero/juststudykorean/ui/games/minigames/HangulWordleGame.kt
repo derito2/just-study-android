@@ -40,8 +40,6 @@ import com.dero.juststudykorean.korean.hangul.HangulIme
 import com.dero.juststudykorean.korean.hangul.jamoOf
 import com.dero.juststudykorean.ui.components.Lucide
 import com.dero.juststudykorean.ui.components.LucideIcon
-import com.dero.juststudykorean.ui.components.Pill
-import com.dero.juststudykorean.ui.components.PillTone
 import com.dero.juststudykorean.ui.games.pieces.HangulKeyboard
 import com.dero.juststudykorean.ui.games.pieces.JAMO_NAMES
 import com.dero.juststudykorean.ui.games.stage.StageScope
@@ -81,7 +79,6 @@ fun HangulWordleGame(spec: RoundSpec.HangulWordle, paused: Boolean, onResult: (R
     fun key(action: () -> Unit) { if (paused || outcome != null) return; action(); text = ime.text }
 
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        spec.firstSyllable?.let { Pill("Starts with $it", PillTone.Info) }
         Column(Modifier.semantics { liveRegion = LiveRegionMode.Polite; contentDescription = said }, verticalArrangement = Arrangement.spacedBy(6.dp)) {
             val typing = text.filter { it in '가'..'힣' }.flatMap { jamoOf(it) }
             for (r in 0 until spec.attempts) {
@@ -94,11 +91,15 @@ fun HangulWordleGame(spec: RoundSpec.HangulWordle, paused: Boolean, onResult: (R
         }
         if (outcome == Outcome.LOST) Text(spec.item.korean, style = JustStudyTheme.korean.koPrompt, color = JustStudyTheme.colors.correctInk)
         HangulKeyboard(
-            onJamo = { j -> key { ime.input(j) } }, onSpace = {}, onDelete = { key { ime.delete() } },
+            // A full row takes no more jamo: the tap does nothing (no vibration).
+            onJamo = { j -> key { ime.input(j); if (jamoCount(ime.text) > n) ime.delete() } }, onSpace = {}, onDelete = { key { ime.delete() } },
             onCheck = { if (!paused) check() }, checkEnabled = wordleJamo(text, n) != null && outcome == null, enabled = !paused && outcome == null,
         )
     }
 }
+
+/** The jamo of what is typed (the grid's row): those of each syllable, and a loose jamo counts one. */
+internal fun jamoCount(text: String) = text.sumOf { if (it in '가'..'힣') jamoOf(it).size else if (it in 'ㄱ'..'ㅣ') 1 else 0 }
 
 @Composable
 private fun JamoCell(jamo: Char?, mark: JamoMark?) {

@@ -49,5 +49,7 @@ class NewGamesScreenshotTest {
     @Test fun crossword() = snap("games_crossword") { Games(SessionState.Playing(REF, cross)) }
     @Test fun crosswordDark() = snap("games_crossword_dark", dark = true) { Games(SessionState.Playing(REF, cross)) }
     @Test fun crosswordFilled() = snap("games_crossword_filled") { Board { CrosswordGame(cross, false, {}, StageScope(), initial = mapOf(0 to "학", 1 to "교", 4 to "실")) } }
+    @Test fun crosswordOpen() = snap("games_crossword_open") { Board { CrosswordGame(cross, false, {}, StageScope(), initial = mapOf(0 to "학"), startOpen = true) } }
+    @Test fun crosswordOpenDark() = snap("games_crossword_open_dark", dark = true) { Board { CrosswordGame(cross, false, {}, StageScope(), initial = mapOf(0 to "학"), startOpen = true) } }
     @Test fun crosswordFilledDark() = snap("games_crossword_filled_dark", dark = true) { Board { CrosswordGame(cross, false, {}, StageScope(), initial = mapOf(0 to "학", 1 to "교", 4 to "실")) } }
 }

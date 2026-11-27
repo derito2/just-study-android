@@ -60,7 +60,11 @@ private val KEY_SHAPE = RoundedCornerShape(8.dp)
  * into their doubles for one press. Keys 34 × 46 dp; the last row: space and Check.
  */
 @Composable
-fun HangulKeyboard(onJamo: (Char) -> Unit, onSpace: () -> Unit, onDelete: () -> Unit, onCheck: () -> Unit, checkEnabled: Boolean, enabled: Boolean, modifier: Modifier = Modifier) {
+fun HangulKeyboard(
+    onJamo: (Char) -> Unit, onSpace: () -> Unit, onDelete: () -> Unit, onCheck: () -> Unit, checkEnabled: Boolean, enabled: Boolean, modifier: Modifier = Modifier,
+    /** Crossword (PR 10): no space and Check row; the game puts its own Check where it fits. */
+    bottomRow: Boolean = true,
+) {
     var shift by remember { mutableStateOf(false) }
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         ROWS.forEachIndexed { r, row ->
@@ -73,7 +77,7 @@ fun HangulKeyboard(onJamo: (Char) -> Unit, onSpace: () -> Unit, onDelete: () -> 
                 if (r == 2) KeyCap(null, "Delete", enabled, width = 44.dp, onClick = onDelete)
             }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (bottomRow) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
             KeyCap("space", "Space", enabled, width = 0.dp, modifier = Modifier.weight(1f), onClick = onSpace)
             StickerButton("Check", onCheck, Modifier.width(96.dp), ko = "확인", color = StickerColor.Go, enabled = checkEnabled && enabled)
         }
