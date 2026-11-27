@@ -44,6 +44,16 @@ class FactoriesTest {
             s("우리 집은 학교 옆에 있어요.", "Our house is next to the school"), s("동생은 토끼를 좋아해요.", "My younger sibling likes rabbits"),
         )
         val BANK = GameBank(WORDS, SENTENCES)
+        /** Crossword needs words that share syllables: an invented bank of common words (never the owner's notes). */
+        val CROSS_BANK = GameBank(listOf(
+            "가방" to "Bag", "가수" to "Singer", "가구" to "Furniture", "수박" to "Watermelon", "박수" to "Applause", "수영" to "Swimming",
+            "영어" to "English", "어머니" to "Mother", "머리" to "Head", "리본" to "Ribbon", "사자" to "Lion", "자리" to "Seat",
+            "기차" to "Train", "차표" to "Ticket", "표지" to "Cover", "지도" to "Map", "도시" to "City", "시계" to "Clock",
+            "계단" to "Stairs", "단어" to "Word", "어제" to "Yesterday", "제주도" to "Jeju Island", "도로" to "Road", "로봇" to "Robot",
+            "구두" to "Shoes", "두부" to "Tofu", "부모" to "Parents", "모자" to "Hat", "자전거" to "Bicycle", "거울" to "Mirror",
+            "산책" to "Walk", "책상" to "Desk", "상자" to "Box", "자유" to "Freedom", "유리" to "Glass", "가위" to "Scissors",
+            "위치" to "Location", "치마" to "Skirt", "마음" to "Heart", "음악" to "Music", "악기" to "Instrument", "기자" to "Reporter",
+        ).map { (k, m) -> w(k, m) }, emptyList())
         val SEEDS = 0 until 500
         fun ctx(level: Int, seed: Int, bank: GameBank = BANK) = RoundContext(bank, level, Random(seed))
     }
@@ -220,5 +230,38 @@ class FactoriesTest {
         assertEquals(roundRandom(42, 3).nextLong(), roundRandom(42, 3).nextLong())
         assertNotEquals(roundRandom(42, 3).nextLong(), roundRandom(42, 4).nextLong())
         assertNotNull(compose('ㄱ', 'ㅏ'))
+    }
+
+    // FASE_11_PLAN PR 10 (F7): Hangul Wordle and Crossword.
+
+    @Test fun hangulWordle() = each(GameType.HangulWordle) { spec, level ->
+        spec as RoundSpec.HangulWordle
+        assertTrue(spec.item.blocks.size in 2..3)
+        assertEquals(spec.item.blocks.flatMap { com.dero.juststudykorean.korean.hangul.jamoOf(it.single()) }, spec.jamo)
+        assertEquals(wordleLength(BANK), spec.jamo.size) // one length for the whole session: a fixed grid
+        assertEquals(if (level == 3) 5 else 6, spec.attempts)
+        assertEquals(if (level == 1) spec.item.blocks.first() else null, spec.firstSyllable)
+    }
+
+    @Test
+    fun crossword() {
+        for (level in 1..3) {
+            val made = SEEDS.mapNotNull { seed -> FACTORIES.getValue(GameType.Crossword).build(ctx(level, seed, CROSS_BANK))?.let { it as RoundSpec.Crossword } }
+            println("Crossword level $level: ${made.size}/${SEEDS.count()} seeds fit")
+            assertTrue("level $level: most seeds fit (${made.size})", made.size >= SEEDS.count() * 9 / 10)
+            for (spec in made) {
+                assertEquals(level, spec.level)
+                assertEquals(when (level) { 1 -> 4; 2 -> 5; else -> 7 }, spec.entries.size)
+                assertTrue(spec.rows <= 7 && spec.cols <= 7)
+                noSharedSense(spec.entries.map { it.item })
+                val cells = spec.solution() // every crossing agrees, no word overwrites another
+                for (e in spec.entries) assertEquals(e.item.blocks, e.cells(spec.cols).map { cells.getValue(it) })
+                assertTrue("every word crosses another", spec.entries.all { e -> spec.entries.any { o -> o != e && (o.cells(spec.cols) intersect e.cells(spec.cols).toSet()).isNotEmpty() } })
+                assertEquals(if (level == 1) spec.entries.size else 0, spec.givens.size)
+                assertEquals(spec.entries.map { it.number }.distinct().sorted(), spec.entries.map { it.number }.distinct())
+            }
+            assertEquals(made.first(), FACTORIES.getValue(GameType.Crossword).build(ctx(level, SEEDS.first { s -> FACTORIES.getValue(GameType.Crossword).build(ctx(level, s, CROSS_BANK)) != null }, CROSS_BANK)))
+        }
+        assertNull(FACTORIES.getValue(GameType.Crossword).build(ctx(1, 0, GameBank(emptyList(), emptyList()))))
     }
 }
