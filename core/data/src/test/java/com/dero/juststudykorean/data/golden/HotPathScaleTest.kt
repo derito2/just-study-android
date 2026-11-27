@@ -22,10 +22,13 @@ import org.robolectric.annotation.Config
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [36])
 class HotPathScaleTest : GoldenDb() {
-    /** The fastest of [times] runs: the cost of the work itself, without the pauses of a busy machine (CI, other tests). */
-    private fun bestMs(times: Int = 25, block: suspend () -> Unit): Double = runBlocking {
-        repeat(5) { block() } // warm up
-        (1..times).minOf { val t = System.nanoTime(); block(); (System.nanoTime() - t) / 1e6 }
+    /**
+     * The cost of the work itself, without the pauses of a busy machine (CI, other tests): a warm-up, then 5 measures of
+     * the fastest of [times] runs each, and their median (one lucky or unlucky measure no longer decides the ratio).
+     */
+    private fun medianMs(times: Int = 25, block: suspend () -> Unit): Double = runBlocking {
+        repeat(300) { block() } // warm up: JIT and SQLite caches
+        List(5) { (1..times).minOf { val t = System.nanoTime(); block(); (System.nanoTime() - t) / 1e6 } }.sorted()[2]
     }
 
     @Test
@@ -39,8 +42,8 @@ class HotPathScaleTest : GoldenDb() {
         val review: suspend () -> Unit = { cards.review(card.id, Rating.Good, 1200) }
         val answer: suspend () -> Unit = { quiz.answer(null, question.id, question.correctAnswer, 1200) }
 
-        val reviewBase = bestMs(block = review)
-        val answerBase = bestMs(block = answer)
+        val reviewBase = medianMs(block = review)
+        val answerBase = medianMs(block = answer)
 
         runBlocking {
             db.useWriterConnection { c ->
@@ -61,9 +64,9 @@ class HotPathScaleTest : GoldenDb() {
             assertTrue(db.questionAttemptsDao().count() > 20_000)
         }
 
-        val reviewBig = bestMs(block = review)
-        val answerBig = bestMs(block = answer)
-        println("R-001 review: %.2f ms -> %.2f ms; answer: %.2f ms -> %.2f ms".format(reviewBase, reviewBig, answerBase, answerBig))
+        val reviewBig = medianMs(block = review)
+        val answerBig = medianMs(block = answer)
+        println("R-001 review: %.2f ms -> %.2f ms (%.2fx); answer: %.2f ms -> %.2f ms (%.2fx)".format(reviewBase, reviewBig, reviewBig / reviewBase, answerBase, answerBig, answerBig / answerBase))
         assertTrue("review: $reviewBase ms -> $reviewBig ms", reviewBig < 2 * reviewBase)
         assertTrue("answer: $answerBase ms -> $answerBig ms", answerBig < 2 * answerBase)
         assertEquals(card.id, runBlocking { db.hotDao().flashcard(card.id) }?.id)
