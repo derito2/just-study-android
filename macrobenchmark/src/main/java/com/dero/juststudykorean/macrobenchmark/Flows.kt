@@ -70,3 +70,17 @@ fun MacrobenchmarkScope.games() {
     device.wait(Until.hasObject(any("Nice session")), 5_000)
     device.pressBack()
 }
+
+/** Reader (phase 11, PR 8): More → Beta → Reader, the 30-page document (tools/fixtures/long_pdf.py), then scroll it down and up. */
+fun MacrobenchmarkScope.reader() {
+    device.wait(Until.findObject(By.desc("More")), 5_000)?.click() ?: return
+    if (!tap("Beta")) return
+    if (!tap("Reader")) return
+    if (!tap("long", 5_000)) return
+    device.wait(Until.hasObject(any("Page 1")), 5_000)
+    val list = device.findObject(By.scrollable(true)) ?: return
+    list.setGestureMargin(device.displayWidth / 5)
+    repeat(4) { list.fling(androidx.test.uiautomator.Direction.DOWN) }
+    repeat(4) { list.fling(androidx.test.uiautomator.Direction.UP) }
+    device.pressBack()
+}

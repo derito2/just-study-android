@@ -63,7 +63,8 @@ fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavSta
                             screen.pointKey, onBack = back, onLibrary = { nav.back(); nav.back(); nav.select(TopLevel.Library) },
                         )
                         screen is Screen.Listening -> com.dero.juststudykorean.ui.listening.ListeningScreen(onBack = back)
-                        screen is Screen.Mistakes || screen is Screen.Reader ->
+                        screen is Screen.Reader -> com.dero.juststudykorean.ui.reader.ReaderScreen(screen.documentId, onBack = back)
+                        screen is Screen.Mistakes ->
                             com.dero.juststudykorean.ui.beta.ComingSoonScreen(com.dero.juststudykorean.ui.beta.BetaFeature.of(screen), onBack = back)
                         screen is Screen.Games -> com.dero.juststudykorean.ui.games.GamesScreen(onBack = back, onLibrary = { nav.back(); nav.select(TopLevel.Library) })
                         route == Route(TopLevel.Library) -> LibraryScreen(onMore = more, onAllVocabulary = { nav.push(TopLevel.Library, Screen.Vocabulary) }, onTemplate = { nav.open(MoreDestination.Settings) })

@@ -13,6 +13,7 @@ import com.dero.juststudykorean.korean.ai.teacherNoSourcesPrompt
 import com.dero.juststudykorean.korean.ai.teacherPrompt
 import com.dero.juststudykorean.korean.ai.validNoSources
 import com.dero.juststudykorean.korean.ai.validTeacher
+import com.dero.juststudykorean.korean.teacher.NotesIndex
 import com.dero.juststudykorean.korean.teacher.Teacher
 import com.dero.juststudykorean.korean.teacher.TeacherAnswer
 import com.dero.juststudykorean.korean.teacher.formatSources
@@ -53,6 +54,15 @@ class TeacherService @Inject constructor(db: JustStudyDatabase, private val gate
             val start = System.nanoTime()
             teacher.warm()
             Log.i("JustStudy", "teacher_warm ms=${(System.nanoTime() - start) / 1_000_000}")
+        }
+    }
+
+    /** F8: the Reader reads the same cached index of your notes (verbs, grammar points and sentences). */
+    suspend fun index(): NotesIndex = lock.withLock {
+        withContext(Dispatchers.Default) {
+            val version = search.version()
+            if (version != seen) { teacher.invalidate(); seen = version }
+            teacher.index()
         }
     }
 

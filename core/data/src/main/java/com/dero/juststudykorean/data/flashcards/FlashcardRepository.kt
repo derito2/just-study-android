@@ -493,6 +493,23 @@ class FlashcardRepository @Inject constructor(
      * cards, so no deck of yours nor its progress changes. Returns its deck id (negative, as custom decks are shown).
      */
     suspend fun createCustomDeck(name: String, words: List<String>): Long = db.withWriteTransaction {
+        val deck = CustomDecksEntity(progress.nextId("custom_decks"), freeName(name.trim().cut(110)), clock.now().toEpochMilli())
+        db.customDecksDao().insert(deck)
+        if (copyInto(deck.id, words) == 0) throw FlashcardException("None of those words are in your notes.") // rolls the deck back
+        -deck.id
+    }.also { this.words?.rebuildWordState() } // cards came or went: word_state is written again from the sources
+
+    /** F8 (Reader's Add to deck): copies of [words] into custom deck [deckId] (negative), the ones it doesn't have yet. */
+    suspend fun addWords(deckId: Long, words: List<String>): Int = db.withWriteTransaction {
+        if (db.customDecksDao().all().none { it.id == -deckId }) throw FlashcardException("Deck not found.")
+        val have = db.flashcardsDao().all().filter { it.customDeckId == -deckId }.map { norm(it.koreanWord) }.toSet()
+        val missing = words.filter { norm(it) !in have }
+        if (missing.isEmpty()) 0
+        else copyInto(-deckId, missing).also { if (it == 0) throw FlashcardException("None of those words are in your notes.") }
+    }.also { if (it > 0) this.words?.rebuildWordState() }
+
+    /** COPIES of the cards of [words] (from your notes, else from a card of yours) into custom deck [deckId]; how many. */
+    private suspend fun copyInto(deckId: Long, words: List<String>): Int {
         val now = clock.now().toEpochMilli()
         val wanted = words.map(::norm).filter { it.isNotEmpty() }.distinct()
         val ready = db.documentsDao().all().filter { it.status == "ready" }.sortedBy { it.id }
@@ -507,27 +524,26 @@ class FlashcardRepository @Inject constructor(
             val key = norm(card.koreanWord)
             if (key in wanted && key !in fromNotes && key !in fromCards) fromCards[key] = card
         }
-        if (fromNotes.isEmpty() && fromCards.isEmpty()) throw FlashcardException("None of those words are in your notes.")
-        val deck = CustomDecksEntity(progress.nextId("custom_decks"), freeName(name.trim().cut(110)), now)
-        db.customDecksDao().insert(deck)
         val topics = Topics(db, progress)
         var nextId = progress.nextId("flashcards")
+        var added = 0
         for (key in wanted) {
             val card = fromNotes[key]?.let { (chunk, item) ->
                 FlashcardsEntity(
                     id = nextId, vocabularyId = null, front = item.korean, back = item.english, koreanWord = item.korean.cut(120),
                     translation = item.english.cut(255), romanization = item.romanization?.takeIf { it.isNotEmpty() }?.cut(120),
                     exampleSentence = item.exampleKo, topicId = topics.idFor(chunk), difficulty = 1, ease = 2.5, intervalHours = 0, repetitions = 0,
-                    dueAt = now, sourceChunkId = chunk.chromaId, exampleTranslation = item.exampleEn, createdAt = now, customDeckId = deck.id,
+                    dueAt = now, sourceChunkId = chunk.chromaId, exampleTranslation = item.exampleEn, createdAt = now, customDeckId = deckId,
                 )
             } ?: fromCards[key]?.copy( // without its progress
-                id = nextId, vocabularyId = null, difficulty = 1, ease = 2.5, intervalHours = 0, repetitions = 0, dueAt = now, createdAt = now, customDeckId = deck.id,
+                id = nextId, vocabularyId = null, difficulty = 1, ease = 2.5, intervalHours = 0, repetitions = 0, dueAt = now, createdAt = now, customDeckId = deckId,
             ) ?: continue
             db.flashcardsDao().insert(card)
             nextId++
+            added++
         }
-        -deck.id
-    }.also { this.words?.rebuildWordState() } // cards came or went: word_state is written again from the sources
+        return added
+    }
 
     /** R1-28 (design/flashcards.md): "Your mistakes", then "Your mistakes · 13 Nov", then "… (2)", "… (3)". */
     private suspend fun freeName(name: String): String {
