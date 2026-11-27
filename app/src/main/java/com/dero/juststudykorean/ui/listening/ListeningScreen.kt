@@ -78,8 +78,8 @@ import com.dero.juststudykorean.ui.theme.Tokens
 private val RATES = listOf(0.7f, 1f, 1.2f)
 
 @Composable
-fun ListeningScreen(onBack: () -> Unit, vm: ListeningViewModel = hiltViewModel()) {
-    LaunchedEffect(Unit) { vm.open() }
+fun ListeningScreen(keys: List<String>?, onBack: () -> Unit, vm: ListeningViewModel = hiltViewModel()) {
+    LaunchedEffect(Unit) { vm.open(keys) }
     val ui by vm.state.collectAsStateWithLifecycle()
     val speaking by vm.speaking.collectAsStateWithLifecycle()
     val system by vm.systemKeyboard.collectAsStateWithLifecycle()
@@ -161,7 +161,10 @@ fun ListeningContent(
             }
             when {
                 ui.loading -> LoadingState()
-                ui.reason != null || item == null -> EmptyState(Lucide.Headphones, "Nothing to listen to yet", null, ui.reason ?: "Add sentences with a translation to your notes.")
+                ui.reason != null || item == null -> EmptyState(
+                    Lucide.Headphones, "Nothing to listen to yet", null, ui.reason ?: "Add sentences with a translation to your notes.",
+                    action = if (ui.reason == NO_SENTENCE_FOR_WORDS) "Back" else null, onAction = onBack, actionColor = StickerColor.Action,
+                )
                 ui.mode == ListenMode.Dictation -> {
                     Card {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space3)) {

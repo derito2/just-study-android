@@ -22,6 +22,9 @@ fun dictation(sentences: List<LabSentence>) = sentences.filter { it.meaning.isNo
 /** Shadowing: short sentences, 2 words and 20 syllables at most. */
 fun shadowing(sentences: List<LabSentence>) = sentences.filter { it.meaning.isNotBlank() && words(it.korean) >= MIN_WORDS && syllables(it.korean) <= SHADOWING_SYLLABLES }
 
+/** The sentences with one of [keys] (word_state keys), also conjugated: 마셨어요 has 마시다. */
+fun withWords(items: List<LabSentence>, keys: List<String>) = items.filter { s -> keys.any { k -> k.isNotBlank() && com.dero.juststudykorean.korean.hasForm(s.korean, k) } }
+
 /** Why [mode] can't be used now (design/beta.md 4, empty states); null if it can. */
 fun unavailable(mode: ListenMode, sentences: List<LabSentence>, dueCards: Int, voiceReady: Boolean): String? = when {
     !voiceReady -> "Needs the phone's Korean voice."

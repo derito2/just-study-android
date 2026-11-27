@@ -29,7 +29,8 @@ sealed interface Screen {
     data object Beta : Screen
     /** [pointKey]: norm of a grammar point's pattern; null = all your points. */
     data class GrammarLab(val pointKey: String?) : Screen
-    data object Listening : Screen
+    /** [keys]: word_state keys (My Mistakes' Practice this): only a dictation of sentences with them; null = Listening Lab as always. */
+    data class Listening(val keys: List<String>?) : Screen
     data object Mistakes : Screen
     /** [documentId]: null = choose a document first. */
     data class Reader(val documentId: Long?) : Screen
@@ -43,7 +44,7 @@ sealed interface Screen {
             Games -> "games|"
             Beta -> "beta|"
             is GrammarLab -> "grammarlab|${s.pointKey ?: ""}"
-            Listening -> "listening|"
+            is Listening -> "listening|" + (s.keys?.let { "=" + it.joinToString("\n") } ?: "")
             Mistakes -> "mistakes|"
             is Reader -> "reader|${s.documentId ?: ""}"
         }
@@ -56,7 +57,7 @@ sealed interface Screen {
                 "games" -> Games
                 "beta" -> Beta
                 "grammarlab" -> GrammarLab(p.drop(1).joinToString("|").ifEmpty { null }) // a pattern may hold "|"
-                "listening" -> Listening
+                "listening" -> Listening(p.drop(1).joinToString("|").takeIf { it.startsWith("=") }?.drop(1)?.split("\n")?.filter { it.isNotEmpty() })
                 "mistakes" -> Mistakes
                 "reader" -> Reader(p[1].toLongOrNull())
                 else -> Results(p.drop(1).joinToString("|"))
