@@ -11,8 +11,36 @@ data class LastReview(val flashcardId: Long, val reviewedAt: Long)
 
 data class TopicTotals(val attempts: Long, val correct: Long)
 
+/** F5 (My Mistakes): one wrong answer as each source keeps it; [given] null where only right or wrong is kept. */
+data class MistakeRow(val expected: String, val given: String?, val ref: String?, val at: Long)
+
 @Dao
 interface HotDao {
+    // F5: each source's mistakes since a moment, by its created_at index (R-001: never .all()).
+    @Query(
+        "SELECT q.correct_answer AS expected, a.user_answer AS given, " +
+            "COALESCE((SELECT w.word_key FROM question_words w WHERE w.question_id = q.id LIMIT 1), q.prompt) AS ref, a.created_at AS at " +
+            "FROM question_attempts a JOIN questions q ON q.id = a.question_id WHERE a.is_correct = 0 AND a.created_at >= :since",
+    )
+    suspend fun quizMistakes(since: Long): List<MistakeRow>
+
+    @Query(
+        "SELECT c.korean_word AS expected, CAST(NULL AS TEXT) AS given, c.korean_word AS ref, r.reviewed_at AS at " +
+            "FROM flashcard_reviews r JOIN flashcards c ON c.id = r.flashcard_id WHERE r.rating = 'again' AND r.reviewed_at >= :since",
+    )
+    suspend fun againMistakes(since: Long): List<MistakeRow>
+
+    /** [expected]: the round's item keys (a JSON array). */
+    @Query("SELECT item_keys AS expected, CAST(NULL AS TEXT) AS given, game AS ref, created_at AS at FROM game_rounds WHERE outcome = 'lost' AND created_at >= :since")
+    suspend fun gameMistakes(since: Long): List<MistakeRow>
+
+    /** [expected]: "verb|ending label"; [ref]: the grammar point. */
+    @Query("SELECT verb || '|' || ending AS expected, given, point_key AS ref, created_at AS at FROM grammar_drill_attempts WHERE correct = 0 AND created_at >= :since")
+    suspend fun drillMistakes(since: Long): List<MistakeRow>
+
+    @Query("SELECT item_key AS expected, CAST(NULL AS TEXT) AS given, item_key AS ref, created_at AS at FROM listening_attempts WHERE mode = 'dictation' AND correct = 0 AND created_at >= :since")
+    suspend fun dictationMistakes(since: Long): List<MistakeRow>
+
     @Query("SELECT * FROM flashcards WHERE id = :id")
     suspend fun flashcard(id: Long): FlashcardsEntity?
 
