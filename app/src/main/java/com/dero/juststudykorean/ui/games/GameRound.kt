@@ -77,28 +77,6 @@ fun hintOf(spec: RoundSpec): String? = when (spec) {
     else -> null
 }
 
-/** The document the round's content comes from (null: Extra, the fixed sound pairs). */
-fun originOf(spec: RoundSpec, bank: GameBank = GameBank(emptyList(), emptyList())): String? = when (spec) {
-    is RoundSpec.WordMatch -> spec.items.first().documentName
-    is RoundSpec.MemoryFlip -> spec.items.first().documentName
-    is RoundSpec.ListenGuess -> spec.cards.first().documentName
-    is RoundSpec.WordSort -> spec.tiles.first().first.documentName
-    is RoundSpec.WordRecall -> spec.sequence.first().documentName
-    is RoundSpec.Hangman -> spec.item.documentName
-    is RoundSpec.SentenceBuilder -> spec.item.documentName
-    is RoundSpec.WordScramble -> spec.item.documentName
-    is RoundSpec.HangulBuilder -> spec.item.documentName
-    is RoundSpec.GrammarFixer -> spec.item.documentName
-    is RoundSpec.HangulTyping -> spec.item.documentName
-    is RoundSpec.WordPath -> spec.item.documentName
-    is RoundSpec.SoundDetective.SameOrDifferent -> if (spec.first.extra || spec.second.extra) null else spec.first.key?.let { bank.byKey[it]?.documentName }
-    is RoundSpec.SoundDetective.CameTwice -> spec.words.first().documentName
-    is RoundSpec.SoundDetective.WhatOrder -> spec.order.first().documentName
-    is RoundSpec.HangulWordle -> spec.item.documentName
-    is RoundSpec.Crossword -> spec.entries.first().item.documentName
-    else -> null
-}
-
 /** What the lost ribbon shows after "Answer:" (null where the round already showed it all). */
 fun answerOf(spec: RoundSpec): String? = when (spec) {
     is RoundSpec.Hangman -> "${spec.item.korean} — ${spec.item.meaning}"
