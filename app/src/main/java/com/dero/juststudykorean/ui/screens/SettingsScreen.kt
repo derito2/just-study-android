@@ -1,6 +1,8 @@
 package com.dero.juststudykorean.ui.screens
 
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.dero.juststudykorean.ui.components.PillTone
 import com.dero.juststudykorean.ui.components.Pill
 import com.dero.juststudykorean.ui.components.StickerSize
@@ -199,7 +201,7 @@ internal fun ReminderRow(reminder: com.dero.juststudykorean.data.prefs.Reminder,
     val colors = JustStudyTheme.colors
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.weight(1f)) {
-            SettingsRow(Lucide.Bell, "Daily Reminder", "A quiet reminder with your cards due.", animateKey = null) {
+            SettingsRow(Lucide.Bell, "Daily Reminder", "A quiet reminder with your cards due.", animateKey = null, below = {
                 if (reminder.on) Text(
                     java.time.LocalTime.MIN.plusMinutes(reminder.minuteOfDay.toLong()).format(TIME),
                     Modifier.clickable(onClick = onTime).padding(vertical = Tokens.Space1),
@@ -207,9 +209,12 @@ internal fun ReminderRow(reminder: com.dero.juststudykorean.data.prefs.Reminder,
                     style = JustStudyTheme.korean.bodyBold, color = if (colors.background == Tokens.BackgroundDark) colors.brandText else colors.action,
                 )
                 if (notificationsOff && !reminder.on) Text("Notifications are off for this app.", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = colors.wrongInk)
-            }
+            })
         }
-        com.dero.juststudykorean.ui.components.ThemeSwitch(reminder.on, onToggle, Modifier.padding(end = Tokens.Space6))
+        com.dero.juststudykorean.ui.components.ThemeSwitch(
+            reminder.on, onToggle,
+            Modifier.padding(end = Tokens.Space6).semantics { contentDescription = "Daily Reminder" }, // TalkBack: not just "Switch"
+        )
     }
 }
 
@@ -235,8 +240,8 @@ private fun SettingsRow(
     animateKey: Any?,
     iconRotation: Float = 0f,
     enabled: Boolean = true,
+    below: (@Composable () -> Unit)? = null, // before onClick: a trailing lambda stays the click
     onClick: (() -> Unit)? = null,
-    below: (@Composable () -> Unit)? = null,
 ) {
     Row(
         Modifier
