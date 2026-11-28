@@ -2,6 +2,15 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-28 — Music Study aprobado (PoC 7)
+**Decisión del dueño:** Music Study entra en **BETA** como función independiente (no toca Library, Quiz, Teacher, Games ni el respaldo; canciones y análisis fuera del respaldo, como Games). Explicaciones solo en inglés; letra en coreano e inglés. Forma base, partícula y patrón por reglas (Lookup corregido en #80, EndingMatch); Nano solo explica. Vocabulario: si la palabra está en tus notas se enlaza; si no, el significado de Nano solo se guarda si lo confirmas o corriges (mazo «Songs»).
+- **Sin ejemplos coreanos del modelo:** Explain usa ejemplos de tus notas; si no hay, ninguno (78 % correctos frente al 90 % pedido).
+- **Prompts v3** (texto entre comillas, objetivo separado del contexto, partes coreano/inglés, sin facts de «grammar point», sin saludos).
+- **Translation con la etiqueta «AI translation · may be wrong»:** 30/40 útil con fuentes; la v5 (facts de tipo de oración y sujeto/objeto) no llegó a 34/40.
+- **Naver Dictionary bloqueado** por la extensión de Chrome («safety restrictions»): sustituido por 한국어기초사전 (krdict) y 표준국어대사전 como fuentes de diccionario.
+**Por qué** (`docs/poc/7-music.md`): Interpretation útil 95 % (100 % en las mezcladas), 0 % de contexto o intención inventados, p90 ≤ 5 s y 0 BUSY en el OPPO; los fallos de traducción (sujeto invertido, descripción leída como orden) no los puede ver el usuario, por eso la etiqueta.
+**Descartado:** «solo lector sin interpretación» (Interpretation cumple de sobra) y ejemplos coreanos del modelo.
+
 ## 2026-11-27 — Games: la referencia del macrobenchmark pasa a P90 8,4 ms y P99 13,5 ms
 **Decisión:** la condición de Games (`FASE_11_PLAN.md` §4 PR 10 y 11, §5) pasa a ser **no empeorar la referencia del 2026-11-27 en el OPPO: P90 8,4 ms y P99 13,5 ms en el flujo de Games** (`StartupBenchmark#gamesFrames`: abrir, pausar, reanudar, terminar y volver). Sustituye a «P90 ≤ 8 ms y P99 ≤ 12 ms». La rama `fix/games-scene-perf` se cierra sin cambios.
 **Por qué** (medido en el OPPO el 2026-11-27, build benchmark, mismos datos):
