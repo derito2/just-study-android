@@ -18,6 +18,9 @@ import javax.inject.Singleton
 enum class ThemeMode { System, Light, Dark }
 enum class CardDirection { KoToEn, EnToKo, Both }
 
+/** F1 (design/beta.md 8): the Daily Reminder, off by default, at [minuteOfDay] (8:00 PM). */
+data class Reminder(val on: Boolean = false, val minuteOfDay: Int = 20 * 60)
+
 /** design/ajustes.md AJ-32: the most questions a quiz can ask for; a larger saved count reads as this. */
 const val QUIZ_MAX_COUNT = 25
 
@@ -72,6 +75,9 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     val gamesMicDenied: Flow<Boolean> = store.data.map { it[GAMES_MIC_DENIED] ?: false }
     suspend fun setGamesMicDenied(on: Boolean) { store.edit { it[GAMES_MIC_DENIED] = on } }
 
+    val reminder: Flow<Reminder> = store.data.map { Reminder(it[REMINDER_ON] ?: false, it[REMINDER_MINUTE] ?: Reminder().minuteOfDay) }
+    suspend fun setReminder(r: Reminder) { store.edit { it[REMINDER_ON] = r.on; it[REMINDER_MINUTE] = r.minuteOfDay } }
+
     /** R1-14: repeats you skipped ("{document}:{kind}:{text}"), not asked again when the document is reprocessed. */
     val skippedDuplicates: Flow<Set<String>> = store.data.map { it[SKIPPED_DUPLICATES].orEmpty() }
     suspend fun addSkippedDuplicates(keys: Collection<String>) { store.edit { it[SKIPPED_DUPLICATES] = it[SKIPPED_DUPLICATES].orEmpty() + keys } }
@@ -113,6 +119,8 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         val SKIPPED_DUPLICATES = stringSetPreferencesKey("skipped_duplicates")
         val GAMES_SPEAK_WORD = booleanPreferencesKey("games_speak_word")
         val GAMES_MIC_DENIED = booleanPreferencesKey("games_mic_denied")
+        val REMINDER_ON = booleanPreferencesKey("reminder_on")
+        val REMINDER_MINUTE = intPreferencesKey("reminder_minute")
         val TYPING_TIMER = booleanPreferencesKey("typing_timer")
         val CARD_DIRECTION = stringPreferencesKey("card_direction")
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")

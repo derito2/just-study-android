@@ -38,7 +38,17 @@ import com.dero.juststudykorean.ui.teacher.TeacherScreen
  * bottom edge, under the system navigation buttons. Edge to edge.
  */
 @Composable
-fun AppScaffold(darkMode: Boolean, onDarkMode: (Boolean) -> Unit, nav: AppNavState = rememberAppNavState()) {
+fun AppScaffold(
+    darkMode: Boolean,
+    onDarkMode: (Boolean) -> Unit,
+    nav: AppNavState = rememberAppNavState(),
+    studyAll: Boolean = false,
+    onStudyAllOpened: () -> Unit = {},
+) {
+    // design/beta.md 8: the Daily Reminder opens All decks' session.
+    androidx.compose.runtime.LaunchedEffect(studyAll) {
+        if (studyAll) { nav.push(TopLevel.Flashcards, Screen.Study(null, "All decks")); onStudyAllOpened() }
+    }
     var moreOpen by rememberSaveable { mutableStateOf(false) }
     var coachAsks by rememberSaveable { mutableIntStateOf(0) } // Dashboard's "Ask what to do": Teacher in the coach's mode
     // One decorator per tab stack, so a tab keeps its screens' state while another tab is shown.

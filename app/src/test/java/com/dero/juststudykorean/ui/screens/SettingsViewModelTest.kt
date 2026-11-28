@@ -47,6 +47,7 @@ class SettingsViewModelTest {
     private val vm = SettingsViewModel(
         app.prefs, BackupImporter(app.context, app.db), BackupExporter(app.context, app.db),
         DocumentIndexer(app.db, app.clock, app.progress, app.notes, files), NanoState(model), app.words,
+        com.dero.juststudykorean.reminders.ReminderScheduler(app.context, app.clock),
     )
     private val messages = Collections.synchronizedList(mutableListOf<String>())
     private val collector = CoroutineScope(Dispatchers.IO).launch { vm.messages.collect { messages += it } }

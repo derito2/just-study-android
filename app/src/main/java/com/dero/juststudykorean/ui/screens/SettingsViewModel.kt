@@ -10,7 +10,9 @@ import com.dero.juststudykorean.data.backup.BackupImporter
 import com.dero.juststudykorean.data.backup.ExportResult
 import com.dero.juststudykorean.data.backup.NO_SPACE
 import com.dero.juststudykorean.data.backup.ImportResult
+import com.dero.juststudykorean.data.prefs.Reminder
 import com.dero.juststudykorean.data.prefs.ThemeMode
+import com.dero.juststudykorean.reminders.ReminderScheduler
 import com.dero.juststudykorean.data.prefs.UserPrefs
 import com.dero.juststudykorean.data.progress.WordProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +35,7 @@ class SettingsViewModel @Inject constructor(
     private val indexer: DocumentIndexer,
     private val nanoState: NanoState,
     private val words: WordProgress,
+    private val reminders: ReminderScheduler,
 ) : ViewModel() {
     /** Gemini Nano (On-device AI): the download only starts with Download. */
     val nano = nanoState.status
@@ -54,6 +57,10 @@ class SettingsViewModel @Inject constructor(
     val messages = snackbar.receiveAsFlow()
 
     fun setTheme(mode: ThemeMode) = viewModelScope.launch { prefs.setThemeMode(mode) }
+
+    /** F1: the Daily Reminder; the alarm follows the setting at once. */
+    val reminder = prefs.reminder.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Reminder())
+    fun setReminder(r: Reminder) = viewModelScope.launch { prefs.setReminder(r); reminders.schedule(r) }
 
     private val _importing = MutableStateFlow(false)
     /** An import is running (P-51: a dialog with a progress bar, never a dimmed screen with nothing on it). */

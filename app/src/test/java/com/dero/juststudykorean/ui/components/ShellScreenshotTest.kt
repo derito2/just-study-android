@@ -21,6 +21,8 @@ import com.dero.juststudykorean.ai.NanoStatus
 import com.dero.juststudykorean.ui.navigation.TopLevel
 import com.dero.juststudykorean.ui.screens.NotesTemplateRow
 import com.dero.juststudykorean.ui.screens.OnDeviceAiRow
+import com.dero.juststudykorean.ui.screens.ReminderRow
+import com.dero.juststudykorean.data.prefs.Reminder
 import com.dero.juststudykorean.ui.theme.JustStudyTheme
 import com.dero.juststudykorean.ui.theme.Tokens
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -144,4 +146,14 @@ class ShellScreenshotTest {
     /** Settings → Notes template row (Fase 10). */
     @Test
     fun notesTemplate() = snap("settings_notes") { NotesTemplateRow {} }
+
+    /** Settings → Study → Daily Reminder (design/beta.md 8): off, on at 8:00 PM, and off after a refused permission. */
+    @Test
+    fun dailyReminder() = snap("settings_reminder") {
+        Column {
+            ReminderRow(Reminder(on = false), notificationsOff = false, onToggle = {}, onTime = {})
+            ReminderRow(Reminder(on = true), notificationsOff = false, onToggle = {}, onTime = {})
+            ReminderRow(Reminder(on = false), notificationsOff = true, onToggle = {}, onTime = {})
+        }
+    }
 }

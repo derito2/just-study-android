@@ -1,5 +1,6 @@
 package com.dero.juststudykorean
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import com.dero.juststudykorean.ai.AppForeground
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.dero.juststudykorean.data.prefs.ThemeMode
@@ -36,6 +39,15 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var nano: NanoState
     @Inject lateinit var words: WordProgress
 
+    /** The Daily Reminder was touched: open All decks' session once (not again when the activity is recreated). */
+    private var studyAll by mutableStateOf(false)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.action == ACTION_STUDY_ALL) studyAll = true
+    }
+
     override fun onStart() {
         super.onStart()
         AppForeground.started()
@@ -50,6 +62,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null && intent?.action == ACTION_STUDY_ALL) studyAll = true
         // A PDF left half processed (ColorOS closed the app): go on from its last saved stage.
         // Phase 11 (H-03 B): the first open on v6 writes word_state once, off the main thread (until then: on the fly).
         lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) { words.ensureBuilt() }
@@ -81,10 +94,17 @@ class MainActivity : ComponentActivity() {
                     AppScaffold(
                         darkMode = dark,
                         onDarkMode = { on -> scope.launch { prefs.setThemeMode(if (on) ThemeMode.Dark else ThemeMode.Light) } },
+                        studyAll = studyAll,
+                        onStudyAllOpened = { studyAll = false },
                     )
                     SplashOverlay()
                 }
             }
         }
+    }
+
+    companion object {
+        /** Only the reminder's explicit PendingIntent sets it; at most it opens a study session. */
+        const val ACTION_STUDY_ALL = "com.dero.juststudykorean.action.STUDY_ALL"
     }
 }

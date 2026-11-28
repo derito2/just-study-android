@@ -74,6 +74,14 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
     val importing by vm.importing.collectAsStateWithLifecycle()
     val error by vm.error.collectAsStateWithLifecycle()
     val nano by vm.nano.collectAsStateWithLifecycle()
+    val reminder by vm.reminder.collectAsStateWithLifecycle()
+    var notificationsOff by rememberSaveable { mutableStateOf(false) }
+    var pickingTime by rememberSaveable { mutableStateOf(false) }
+    // Android asks for the notification permission the first time; refused, the switch stays off with the notice.
+    val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        notificationsOff = !granted
+        if (granted) vm.setReminder(reminder.copy(on = true))
+    }
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(vm) { vm.messages.collect { snackbar.showSnackbar(it) } }
 
@@ -101,6 +109,16 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
                     onSelect = { vm.setTheme(ThemeMode.entries[it]) },
                     modifier = Modifier.fillMaxWidth().padding(start = Tokens.Space4, end = Tokens.Space4, bottom = Tokens.Space2),
                 )
+                GroupDivider()
+                ReminderRow(reminder, notificationsOff, onToggle = { on ->
+                    when {
+                        !on -> vm.setReminder(reminder.copy(on = false))
+                        android.os.Build.VERSION.SDK_INT < 33 || androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) ==
+                            android.content.pm.PackageManager.PERMISSION_GRANTED -> { notificationsOff = false; vm.setReminder(reminder.copy(on = true)) }
+                        else -> askNotifications.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }, onTime = { pickingTime = true })
+                GroupDivider()
                 SettingsRow(Lucide.Download, "Import backup", "Replace everything with a .jsbackup.zip.", animateKey = importTaps, enabled = !busy) {
                     importTaps++
                     pick.launch(BACKUP_TYPES)
@@ -124,6 +142,10 @@ fun SettingsScreen(onMore: () -> Unit, onBack: () -> Unit, vm: SettingsViewModel
     }
 
     if (licenses) LicensesScreen { licenses = false }
+    if (pickingTime) ReminderTimeDialog(reminder.minuteOfDay, onDismiss = { pickingTime = false }) { minute ->
+        pickingTime = false
+        vm.setReminder(reminder.copy(minuteOfDay = minute))
+    }
 
     ImportDialogs(
         confirming = pending != null, importing = importing,
@@ -161,7 +183,50 @@ internal fun ImportDialogs(confirming: Boolean, importing: Boolean, onCancel: ()
 internal fun NotesTemplateRow(onClick: () -> Unit) =
     SettingsRow(Lucide.FileText, "Notes template", "A .docx to write notes the app can read.", animateKey = null, onClick = onClick)
 
-/** A Settings row, like MoreSheet's: 56 dp, `control` icon, `body-bold` name and one `muted` line. */
+/** design/grammar-calendar-settings.md: a 2 dp `line` divider between groups. */
+@Composable
+private fun GroupDivider() =
+    androidx.compose.material3.HorizontalDivider(Modifier.padding(vertical = Tokens.Space2), thickness = Tokens.Border, color = JustStudyTheme.colors.line)
+
+private val TIME = java.time.format.DateTimeFormatter.ofPattern("h:mm a", java.util.Locale.US)
+
+/**
+ * Settings → Study → Daily Reminder (design/beta.md 8): a ThemeSwitch; on, the time in `action` (opens the TimePicker);
+ * after a refused permission, *Notifications are off for this app.* (12 sp, `wrong-ink`).
+ */
+@Composable
+internal fun ReminderRow(reminder: com.dero.juststudykorean.data.prefs.Reminder, notificationsOff: Boolean, onToggle: (Boolean) -> Unit, onTime: () -> Unit) {
+    val colors = JustStudyTheme.colors
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.weight(1f)) {
+            SettingsRow(Lucide.Bell, "Daily Reminder", "A quiet reminder with your cards due.", animateKey = null) {
+                if (reminder.on) Text(
+                    java.time.LocalTime.MIN.plusMinutes(reminder.minuteOfDay.toLong()).format(TIME),
+                    Modifier.clickable(onClick = onTime).padding(vertical = Tokens.Space1),
+                    // `action` is a fill colour, the same in both themes: on dark it is unreadable, so dark uses brandText.
+                    style = JustStudyTheme.korean.bodyBold, color = if (colors.background == Tokens.BackgroundDark) colors.brandText else colors.action,
+                )
+                if (notificationsOff && !reminder.on) Text("Notifications are off for this app.", style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), color = colors.wrongInk)
+            }
+        }
+        com.dero.juststudykorean.ui.components.ThemeSwitch(reminder.on, onToggle, Modifier.padding(end = Tokens.Space6))
+    }
+}
+
+/** Material 3's TimePicker in a dialog (*Cancel* / *OK*). */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ReminderTimeDialog(minuteOfDay: Int, onDismiss: () -> Unit, onPick: (Int) -> Unit) {
+    val state = androidx.compose.material3.rememberTimePickerState(minuteOfDay / 60, minuteOfDay % 60, is24Hour = false)
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { androidx.compose.material3.TextButton({ onPick(state.hour * 60 + state.minute) }) { Text("OK") } },
+        dismissButton = { androidx.compose.material3.TextButton(onDismiss) { Text("Cancel") } },
+        text = { androidx.compose.material3.TimePicker(state) },
+    )
+}
+
+/** A Settings row, like MoreSheet's: 56 dp, `control` icon, `body-bold` name and one `muted` line ([below]: under it). */
 @Composable
 private fun SettingsRow(
     icon: Lucide,
@@ -171,6 +236,7 @@ private fun SettingsRow(
     iconRotation: Float = 0f,
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
+    below: (@Composable () -> Unit)? = null,
 ) {
     Row(
         Modifier
@@ -185,6 +251,7 @@ private fun SettingsRow(
         Column {
             Text(title, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface)
             Text(line, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            below?.invoke()
         }
     }
 }

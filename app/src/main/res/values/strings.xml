@@ -2,6 +2,7 @@
     <string name="app_name">Just Study 한국어</string>
     <!-- Processing notification: the stage only, never a file name or note text. -->
     <string name="processing_channel">PDF processing</string>
+    <string name="reminder_channel">Daily reminder</string>
     <string name="processing_title">Processing your PDF</string>
     <string name="processing_starting">Starting…</string>
     <string name="stage_extracting">Extracting text</string>
