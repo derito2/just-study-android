@@ -2,6 +2,14 @@
 
 Una entrada por decisión, la más reciente arriba: fecha, decisión, por qué y alternativas descartadas. Las de los PoC (fase 1) también van a Engram (`android/*`).
 
+## 2026-11-27 — Games: la referencia del macrobenchmark pasa a P90 8,4 ms y P99 13,5 ms
+**Decisión:** la condición de Games (`FASE_11_PLAN.md` §4 PR 10 y 11, §5) pasa a ser **no empeorar la referencia del 2026-11-27 en el OPPO: P90 8,4 ms y P99 13,5 ms en el flujo de Games** (`StartupBenchmark#gamesFrames`: abrir, pausar, reanudar, terminar y volver). Sustituye a «P90 ≤ 8 ms y P99 ≤ 12 ms». La rama `fix/games-scene-perf` se cierra sin cambios.
+**Por qué** (medido en el OPPO el 2026-11-27, build benchmark, mismos datos):
+- **La escena no es la causa.** Con el código de hoy: P90 8,0–8,4 / P99 12,8–13,5. Sin Beom ni Deung: P90 8,1–8,2. Sin las capas de fondo (cielo, montañas, niebla…): P90 8,0–8,2. Las dos diferencias quedan dentro del ruido (≤ 0,2 ms).
+- **Las transiciones sí.** Sin la escena entera, P90 sube a 9,0–9,3 y P99 a 37–40: sus fotogramas continuos son baratos y bajan el percentil; los que pasan de 8 ms son los de la apertura, la hoja de pausa, el resumen y la vuelta.
+- **Los 6,4 ms de la fase 8 no se repiten con el mismo código.** El commit anterior a la escena nueva (988f04d^, la escena de la fase 8) da hoy P90 8,9–9,4 / P99 17,6–18,5, y el de después de F2 (84eedfc) P90 8,2–8,4 / P99 13,2–14,1: la escena nueva mejoró la cifra; lo que cambió desde la fase 8 es el teléfono o las herramientas, no el código.
+**Descartado:** bajar la escena a ≤ 8 ms (no mueve el P90) y perfilar las transiciones con `trace_processor` (habría que descargarlo; el dueño eligió la opción 1).
+
 ## 2026-11-23 — `gen_room_entities.py` ya no se ejecuta; `JustStudyDatabase.kt` se edita a mano
 **Decisión:** `tools/data/gen_room_entities.py` ya no se puede ejecutar: leía el `models.py` del proyecto web, que ya no está en el Mac. Desde la v6 (fase 11, PR 2), `JustStudyDatabase.kt` se edita a mano **siguiendo el formato que escribía el script** (la cabecera, las entidades de la web y, detrás, las tablas solo del teléfono; un `abstract fun …Dao()` por tabla). `APP_TABLES` y `DB_VERSION` del script se mantienen al día **solo como referencia**.
 **Por qué:** el dueño desinstaló el proyecto web (2026-11-23). Las 18 tablas del respaldo no cambian (`BackupSchema.kt` sigue igual), así que lo que el script generaba de la web ya no se mueve; solo crecen las tablas del teléfono, que siempre fueron a mano (`db/*Tables.kt`).
