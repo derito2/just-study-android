@@ -14,9 +14,10 @@ class LookupTest {
 
     private val notes = ReaderNotes(
         words = listOf(entry("학교", "School"), entry("먹다", "To eat"), entry("아이", "Child")).associateBy { it.korean },
-        verbs = setOf("먹다"),
+        verbs = setOf("먹다", "연락하다"),
         grammar = listOf("-거든(요)" to "Because (giving a reason)", "-(으)ㄹ게요" to "I will"),
         sentences = listOf("비행기가 늦었어요. = The plane was late.", "학교에 가요. = I go to school."),
+        examples = mapOf("-거든(요)" to setOf("바쁘거든요")), // 바쁘다 is not a verb of these notes: its example gives the point
     )
 
     @Test
@@ -56,6 +57,28 @@ class LookupTest {
         assertEquals(Gloss.Grammar("-(으)ㄹ게요", "I will"), lookup("연락할게요", notes))
     }
 
+    /** fix/lookup-grammar: a point only if a verb of your notes + its ending rebuilds the word, or the word is in its examples. */
+    @Test
+    fun noGrammarPointWithoutAStemOfYourNotes() {
+        val noVerb = ReaderNotes(notes.words, emptySet(), notes.grammar, emptyList())
+        assertTrue(lookup("바쁘거든요", noVerb) is Gloss.NotFound)
+        val fromExample = ReaderNotes(notes.words, emptySet(), notes.grammar, emptyList(), examples = mapOf("-거든(요)" to setOf("바쁘거든요")))
+        assertEquals(Gloss.Grammar("-거든(요)", "Because (giving a reason)"), lookup("바쁘거든요", fromExample))
+    }
+
+    /** PoC 7 with the golden notes: these words ended in a point's letters but are not that point (간달까 is not -(으)ㄹ까 봐…). */
+    @Test
+    fun thePocFalsePointsAreGone() {
+        val docs = Golden.files("extracted").map { org.json.JSONObject(it.readText()) }
+        val words = docs.flatMap { d -> d.getJSONArray("words").objects().map { entry(it.getString("korean"), it.getString("english")) } }.associateBy { it.korean }
+        val points = docs.flatMap { it.getJSONArray("grammar").objects() }
+        val golden = ReaderNotes(
+            words, emptySet(), points.map { it.getString("pattern") to it.getString("meaning") }, emptyList(),
+            examples = points.associate { p -> p.getString("pattern") to p.getJSONArray("examples").objects().flatMap { tokens(it.getString("korean")) }.map { it.text }.toSet() },
+        )
+        for (w in listOf("간달까", "보던", "보고싶어", "거야", "해")) assertTrue("$w → ${lookup(w, golden)}", lookup(w, golden) !is Gloss.Grammar)
+    }
+
     @Test
     fun notInYourNotesShowsTheSentencesWhereItIs() {
         assertEquals(Gloss.NotFound("비행기가", listOf("비행기가 늦었어요. = The plane was late.")), lookup("비행기가", notes))
@@ -69,7 +92,9 @@ class LookupTest {
             val json = org.json.JSONObject(file.readText())
             val words = json.getJSONArray("words").objects().map { entry(it.getString("korean"), it.getString("english")) }
             val grammar = json.getJSONArray("grammar").objects().map { it.getString("pattern") to it.getString("meaning") }
-            val mine = ReaderNotes(words.associateBy { it.korean }, emptySet(), grammar, emptyList())
+            // As the Reader builds it: each point with the words of its examples (a point needs your stem or your example).
+            val examples = json.getJSONArray("grammar").objects().associate { p -> p.getString("pattern") to p.getJSONArray("examples").objects().flatMap { tokens(it.getString("korean")) }.map { it.text }.toSet() }
+            val mine = ReaderNotes(words.associateBy { it.korean }, emptySet(), grammar, emptyList(), examples)
             for (w in words.filter { ' ' !in it.korean && tokens(it.korean).size == 1 }) {
                 assertEquals(file.name, w, lookup(w.korean, mine))
                 val withParticle = lookup(w.korean + "에서", mine)

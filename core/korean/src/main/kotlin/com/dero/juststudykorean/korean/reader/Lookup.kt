@@ -1,5 +1,8 @@
 package com.dero.juststudykorean.korean.reader
 
+import com.dero.juststudykorean.korean.grammar.WordKind
+import com.dero.juststudykorean.korean.grammar.conjugate
+import com.dero.juststudykorean.korean.grammar.endingOf
 import com.dero.juststudykorean.korean.hasForm
 import com.dero.juststudykorean.korean.lemmas
 import com.dero.juststudykorean.korean.teacher.MAX_EXAMPLES
@@ -30,6 +33,8 @@ class ReaderNotes(
     verbs: Set<String>,
     val grammar: List<Pair<String, String>>,
     val sentences: List<String>,
+    /** Each grammar point's pattern → the Hangul words of its own examples in your notes. */
+    val examples: Map<String, Set<String>> = emptyMap(),
 ) {
     val verbs: Set<String> = verbs + words.keys.filter { it.length >= 2 && it.endsWith("다") && ' ' !in it }
     /**
@@ -42,6 +47,17 @@ class ReaderNotes(
 }
 
 private val PARTICLES = listOf("에서", "에게", "한테", "까지", "부터", "처럼", "으로", "이랑", "은", "는", "이", "가", "을", "를", "에", "의", "도", "만", "와", "과", "로", "랑")
+
+/**
+ * The point's letters ending a word are not enough (PoC 7: 간달까 is not -(으)ㄹ까 봐, 해 is not -기로 하다): a verb of your
+ * notes + the point's ending must rebuild the word (whole, or one spaced piece of it: 자는 of 자는 동안), or the word is
+ * one of that point's own examples. Better no point than a false one.
+ */
+private fun fitsStem(surface: String, pattern: String, notes: ReaderNotes): Boolean {
+    if (surface in notes.examples[pattern].orEmpty()) return true
+    val ending = endingOf(pattern) ?: return false
+    return notes.verbs.any { v -> WordKind.entries.any { k -> conjugate(v, ending, k).any { f -> f == surface || surface in f.split(' ') } } }
+}
 
 /** In order: the word; without its particle; a conjugated verb of your notes; a grammar point that ends it; else not found. */
 fun lookup(surface: String, notes: ReaderNotes): Gloss {
@@ -59,7 +75,7 @@ fun lookup(surface: String, notes: ReaderNotes): Gloss {
             surface.endsWith(f) || (hasForm(surface, f) && surface.endsWith(f.drop(1))) ||
                 (f.endsWith("다") && lemmas(surface, setOf(f)).isNotEmpty())
         }
-        if (ends) return Gloss.Grammar(point.first, point.second)
+        if (ends && fitsStem(surface, point.first, notes)) return Gloss.Grammar(point.first, point.second)
     }
     return Gloss.NotFound(surface, notes.sentences.filter { surface in it }.take(MAX_EXAMPLES))
 }
