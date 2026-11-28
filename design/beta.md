@@ -186,6 +186,12 @@ Usan la pantalla de Games tal cual: escenario, cinta, pausa, resumen, Beom, Deun
 | **Conjugation Runner** | 활용 달리기 | Arriba, el verbo y la terminación (*먹다 · -아요/어요*). Caen 3 o 4 formas como QuizOption anchas. Con *Quitar animaciones* no caen: un contador de 5 s. Abajo, *{n}/10*. |
 | **Speak It** | 말해 보기 | Arriba, el inglés. En el centro, el bloque de micrófono común (§4 Shadowing). Si coincide, se celebra y suena la palabra; si no, se ve lo oído frente a lo de tus notas, con **Try again** y **Skip** (Small). Nunca dice «Not quite». |
 
+**Cambios del dueño en el PR 10 (#76):**
+- **Crossword:** casillas de 44 dp hasta 7 × 7, sin encogerlas. Cerrado: la cuadrícula y todas las pistas (*Across | Down*, lado a lado). Al tocar una casilla o una pista aparece `HangulKeys` y, encima, solo la pista de esa palabra con *Done* y *Check*; el teclado no lleva la fila de espacio (un crucigrama no tiene espacios). Se cierra con *Done*, al completar la palabra o al tocar fuera.
+- **Hangul Wordle:** el significado va siempre arriba; *Starts with…* deja de verse y es el tip (solo nivel 1). Con la fila llena, el teclado no admite más jamo (el toque no hace nada, sin vibrar).
+- **Todos los juegos:** sin la línea de abajo con el documento de la palabra (ni *Extra · not from your notes*).
+- **Tips:** ver `design/games.md` 6.3.
+
 ---
 
 ## 8 · Daily Reminder (F1, último PR)

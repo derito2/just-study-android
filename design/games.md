@@ -146,6 +146,12 @@ Se añaden a `Motion` (los tiempos que ya existen no cambian):
 
 **Con *Quitar animaciones*:** no hay `Fly`, `Pop`, `Shake`, `Flip`, paralaje, pétalos ni faroles que suben: las piezas cambian de sitio y de estado en el mismo fotograma. **Los tiempos de lectura no cambian** (cuánto dura el aviso, cuánto se ve una secuencia).
 
+### 6.3 · Tip (PR 10, dueño)
+- Lo que un juego enseñaba como pista sin pedirlo (el significado en Hangman, Word Scramble, Hangul Builder y Word Path; *Starts with…* en Hangul Wordle) queda oculto.
+- En su lugar, a la derecha de la instrucción, un botón con el icono `lightbulb` (24 dp, `control`, zona táctil 48 dp, TalkBack *Show tip*).
+- Al tocarlo, el tip aparece en la píldora de siempre (fundido de 150 ms; con *Quitar animaciones*, al instante) y se queda hasta la siguiente ronda.
+- Si el nivel no da tip, el botón no sale. Usar el tip no cambia la puntuación.
+
 ## 7 · Ciclo de una ronda
 
 ```

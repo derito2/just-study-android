@@ -58,4 +58,22 @@ class NewGamesBehaviourTest {
         compose.onNodeWithText("DONE", ignoreCase = true).performClick()
         compose.onAllNodesWithContentDescription("Delete").assertCountEquals(0)
     }
+
+    /** Owner, PR 10, point 5: the tip hides behind the lightbulb ("Show tip") and stays once shown; no tip, no button. */
+    @Test
+    fun theTipShowsOnlyWhenAsked() {
+        compose.setContent { CompositionLocalProvider(LocalFrozenMotion provides true) { JustStudyTheme { com.dero.juststudykorean.ui.games.pieces.Instruction("Find the word.", "단어를 찾으세요.", "School", tipKey = 1) } } }
+        compose.onAllNodesWithContentDescription("Hint: School").assertCountEquals(0)
+        compose.onAllNodesWithContentDescription("Show tip").onLast().performClick()
+        compose.onAllNodesWithContentDescription("Hint: School").assertCountEquals(1)
+        compose.onAllNodesWithContentDescription("Show tip").assertCountEquals(0)
+    }
+
+    @Test
+    fun whichRoundsHaveATip() {
+        val wordle = RoundSpec.HangulWordle(1, GameFixtures.school, wordleJamo("학교", 5)!!, 6, "학")
+        org.junit.Assert.assertEquals("Starts with 학", tipOf(wordle))
+        org.junit.Assert.assertNull(tipOf(wordle.copy(level = 2, firstSyllable = null))) // no tip at this level: no button
+        org.junit.Assert.assertEquals("Library", tipOf(RoundSpec.Hangman(1, GameFixtures.library, false, listOf("도", "서", "관"), emptyList())))
+    }
 }
