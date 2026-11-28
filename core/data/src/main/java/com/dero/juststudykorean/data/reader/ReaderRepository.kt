@@ -8,6 +8,7 @@ import com.dero.juststudykorean.data.flashcards.FlashcardRepository
 import com.dero.juststudykorean.data.teacher.TeacherService
 import com.dero.juststudykorean.korean.reader.Gloss
 import com.dero.juststudykorean.korean.reader.ReaderNotes
+import com.dero.juststudykorean.korean.reader.tokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -64,7 +65,10 @@ class ReaderRepository @Inject constructor(
             w.korean to Gloss.Entry(w.korean, cards.joinedMeaning(w), names[w.firstDoc].orEmpty(), w.examples.take(2))
         }
         val index = teacher.index()
-        ReaderNotes(words, index.verbs, index.points.map { it.second.pattern to it.second.meaning }, index.sentences.map { it.first })
+        ReaderNotes(
+            words, index.verbs, index.points.map { it.second.pattern to it.second.meaning }, index.sentences.map { it.first },
+            index.points.groupBy({ it.second.pattern }) { p -> p.second.examples.flatMap { ex -> tokens(ex.firstOrNull().orEmpty()).map { it.text } } }.mapValues { (_, v) -> v.flatten().toSet() },
+        )
     }
 
     /** Your own decks, where a word can be added (a document's deck holds that document's words only). */
