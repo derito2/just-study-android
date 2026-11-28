@@ -81,7 +81,8 @@ fun HangulWordleGame(spec: RoundSpec.HangulWordle, paused: Boolean, onResult: (R
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         // The meaning always shows on top (design/beta.md 7): without it Wordle would be guessing blind. The tip is extra.
         Text(spec.item.meaning, style = JustStudyTheme.korean.bodyBold, color = MaterialTheme.colorScheme.onSurface, maxLines = 2)
-        Column(Modifier.semantics { liveRegion = LiveRegionMode.Polite; contentDescription = said }, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        // 4 dp between rows (was 6): on the OPPO the keys' last row was 4 dp under the edge; the cells stay 44 dp.
+        Column(Modifier.semantics { liveRegion = LiveRegionMode.Polite; contentDescription = said }, verticalArrangement = Arrangement.spacedBy(4.dp)) {
             val typing = text.filter { it in '가'..'힣' }.flatMap { jamoOf(it) }
             for (r in 0 until spec.attempts) {
                 val guess = guesses.getOrNull(r)

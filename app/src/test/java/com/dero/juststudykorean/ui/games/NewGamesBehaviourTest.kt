@@ -76,4 +76,12 @@ class NewGamesBehaviourTest {
         org.junit.Assert.assertNull(tipOf(wordle.copy(level = 2, firstSyllable = null))) // no tip at this level: no button
         org.junit.Assert.assertEquals("Library", tipOf(RoundSpec.Hangman(1, GameFixtures.library, false, listOf("도", "서", "관"), emptyList())))
     }
+
+    /** Phone test, PR 10: at level 1 a 2-syllable word can have both its cells shown (one is another word's); no crash. */
+    @Test
+    fun aFirstWordWithEveryCellShownDoesNotCrash() {
+        val spec = RoundSpec.Crossword(1, 2, 2, listOf(CrossEntry(GameFixtures.school, 0, 0, true, 1), CrossEntry(GameFixtures.word("교실", "Classroom"), 0, 1, false, 2)), setOf(0, 1))
+        compose.setContent { CompositionLocalProvider(LocalFrozenMotion provides true) { JustStudyTheme { CrosswordGame(spec, false, {}, StageScope()) } } }
+        compose.onAllNodesWithText("Across").assertCountEquals(1)
+    }
 }

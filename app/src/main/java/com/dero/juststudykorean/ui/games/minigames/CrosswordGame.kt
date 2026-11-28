@@ -72,7 +72,8 @@ fun CrosswordGame(spec: RoundSpec.Crossword, paused: Boolean, onResult: (RoundRe
     val filled = remember { mutableStateMapOf<Int, String>().apply { spec.givens.forEach { put(it, solution.getValue(it)) }; putAll(initial) } }
     val done = remember { mutableStateMapOf<CrossEntry, Boolean>() }
     var entry by remember { mutableStateOf(spec.entries.first()) }
-    var cell by remember { mutableIntStateOf(spec.entries.first().cells(spec.cols).first { it !in spec.givens }) }
+    // Level 1 shows a syllable of each word: a short word may have all its cells shown, so start where there is room.
+    var cell by remember { mutableIntStateOf(spec.entries.first().cells(spec.cols).let { all -> all.firstOrNull { it !in spec.givens } ?: all.first() }) }
     val ime = remember { HangulIme() }
     var text by remember { mutableStateOf("") }
     var mistakes by remember { mutableIntStateOf(0) }
