@@ -17,13 +17,19 @@ import com.dero.juststudykorean.ui.games.GamesScreenshotTest.Companion.REF
 import com.dero.juststudykorean.ui.games.GamesScreenshotTest.Companion.snap
 import com.dero.juststudykorean.ui.games.minigames.CrosswordGame
 import com.dero.juststudykorean.ui.games.minigames.HangulWordleGame
+import com.dero.juststudykorean.ui.games.minigames.GamesSpeech
+import com.dero.juststudykorean.ui.games.minigames.LocalGamesSpeech
+import com.dero.juststudykorean.ui.testing.FakeKoreanSpeech
+import com.dero.juststudykorean.korean.games.RunnerQuestion
+import com.dero.juststudykorean.korean.grammar.Ending
+import androidx.compose.runtime.CompositionLocalProvider
 import com.dero.juststudykorean.ui.games.stage.StageScope
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** design/beta.md 7 (FASE_11_PLAN PR 10): Hangul Wordle and Crossword, in the scene and mid-round, light and dark. Invented content. */
+/** design/beta.md 7 (FASE_11_PLAN PR 10 and 11): Hangul Wordle, Crossword, Conjugation Runner and Speak It, in the scene and mid-round, light and dark. Invented content. */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w411dp-h905dp-420dpi")
@@ -52,4 +58,15 @@ class NewGamesScreenshotTest {
     @Test fun crosswordOpen() = snap("games_crossword_open") { Board { CrosswordGame(cross, false, {}, StageScope(), initial = mapOf(0 to "학"), startOpen = true) } }
     @Test fun crosswordOpenDark() = snap("games_crossword_open_dark", dark = true) { Board { CrosswordGame(cross, false, {}, StageScope(), initial = mapOf(0 to "학"), startOpen = true) } }
     @Test fun crosswordFilledDark() = snap("games_crossword_filled_dark", dark = true) { Board { CrosswordGame(cross, false, {}, StageScope(), initial = mapOf(0 to "학", 1 to "교", 4 to "실")) } }
+
+    private val runner = RoundSpec.ConjugationRunner(1, listOf(RunnerQuestion(GameFixtures.word("먹다", "To eat"), Ending.PoliteAeo, listOf("먹아요", "먹어요", "먹었어요"), "먹어요")), 6000)
+    private val speak = RoundSpec.SpeakIt(1, school)
+
+    @Composable
+    private fun WithSpeech(content: @Composable () -> Unit) = CompositionLocalProvider(LocalGamesSpeech provides GamesSpeech(FakeKoreanSpeech())) { content() }
+
+    @Test fun conjugationRunner() = snap("games_conjugation_runner") { Games(SessionState.Playing(REF, runner)) }
+    @Test fun conjugationRunnerDark() = snap("games_conjugation_runner_dark", dark = true) { Games(SessionState.Playing(REF, runner)) }
+    @Test fun speakIt() = snap("games_speak_it") { WithSpeech { Games(SessionState.Playing(REF, speak)) } }
+    @Test fun speakItDark() = snap("games_speak_it_dark", dark = true) { WithSpeech { Games(SessionState.Playing(REF, speak)) } }
 }
