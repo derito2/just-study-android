@@ -375,7 +375,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.Board(state: SessionS
             val answered = state is SessionState.Feedback
             val text = GAME_TEXTS.getValue(round.game)
             val (instruction, ko) = instructionOf(round, text)
-            Instruction(instruction, ko, hintOf(round))
+            Instruction(instruction, ko, tipOf(round), tipKey = round)
             Spacer(Modifier.height(12.dp))
             // The game sits in the middle of the space under its instruction (H: most games left the lower half empty); one taller
             // than that fills it and scrolls, as before.

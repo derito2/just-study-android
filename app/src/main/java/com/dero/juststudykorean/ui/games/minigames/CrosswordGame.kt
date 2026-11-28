@@ -70,9 +70,10 @@ fun CrosswordGame(spec: RoundSpec.Crossword, paused: Boolean, onResult: (RoundRe
     val c = JustStudyTheme.colors
     val solution = remember(spec) { spec.solution() }
     val filled = remember { mutableStateMapOf<Int, String>().apply { spec.givens.forEach { put(it, solution.getValue(it)) }; putAll(initial) } }
-    val done = remember { mutableStateMapOf<CrossEntry, Boolean>() }
-    var entry by remember { mutableStateOf(spec.entries.first()) }
-    var cell by remember { mutableIntStateOf(spec.entries.first().cells(spec.cols).first { it !in spec.givens }) }
+    // Level 1 shows a syllable of each word: a short word may have all its cells shown; it counts as solved from the start.
+    val done = remember { mutableStateMapOf<CrossEntry, Boolean>().apply { spec.entries.filter { e -> e.cells(spec.cols).all { it in filled } }.forEach { put(it, true) } } }
+    var entry by remember { mutableStateOf(spec.entries.firstOrNull { it !in done } ?: spec.entries.first()) }
+    var cell by remember { mutableIntStateOf(entry.cells(spec.cols).let { all -> all.firstOrNull { it !in filled } ?: all.first() }) }
     val ime = remember { HangulIme() }
     var text by remember { mutableStateOf("") }
     var mistakes by remember { mutableIntStateOf(0) }
@@ -95,7 +96,7 @@ fun CrosswordGame(spec: RoundSpec.Crossword, paused: Boolean, onResult: (RoundRe
     fun place() {
         val syllable = text.lastOrNull { it in '가'..'힣' }?.toString() ?: return
         clearIme()
-        if (locked(cell)) return
+        if (locked(cell)) cell = entry.cells(spec.cols).firstOrNull { !locked(it) && it !in filled } ?: return close() // never write on a shown cell
         filled[cell] = syllable
         val complete = spec.entries.filter { cell in it.cells(spec.cols) && it !in done && it.cells(spec.cols).all { k -> k in filled } }
         if (complete.isNotEmpty()) open = false // a full word closes the keys
@@ -141,7 +142,7 @@ fun CrosswordGame(spec: RoundSpec.Crossword, paused: Boolean, onResult: (RoundRe
                         val i = (p.y / CELL.toPx()).toInt() * spec.cols + (p.x / CELL.toPx()).toInt()
                         if (i !in solution) { close(); return@detectTapGestures }
                         if (paused || outcome != null) return@detectTapGestures
-                        val mine = spec.entries.filter { i in it.cells(spec.cols) }
+                        val mine = spec.entries.filter { i in it.cells(spec.cols) && it !in done }.ifEmpty { return@detectTapGestures }
                         select(if (i == cell && open && mine.size > 1) mine.first { it != entry } else mine.firstOrNull { it == entry } ?: mine.first(), i)
                     }
                 },

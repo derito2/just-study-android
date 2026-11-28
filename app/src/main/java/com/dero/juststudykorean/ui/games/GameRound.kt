@@ -67,13 +67,16 @@ fun instructionOf(spec: RoundSpec, text: GameText): Pair<String, String> = when 
     else -> text.instruction to text.instructionKo
 }
 
-/** The hint pill: the meaning of your notes, where the game shows one. */
-fun hintOf(spec: RoundSpec): String? = when (spec) {
+/**
+ * The round's tip (owner, PR 10): hidden behind the lightbulb until asked; null where the level gives none (then no
+ * button). Hangman, Word Scramble, Hangul Builder and Word Path: the meaning; Hangul Wordle: its first syllable (level 1).
+ */
+fun tipOf(spec: RoundSpec): String? = when (spec) {
     is RoundSpec.Hangman -> spec.item.meaning
     is RoundSpec.WordScramble -> spec.item.meaning
     is RoundSpec.HangulBuilder -> spec.item.meaning
     is RoundSpec.WordPath -> spec.item.meaning
-    is RoundSpec.HangulWordle -> spec.item.meaning
+    is RoundSpec.HangulWordle -> spec.firstSyllable?.let { "Starts with $it" }
     else -> null
 }
 

@@ -58,4 +58,39 @@ class NewGamesBehaviourTest {
         compose.onNodeWithText("DONE", ignoreCase = true).performClick()
         compose.onAllNodesWithContentDescription("Delete").assertCountEquals(0)
     }
+
+    /** Owner, PR 10, point 5: the tip hides behind the lightbulb ("Show tip") and stays once shown; no tip, no button. */
+    @Test
+    fun theTipShowsOnlyWhenAsked() {
+        compose.setContent { CompositionLocalProvider(LocalFrozenMotion provides true) { JustStudyTheme { com.dero.juststudykorean.ui.games.pieces.Instruction("Find the word.", "단어를 찾으세요.", "School", tipKey = 1) } } }
+        compose.onAllNodesWithContentDescription("Hint: School").assertCountEquals(0)
+        compose.onAllNodesWithContentDescription("Show tip").onLast().performClick()
+        compose.onAllNodesWithContentDescription("Hint: School").assertCountEquals(1)
+        compose.onAllNodesWithContentDescription("Show tip").assertCountEquals(0)
+    }
+
+    @Test
+    fun whichRoundsHaveATip() {
+        val wordle = RoundSpec.HangulWordle(1, GameFixtures.school, wordleJamo("학교", 5)!!, 6, "학")
+        org.junit.Assert.assertEquals("Starts with 학", tipOf(wordle))
+        org.junit.Assert.assertNull(tipOf(wordle.copy(level = 2, firstSyllable = null))) // no tip at this level: no button
+        org.junit.Assert.assertEquals("Library", tipOf(RoundSpec.Hangman(1, GameFixtures.library, false, listOf("도", "서", "관"), emptyList())))
+    }
+
+    /** Phone test, PR 10: at level 1 a 2-syllable word can have both its cells shown (one is another word's); no crash. */
+    @Test
+    fun aFirstWordWithEveryCellShownDoesNotCrash() {
+        val spec = RoundSpec.Crossword(1, 2, 2, listOf(CrossEntry(GameFixtures.school, 0, 0, true, 1), CrossEntry(GameFixtures.word("교실", "Classroom"), 0, 1, false, 2)), setOf(0, 1))
+        var result: com.dero.juststudykorean.korean.games.RoundResult? = null
+        compose.setContent { CompositionLocalProvider(LocalFrozenMotion provides true) { JustStudyTheme { CrosswordGame(spec, false, { result = it }, StageScope()) } } }
+        compose.onAllNodesWithText("Across").assertCountEquals(1)
+        compose.onNodeWithText("1. School ✓").assertExists() // all its syllables shown: solved from the start
+        // The other word only lacks 실: writing it wins the round (the cursor never sits on a shown cell).
+        compose.onNodeWithText("2. Classroom").performClick()
+        listOf("시옷", "이", "리을").forEach(::key)
+        compose.onNodeWithText("CHECK", ignoreCase = true).performClick()
+        compose.mainClock.advanceTimeBy(2_000)
+        compose.waitForIdle()
+        org.junit.Assert.assertEquals(com.dero.juststudykorean.korean.games.Outcome.WON, result?.outcome)
+    }
 }

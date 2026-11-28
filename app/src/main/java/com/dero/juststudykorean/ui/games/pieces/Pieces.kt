@@ -27,6 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -144,17 +147,31 @@ fun Slot(index: Int, total: Int, modifier: Modifier = Modifier, width: Dp = 56.d
     )
 }
 
-/** The instruction (one line and its Korean below) and, at its right, the optional hint pill with the meaning. */
+/**
+ * The instruction (one line and its Korean below) and, at its right, the tip (owner, PR 10): a lightbulb button
+ * (24 dp, `control`, 48 dp touch, TalkBack "Show tip"); tapped, the tip fades in (150 ms; at once with Remove
+ * animations) and stays until the next round ([tipKey]). No tip, no button. Asking for it never changes the score.
+ */
 @Composable
-fun Instruction(text: String, ko: String, hint: String? = null, modifier: Modifier = Modifier) {
+fun Instruction(text: String, ko: String, tip: String? = null, modifier: Modifier = Modifier, tipKey: Any? = null) {
     val c = JustStudyTheme.colors
+    var shown by remember(tipKey) { mutableStateOf(false) }
+    val still = LocalFrozenMotion.current || reduceMotion()
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1f)) {
             // G-1: the first thing to read was the smallest text on the screen: English 16 sp 700, Korean 12 sp.
             Text(text, style = JustStudyTheme.korean.bodyBold.copy(fontSize = 16.sp), color = MaterialTheme.colorScheme.onSurface, maxLines = 2)
             Text(ko, style = JustStudyTheme.korean.koBelow.copy(fontSize = 12.sp), color = c.muted)
         }
-        if (hint != null) Hint(hint)
+        if (tip != null) {
+            if (!shown) Box(
+                Modifier.size(48.dp).clickable(role = Role.Button, onClickLabel = "Show tip") { shown = true }.semantics { contentDescription = "Show tip" },
+                contentAlignment = Alignment.Center,
+            ) { LucideIcon(Lucide.Lightbulb, contentDescription = null, size = 24.dp, tint = c.control) }
+            androidx.compose.animation.AnimatedVisibility(shown, enter = if (still) androidx.compose.animation.EnterTransition.None else androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(Motion.Fast))) {
+                Hint(tip)
+            }
+        }
     }
 }
 
