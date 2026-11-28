@@ -81,7 +81,16 @@ class NewGamesBehaviourTest {
     @Test
     fun aFirstWordWithEveryCellShownDoesNotCrash() {
         val spec = RoundSpec.Crossword(1, 2, 2, listOf(CrossEntry(GameFixtures.school, 0, 0, true, 1), CrossEntry(GameFixtures.word("교실", "Classroom"), 0, 1, false, 2)), setOf(0, 1))
-        compose.setContent { CompositionLocalProvider(LocalFrozenMotion provides true) { JustStudyTheme { CrosswordGame(spec, false, {}, StageScope()) } } }
+        var result: com.dero.juststudykorean.korean.games.RoundResult? = null
+        compose.setContent { CompositionLocalProvider(LocalFrozenMotion provides true) { JustStudyTheme { CrosswordGame(spec, false, { result = it }, StageScope()) } } }
         compose.onAllNodesWithText("Across").assertCountEquals(1)
+        compose.onNodeWithText("1. School ✓").assertExists() // all its syllables shown: solved from the start
+        // The other word only lacks 실: writing it wins the round (the cursor never sits on a shown cell).
+        compose.onNodeWithText("2. Classroom").performClick()
+        listOf("시옷", "이", "리을").forEach(::key)
+        compose.onNodeWithText("CHECK", ignoreCase = true).performClick()
+        compose.mainClock.advanceTimeBy(2_000)
+        compose.waitForIdle()
+        org.junit.Assert.assertEquals(com.dero.juststudykorean.korean.games.Outcome.WON, result?.outcome)
     }
 }
