@@ -118,7 +118,22 @@ sealed class RoundSpec {
         /** Every cell's syllable. */
         fun solution(): Map<Int, String> = entries.flatMap { e -> e.cells(cols).zip(e.item.blocks) }.toMap()
     }
+
+    /** F7: 10 forms of your verbs to tap before they fall [fallMs] (with "Remove animations": a 5 s counter). */
+    data class ConjugationRunner(override val level: Int, val questions: List<RunnerQuestion>, val fallMs: Int) : RoundSpec() {
+        override val game get() = GameType.ConjugationRunner
+        override val targets get() = questions.map { it.item.key }.distinct()
+    }
+
+    /** F7: the English of a word of your notes, said in Korean. Never graded (D9-6, D11-8). */
+    data class SpeakIt(override val level: Int, val item: GameItem) : RoundSpec() {
+        override val game get() = GameType.SpeakIt
+        override val targets get() = listOf(item.key)
+    }
 }
+
+/** One form of Conjugation Runner: [answer] is the only form of [options] that `conjugate` gives. */
+data class RunnerQuestion(val item: GameItem, val ending: com.dero.juststudykorean.korean.grammar.Ending, val options: List<String>, val answer: String)
 
 /** A word of the crossword: its first cell, its direction and its clue's number. */
 data class CrossEntry(val item: GameItem, val row: Int, val col: Int, val across: Boolean, val number: Int) {

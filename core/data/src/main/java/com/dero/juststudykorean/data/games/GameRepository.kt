@@ -78,6 +78,13 @@ class GameRepository @Inject constructor(
                     durationSeconds = session.durationSeconds + (minOf(result.responseMs, ROUND_CAP_MS) + 500) / 1000,
                 ),
             )
+            if (game == GameType.SpeakIt) { // D11-8: what you said is never graded; the word only counts as seen
+                for (key in result.itemKeys.distinct()) {
+                    val old = db.gameItemProgressDao().get(key)
+                    db.gameItemProgressDao().upsert(old?.copy(seen = old.seen + 1, lastSeenAt = at) ?: GameItemProgressEntity(key, 1, 0, 0, 0, at, null))
+                }
+                return@withWriteTransaction
+            }
             if (result.outcome == Outcome.NEUTRAL) return@withWriteTransaction
             for (key in result.itemKeys.distinct()) {
                 val old = db.gameItemProgressDao().get(key)?.stats()
@@ -85,7 +92,7 @@ class GameRepository @Inject constructor(
                 db.gameItemProgressDao().upsert(GameItemProgressEntity(key, p.seen, p.correct, p.wrong, p.streak, p.lastSeenAt, p.lastWrongAt))
             }
         }
-        if (result.outcome != Outcome.NEUTRAL) words?.refresh(result.itemKeys.filter { it.startsWith("w:") }.map { it.removePrefix("w:") })
+        if (result.outcome != Outcome.NEUTRAL || game == GameType.SpeakIt) words?.refresh(result.itemKeys.filter { it.startsWith("w:") }.map { it.removePrefix("w:") })
     }
 
     suspend fun endSession(id: Long) = db.withWriteTransaction {

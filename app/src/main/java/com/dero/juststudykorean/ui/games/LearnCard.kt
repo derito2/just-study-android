@@ -46,6 +46,8 @@ fun learnOf(round: RoundSpec, result: RoundResult, progress: Map<String, ItemSta
         is RoundSpec.SoundDetective.SameOrDifferent -> Learn(round.first.korean, round.first.meaning, key = round.first.key)
         is RoundSpec.HangulWordle -> round.item.word()
         is RoundSpec.Crossword -> many(round.entries.map { it.item })
+        is RoundSpec.ConjugationRunner -> many(round.questions.map { it.item }.distinct())
+        is RoundSpec.SpeakIt -> round.item.word()
     }
     // Mastered: this round took the word's streak to 3 (the progress is already updated when the card shows).
     val streak = learn?.key?.let { progress[it]?.streak }

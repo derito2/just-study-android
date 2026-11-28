@@ -220,9 +220,12 @@ class FactoriesTest {
 
     @Test
     fun everyGameIsAvailableWithThisBankAndTheVoice() {
-        for (game in GameType.entries) assertTrue("$game", available(game, BANK, voice = true))
-        assertTrue(GameType.entries.filter { it.needsVoice }.none { available(it, BANK, voice = false) })
-        assertTrue(GameType.entries.none { available(it, GameBank(WORDS.take(5), SENTENCES), voice = true) })
+        for (game in GameType.entries) assertTrue("$game", available(game, BANK, voice = true, mic = true))
+        assertTrue(GameType.entries.filter { it.needsVoice }.none { available(it, BANK, voice = false, mic = true) })
+        // PR 11: Speak It only with the speech recognizer ready and the microphone not refused.
+        assertEquals(listOf(GameType.SpeakIt), GameType.entries.filter { it.needsMic })
+        assertTrue(GameType.entries.filter { it.needsMic }.none { available(it, BANK, voice = true, mic = false) })
+        assertTrue(GameType.entries.none { available(it, GameBank(WORDS.take(5), SENTENCES), voice = true, mic = true) })
     }
 
     @Test
@@ -263,5 +266,32 @@ class FactoriesTest {
             assertEquals(made.first(), FACTORIES.getValue(GameType.Crossword).build(ctx(level, SEEDS.first { s -> FACTORIES.getValue(GameType.Crossword).build(ctx(level, s, CROSS_BANK)) != null }, CROSS_BANK)))
         }
         assertNull(FACTORIES.getValue(GameType.Crossword).build(ctx(1, 0, GameBank(emptyList(), emptyList()))))
+    }
+
+    // FASE_11_PLAN PR 11 (F7): Conjugation Runner and Speak It.
+
+    @Test fun conjugationRunner() = each(GameType.ConjugationRunner) { spec, level ->
+        spec as RoundSpec.ConjugationRunner
+        assertEquals(RUNNER_FORMS, spec.questions.size)
+        assertEquals(when (level) { 1 -> 6000; 2 -> 4500; else -> 3500 }, spec.fallMs)
+        for (q in spec.questions) {
+            val right = com.dero.juststudykorean.korean.grammar.conjugate(q.item.korean, q.ending, com.dero.juststudykorean.korean.grammar.wordKindOf(q.item.korean, q.item.meaning))
+            assertTrue("${q.item.korean} ${q.ending}: only verbs and endings conjugate knows", q.answer in right)
+            assertEquals(if (level == 1) 3 else 4, q.options.size)
+            assertEquals(q.options.size, q.options.distinct().size)
+            assertEquals("one right form on screen", 1, q.options.count { it in right })
+            if (level == 1) assertTrue(q.ending in RUNNER_LEVEL_1)
+        }
+        assertEquals("no pair twice", spec.questions.size, spec.questions.map { it.item.key to it.ending }.distinct().size)
+        assertTrue("several verbs", spec.questions.map { it.item.key }.distinct().size >= 3)
+        assertEquals(spec.questions.map { it.item.key }.distinct(), spec.targets)
+    }
+
+    @Test fun speakIt() = each(GameType.SpeakIt) { spec, level ->
+        spec as RoundSpec.SpeakIt
+        assertTrue(spec.item.blocks.size <= when (level) { 1 -> 2; 2 -> 3; else -> 5 })
+        val mine = englishSenses(spec.item.meaning)
+        assertTrue("the English points to one word of the notes", WORDS.none { it != spec.item && (englishSenses(it.meaning) intersect mine).isNotEmpty() })
+        assertEquals(listOf(spec.item.key), spec.targets)
     }
 }

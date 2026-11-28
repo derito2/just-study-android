@@ -176,7 +176,7 @@ fun GamesScreen(onBack: () -> Unit, onLibrary: () -> Unit, vm: GamesViewModel = 
     }
     BackHandler { if (state is SessionState.Ended || state is SessionState.Empty || state is SessionState.Failed) onBack() else vm.pause() }
     val speakWord by vm.speakWord.collectAsStateWithLifecycle()
-    CompositionLocalProvider(LocalGameBank provides bank, LocalKoreanVoice provides vm.voice, LocalSpeakWord provides SpeakWordSetting(speakWord, vm::setSpeakWord), LocalItemProgress provides vm::itemProgress) {
+    CompositionLocalProvider(LocalGameBank provides bank, LocalKoreanVoice provides vm.voice, com.dero.juststudykorean.ui.games.minigames.LocalGamesSpeech provides remember(vm) { com.dero.juststudykorean.ui.games.minigames.GamesSpeech(vm.speech, { vm.micDenied() }, { vm.micGranted() }) }, LocalSpeakWord provides SpeakWordSetting(speakWord, vm::setSpeakWord), LocalItemProgress provides vm::itemProgress) {
         GamesContent(
             state, counts, typingTimer,
             onResult = vm::submit, onFeedbackDone = { vm.feedbackDone() }, onPause = vm::pause, onResume = vm::resume,
@@ -466,7 +466,7 @@ private fun FeedbackRibbon(round: RoundSpec, result: RoundResult, counts: Sessio
     val (title, ko) = when {
         result.timedOut -> "Time's up" to "시간 종료"
         won -> when (counts.streak) { 3 -> "Three in a row!"; 5 -> "On fire!"; 10 -> "Unstoppable!"; else -> "Correct!" } to "정답!"
-        result.outcome == Outcome.NEUTRAL -> neutralText(round) to null
+        result.outcome == Outcome.NEUTRAL -> neutralText(round, result) to null
         counts.lostInARow > 2 -> "Almost. Keep going." to "아쉬워요"
         else -> "Not quite" to "아쉬워요"
     }

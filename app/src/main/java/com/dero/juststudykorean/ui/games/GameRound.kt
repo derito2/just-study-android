@@ -21,13 +21,13 @@ import com.dero.juststudykorean.ui.games.minigames.WordScrambleGame
 import com.dero.juststudykorean.ui.games.minigames.WordSortGame
 import com.dero.juststudykorean.ui.games.stage.StageScope
 
-/** The 15 games; the two listening games only come when the phone has an offline Korean voice (the engine checks). */
+/** The 17 games; the two listening games only come with an offline Korean voice, Speak It with the speech recognizer and the microphone (the engine checks). */
 val PLAYABLE: Set<GameType> = setOf(
     GameType.ListenGuess, GameType.SoundDetective,
     GameType.WordMatch, GameType.MemoryFlip, GameType.WordScramble, GameType.SentenceBuilder, GameType.WordRecall,
     GameType.Hangman, GameType.HangulBuilder, GameType.HangulTyping,
     GameType.WordSort, GameType.WordPath, GameType.GrammarFixer,
-    GameType.HangulWordle, GameType.Crossword,
+    GameType.HangulWordle, GameType.Crossword, GameType.ConjugationRunner, GameType.SpeakIt,
 )
 
 /** The bank of your notes, for Word Path's "another word of your notes" (empty in tests and before it loads). */
@@ -55,6 +55,8 @@ fun GameRound(spec: RoundSpec, paused: Boolean, stage: StageScope, timer: Boolea
         is RoundSpec.SoundDetective -> SoundDetectiveGame(spec, paused, onResult, stage)
         is RoundSpec.HangulWordle -> com.dero.juststudykorean.ui.games.minigames.HangulWordleGame(spec, paused, onResult, stage)
         is RoundSpec.Crossword -> com.dero.juststudykorean.ui.games.minigames.CrosswordGame(spec, paused, onResult, stage)
+        is RoundSpec.ConjugationRunner -> com.dero.juststudykorean.ui.games.minigames.ConjugationRunnerGame(spec, paused, onResult, stage)
+        is RoundSpec.SpeakIt -> com.dero.juststudykorean.ui.games.minigames.SpeakItGame(spec, paused, onResult, stage)
     }
 }
 
@@ -90,12 +92,15 @@ fun answerOf(spec: RoundSpec): String? = when (spec) {
     is RoundSpec.HangulWordle -> "${spec.item.korean} — ${spec.item.meaning}"
     is RoundSpec.SentenceBuilder -> spec.item.korean
     is RoundSpec.GrammarFixer -> spec.item.korean
+    is RoundSpec.SpeakIt -> "${spec.item.korean} — ${spec.item.meaning}"
+    is RoundSpec.ConjugationRunner -> null // each form was shown as it went
     is RoundSpec.WordRecall -> spec.sequence.joinToString(" · ") { it.korean }
     else -> null
 }
 
-/** The neutral ribbon's text (Sentence Builder: another right order). */
-fun neutralText(spec: RoundSpec): String = when (spec) {
+/** The neutral ribbon's text (Sentence Builder: another right order; Speak It: said, or skipped; never "Not quite", D9-6). */
+fun neutralText(spec: RoundSpec, result: RoundResult? = null): String = when (spec) {
     is RoundSpec.SentenceBuilder -> "Your notes say it this way:"
+    is RoundSpec.SpeakIt -> if (result?.failedKeys.isNullOrEmpty()) "You said it!" else "Here it is:"
     else -> "Almost."
 }

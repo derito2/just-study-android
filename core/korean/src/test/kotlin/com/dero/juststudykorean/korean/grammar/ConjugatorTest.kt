@@ -123,6 +123,11 @@ class ConjugatorTest {
         assertTrue("듣어서" in commonMistakes("듣다", SoBecause, Verb)) // the irregular done as a regular
         assertTrue("가아서" in commonMistakes("가다", SoBecause, Verb)) // no contraction
         assertTrue("살니까" in commonMistakes("살다", Because, Verb)) // ㄹ that should drop
+        // Phone, PR 11: a 하다 word whose form contracts (유명합니다) gave "유명하으유명합니다". Never a form glued to the right one.
+        for (e in Ending.entries) for ((v, k) in listOf("공부하다" to Verb, "유명하다" to Adjective, "보다" to Verb, "마시다" to Verb)) {
+            val right = conjugate(v, e, k)
+            assertTrue("$v ${e.label}: ${commonMistakes(v, e, k)}", commonMistakes(v, e, k).none { w -> right.any { r -> r in w } })
+        }
     }
 
     @Test

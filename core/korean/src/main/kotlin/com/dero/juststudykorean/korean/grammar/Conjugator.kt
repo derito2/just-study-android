@@ -223,7 +223,10 @@ fun commonMistakes(verb: String, ending: Ending, kind: WordKind? = null): Set<St
             wrong += attach(stem + "으", rest) // 으 where it doesn't go (가으면, 살으면), or the irregular done as a regular (듣으면)
             wrong += attach(stem, rest) // no 으 (먹면), or ㄹ kept (살니까)
         }
-        else -> { wrong += stem + "어" + (PLAIN[ending] ?: right.first().removePrefix(stem)); wrong += stem + "으" + (PLAIN[ending] ?: right.first().removePrefix(stem)) }
+        else -> { // the rest after the stem; none when the form contracts the stem (공부하 → 공부합니다): no glued form
+            val rest = PLAIN[ending] ?: right.first().takeIf { it.startsWith(stem) }?.removePrefix(stem)
+            if (rest != null) { wrong += stem + "어" + rest; wrong += stem + "으" + rest }
+        }
     }
     return wrong.filterNotNull().filter { it !in right && it.isNotBlank() }.toCollection(LinkedHashSet())
 }

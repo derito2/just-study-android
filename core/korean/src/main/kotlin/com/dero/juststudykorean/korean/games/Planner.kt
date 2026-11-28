@@ -19,7 +19,10 @@ data class SessionInputs(
     fun after(game: GameType, result: RoundResult): SessionInputs {
         if (result.outcome == Outcome.SKIPPED) return this
         val p = progress.toMutableMap()
-        if (result.outcome != Outcome.NEUTRAL) for (key in result.itemKeys.distinct()) {
+        if (game == GameType.SpeakIt) for (key in result.itemKeys.distinct()) { // D11-8: only seen, as the repository saves it
+            val at = maxOf(startedAt, p[key]?.lastSeenAt ?: 0)
+            p[key] = p[key]?.let { it.copy(seen = it.seen + 1, lastSeenAt = at) } ?: ItemStats(1, 0, 0, 0, at, null)
+        } else if (result.outcome != Outcome.NEUTRAL) for (key in result.itemKeys.distinct()) {
             p[key] = progressAfter(p[key], wrong = key in result.failedKeys || result.outcome == Outcome.LOST, at = maxOf(startedAt, p[key]?.lastSeenAt ?: 0))
         }
         val outcomes = lastOutcomes.toMutableMap().also { it[game] = listOf(result.outcome) + it[game].orEmpty() }
@@ -53,6 +56,6 @@ fun planRound(inputs: SessionInputs, index: Int): RoundPlan? {
     return null
 }
 
-/** The games that can be played with this bank (and the voice), with their number of valid items. */
-fun availableGames(bank: GameBank, voice: Boolean): Map<GameType, Int> =
-    GameType.entries.filter { available(it, bank, voice) }.associateWith { validItems(it, bank) }
+/** The games that can be played with this bank (and the voice, and the microphone), with their number of valid items. */
+fun availableGames(bank: GameBank, voice: Boolean, mic: Boolean = false): Map<GameType, Int> =
+    GameType.entries.filter { available(it, bank, voice, mic) }.associateWith { validItems(it, bank) }

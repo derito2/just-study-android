@@ -24,6 +24,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import com.dero.juststudykorean.korean.games.GameType
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -77,8 +78,8 @@ class GameSessionEngineTest {
 
     private fun db() = Room.inMemoryDatabaseBuilder(context, JustStudyDatabase::class.java).setDriver(AndroidSQLiteDriver()).build().also { dbs += it }
 
-    private fun engine(db: JustStudyDatabase, voice: Boolean = true, seed: Long = 42) =
-        GameSessionEngine({ bank }, GameRepository(db, clock), clock, FakeKoreanVoice(voice), scope, Dispatchers.Default, newSeed = { seed })
+    private fun engine(db: JustStudyDatabase, voice: Boolean = true, seed: Long = 42, mic: Boolean = false) =
+        GameSessionEngine({ bank }, GameRepository(db, clock), clock, FakeKoreanVoice(voice), scope, Dispatchers.Default, newSeed = { seed }, mic = { mic })
 
     private fun result(spec: RoundSpec, won: Boolean) =
         RoundResult(if (won) Outcome.WON else Outcome.LOST, if (won) 0 else 1, 3000, spec.targets, if (won) emptyList() else spec.targets)
@@ -106,6 +107,12 @@ class GameSessionEngineTest {
         rounds.forEachIndexed { i, r -> rounds.subList(maxOf(0, i - 8), i).forEach { prev -> assertTrue((r.targets intersect prev.targets.toSet()).isEmpty()) } }
         assertTrue(rounds.none { it.game.needsVoice })
         assertTrue(rounds.map { it.game }.toSet().size >= 8)
+    }
+
+    @Test
+    fun speakItComesOnlyWithTheMicrophone() = runBlocking { // FASE_11_PLAN PR 11: speech ready and the microphone not refused
+        assertTrue(engine(db()).also { it.start() }.play(120, Random(4)).none { it.game == GameType.SpeakIt })
+        assertTrue(engine(db(), mic = true).also { it.start() }.play(120, Random(4)).any { it.game == GameType.SpeakIt })
     }
 
     @Test

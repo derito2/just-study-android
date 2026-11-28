@@ -32,6 +32,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import com.dero.juststudykorean.data.speech.KoreanSpeech
+import com.dero.juststudykorean.data.speech.SpeechAvailability
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 /** What the bar, the pause sheet and the summary count in this session (design/games.md 5, 9, 10). */
 data class SessionCounts(
@@ -64,12 +71,15 @@ class GamesViewModel @Inject constructor(
     private val prefs: UserPrefs,
     private val saved: SavedStateHandle,
     voices: KoreanVoices,
+    /** Speak It (PR 11): the recognizer, and the context only to read whether the microphone is granted. */
+    val speech: KoreanSpeech? = null,
+    @ApplicationContext private val context: Context? = null,
 ) : ViewModel() {
     private val source: BankSource = content
     /** 4.11: made when Games opens, released when it closes; a call or another app taking the audio pauses. */
     val voice: KoreanVoice = voices.create().also { v -> v.onInterrupted = { viewModelScope.launch(Dispatchers.Main) { pause() } } }
     val voiceMissing: StateFlow<Boolean> = voice.state.map { it == VoiceState.Missing }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
-    private val engine = GameSessionEngine(source, repository, clock, voice = voice, scope = viewModelScope, games = PLAYABLE)
+    private val engine = GameSessionEngine(source, repository, clock, voice = voice, scope = viewModelScope, games = PLAYABLE, mic = ::micReady)
     val state: StateFlow<SessionState> = engine.state
     private val _counts = MutableStateFlow(SessionCounts())
     val counts: StateFlow<SessionCounts> = _counts.asStateFlow()
@@ -158,4 +168,17 @@ class GamesViewModel @Inject constructor(
 
     val speakWord: StateFlow<Boolean> = prefs.gamesSpeakWord.stateIn(viewModelScope, SharingStarted.Eagerly, true)
     fun setSpeakWord(on: Boolean) = viewModelScope.launch { prefs.setGamesSpeakWord(on) }
+
+    /** Speak It enters the draw with the recognizer ready and the microphone granted or never refused here (granted in Android's settings clears the refusal). */
+    private suspend fun micReady(): Boolean {
+        val s = speech ?: return false
+        if (runCatchingCancellable { s.availability() }.getOrNull() != SpeechAvailability.Ready) return false
+        val granted = context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED } == true
+        if (granted) { prefs.setGamesMicDenied(false); return true }
+        return !prefs.gamesMicDenied.first()
+    }
+
+    /** You refused the microphone in Speak It: it leaves the draw (from the next session) until it is granted. */
+    fun micDenied() = viewModelScope.launch { prefs.setGamesMicDenied(true) }
+    fun micGranted() = viewModelScope.launch { prefs.setGamesMicDenied(false) }
 }
