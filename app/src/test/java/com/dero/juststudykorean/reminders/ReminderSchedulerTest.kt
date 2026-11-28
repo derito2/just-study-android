@@ -45,4 +45,19 @@ class ReminderSchedulerTest {
         assertEquals(at(8, 0, day = 9), nextAt(8 * 60, at(18, 30), zone))
         assertEquals(at(20, 0, day = 9), nextAt(20 * 60, at(20, 0), zone)) // just fired: tomorrow's
     }
+
+    /** Release builds (not debuggable): the 15-minute window; the 1-minute one is only for debug and QA builds. */
+    @Test
+    fun releaseUsesTheFifteenMinuteWindow() {
+        val info = context.applicationInfo
+        val before = info.flags
+        try {
+            info.flags = info.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE.inv()
+            ReminderScheduler(context, FixedClock(at(18, 30), zone)).schedule(Reminder(on = true))
+            assertEquals(15 * 60_000L, alarms.scheduledAlarms.single().windowLengthMs)
+            assertEquals(ReminderScheduler.WINDOW_MS, alarms.scheduledAlarms.single().windowLengthMs)
+        } finally {
+            info.flags = before
+        }
+    }
 }

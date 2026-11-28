@@ -18,6 +18,7 @@ class JustStudyApp : Application() {
     override fun onCreate() {
         super.onCreate()
         // D11-7: without RECEIVE_BOOT_COMPLETED a reboot drops the alarm; opening the app once sets it again.
-        CoroutineScope(Dispatchers.IO).launch { reminders.schedule(prefs.reminder.first()) }
+        // Main: DataStore reads off the main thread on its own; the alarm is set on main, never racing another caller.
+        CoroutineScope(Dispatchers.Main).launch { reminders.schedule(prefs.reminder.first()) }
     }
 }
