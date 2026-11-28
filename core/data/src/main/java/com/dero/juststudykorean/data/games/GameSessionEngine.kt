@@ -62,6 +62,8 @@ class GameSessionEngine(
     private val newSeed: () -> Long = { Random.nextLong() },
     /** The games this build can show (PR B: no listening games); the rest are never planned. */
     private val games: Set<GameType> = GameType.entries.toSet(),
+    /** Speak It (PR 11): the speech recognizer is ready and the microphone was not refused; asked at each session's start. */
+    private val mic: suspend () -> Boolean = { false },
 ) {
     private val _state = MutableStateFlow<SessionState>(SessionState.Preparing)
     val state: StateFlow<SessionState> = _state.asStateFlow()
@@ -78,7 +80,7 @@ class GameSessionEngine(
         try {
             _state.value = SessionState.Preparing
             val bank = content.bank()
-            val available = availableGames(bank, voice?.state?.value == VoiceState.Ready).filterKeys { it in games }
+            val available = availableGames(bank, voice?.state?.value == VoiceState.Ready, mic()).filterKeys { it in games }
             if (bank.words.size < MIN_BANK_WORDS || available.isEmpty()) { _state.value = SessionState.Empty; return@withLock }
             val old = resume?.let { repository.session(it.sessionId) }
             val now = clock.now().toEpochMilli()

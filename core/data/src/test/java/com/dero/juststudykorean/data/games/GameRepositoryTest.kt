@@ -51,6 +51,23 @@ class GameRepositoryTest {
     }
 
     @Test
+    fun speakItOnlyAddsSeenAndIsNeverGraded() = runBlocking { // D11-8: Speak It never counts for mastered
+        val id = repo.startSession(seed = 3)
+        repo.saveRound(id, 0, GameType.WordMatch, 1, result(Outcome.WON, 1000, "w:사과"))
+        repo.saveRound(id, 1, GameType.SpeakIt, 1, result(Outcome.NEUTRAL, 4000, "w:사과"))
+        repo.saveRound(id, 2, GameType.SpeakIt, 1, result(Outcome.NEUTRAL, 4000, "w:우유", failed = listOf("w:우유"))) // skipped
+        val apple = repo.progress().getValue("w:사과")
+        assertEquals(2L, apple.seen)
+        assertEquals(1L, apple.correct)
+        assertEquals(0L, apple.wrong)
+        assertEquals(1L, apple.streak)
+        val milk = repo.progress().getValue("w:우유")
+        assertEquals(listOf(1L, 0L, 0L, 0L), listOf(milk.seen, milk.correct, milk.wrong, milk.streak))
+        assertEquals(1, db.gameRoundsDao().gradedKeys().size) // saved as neutral: not graded
+        assertEquals(1L, repo.session(id)!!.won)
+    }
+
+    @Test
     fun itemProgressByTextKey() = runBlocking {
         val id = repo.startSession(seed = 1)
         repo.saveRound(id, 0, GameType.WordMatch, 1, result(Outcome.WON, 1000, "w:사과"))

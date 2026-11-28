@@ -46,6 +46,14 @@ class UserPrefsTest {
     }
 
     @Test
+    fun theGamesMicrophoneRefusalPersists() { // PR 11: Speak It stays out of the draw
+        val file = File(tmp.root, "prefs.preferences_pb")
+        assertEquals(false, withPrefs(file) { it.gamesMicDenied.first() })
+        withPrefs(file) { it.setGamesMicDenied(true) }
+        assertEquals(true, withPrefs(file) { it.gamesMicDenied.first() })
+    }
+
+    @Test
     fun skippedRepeatsPersist() { // R1-14
         val file = File(tmp.root, "prefs.preferences_pb")
         withPrefs(file) { it.addSkippedDuplicates(listOf("3:word:학교")); it.addSkippedDuplicates(listOf("3:grammar:거든")) }

@@ -68,6 +68,9 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
     /** D10-3: the Korean voice says the word at the end of each Games round. On by default. */
     val gamesSpeakWord: Flow<Boolean> = store.data.map { it[GAMES_SPEAK_WORD] ?: true }
     suspend fun setGamesSpeakWord(on: Boolean) { store.edit { it[GAMES_SPEAK_WORD] = on } }
+    /** Speak It (PR 11): you refused the microphone in Games; it leaves the draw until Android says it is granted. */
+    val gamesMicDenied: Flow<Boolean> = store.data.map { it[GAMES_MIC_DENIED] ?: false }
+    suspend fun setGamesMicDenied(on: Boolean) { store.edit { it[GAMES_MIC_DENIED] = on } }
 
     /** R1-14: repeats you skipped ("{document}:{kind}:{text}"), not asked again when the document is reprocessed. */
     val skippedDuplicates: Flow<Set<String>> = store.data.map { it[SKIPPED_DUPLICATES].orEmpty() }
@@ -109,6 +112,7 @@ class UserPrefs @Inject constructor(private val store: DataStore<Preferences>) {
         val DECKS_LAYOUT = stringPreferencesKey("decks_layout")
         val SKIPPED_DUPLICATES = stringSetPreferencesKey("skipped_duplicates")
         val GAMES_SPEAK_WORD = booleanPreferencesKey("games_speak_word")
+        val GAMES_MIC_DENIED = booleanPreferencesKey("games_mic_denied")
         val TYPING_TIMER = booleanPreferencesKey("typing_timer")
         val CARD_DIRECTION = stringPreferencesKey("card_direction")
         val TYPE_ANSWER = booleanPreferencesKey("type_answer")
