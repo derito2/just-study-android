@@ -93,6 +93,9 @@ object Evaluators {
 
     fun wordleWon(target: List<Char>, guess: List<Char>) = target == guess
 
+    /** F7, Conjugation Runner: won with [RUNNER_WIN] of the [RUNNER_FORMS] forms right. */
+    fun runnerWon(right: Int) = right >= RUNNER_WIN
+
     /** F7, Crossword: the word's cells hold its syllables. */
     fun crossWord(entry: CrossEntry, spec: RoundSpec.Crossword, filled: Map<Int, String>) = entry.cells(spec.cols).map { filled[it] } == entry.item.blocks
 
@@ -121,3 +124,10 @@ fun wordleCandidates(bank: GameBank): List<Pair<GameItem, List<Char>>> {
 /** A typed guess as jamo, only if it is whole syllables of [length] jamo; else null. */
 fun wordleJamo(text: String, length: Int): List<Char>? =
     text.trim().takeIf { t -> t.isNotEmpty() && t.all { it in '가'..'힣' } }?.flatMap { com.dero.juststudykorean.korean.hangul.jamoOf(it) }?.takeIf { it.size == length }
+
+/** Conjugation Runner (F7): forms per round, how many win it, and level 1's endings (the polite ones). */
+const val RUNNER_FORMS = 10
+const val RUNNER_WIN = 8
+val RUNNER_LEVEL_1: List<com.dero.juststudykorean.korean.grammar.Ending> = listOf(
+    com.dero.juststudykorean.korean.grammar.Ending.PoliteAeo, com.dero.juststudykorean.korean.grammar.Ending.PastPolite, com.dero.juststudykorean.korean.grammar.Ending.Formal,
+)

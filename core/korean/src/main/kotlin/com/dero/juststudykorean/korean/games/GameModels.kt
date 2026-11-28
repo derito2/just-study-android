@@ -5,12 +5,15 @@ import kotlin.random.Random
 // FASE_8_PLAN 2 and 4.1: what Games plays with. Pure Kotlin: no Compose, no android.*.
 
 /** The gesture family of a game (design/games-minigames.md, first table). */
-enum class Gesture { Keyboard, Match, Order, Listen, Build, Drag, Correct, Trace }
+enum class Gesture { Keyboard, Match, Order, Listen, Build, Drag, Correct, Trace, Speak }
 
-enum class Skill { Writing, Vocabulary, Structure, Memory, Listening, Grammar }
+enum class Skill { Writing, Vocabulary, Structure, Memory, Listening, Grammar, Speaking }
 
-/** The 15 games (Hangul Wordle and Crossword: phase 11, F7). [gentle] / [demanding]: how the selector weighs them after two lost rounds (5.2). */
-enum class GameType(val gesture: Gesture, val skill: Skill, val gentle: Boolean = false, val demanding: Boolean = false, val needsVoice: Boolean = false) {
+/**
+ * The 17 games (Hangul Wordle, Crossword, Conjugation Runner and Speak It: phase 11, F7). [gentle] / [demanding]: how the
+ * selector weighs them after two lost rounds (5.2). [needsMic]: only with the speech recognizer ready and the microphone not refused.
+ */
+enum class GameType(val gesture: Gesture, val skill: Skill, val gentle: Boolean = false, val demanding: Boolean = false, val needsVoice: Boolean = false, val needsMic: Boolean = false) {
     Hangman(Gesture.Keyboard, Skill.Writing),
     WordMatch(Gesture.Match, Skill.Vocabulary, gentle = true),
     SentenceBuilder(Gesture.Order, Skill.Structure),
@@ -26,6 +29,8 @@ enum class GameType(val gesture: Gesture, val skill: Skill, val gentle: Boolean 
     SoundDetective(Gesture.Listen, Skill.Listening, needsVoice = true),
     HangulWordle(Gesture.Keyboard, Skill.Writing),
     Crossword(Gesture.Keyboard, Skill.Vocabulary),
+    ConjugationRunner(Gesture.Correct, Skill.Grammar, demanding = true),
+    SpeakIt(Gesture.Speak, Skill.Speaking, needsMic = true),
 }
 
 enum class ItemKind { WORD, SENTENCE }

@@ -1,6 +1,7 @@
 package com.dero.juststudykorean.korean.games
 
 import com.dero.juststudykorean.korean.englishSenses
+import com.dero.juststudykorean.korean.games.rounds.ConjugationRunnerRounds
 import com.dero.juststudykorean.korean.games.rounds.CrosswordRounds
 import com.dero.juststudykorean.korean.games.rounds.GrammarFixerRounds
 import com.dero.juststudykorean.korean.games.rounds.HangulWordleRounds
@@ -11,12 +12,15 @@ import com.dero.juststudykorean.korean.games.rounds.ListenGuessRounds
 import com.dero.juststudykorean.korean.games.rounds.MemoryFlipRounds
 import com.dero.juststudykorean.korean.games.rounds.SentenceBuilderRounds
 import com.dero.juststudykorean.korean.games.rounds.SoundDetectiveRounds
+import com.dero.juststudykorean.korean.games.rounds.SpeakItRounds
 import com.dero.juststudykorean.korean.games.rounds.WordMatchRounds
 import com.dero.juststudykorean.korean.games.rounds.WordPathRounds
 import com.dero.juststudykorean.korean.games.rounds.WordRecallRounds
 import com.dero.juststudykorean.korean.games.rounds.WordScrambleRounds
 import com.dero.juststudykorean.korean.games.rounds.WordSortRounds
+import com.dero.juststudykorean.korean.games.rounds.runnerVerbs
 import com.dero.juststudykorean.korean.games.rounds.scramblable
+import com.dero.juststudykorean.korean.games.rounds.speakable
 import com.dero.juststudykorean.korean.games.sentenceTiles
 import kotlin.random.Random
 
@@ -27,6 +31,7 @@ val FACTORIES: Map<GameType, RoundFactory> = mapOf(
     GameType.HangulBuilder to HangulBuilderRounds, GameType.WordSort to WordSortRounds, GameType.GrammarFixer to GrammarFixerRounds,
     GameType.WordRecall to WordRecallRounds, GameType.HangulTyping to HangulTypingRounds, GameType.WordPath to WordPathRounds,
     GameType.SoundDetective to SoundDetectiveRounds, GameType.HangulWordle to HangulWordleRounds, GameType.Crossword to CrosswordRounds,
+    GameType.ConjugationRunner to ConjugationRunnerRounds, GameType.SpeakIt to SpeakItRounds,
 )
 
 /** Under this many words: "not enough content" (games.md, 11). */
@@ -51,11 +56,13 @@ fun validItems(game: GameType, bank: GameBank): Int = when (game) {
     GameType.SoundDetective -> bank.words.size
     GameType.HangulWordle -> wordleCandidates(bank).size
     GameType.Crossword -> bank.words.count { it.blocks.size in 2..5 }
+    GameType.ConjugationRunner -> runnerVerbs(bank).size
+    GameType.SpeakIt -> speakable(bank).size
 }
 
-/** 4.2: the game has its minimum content (and the Korean voice, for the two listening games). */
-fun available(game: GameType, bank: GameBank, voice: Boolean): Boolean {
-    if (bank.words.size < MIN_BANK_WORDS || (game.needsVoice && !voice)) return false
+/** 4.2: the game has its minimum content (and the Korean voice for the two listening games; [mic]: speech ready and the microphone not refused, for Speak It). */
+fun available(game: GameType, bank: GameBank, voice: Boolean, mic: Boolean = false): Boolean {
+    if (bank.words.size < MIN_BANK_WORDS || (game.needsVoice && !voice) || (game.needsMic && !mic)) return false
     val n = validItems(game, bank)
     return when (game) {
         GameType.Hangman, GameType.WordScramble, GameType.HangulBuilder, GameType.HangulTyping -> n >= 10
@@ -67,6 +74,8 @@ fun available(game: GameType, bank: GameBank, voice: Boolean): Boolean {
         GameType.SoundDetective -> n >= 6
         GameType.HangulWordle -> n >= 10
         GameType.Crossword -> (1..3).any { CrosswordRounds.build(RoundContext(bank, it, Random(0))) != null }
+        GameType.ConjugationRunner -> ConjugationRunnerRounds.build(RoundContext(bank, 1, Random(0))) != null
+        GameType.SpeakIt -> n >= 5
     }
 }
 

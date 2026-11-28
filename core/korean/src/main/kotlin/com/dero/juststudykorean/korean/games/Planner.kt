@@ -53,6 +53,6 @@ fun planRound(inputs: SessionInputs, index: Int): RoundPlan? {
     return null
 }
 
-/** The games that can be played with this bank (and the voice), with their number of valid items. */
-fun availableGames(bank: GameBank, voice: Boolean): Map<GameType, Int> =
-    GameType.entries.filter { available(it, bank, voice) }.associateWith { validItems(it, bank) }
+/** The games that can be played with this bank (and the voice, and the microphone), with their number of valid items. */
+fun availableGames(bank: GameBank, voice: Boolean, mic: Boolean = false): Map<GameType, Int> =
+    GameType.entries.filter { available(it, bank, voice, mic) }.associateWith { validItems(it, bank) }

@@ -76,4 +76,11 @@ class EvaluatorsTest {
         assertTrue(Evaluators.crossSolved(spec, right))
         assertFalse(Evaluators.crossSolved(spec, right - 3))
     }
+
+    @Test
+    fun conjugationRunnerIsWonWithEightOfTen() {
+        assertTrue(Evaluators.runnerWon(8))
+        assertTrue(Evaluators.runnerWon(10))
+        assertFalse(Evaluators.runnerWon(7))
+    }
 }
