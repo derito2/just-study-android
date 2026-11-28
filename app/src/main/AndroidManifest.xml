@@ -54,6 +54,11 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!-- F1, D11-7: the Daily Reminder's alarm. Not exported; no RECEIVE_BOOT_COMPLETED (set again when the app starts). -->
+        <receiver
+            android:name=".reminders.ReminderReceiver"
+            android:exported="false" />
+
         <!-- Only MainActivity may be exported. shortcut: macrobenchmark needs this receiver, re-add it in a benchmark build type in phase 7. -->
         <receiver
             android:name="androidx.profileinstaller.ProfileInstallReceiver"

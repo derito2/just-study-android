@@ -41,6 +41,7 @@ enum class Lucide(internal val durationMs: Int) {
     FlaskConical(0), Headphones(0), Dumbbell(0), NotebookPen(0), BookOpen(0), // design/beta.md 1: still
     Keyboard(0), // design/beta.md 3: still
     RotateCcw(0), Turtle(0), // design/beta.md 4: still
+    Bell(0), // design/beta.md 8: still
 }
 
 /** How one part of an icon moves at progress t (0..1). Pivot in icon units (24 × 24). */
@@ -84,7 +85,7 @@ private fun Lucide.pose(part: Int, t: Float): PartPose = when (this) {
     Lucide.Gamepad2, Lucide.Pause, Lucide.Play, Lucide.Flame, Lucide.Volume2, Lucide.Delete, Lucide.Mic, Lucide.Lightbulb, Lucide.Clock,
     Lucide.SlidersHorizontal, Lucide.Rocket, Lucide.BookOpenText,
     Lucide.FlaskConical, Lucide.Headphones, Lucide.Dumbbell, Lucide.NotebookPen, Lucide.BookOpen, Lucide.Keyboard,
-    Lucide.RotateCcw, Lucide.Turtle -> PartPose()
+    Lucide.RotateCcw, Lucide.Turtle, Lucide.Bell -> PartPose()
     Lucide.BadgeAlert -> PartPose(rotation = 8f * sin(4 * PI * t).toFloat() * (1f - t), scale = 1f + 0.1f * wave(t))
 }
 
