@@ -197,7 +197,7 @@ Los 4 juegos siguen los 7 pasos de «Cómo se añade un juego». Por PR:
 Cada juego necesita:
 - `FactoriesTest` y `EvaluatorsTest`;
 - Roborazzi en claro y oscuro;
-- **macrobenchmark de Games: P90 ≤ 8 ms y P99 ≤ 12 ms.**
+- **macrobenchmark de Games: no empeorar la referencia del 2026-11-27 en el OPPO: P90 8,4 ms y P99 13,5 ms en el flujo de Games** (antes «P90 ≤ 8 ms y P99 ≤ 12 ms»; por qué, en `DECISIONS.md` 2026-11-27).
 
 Sin Nano (D8-9), sin efectos de sonido (D8-5) y sin vibración.
 
@@ -235,7 +235,7 @@ Para y pregunta si:
 - cambia una captura de una pantalla que no está en la sección 2;
 - el conjugador falla un caso de la tabla y la única salida es ampliar la lista de irregulares sin una fuente;
 - `EndingMatch` reconoce menos del 70 % de las terminaciones de `golden/grammar` o de `WW1_Grammar` (sin contar las partículas);
-- Games pasa de P90 8 ms o de P99 12 ms;
+- Games empeora la referencia del 2026-11-27 en el OPPO: P90 8,4 ms o P99 13,5 ms en el flujo de Games (dueño, 2026-11-27; antes «P90 8 ms o P99 12 ms»);
 - algo pide aceptar un diálogo del sistema o cambiar un ajuste del teléfono;
 - un PR pasa de ~600 líneas de código de producto (se parte);
 - hace falta un color o un token nuevo, o una ficha contradice a otra.
