@@ -199,8 +199,8 @@ Usan la pantalla de Games tal cual: escenario, cinta, pausa, resumen, Beom, Deun
 En **Settings**, un grupo nuevo *Study* (con su divisor), entre *Appearance* y *Backup*, con una fila:
 
 - **Daily Reminder** `bell` · *A quiet reminder with your cards due.*
-- A la derecha, un ThemeSwitch.
-- Encendido, debajo de la línea, la hora *8:00 PM* en `action`, táctil, que abre el `TimePicker` de Material 3 en un diálogo (*Cancel* / *OK*).
+- A la derecha, un ThemeSwitch con la etiqueta de accesibilidad *Daily Reminder* (TalkBack no dice solo «Switch»).
+- Encendido, debajo de la línea, la hora *8:00 PM* en `action` en claro y en `brandText` en oscuro (`action` es un color de relleno, igual en los dos temas, y no se lee sobre el fondo oscuro; PR 12), táctil, que abre el `TimePicker` de Material 3 en un diálogo (*Cancel* / *OK*).
 - **Al encenderlo por primera vez**, si falta el permiso de notificaciones, Android lo pide. Si lo niegas, el interruptor vuelve a apagado y debajo sale *Notifications are off for this app.* (12 sp, `wrong-ink`).
 
 **Notificación:**
